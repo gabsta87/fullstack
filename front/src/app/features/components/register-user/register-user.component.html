@@ -1,0 +1,50 @@
+<div class="register-container">
+  <h2>Register</h2>
+
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <!-- Username Field -->
+    <div>
+      <label for="username">Username</label>
+      <input id="username" type="text" formControlName="username" />
+      <div *ngIf="registerForm.get('username')?.invalid && registerForm.get('username')?.touched">
+        <small *ngIf="registerForm.get('username')?.hasError('required')">Username is required</small>
+        <small *ngIf="registerForm.get('username')?.hasError('minlength')">Minimum 3 characters</small>
+      </div>
+    </div>
+
+    <!-- Email Field -->
+    <div>
+      <label for="email">Email</label>
+      <input id="email" type="email" formControlName="email" />
+      <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+        <small *ngIf="registerForm.get('email')?.hasError('required')">Email is required</small>
+        <small *ngIf="registerForm.get('email')?.hasError('email')">Invalid email address</small>
+      </div>
+    </div>
+
+    <!-- Password Field -->
+    <div>
+      <label for="password">Password</label>
+      <input id="password" type="password" formControlName="password" />
+      <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+        <small *ngIf="registerForm.get('password')?.hasError('required')">Password is required</small>
+        <small *ngIf="registerForm.get('password')?.hasError('minlength')">Minimum 6 characters</small>
+      </div>
+    </div>
+
+    <!-- Confirm Password Field -->
+    <div>
+      <label for="confirmPassword">Confirm Password</label>
+      <input id="confirmPassword" type="password" formControlName="confirmPassword" />
+      <div *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched">
+        <small *ngIf="registerForm.get('confirmPassword')?.hasError('required')">Confirm Password is required</small>
+        <small *ngIf="registerForm.get('confirmPassword')?.hasError('mismatch')">Passwords do not match</small>
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div>
+      <button type="submit" [disabled]="registerForm.invalid">Register</button>
+    </div>
+  </form>
+</div>
