@@ -34,6 +34,9 @@ dependencies {
 	// MySQL JDBC driver
 	runtimeOnly("com.mysql:mysql-connector-j")
 
+	// Online payment
+	implementation("com.stripe:stripe-java:27.1.0")
+
 	// Testing
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")

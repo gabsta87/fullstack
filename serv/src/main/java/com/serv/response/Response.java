@@ -1,4 +1,4 @@
-package com.serv.controller;
+package com.serv.response;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -27,6 +27,7 @@ public class Response {
     /**
      * Some HTTP response status codes
      */
+    @Getter
     public enum Status implements IStatus, Serializable {
         SWITCH_PROTOCOL(101, "Switching Protocols"),
         OK(200, "OK"),
@@ -61,11 +62,6 @@ public class Response {
         @Override
         public String getDescription() {
             return this.requestStatus + " " + this.description;
-        }
-
-        @Override
-        public int getRequestStatus() {
-            return this.requestStatus;
         }
 
     }

@@ -1,0 +1,96 @@
+<div>
+  <button (click)="startPayment()">Pay</button>
+  <ng-container *ngIf="payment.openStripe">
+    <div class="payment-form-container">
+      <h1>PAYMENT</h1>
+      <h2>All transactions are secure and encrypted</h2>
+
+      <!-- Payment Form -->
+      <form id="payment-form" (ngSubmit)="onSubmit()">
+
+        <!-- Email Field -->
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" class="form-control" placeholder="Enter your email"
+                 [(ngModel)]="paymentDetails.email" name="email" required>
+        </div>
+
+        <!-- Card Number (Stripe Element will replace this) -->
+        <div class="form-group" id="card-number">
+          <label for="card-number">Card number</label>
+          <div id="card-element" class="form-control">
+            <!-- Stripe.js injects the Card Element -->
+          </div>
+        </div>
+
+        <!-- Expiration Date and CVC (Stripe Elements will handle these) -->
+        <div class="form-row">
+          <div class="form-group" id="expiry-date">
+            <label for="expiry-date">Expiration</label>
+            <div id="card-expiry" class="form-control">
+              <!-- Stripe.js injects the Expiration Element -->
+            </div>
+          </div>
+
+          <div class="form-group" id="cvc">
+            <label for="cvc">CVC</label>
+            <div id="card-cvc" class="form-control">
+              <!-- Stripe.js injects the CVC Element -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Country Selection -->
+        <div class="form-group">
+          <label for="country">Country</label>
+          <select id="country" class="form-control" [(ngModel)]="paymentDetails.country" name="country" required>
+            <option value="">Select your country</option>
+            <option value="Europe">Europe</option>
+            <option value="Switzerland">Switzerland</option>
+            <!-- Add more countries as needed -->
+          </select>
+        </div>
+
+        <!-- Payment Button -->
+        <button type="submit" id="submit-button" class="pay-btn">
+          PAY {{ paymentDetails.amount }} EUR
+        </button>
+
+      </form>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="payment.openSuccess">
+    <div>
+      <h1>Thank you successfully Paid</h1>
+    </div>
+  </ng-container>
+</div>
+
+<!--  <div>-->
+<!--    <ng-container *ngIf="payment.openStripe">-->
+<!--      <div>-->
+<!--        <h1>PAYMENT</h1>-->
+<!--        <h2>All transactions are secure and encrypted</h2>-->
+<!--        &lt;!&ndash; Stripe &ndash;&gt;-->
+<!--        <form id="payment-form" class="w-full">-->
+<!--          <div id="link-authentication-element">-->
+<!--            &lt;!&ndash;Stripe.js injects the Link Authentication Element&ndash;&gt;-->
+<!--          </div>-->
+<!--          <div id="payment-element">-->
+<!--            &lt;!&ndash;Stripe.js injects the Payment Element&ndash;&gt;-->
+<!--          </div>-->
+<!--          <button id="submit" (click)="makePayment()">-->
+<!--            <div class="spinner hidden" id="spinner"></div>-->
+<!--            <span id="button-text"> Pay {{ payment.amount }} CAD </span>-->
+<!--          </button>-->
+<!--          <div id="payment-message" class="hidden"></div>-->
+<!--        </form>-->
+<!--        &lt;!&ndash; Stripe &ndash;&gt;-->
+<!--      </div>-->
+<!--    </ng-container>-->
+<!--    <ng-container *ngIf="payment.openSuccess">-->
+<!--      <div>-->
+<!--        <h1>Thank you successfully Paid</h1>-->
+<!--      </div>-->
+<!--    </ng-container>-->
+<!--  </div>-->
