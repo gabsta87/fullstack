@@ -1,0 +1,33 @@
+<h1>Ngx-Pay</h1>
+<div>
+  Stripe script
+  <script src="https://js.stripe.com/v3/"></script>
+</div>
+
+<div *ngIf="clientSecret" [formGroup]="paymentElementForm">
+  Standard form
+  <mat-form-field appearance="fill">
+    <input matInput placeholder="name" formControlName="name" />
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <input matInput placeholder="Email" type="email" formControlName="email" />
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <input matInput placeholder="Address" formControlName="address" />
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <input matInput placeholder="ZIP Code" formControlName="zipcode" />
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <input matInput placeholder="city" formControlName="city" />
+  </mat-form-field>
+  @if (elementsOptions.clientSecret) {
+    <ngx-stripe-elements
+      [stripe]="stripe"
+      [elementsOptions]="elementsOptions"
+    >
+      <ngx-stripe-payment [options]="paymentElementOptions" />
+    </ngx-stripe-elements>
+  }
+  <button (click)="pay()">PAY</button>
+</div>

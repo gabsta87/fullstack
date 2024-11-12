@@ -1,5 +1,6 @@
 package com.serv.database;
 
+import com.serv.common.Currency;
 import jakarta.persistence.*;
 import lombok.Setter;
 import lombok.Getter;
@@ -30,6 +31,10 @@ public class Payment {
     @Column(name = "bill_value")
     private int billValue;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name="currency")
+    private Currency currency;
+
 //    @Column(name = "card_number")
     @Transient
     private String cardNumber;
@@ -46,5 +51,9 @@ public class Payment {
     //    @Column(name = "cvc")
     @Transient
     private String cvc;
+
+    public String toString(){
+        return "Payment "+id+" - email: "+email+" amount: "+currency+" "+billValue;
+    }
 
 }
