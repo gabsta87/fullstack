@@ -1,19 +1,24 @@
 package com.serv.controller;
 
-import com.serv.response.Response;
 import com.serv.database.*;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
-public class PageController {
+public class UserController {
+
+    private final ClientRepository clientRepository;
+    private final WorkerRepository workerRepository;
+
     @Autowired
-    ClientRepository clientRepository;
-    @Autowired
-    WorkerRepository workerRepository;
+    public UserController(ClientRepository clientRepository, WorkerRepository workerRepository) {
+        this.clientRepository = clientRepository;
+        this.workerRepository = workerRepository;
+    }
 
     @PostConstruct
     public void init() {
@@ -25,8 +30,13 @@ public class PageController {
         return "Hello, World!";
     }
 
+    @GetMapping("/")
+    public String index() {
+        return "this is the index";
+    }
+
     @PostMapping(path="/addClient") // Map ONLY POST Requests
-    public @ResponseBody Response addNewClient (@RequestBody ClientDTO cl) {
+    public @ResponseBody ResponseEntity<String> addNewClient (@RequestBody ClientDTO cl) {
 
         try {
             Client n = new Client();
@@ -34,14 +44,14 @@ public class PageController {
             n.setEmail(new Email(cl.getEmail()));
             clientRepository.save(n);
 
-            return new Response(Response.Status.ACCEPTED, "Client added successfully");
+            return ResponseEntity.accepted().body("Client added successfully");
         }catch (IllegalArgumentException e) {
-            return new Response(Response.Status.BAD_REQUEST, e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @PostMapping(path="/addWorker") // Map ONLY POST Requests
-    public @ResponseBody Response addNewWorker (@RequestBody WorkerDTO wo) {
+    public @ResponseBody ResponseEntity<String> addNewWorker (@RequestBody WorkerDTO wo) {
 
         try {
             Worker n = new Worker();
@@ -49,9 +59,9 @@ public class PageController {
             n.setEmail(new Email(wo.getEmail()));
             workerRepository.save(n);
 
-            return new Response(Response.Status.ACCEPTED, "Worker added successfully");
+            return ResponseEntity.ok().body("Worker added successfully");
         }catch (IllegalArgumentException e) {
-            return new Response(Response.Status.BAD_REQUEST, e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -60,16 +70,17 @@ public class PageController {
         // This returns a JSON or XML with the users
         return workerRepository.findAll();
     }
+
+    @Getter
+    static class ClientDTO{
+        private String pseudo;
+        private String email;
+    }
+
+    @Getter
+    static class WorkerDTO{
+        private String pseudo;
+        private String email;
+    }
 }
 
-@Getter
-class ClientDTO{
-    private String pseudo;
-    private String email;
-}
-
-@Getter
-class WorkerDTO{
-    private String pseudo;
-    private String email;
-}
