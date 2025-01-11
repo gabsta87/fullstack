@@ -80,12 +80,7 @@ export class NgxPayComponent implements OnInit {
   };
 
   paymentElementOptions: StripePaymentElementOptions = {
-    layout: {
-      type: 'tabs',
-      defaultCollapsed: false,
-      radios: false,
-      spacedAccordionItems: false
-    }
+    layout: "accordion"
   };
 
   // Replace with your own public key

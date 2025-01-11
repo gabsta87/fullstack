@@ -1,0 +1,15 @@
+Workers
+<ion-grid>
+  <ion-row>
+    <ion-col *ngFor="let worker of workers">
+<!--      Link to {{worker.id}} -->
+      <div class="pictureThumbnail" (click)="goToProfile(worker.id)">
+        <!--        <img ngSrc="photo" alt="Profile images">-->
+        {{worker.mainPhoto}}
+        <ion-text color="black">
+          {{worker.pseudo}}
+        </ion-text>
+      </div>
+      </ion-col>
+  </ion-row>
+</ion-grid>

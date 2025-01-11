@@ -1,0 +1,28 @@
+Profile
+<ion-title>{{profileSimple .pseudo}}</ion-title>
+<ion-grid>
+  <ion-row>
+    <ion-col *ngFor="let photo of profileSimple.photos">
+      <div class="pictureThumbnail">
+<!--        <img ngSrc="photo" alt="Profile images">-->
+        <ion-text color="black">
+          {{photo}}
+        </ion-text>
+
+      </div>
+    </ion-col>
+  </ion-row>
+</ion-grid>
+
+<app-upload-image></app-upload-image>
+
+<ion-text>{{profileSimple.phone}}</ion-text>
+<ion-text>{{profileSimple.description}}</ion-text>
+
+
+<ion-list>
+  <ion-item *ngFor="let comment of profileSimple.comments">
+    {{ comment }}
+  </ion-item>
+</ion-list>
+

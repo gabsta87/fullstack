@@ -11,9 +11,9 @@ import lombok.Setter;
 public class Photo {
     @Id
     private long id;
+    private String fileName;
     private String title;
     private String description;
     private String url;
 
-    public Photo() {}
 }

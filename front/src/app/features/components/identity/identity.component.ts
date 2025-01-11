@@ -7,7 +7,6 @@ import { StripeService } from 'ngx-stripe';
 @Component({
   selector: 'app-identity',
   standalone: true,
-  imports: [],
   templateUrl: './identity.component.html',
   styleUrl: './identity.component.scss'
 })

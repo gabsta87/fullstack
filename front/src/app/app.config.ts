@@ -6,6 +6,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 
 import { routes } from './app.routes';
 import {provideNgxStripe} from "ngx-stripe";
+import { provideIonicAngular } from '@ionic/angular/standalone';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -14,5 +15,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(),
     provideNgxStripe(),
     provideAnimations(),
+    provideIonicAngular(),
   ]
 };

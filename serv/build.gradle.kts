@@ -27,6 +27,10 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 
+	// Security
+//	implementation("org.springframework.boot:spring-boot-starter-security")
+//	testImplementation("org.springframework.security:spring-security-test")
+
 	// Lombok
 	annotationProcessor("org.projectlombok:lombok")
 	compileOnly("org.projectlombok:lombok")
