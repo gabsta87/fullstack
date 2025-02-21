@@ -37,7 +37,7 @@ public class ItemController {
 
     @GetMapping("/simpleProfiles")
     public List<Worker> getSimpleProfiles() {
-        System.out.println("request received");
+        System.out.println("simpleProfiles request received");
 //        String query = "SELECT id,pseudo,main_photo_id FROM "+ TablesNames.WORKERS +" ORDER BY priority DESC";
         String query = "SELECT * FROM "+ TablesNames.WORKERS;
         Query nativeQuery = entityManager.createNativeQuery(query, Map.class);

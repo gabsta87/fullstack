@@ -30,8 +30,8 @@ export class ProfileComponent implements OnInit {
   }
 }
 
+// This class is used in the gallery, to have minimal information on all profiles
 export class Profile{
-
   id!: number;
   pseudo!:string;
   description!:string;
@@ -41,6 +41,7 @@ export class Profile{
   mainPhoto!:string;
 }
 
+// This class is used for a profile detailed page, with all photos loaded
 export class ProfileDetail extends Profile{
   photos!:string[];
 }

@@ -1,7 +1,7 @@
 <div class="homepage">
   <h1>Welcome to the Homepage</h1>
   <p>Choose an action:</p>
-
+<!-- TODO Remove this testing menu when the home page is finished -->
   <nav>
     <ul>
       <li><a routerLink="/register">Register</a></li>
@@ -12,4 +12,11 @@
              [queryParams]="{ id: '1'}">Profile 1</a></li>
     </ul>
   </nav>
+
+<!--  TODO Add a home page with (by priority):
+a grid with available workers ordered as last paying update first using the "main-gallery" component
+a drop down menu to select the region/city to filter workers
+an infinite scroll down system by loading more profiles as we reach 2 lines of profiles before the end of actual page
+filtering system by workers' tags
+-->
 </div>

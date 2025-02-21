@@ -7,13 +7,10 @@ import {Observable} from "rxjs";
 export const detailedProfileResolver: ResolveFn<Observable<ProfileDetail>> = (route, state) => {
   const dataService = inject(DynamicDataService);
 
-  // Extract and parse the 'id' parameter as a number
   const profileId = route.queryParamMap.get('id');
 
   if (!profileId || isNaN(Number(profileId))) {
     throw new Error("Profile ID is missing or not a valid number.");
   }
-  const parsedId = parseInt(profileId, 10); // Convert to number
-
-  return dataService.getTableDataById("worker", parsedId);
+  return dataService.getTableDataById("worker", parseInt(profileId, 10));
 };
