@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,14 +30,32 @@ public class AuthController {
 
     /** LOGIN */
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody Requests.LoginRequest request, HttpSession session) {
+    public ResponseEntity<Object> login(@RequestBody Requests.LoginRequest request,
+                                        HttpSession session) {
         Optional<VenusUser> clientOpt = userRepository.findByUsername(request.getPseudo());
 
         if (clientOpt.isPresent() && clientOpt.get().checkPassword(request.getPassword())) {
             session.setAttribute("user", clientOpt.get());
-            return ResponseEntity.ok("Login successful!");
+
+            String redirectTo = (request.getRedirectTo() != null && !request.getRedirectTo().isEmpty())
+                    ? request.getRedirectTo()
+                    : "/home";
+
+            var response = Map.of(
+                    "message", "Login successful!",
+                    "redirectTo", redirectTo
+            );
+
+            return ResponseEntity.ok(response);
         }
-        return ResponseEntity.status(401).body("Invalid credentials.");
+
+        return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials."));
+    }
+
+    @GetMapping("/session-check")
+    public ResponseEntity<?> sessionCheck(HttpSession session) {
+        VenusUser user = (VenusUser) session.getAttribute("user");
+        return ResponseEntity.ok(user != null);
     }
 
     /** LOGOUT */

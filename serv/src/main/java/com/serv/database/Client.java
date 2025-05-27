@@ -21,6 +21,8 @@ public class Client extends VenusUser {
     @OneToMany
     Collection<Seller> favorites;
 
+    // TODO default location
+
     public Client(String name, Email email, String password) {
         super(name,email,password);
     }

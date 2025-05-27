@@ -4,12 +4,15 @@
 <!-- TODO Remove this testing menu when the home page is finished -->
   <nav>
     <ul>
+      <li><a routerLink="/login">Login</a></li>
       <li><a routerLink="/register">Register</a></li>
       <li><a routerLink="/register-worker">Register worker</a></li>
+      <li><a routerLink="/account">Account</a></li>
       <li><a routerLink="/ngx-pay">Make a Payment with NGX</a></li>
       <li><a routerLink="/gallery">Gallery</a></li>
       <li><a [routerLink]="['/profile']"
              [queryParams]="{ id: '1'}">Profile 1</a></li>
+
     </ul>
   </nav>
 

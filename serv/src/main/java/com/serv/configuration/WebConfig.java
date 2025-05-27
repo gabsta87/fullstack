@@ -18,10 +18,10 @@ public class WebConfig implements WebMvcConfigurer {
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:4200")
                         .allowedMethods("GET", "POST")// Allow necessary HTTP methods
-//                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")// Allow necessary HTTP methods
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")// Allow necessary HTTP methods
                         .allowedHeaders("*")  // Allow headers for requests
 //                        .allowedHeaders("Content-Type", "Authorization")  // Allow headers for requests
-//                        .allowCredentials(false) // If app needs cookies/auth, enable this
+                        .allowCredentials(true)
                         .maxAge(3600) // Cache the response for 1 hour
                 ;
             }

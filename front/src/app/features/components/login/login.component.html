@@ -1,0 +1,16 @@
+<div class="login-container">
+  <h2>Login</h2>
+  <form (submit)="login(); $event.preventDefault()">
+    <label for="pseudo">Username:</label>
+    <input type="text" id="pseudo" [(ngModel)]="pseudo" name="pseudo" required />
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" [(ngModel)]="password" name="password" required />
+
+    <button type="submit">Login</button>
+
+    <div *ngIf="errorMessage" class="error">
+      {{ errorMessage }}
+    </div>
+  </form>
+</div>

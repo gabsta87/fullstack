@@ -1,17 +1,17 @@
 import { Component } from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import { RegisterService } from '../../services/register.service';
-import {NgIf} from "@angular/common";  // Import the service
+import {NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-register-user',
   standalone: true,
   templateUrl: './register-user.component.html',
+  styleUrls: ['./register-user.component.scss'],
   imports: [
     ReactiveFormsModule,
     NgIf
   ],
-  styleUrls: ['./register-user.component.scss']
 })
 export class RegisterComponent {
   registerForm: FormGroup;

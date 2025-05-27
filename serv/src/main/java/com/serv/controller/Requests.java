@@ -15,6 +15,7 @@ public class Requests {
     public static class LoginRequest {
         private String pseudo;
         private String password;
+        private String redirectTo;
     }
 
     @Data
