@@ -2,13 +2,11 @@ package com.serv.database;
 
 import com.serv.common.Currency;
 import jakarta.persistence.*;
-import lombok.Setter;
-import lombok.Getter;
+import lombok.Data;
 
 @Entity
-@Table(name = "payment")
-@Setter
-@Getter
+@Table(name = "payments")
+@Data
 public class Payment {
 
     @Id
@@ -51,9 +49,5 @@ public class Payment {
     //    @Column(name = "cvc")
     @Transient
     private String cvc;
-
-    public String toString(){
-        return "Payment "+id+" - email: "+email+" amount: "+currency+" "+billValue;
-    }
 
 }

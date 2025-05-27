@@ -1,16 +1,19 @@
 package com.serv.database;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
+import java.util.UUID;
+
+@Data
 @Entity
+@Table(name = "photos")
 public class Photo {
     @Id
-    private long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
     private String fileName;
     private String title;
     private String description;

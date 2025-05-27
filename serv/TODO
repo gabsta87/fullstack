@@ -1,2 +1,18 @@
 Manage Users with Spring security
 Manage payments
+
+
+The Password Reset Flow
+    From the login page, the user clicks on the ‘Forgot Password’ link.
+    The request hits the /forgotPassword route in the SecurityController
+    The forgotPassword.html template (which is in the security directory) is returned to the user. This template has a form with a single email field.
+    User enters his email and submits the form.
+    This new request arrives via the /passwordRequest route in the PasswordResetController
+    The forgottenPassword(email) is invoked with the passed in user’s email
+    If and email exists, then a token is generated and send along to the user via a password reset email
+    User receives the email and clicks on the link in the email
+    The request arrives via the /passwordChange route in the PasswordResetController
+    The changePassword() method sends the user the password reset form along with the token. This form contains two fields: newPassword and confirmPassword
+    User fills the form and submits via the /passwordChange route
+    The updatePassword is called with the password and token and the user data is saved
+    The user is redirected to the passwordChangeSuccessful page

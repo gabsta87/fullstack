@@ -1,7 +1,6 @@
 package com.serv.controller;
 
 import com.serv.common.TablesNames;
-import com.serv.database.Worker;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +12,16 @@ import java.util.Map;
 @RestController
 @RequestMapping("/data")
 public class ItemController {
+    private final EntityManager entityManager;
+
     @Autowired
-    private EntityManager entityManager;
+    public ItemController(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     // Fetch all rows from a table
     @GetMapping("/table/{tableName}")
-    public List<Map<String, Object>> getTableData(@PathVariable String tableName) {
+    public List getTableData(@PathVariable String tableName) {
         String query = String.format("SELECT * FROM %s", tableName);
         Query nativeQuery = entityManager.createNativeQuery(query, Map.class);
         System.out.println("Query result size : "+nativeQuery.getResultList().size());
@@ -36,7 +39,7 @@ public class ItemController {
     }
 
     @GetMapping("/simpleProfiles")
-    public List<Worker> getSimpleProfiles() {
+    public List getSimpleProfiles() {
         System.out.println("simpleProfiles request received");
 //        String query = "SELECT id,pseudo,main_photo_id FROM "+ TablesNames.WORKERS +" ORDER BY priority DESC";
         String query = "SELECT * FROM "+ TablesNames.WORKERS;

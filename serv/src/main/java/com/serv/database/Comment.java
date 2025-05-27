@@ -1,24 +1,28 @@
 package com.serv.database;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
 
-@Getter
-@Setter
+@Data
 @Entity
+@Table(name = "comments")
 public class Comment {
     @Id
+    @Basic(optional = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Basic(optional = false)
+    @Column(nullable = false)
     private String content;
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private Client user;
+    @Basic(optional = false)
+    @Column(nullable = false)
     private Date date;
 
 }

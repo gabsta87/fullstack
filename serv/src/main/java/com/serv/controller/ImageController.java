@@ -1,7 +1,7 @@
 package com.serv.controller;
 
 import com.serv.database.Photo;
-import com.serv.database.PhotoRepository;
+import com.serv.database.repositories.PhotoRepository;
 import com.serv.service.ImageUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

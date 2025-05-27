@@ -11,13 +11,13 @@ export class RegisterService {
 
   constructor(private http: HttpClient) {}
 
-  registerClient(name: string, email: string): Observable<any> {
-    const body = { name, email };
+  registerClient(username: string, email: string, password : string): Observable<any> {
+    const body = { username, email , password};
     return this.http.post(`${this.apiUrl}/addClient`, body);
   }
 
-  registerWorker(name: string, email: string): Observable<any> {
-    const body = { name, email };
+  registerWorker(username: string, email: string, password : string): Observable<any> {
+    const body = { username, email, password };
     return this.http.post(`${this.apiUrl}/addWorker`, body);
   }
 }

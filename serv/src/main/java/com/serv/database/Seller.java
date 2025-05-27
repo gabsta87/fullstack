@@ -1,15 +1,19 @@
 package com.serv.database;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 
-@Getter
-@Setter
+@Data
 @Entity
-public class Worker extends User{
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+@DiscriminatorValue("SELLER")
+@Table(name = "sellers")
+public class Seller extends VenusUser {
 
     @Embedded
     private PhysicalAddress address;
@@ -21,11 +25,15 @@ public class Worker extends User{
     @OneToMany
     Collection<Comment> comments;
     private int priority;
+    private boolean expired;
+
+    public Seller(String username, Email email, String password) {
+        super(username, email, password);
+    }
+
 //    @ManyToMany
 //    Collection<Tag> tags;
 //    @OneToMany
 //    Collection<Video> videos;
-
-    public Worker() {}
 
 }

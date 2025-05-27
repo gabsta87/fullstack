@@ -1,19 +1,27 @@
 package com.serv.database;
 
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 
-@Getter
-@Setter
+@Data
 @Entity
-public class Client extends User{
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+@DiscriminatorValue("CLIENT")
+@Table(name = "clients")
+public class Client extends VenusUser {
 
     @OneToMany
-    Collection<Worker> favorites;
+    Collection<Seller> favorites;
 
-    public Client() {}
+    public Client(String name, Email email, String password) {
+        super(name,email,password);
+    }
 }

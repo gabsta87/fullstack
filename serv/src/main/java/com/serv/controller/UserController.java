@@ -1,79 +1,77 @@
 package com.serv.controller;
 
 import com.serv.database.*;
+import com.serv.database.repositories.ClientRepository;
+import com.serv.database.repositories.SellerRepository;
+import com.serv.database.repositories.UserRepository;
+import com.serv.service.MailService;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UserController {
 
-    private final ClientRepository clientRepository;
-    private final WorkerRepository workerRepository;
-
     @Autowired
-    public UserController(ClientRepository clientRepository, WorkerRepository workerRepository) {
-        this.clientRepository = clientRepository;
-        this.workerRepository = workerRepository;
-    }
+    private UserRepository userRepository;
+    @Autowired
+    private ClientRepository clientRepository;
+    @Autowired
+    private SellerRepository sellerRepository;
+    @Autowired
+    private MailService mailService;
 
-    @GetMapping("/hello")
-    public String sayHello() {
-        return "Hello, World!";
-    }
-
-    @GetMapping("/")
-    public String index() {
-        return "this is the index";
-    }
-
-    @PostMapping(path="/addClient") // Map ONLY POST Requests
-    public @ResponseBody ResponseEntity<String> addNewClient (@RequestBody ClientDTO cl) {
+    @PostMapping(path="/addClient")
+    public @ResponseBody ResponseEntity<String> addNewClient (@RequestBody Requests.RegisterRequest cl) {
 
         try {
-            Client n = new Client();
-            n.setPseudo(cl.getPseudo());
-            n.setEmail(new Email(cl.getEmail()));
-            clientRepository.save(n);
+            Client n = new Client(cl.getUsername(), new Email(cl.getEmail()), cl.getPassword());
+            if (userRepository.findByUsername(n.getUsername()).isPresent()) {
+                return ResponseEntity.badRequest().body("Username already taken.");
+            }
 
-            return ResponseEntity.accepted().body("Client added successfully");
+            // TODO send mail to activate account
+            String activationURL = "testString";
+//            mailService.sendFormattedMessage(n.getEmail(), "Account activation",activationURL);
+
+            n.setEnabled(false);
+            n.setLocked(true);
+
+            clientRepository.save(n);
+            return ResponseEntity.ok("User registered successfully!");
         }catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @PostMapping(path="/addWorker") // Map ONLY POST Requests
-    public @ResponseBody ResponseEntity<String> addNewWorker (@RequestBody WorkerDTO wo) {
-
+    public @ResponseBody ResponseEntity<String> addNewWorker (@RequestBody Requests.RegisterRequest wo) {
         try {
-            Worker n = new Worker();
-            n.setPseudo(wo.getPseudo());
-            n.setEmail(new Email(wo.getEmail()));
-            workerRepository.save(n);
+            Seller u = new Seller(wo.getUsername(), new Email(wo.getEmail()),wo.getPassword());
+            if (userRepository.findByUsername(u.getUsername()).isPresent()) {
+                return ResponseEntity.badRequest().body("Username already taken.");
+            }
 
-            return ResponseEntity.ok().body("Worker added successfully");
+            // TODO send mail to activate account
+            String activationURL = "testString";
+//            mailService.sendFormattedMessage(u.getEmail(), "Account activation",activationURL);
+
+            u.setEnabled(false);
+            u.setLocked(true);
+            u.setExpired(true);
+
+            sellerRepository.save(u);
+            return ResponseEntity.ok("User registered successfully!");
         }catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @GetMapping(path="/all")
-    public @ResponseBody Iterable<Worker> getAllWorkers() {
-        // This returns a JSON or XML with the users
-        return workerRepository.findAll();
-    }
-
-    @Getter
-    static class ClientDTO{
-        private String pseudo;
-        private String email;
-    }
-
-    @Getter
-    static class WorkerDTO{
-        private String pseudo;
-        private String email;
+    @GetMapping(path="/getSellers")
+    public @ResponseBody Iterable<Seller> getAllWorkers() {
+        return sellerRepository.findAll();
     }
 }
 

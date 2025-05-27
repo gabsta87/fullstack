@@ -5,20 +5,20 @@ import lombok.Data;
 public class Requests {
 
     @Data
-    public class RegisterRequest {
-        private String pseudo;
+    public static class RegisterRequest {
+        private String username;
         private String email;
         private String password;
     }
 
     @Data
-    public class LoginRequest {
+    public static class LoginRequest {
         private String pseudo;
         private String password;
     }
 
     @Data
-    public class ForgotPasswordRequest {
+    public static class ForgotPasswordRequest {
         private String email;
     }
 }

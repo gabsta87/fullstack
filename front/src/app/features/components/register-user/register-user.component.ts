@@ -36,10 +36,10 @@ export class RegisterComponent {
 
   onSubmit() {
     if (this.registerForm.valid) {
-      const { username, email } = this.registerForm.value;
+      const { username, email, password} = this.registerForm.value;
 
       // Call the service to register the user (choose client or worker)
-      this.registerService.registerClient(username, email)
+      this.registerService.registerClient(username, email, password)
         .subscribe({
           next: (response) => {
             console.log('User successfully registered:', response);

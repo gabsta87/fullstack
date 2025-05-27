@@ -12,7 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class PasswordResetToken {
 
-    public PasswordResetToken(UUID token,User user) {
+    public PasswordResetToken(UUID token, VenusUser user) {
         this.user = user;
         this.id = token;
         expiryDate = LocalDateTime.now().plusDays(1);
@@ -22,9 +22,9 @@ public class PasswordResetToken {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToOne(targetEntity = User.class)
+    @OneToOne(targetEntity = VenusUser.class)
     @JoinColumn(nullable = false)
-    private User user;
+    private VenusUser user;
 
     private LocalDateTime expiryDate;
 

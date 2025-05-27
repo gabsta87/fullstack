@@ -1,7 +1,7 @@
 package com.serv.controller;
 
 import com.serv.database.Payment;
-import com.serv.database.PaymentRepository;
+import com.serv.database.repositories.PaymentRepository;
 
 import com.stripe.Stripe;
 import jakarta.annotation.PostConstruct;

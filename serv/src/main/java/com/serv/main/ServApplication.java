@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @ComponentScan({"com.serv.controller","com.serv.service","com.serv.configuration"})
-@EnableJpaRepositories(basePackages = "com.serv.database")
+@EnableJpaRepositories(basePackages = "com.serv.database.repositories")
 @EntityScan(basePackages = "com.serv.database")
 //@CrossOrigin(origins = "http://localhost:4200")
 public class ServApplication {
