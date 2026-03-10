@@ -32,8 +32,8 @@ dependencies {
 	// Security
 //	implementation("org.springframework.boot:spring-boot-starter-security")
 //	testImplementation("org.springframework.security:spring-security-test")
-	// implementation("org.springframework.boot:spring-boot-starter-security:3.3.4")
-	// testImplementation("org.springframework.security:spring-security-test:6.2.3")
+	 implementation("org.springframework.boot:spring-boot-starter-security:3.3.4")
+	 testImplementation("org.springframework.security:spring-security-test:6.2.3")
 
 	// Lombok
 //	annotationProcessor("org.projectlombok:lombok")

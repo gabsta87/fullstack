@@ -8,6 +8,9 @@ import com.serv.database.repositories.UserRepository;
 import com.serv.service.MailService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,15 +21,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private MailService mailService;
-    @Autowired
-    private PasswordResetTokenRepository passwordResetTokenRepository;
+    private final UserRepository userRepository;
+    private final MailService mailService;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     /** LOGIN */
     @PostMapping("/login")

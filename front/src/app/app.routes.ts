@@ -9,14 +9,14 @@ import {detailedProfileResolver} from "./features/resolver/detailed-profile.reso
 import {RegisterWorkerComponent} from "./features/components/register-worker/register-worker.component";
 import {LoginComponent} from "./features/components/login/login.component";
 import {AccountComponent} from "./features/components/account/account.component";
-import {AuthGuard} from "./features/guards/auth-guard.guard";
+import {authGuard} from "./features/guards/auth.guard";
 
 
 export const routes: Routes = [
   { path: '', component: HomepageComponent },  // Default route (Home)
   { path: 'home', component: HomepageComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'account', component: AccountComponent, canActivate: [AuthGuard] },
+  { path: 'account', component: AccountComponent, canActivate: [authGuard] },
   { path: 'register', component: RegisterComponent },
   { path: 'register-worker', component: RegisterWorkerComponent },
   { path: 'ngx-pay', component: NgxPayComponent },
