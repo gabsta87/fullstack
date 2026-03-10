@@ -1,20 +1,7 @@
-<div class="homepage">
-  <h1>Welcome to the Homepage</h1>
-  <p>Choose an action:</p>
-<!-- TODO Remove this testing menu when the home page is finished -->
-  <nav>
-    <ul>
-      <li><a routerLink="/login">Login</a></li>
-      <li><a routerLink="/register">Register</a></li>
-      <li><a routerLink="/register-worker">Register worker</a></li>
-      <li><a routerLink="/account">Account</a></li>
-      <li><a routerLink="/ngx-pay">Make a Payment with NGX</a></li>
-      <li><a routerLink="/gallery">Gallery</a></li>
-      <li><a [routerLink]="['/profile']"
-             [queryParams]="{ id: '1'}">Profile 1</a></li>
-
-    </ul>
-  </nav>
+<!-- index.html <head> -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <!--  TODO Add a home page with (by priority):
 a grid with available workers ordered as last paying update first using the "main-gallery" component
@@ -22,4 +9,236 @@ a drop down menu to select the region/city to filter workers
 an infinite scroll down system by loading more profiles as we reach 2 lines of profiles before the end of actual page
 filtering system by workers' tags
 -->
+<div class="page">
+
+  <!-- ░░ DEV MENU (temporary) ░░ -->
+  <div class="dev-bar">
+    <span class="dev-label">🛠 Dev</span>
+    <a routerLink="/login">Login</a>
+    <a routerLink="/register">Register</a>
+    <a routerLink="/register-worker">Register worker</a>
+    <a routerLink="/account">Account</a>
+    <a routerLink="/ngx-pay">NGX Pay</a>
+    <a routerLink="/gallery">Gallery</a>
+    <a [routerLink]="['/profile']" [queryParams]="{ id: '1' }">Profile 1</a>
+  </div>
+
+  <!-- ░░ NAVBAR ░░ -->
+  <header class="navbar">
+    <div class="navbar-inner">
+      <a class="brand" routerLink="/">
+        <span class="brand-mark">◆</span>
+        <span class="brand-name">Escorta</span>
+      </a>
+      <nav class="nav-links">
+        <a routerLink="/login" class="nav-link">Se connecter</a>
+        <a routerLink="/register" class="nav-cta">Créer un compte</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ░░ FILTER BAR ░░ -->
+  <div class="filter-bar">
+    <div class="filter-bar-inner">
+
+      <div class="filter-group">
+        <div class="select-wrap">
+          <svg class="select-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+            <circle cx="12" cy="9" r="2.5"/>
+          </svg>
+          <select [(ngModel)]="filters.region" (change)="applyFilters()" class="filter-select">
+            <option value="">Toutes les régions</option>
+            <option *ngFor="let r of regions" [value]="r">{{ r }}</option>
+          </select>
+          <svg class="select-arrow" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="filter-sep"></div>
+
+      <button class="more-filters-btn" (click)="toggleFilters()" [class.active]="filtersOpen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 6h18M7 12h10M11 18h2"/>
+        </svg>
+        Filtres
+        <span class="filter-badge" *ngIf="activeFilterCount > 0">{{ activeFilterCount }}</span>
+      </button>
+
+      <button class="clear-btn" *ngIf="activeFilterCount > 0" (click)="clearFilters()">
+        Effacer tout
+      </button>
+
+    </div>
+
+    <!-- Expanded panel -->
+    <div class="filter-panel" [class.open]="filtersOpen">
+      <div class="filter-panel-grid">
+
+        <div class="fcol">
+          <p class="fcol-title">Morphologie</p>
+          <div class="check-list">
+            <label *ngFor="let o of options.bodyType" class="check-item">
+              <input type="checkbox" [(ngModel)]="filters.bodyType[o]" (change)="applyFilters()"/>
+              <span class="check-box"></span>
+              <span class="check-text">{{ o }}</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="fcol">
+          <p class="fcol-title">Couleur des yeux</p>
+          <div class="swatch-row">
+            <button *ngFor="let c of options.eyeColor"
+                    class="swatch" [title]="c.label"
+                    [style.background]="c.hex"
+                    [class.selected]="filters.eyeColor === c.label"
+                    (click)="toggle('eyeColor', c.label)">
+            </button>
+          </div>
+          <p class="fcol-title mt">Couleur des cheveux</p>
+          <div class="swatch-row">
+            <button *ngFor="let c of options.hairColor"
+                    class="swatch" [title]="c.label"
+                    [style.background]="c.hex"
+                    [class.selected]="filters.hairColor === c.label"
+                    (click)="toggle('hairColor', c.label)">
+            </button>
+          </div>
+        </div>
+
+        <div class="fcol">
+          <p class="fcol-title">Taille (cm)</p>
+          <div class="range-row">
+            <input type="number" class="range-in" [(ngModel)]="filters.heightMin"
+                   (change)="applyFilters()" placeholder="Min"/>
+            <span class="range-dash">–</span>
+            <input type="number" class="range-in" [(ngModel)]="filters.heightMax"
+                   (change)="applyFilters()" placeholder="Max"/>
+          </div>
+          <p class="fcol-title mt">Poids (kg)</p>
+          <div class="range-row">
+            <input type="number" class="range-in" [(ngModel)]="filters.weightMin"
+                   (change)="applyFilters()" placeholder="Min"/>
+            <span class="range-dash">–</span>
+            <input type="number" class="range-in" [(ngModel)]="filters.weightMax"
+                   (change)="applyFilters()" placeholder="Max"/>
+          </div>
+        </div>
+
+        <div class="fcol">
+          <p class="fcol-title">Services</p>
+          <div class="check-list">
+            <label *ngFor="let s of options.services" class="check-item">
+              <input type="checkbox" [(ngModel)]="filters.services[s]" (change)="applyFilters()"/>
+              <span class="check-box"></span>
+              <span class="check-text">{{ s }}</span>
+            </label>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ░░ GALLERY ░░ -->
+  <main class="gallery">
+
+    <!-- Available -->
+    <section *ngIf="availableWorkers.length > 0">
+      <div class="section-label">
+        <span class="status-pip online"></span>
+        Disponibles maintenant
+        <span class="section-count">{{ availableWorkers.length }}</span>
+      </div>
+      <div class="worker-grid">
+        <a *ngFor="let w of availableWorkers; let i = index"
+           [routerLink]="['/profile']" [queryParams]="{ id: w.id }"
+           class="wcard"
+           [style.animation-delay]="(i * 0.04) + 's'">
+          <div class="wcard-photo">
+            <div class="photo-ph">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                <circle cx="12" cy="8" r="4.5"/>
+                <path d="M3 21c0-4.97 4.03-9 9-9s9 4.03 9 9"/>
+              </svg>
+            </div>
+            <span class="online-pill">
+            <span class="pip"></span>En ligne
+          </span>
+            <div class="wcard-hover-info">
+              <span *ngFor="let s of w.services" class="service-tag">{{ s }}</span>
+            </div>
+          </div>
+          <div class="wcard-body">
+            <div class="wcard-row">
+              <span class="wcard-name">{{ w.name }}, {{ w.age }}</span>
+              <span class="wcard-loc">{{ w.location }}</span>
+            </div>
+            <div class="wcard-meta">
+              <span>{{ w.bodyType }}</span>
+              <span class="dot">·</span>
+              <span>{{ w.height }} cm</span>
+              <span class="dot">·</span>
+              <span>{{ w.weight }} kg</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Unavailable -->
+    <section *ngIf="unavailableWorkers.length > 0" class="section-unavail">
+      <div class="section-label">
+        <span class="status-pip offline"></span>
+        Non disponibles
+        <span class="section-count">{{ unavailableWorkers.length }}</span>
+      </div>
+      <div class="worker-grid faded">
+        <a *ngFor="let w of unavailableWorkers; let i = index"
+           [routerLink]="['/profile']" [queryParams]="{ id: w.id }"
+           class="wcard"
+           [style.animation-delay]="(i * 0.04) + 's'">
+          <div class="wcard-photo">
+            <div class="photo-ph">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                <circle cx="12" cy="8" r="4.5"/>
+                <path d="M3 21c0-4.97 4.03-9 9-9s9 4.03 9 9"/>
+              </svg>
+            </div>
+            <div class="wcard-hover-info">
+              <span *ngFor="let s of w.services" class="service-tag">{{ s }}</span>
+            </div>
+          </div>
+          <div class="wcard-body">
+            <div class="wcard-row">
+              <span class="wcard-name">{{ w.name }}, {{ w.age }}</span>
+              <span class="wcard-loc">{{ w.location }}</span>
+            </div>
+            <div class="wcard-meta">
+              <span>{{ w.bodyType }}</span>
+              <span class="dot">·</span>
+              <span>{{ w.height }} cm</span>
+              <span class="dot">·</span>
+              <span>{{ w.weight }} kg</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Empty state -->
+    <div class="empty" *ngIf="availableWorkers.length === 0 && unavailableWorkers.length === 0">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <p>Aucun profil ne correspond à ces critères.</p>
+      <button (click)="clearFilters()">Réinitialiser</button>
+    </div>
+
+  </main>
+
 </div>
+

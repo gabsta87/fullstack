@@ -1,2 +1,26 @@
 /* You can add global styles to this file, and also import other style files */
 @import "../node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css";
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Outfit:wght@300;400;500;600&display=swap');
+
+// ── Tokens ────────────────────────────────────────────────────────────────────
+:host {
+  --bg:          #faf9f7;
+  --surface:     #ffffff;
+  --border:      #e8e4df;
+  --border-soft: #f0ece7;
+  --text:        #1a1714;
+  --text-mid:    #6b6560;
+  --text-muted:  #a09890;
+  --accent:      #c8956c;       // warm terracotta
+  --accent-2:    #8b6f5e;
+  --accent-light:#f5ede6;
+  --green:       #3a7d5a;
+  --green-bg:    #eef6f1;
+  --radius-sm:   8px;
+  --radius-md:   14px;
+  --radius-lg:   22px;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.06);
+  --shadow-md:   0 4px 20px rgba(0,0,0,0.08);
+  --shadow-lg:   0 12px 48px rgba(0,0,0,0.12);
+}
