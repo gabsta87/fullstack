@@ -37,11 +37,15 @@ export class UploadImageComponent  implements OnInit {
   async uploadImage(): Promise<void> {
     if (this.selectedFiles) {
       for (let selectedFile of this.selectedFiles) {
-        let result = await firstValueFrom(this.imageUploadService.uploadImage(selectedFile));
-        console.log(result)
-        // this.profileInfos.photos.push(result); // Add new image URL to profile photos
+        const isVideo = selectedFile.type.startsWith('video/');
+        const upload$ = isVideo
+          ? this.imageUploadService.uploadVideo(selectedFile)
+          : this.imageUploadService.uploadImage(selectedFile);
+
+        let result = await firstValueFrom(upload$);
+        console.log(result);
       }
-      this.selectedFiles = null; // Clear the file selection
+      this.selectedFiles = null;
     }
   }
 

@@ -1,10 +1,7 @@
 package com.serv.controller;
 
-import com.serv.database.Photo;
-import com.serv.database.repositories.PhotoRepository;
 import com.serv.service.FileUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -19,49 +16,36 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @RestController
-@RequestMapping("/images")
-public class ImageController {
+@RequestMapping("/videos")
+public class VideoController {
 
-    private final Path imageStoragePath = Paths.get("uploads/worker_photos");
-
-    @Value("${image.upload.dir}")
-    private String uploadDir;
+    private final Path videoStoragePath = Paths.get("uploads/worker_videos");
 
     @Autowired
-    private PhotoRepository photoRepository;
-    @Autowired
-    private FileUploadService imageService;
+    private FileUploadService fileService;
 
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> uploadVideo(@RequestParam("file") MultipartFile file) {
         try {
-            String fileName = imageService.saveImage(file);
-
-            Photo p = new Photo();
-            p.setUrl(fileName);
-
-            photoRepository.save(p);
-
+            String fileName = fileService.saveVideo(file);
             return ResponseEntity.ok(fileName);
         } catch (IOException e) {
-            return ResponseEntity.status(500).body("Failed to upload image: " + e.getMessage());
+            return ResponseEntity.status(500).body("Failed to upload video: " + e.getMessage());
         }
     }
 
     @GetMapping("/{filename:.+}")
-    public ResponseEntity<Resource> getImage(@PathVariable String filename) {
+    public ResponseEntity<Resource> getVideo(@PathVariable String filename) {
         try {
-            Path file = imageStoragePath.resolve(filename);
+            Path file = videoStoragePath.resolve(filename);
             Resource resource = new UrlResource(file.toUri());
-
             if (resource.exists() || resource.isReadable()) {
                 return ResponseEntity.ok()
-                        .contentType(MediaType.IMAGE_JPEG)
+                        .contentType(MediaType.parseMediaType("video/mp4"))
                         .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
                         .body(resource);
-            } else {
-                return ResponseEntity.notFound().build();
             }
+            return ResponseEntity.notFound().build();
         } catch (MalformedURLException e) {
             return ResponseEntity.badRequest().build();
         }

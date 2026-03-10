@@ -1,4 +1,4 @@
 <form (ngSubmit)="uploadImage()">
-  <input type="file" (change)="onFileSelected($event)" />
+  <input type="file" (change)="onFileSelected($event)" multiple accept="image/*,video/*"/>
   <button type="submit">Upload Image</button>
 </form>

@@ -10,14 +10,25 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Service
-public class ImageUploadService {
+public class FileUploadService {
 
     @Value("${image.upload.dir}")
-    private String uploadDir;
+    private String imageUploadDir;
+
+    @Value("${video.upload.dir}")
+    private String videoUploadDir;
 
     public String saveImage(MultipartFile file) throws IOException {
+        return saveFile(imageUploadDir,file);
+    }
+
+    public String saveVideo(MultipartFile file) throws IOException {
+        return saveFile(videoUploadDir ,file);
+    }
+
+    private String saveFile(String folder,MultipartFile file) throws IOException {
         // Ensure the upload directory exists
-        Path uploadPath = Paths.get(uploadDir);
+        Path uploadPath = Paths.get(folder);
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
@@ -26,6 +37,7 @@ public class ImageUploadService {
         String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
         Path filePath = uploadPath.resolve(fileName);
         Files.write(filePath, file.getBytes());
+        // for large files, consider file.transferTo(filePath.toFile()) to avoid loading the whole file in memory
         return fileName;
     }
 }
