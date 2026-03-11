@@ -1,6 +1,6 @@
 package com.serv.database.repositories;
 
-import com.serv.database.Client;
+import com.serv.database.entities.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;

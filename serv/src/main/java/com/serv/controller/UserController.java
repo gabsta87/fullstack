@@ -1,14 +1,14 @@
 package com.serv.controller;
 
-import com.serv.database.*;
+import com.serv.database.entities.Client;
+import com.serv.database.entities.Email;
+import com.serv.database.entities.Worker;
 import com.serv.database.repositories.ClientRepository;
-import com.serv.database.repositories.SellerRepository;
+import com.serv.database.repositories.WorkerRepository;
 import com.serv.database.repositories.UserRepository;
 import com.serv.service.MailService;
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,7 +19,7 @@ public class UserController {
     @Autowired
     private ClientRepository clientRepository;
     @Autowired
-    private SellerRepository sellerRepository;
+    private WorkerRepository sellerRepository;
     @Autowired
     private MailService mailService;
 
@@ -49,7 +49,7 @@ public class UserController {
     @PostMapping(path="/addWorker") // Map ONLY POST Requests
     public @ResponseBody ResponseEntity<String> addNewWorker (@RequestBody Requests.RegisterRequest wo) {
         try {
-            Seller u = new Seller(wo.getUsername(), new Email(wo.getEmail()),wo.getPassword());
+            Worker u = new Worker(wo.getUsername(), new Email(wo.getEmail()),wo.getPassword());
             if (userRepository.findByUsername(u.getUsername()).isPresent()) {
                 return ResponseEntity.badRequest().body("Username already taken.");
             }
@@ -70,7 +70,7 @@ public class UserController {
     }
 
     @GetMapping(path="/getSellers")
-    public @ResponseBody Iterable<Seller> getAllWorkers() {
+    public @ResponseBody Iterable<Worker> getAllWorkers() {
         return sellerRepository.findAll();
     }
 }

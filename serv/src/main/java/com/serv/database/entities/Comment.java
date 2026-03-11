@@ -1,9 +1,7 @@
-package com.serv.database;
+package com.serv.database.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.Date;
 
@@ -24,5 +22,8 @@ public class Comment {
     @Basic(optional = false)
     @Column(nullable = false)
     private Date date;
+    @ManyToOne
+    @JoinColumn(name = "worker_id")
+    private Worker worker;
 
 }

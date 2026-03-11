@@ -76,6 +76,9 @@ dependencies {
 	implementation("org.springframework.security:spring-security-crypto")
 	// session management
 	implementation("org.springframework.session:spring-session-core")
+
+	// thumbnails management
+	implementation("net.coobird:thumbnailator:0.4.20")
 }
 
 //tasks.withType<Test> {

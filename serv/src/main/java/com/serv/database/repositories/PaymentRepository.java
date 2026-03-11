@@ -1,5 +1,5 @@
 package com.serv.database.repositories;
-import com.serv.database.Payment;
+import com.serv.database.entities.Payment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

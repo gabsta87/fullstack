@@ -1,6 +1,6 @@
 package com.serv.controller;
 
-import com.serv.database.Photo;
+import com.serv.database.entities.Photo;
 import com.serv.database.repositories.PhotoRepository;
 import com.serv.service.FileUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,7 @@ public class ImageController {
             String fileName = imageService.saveImage(file);
 
             Photo p = new Photo();
-            p.setUrl(fileName);
+            p.setOriginalUrl(fileName);
 
             photoRepository.save(p);
 

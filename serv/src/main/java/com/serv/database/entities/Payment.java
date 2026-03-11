@@ -1,4 +1,4 @@
-package com.serv.database;
+package com.serv.database.entities;
 
 import com.serv.common.Currency;
 import jakarta.persistence.*;

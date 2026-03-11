@@ -1,27 +1,280 @@
-<ion-title>{{profileSimple .pseudo}}</ion-title>
-<ion-grid>
-  <ion-row>
-    <ion-col *ngFor="let photo of profileSimple.photos">
-      <div class="pictureThumbnail">
-<!--        <img ngSrc="photo" alt="Profile images">-->
-        <ion-text color="black">
-          {{photo}}
-        </ion-text>
+<!-- src/app/features/profile/profile.component.html -->
 
-      </div>
-    </ion-col>
-  </ion-row>
-</ion-grid>
+<!-- ░░ LIGHTBOX ░░ -->
+<div class="lightbox" *ngIf="lightbox.open" (click)="closeLightbox()">
+  <button class="lb-btn lb-close" (click)="closeLightbox()">
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+  <button class="lb-btn lb-prev" (click)="lbPrev($event)">
+    <ion-icon name="chevron-back-outline"></ion-icon>
+  </button>
+  <img  *ngIf="lightbox.type === 'photo'" [src]="lightbox.src"
+        class="lb-media" (click)="$event.stopPropagation()" alt="Photo"/>
+  <video *ngIf="lightbox.type === 'video'" [src]="lightbox.src"
+         class="lb-media" controls autoplay (click)="$event.stopPropagation()">
+  </video>
+  <button class="lb-btn lb-next" (click)="lbNext($event)">
+    <ion-icon name="chevron-forward-outline"></ion-icon>
+  </button>
+  <p class="lb-counter">{{ lightbox.index + 1 }} / {{ lightbox.items.length }}</p>
+</div>
 
-<app-upload-image></app-upload-image>
-<!-- TODO display localization -->
-<ion-text>{{profileSimple.phone}}</ion-text>
-<ion-text>{{profileSimple.description}}</ion-text>
+<!-- ░░ HEADER ░░ -->
+<ion-header class="ion-no-border profile-header-bar">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/" text="Retour"></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end" *ngIf="worker">
+      <ion-button fill="clear" (click)="toggleFavorite()" class="action-icon-btn">
+        <ion-icon [name]="isFavorite ? 'heart' : 'heart-outline'"
+                  [style.color]="isFavorite ? '#c8956c' : undefined">
+        </ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
 
+<!-- ░░ CONTENT ░░ -->
+<ion-content class="profile-content">
 
-<ion-list>
-  <ion-item *ngFor="let comment of profileSimple.comments">
-    {{ comment }}
-  </ion-item>
-</ion-list>
+  <!-- Loading -->
+  <div class="loading-wrap" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
 
+  <div class="profile-wrap" *ngIf="worker && !isLoading">
+
+    <!-- ══════════════════════════════════════════
+         TWO-COLUMN LAYOUT
+    ══════════════════════════════════════════ -->
+    <div class="layout">
+
+      <!-- ── LEFT SIDEBAR ── -->
+      <aside class="sidebar">
+
+        <!-- Avatar -->
+        <div class="avatar-wrap">
+          <div class="avatar-frame">
+            <img *ngIf="worker.mainThumbUrl" [src]="worker.mainThumbUrl"
+                 [alt]="worker.name" class="avatar-img"/>
+            <div *ngIf="!worker.mainThumbUrl" class="avatar-ph">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                <circle cx="12" cy="8" r="4.5"/>
+                <path d="M3 21c0-4.97 4.03-9 9-9s9 4.03 9 9"/>
+              </svg>
+            </div>
+          </div>
+          <div class="availability" [class.online]="worker.available">
+            <span class="avail-dot" [class.online]="worker.available"></span>
+            {{ worker.available ? 'Disponible' : 'Non disponible' }}
+          </div>
+        </div>
+
+        <!-- Info card -->
+        <div class="sidebar-card">
+          <p class="card-label">Informations</p>
+          <ul class="info-list">
+            <li>
+              <ion-icon name="location-outline"></ion-icon>
+              {{ worker.location }}
+            </li>
+            <li>
+              <ion-icon name="calendar-outline"></ion-icon>
+              {{ worker.age }} ans
+            </li>
+            <li>
+              <ion-icon name="body-outline"></ion-icon>
+              {{ worker.bodyType }} · {{ worker.height }} cm · {{ worker.weight }} kg
+            </li>
+            <li>
+              <ion-icon name="time-outline"></ion-icon>
+              Répond en {{ worker.responseTime }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Services & prices -->
+        <div class="sidebar-card">
+          <p class="card-label">Services & Tarifs</p>
+          <div class="service-rows">
+            <div class="svc-row" *ngFor="let s of worker.serviceList">
+              <span class="svc-name">{{ s.name }}</span>
+              <span class="svc-price">{{ s.price }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact -->
+        <div class="sidebar-card contact-card">
+          <p class="card-label">Contact</p>
+          <a [href]="'tel:' + worker.phone" class="contact-btn phone-btn">
+            <ion-icon name="call-outline"></ion-icon>
+            Appeler
+          </a>
+          <a [href]="'https://wa.me/' + worker.phone" target="_blank" class="contact-btn wa-btn">
+            <ion-icon name="logo-whatsapp"></ion-icon>
+            WhatsApp
+          </a>
+        </div>
+
+        <!-- Logged-in actions -->
+        <div class="sidebar-card actions-card" *ngIf="isLoggedIn">
+          <button class="action-btn" [class.fav-active]="isFavorite" (click)="toggleFavorite()">
+            <ion-icon [name]="isFavorite ? 'heart' : 'heart-outline'"></ion-icon>
+            {{ isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris' }}
+          </button>
+          <button class="action-btn" [class.notif-active]="notifyEnabled" (click)="toggleNotify()">
+            <ion-icon [name]="notifyEnabled ? 'notifications' : 'notifications-outline'"></ion-icon>
+            {{ notifyEnabled ? 'Notification activée' : 'Me notifier au retour' }}
+          </button>
+        </div>
+
+        <!-- Report -->
+        <button class="report-btn" (click)="report()">
+          <ion-icon name="warning-outline"></ion-icon>
+          Signaler ce profil
+        </button>
+
+      </aside>
+
+      <!-- ── MAIN ── -->
+      <main class="main-col">
+
+        <!-- Header -->
+        <div class="name-block">
+          <h1 class="worker-name">{{ worker.name }}</h1>
+          <div class="name-meta">
+            <span class="meta-chip">{{ worker.age }} ans</span>
+            <span class="meta-chip">{{ worker.location }}</span>
+            <span class="meta-chip svc-chip" *ngFor="let s of worker.services">{{ s }}</span>
+          </div>
+          <div class="rating-row">
+            <svg *ngFor="let s of starRange" viewBox="0 0 20 20"
+                 [attr.fill]="ratingFill(s, worker.rating)">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+            </svg>
+            <span class="rating-val">{{ worker.rating }}/5</span>
+            <span class="rating-count">({{ worker.reviewCount }} avis)</span>
+          </div>
+        </div>
+
+        <!-- Videos -->
+        <section class="media-section" *ngIf="worker.videos.length">
+          <h2 class="sec-title">
+            <ion-icon name="play-circle-outline"></ion-icon>
+            Vidéos
+          </h2>
+          <div class="video-strip">
+            <div class="vthumb" *ngFor="let v of worker.videos; let i = index"
+                 (click)="openVideo(i)">
+              <div class="vthumb-inner">
+                <ion-icon name="play-circle-outline" class="play-icon"></ion-icon>
+              </div>
+              <span class="vthumb-dur" *ngIf="v.duration">{{ v.duration }}</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Photos -->
+        <section class="media-section">
+          <h2 class="sec-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            Photos
+            <span class="count-chip">{{ worker.photos.length }}</span>
+          </h2>
+          <div class="photo-grid">
+            <div class="photo-cell" *ngFor="let p of worker.photos; let i = index"
+                 [class.tall]="i === 0"
+                 (click)="openPhoto(i)">
+              <img *ngIf="p.mainThumbUrl" [src]="p.mainThumbUrl" [alt]="'Photo ' + (i+1)" loading="lazy"/>
+              <div *ngIf="!p.mainThumbUrl" class="photo-ph">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
+              </div>
+              <div class="photo-overlay">
+                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                  <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Description -->
+        <section class="desc-section">
+          <h2 class="sec-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/>
+              <line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/>
+            </svg>
+            À propos
+          </h2>
+          <div class="desc-body">{{ worker.description }}</div>
+          <div class="desc-tags">
+            <span class="dtag" *ngFor="let t of worker.tags">{{ t }}</span>
+          </div>
+        </section>
+
+        <!-- Reviews -->
+        <section class="reviews-section">
+          <h2 class="sec-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+            Avis clients
+            <span class="count-chip">{{ worker.reviewCount }}</span>
+          </h2>
+
+          <!-- Write review -->
+          <div class="review-form" *ngIf="isLoggedIn">
+            <div class="star-picker">
+              <button *ngFor="let s of starRange" class="star-btn"
+                      [class.lit]="s <= newReview.rating"
+                      (click)="newReview.rating = s">★</button>
+            </div>
+            <textarea class="review-ta" [(ngModel)]="newReview.text" rows="3"
+                      placeholder="Partagez votre expérience…"></textarea>
+            <button class="submit-btn" (click)="submitReview()"
+                    [disabled]="!newReview.text || !newReview.rating">
+              Publier
+            </button>
+          </div>
+
+          <p class="login-nudge" *ngIf="!isLoggedIn">
+            <a routerLink="/login">Connectez-vous</a> pour laisser un avis.
+          </p>
+
+          <!-- Review list -->
+          <div class="review-list">
+            <div class="review-item" *ngFor="let r of worker.reviews">
+              <div class="review-head">
+                <div class="review-avatar">{{ r.authorInitial }}</div>
+                <div class="review-meta">
+                  <span class="review-author">{{ r.author }}</span>
+                  <span class="review-date">{{ r.date | date:'MMMM yyyy' }}</span>
+                </div>
+                <div class="review-stars">
+                  <svg *ngFor="let s of starRange" viewBox="0 0 20 20"
+                       [attr.fill]="ratingFill(s, r.rating)">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                  </svg>
+                </div>
+              </div>
+              <p class="review-text">{{ r.text }}</p>
+            </div>
+          </div>
+
+        </section>
+      </main>
+    </div>
+  </div>
+
+</ion-content>

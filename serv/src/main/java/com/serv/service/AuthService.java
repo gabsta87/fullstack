@@ -1,6 +1,6 @@
 package com.serv.service;
 
-import com.serv.database.VenusUser;
+import com.serv.database.entities.VenusUser;
 import com.serv.database.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {Profile} from "../profile/profile.component";
+import {WorkerProfile} from "../../models/worker.model";
 import {IonicModule} from "@ionic/angular";
-import {JsonPipe, NgForOf} from "@angular/common";
+import {NgForOf} from "@angular/common";
 import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
@@ -9,11 +9,11 @@ import {ActivatedRoute, Router} from "@angular/router";
   templateUrl: './main-gallery.component.html',
   styleUrls: ['./main-gallery.component.scss'],
   standalone: true,
-  imports: [IonicModule, NgForOf, JsonPipe],
+  imports: [IonicModule, NgForOf],
 })
 export class MainGalleryComponent  implements OnInit {
 
-  workers!:Profile[];
+  workers!:WorkerProfile[];
 
   constructor(private route: ActivatedRoute, private router : Router) {}
 

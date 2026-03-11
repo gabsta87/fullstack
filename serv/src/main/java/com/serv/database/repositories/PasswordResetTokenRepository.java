@@ -1,6 +1,6 @@
 package com.serv.database.repositories;
 
-import com.serv.database.PasswordResetToken;
+import com.serv.database.entities.PasswordResetToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;

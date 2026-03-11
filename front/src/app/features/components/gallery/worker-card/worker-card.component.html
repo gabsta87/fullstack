@@ -1,0 +1,64 @@
+
+<div class="wcard ion-activatable"
+     (mouseenter)="onMouseEnter()"
+     (mouseleave)="onMouseLeave()"
+     (click)="navigateToProfile()">
+
+  <ion-ripple-effect></ion-ripple-effect>
+
+  <!-- Photo area -->
+  <div class="wcard-photo">
+
+    <!-- Main / preview image -->
+    <img *ngIf="displayUrl"
+         [src]="displayUrl"
+         [alt]="worker.name"
+         class="wcard-img"
+         [class.fading]="isHovering && previewUrls.length > 1"
+         loading="lazy"/>
+
+    <!-- Placeholder when no photo yet -->
+    <div *ngIf="!displayUrl" class="wcard-ph">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+        <circle cx="12" cy="8" r="4.5"/>
+        <path d="M3 21c0-4.97 4.03-9 9-9s9 4.03 9 9"/>
+      </svg>
+    </div>
+
+    <!-- Preview carousel dots -->
+    <div class="preview-dots" *ngIf="isHovering && previewUrls.length > 1">
+      <span *ngFor="let u of previewUrls; let i = index"
+            class="dot"
+            [class.active]="i === currentPreviewIdx">
+      </span>
+    </div>
+
+    <!-- Online pill -->
+    <div class="online-pill" *ngIf="worker.available">
+      <span class="pip"></span>
+      En ligne
+    </div>
+
+    <!-- Service tags (visible on hover) -->
+    <div class="hover-tags" [class.visible]="isHovering">
+      <span *ngFor="let s of worker.services" class="service-tag">{{ s }}</span>
+    </div>
+
+  </div>
+
+  <!-- Card body -->
+  <div class="wcard-body">
+    <div class="wcard-row">
+      <span class="wcard-name">{{ worker.name }}, {{ worker.age }}</span>
+      <span class="wcard-loc">{{ worker.location }}</span>
+    </div>
+    <div class="wcard-meta">
+      <span>{{ worker.bodyType }}</span>
+      <span class="dot-sep">·</span>
+      <span>{{ worker.height }} cm</span>
+      <span class="dot-sep">·</span>
+      <span>{{ worker.weight }} kg</span>
+    </div>
+  </div>
+
+</div>

@@ -1,4 +1,4 @@
-package com.serv.database;
+package com.serv.database.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;

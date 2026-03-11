@@ -1,6 +1,6 @@
 package com.serv.controller;
 
-import com.serv.database.Email;
+import com.serv.database.entities.Email;
 import com.serv.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

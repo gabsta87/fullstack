@@ -1,6 +1,6 @@
 package com.serv.controller;
 
-import com.serv.database.Payment;
+import com.serv.database.entities.Payment;
 import com.serv.database.repositories.PaymentRepository;
 
 import com.stripe.Stripe;

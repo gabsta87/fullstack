@@ -1,0 +1,198 @@
+<!-- src/app/features/gallery/homepage/homepage.component.html -->
+
+<!-- ░░ DEV BAR (remove before go-live) ░░ -->
+<div class="dev-bar">
+  <span class="dev-label">🛠 Dev</span>
+  <a routerLink="/login">Login</a>
+  <a routerLink="/register">Register</a>
+  <a routerLink="/register-worker">Register worker</a>
+  <a routerLink="/account">Account</a>
+  <a routerLink="/ngx-pay">NGX Pay</a>
+  <a [routerLink]="['/profile']" [queryParams]="{ id: 1 }">Profile 1</a>
+</div>
+
+<!-- ░░ IONIC HEADER ░░ -->
+<ion-header class="ion-no-border main-header">
+  <ion-toolbar>
+    <ion-title>
+      <span class="brand">
+        <span class="brand-mark">◆</span>
+        Escorta
+      </span>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/login"    fill="clear" class="nav-link-btn">Se connecter</ion-button>
+      <ion-button routerLink="/register" fill="solid" class="nav-cta-btn">S'inscrire</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <!-- Filter bar inside header so it sticks -->
+  <div class="filter-bar">
+    <div class="filter-bar-inner">
+
+      <!-- Region -->
+      <div class="select-wrap">
+        <ion-icon name="location-outline" class="sel-icon"></ion-icon>
+        <select class="filter-select" [(ngModel)]="filters.region" (change)="onRegionChange()">
+          <option value="">Toutes les régions</option>
+          <option *ngFor="let r of regions" [value]="r">{{ r }}</option>
+        </select>
+        <svg class="sel-arrow" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+        </svg>
+      </div>
+
+      <div class="filter-sep"></div>
+
+      <!-- More filters -->
+      <button class="more-btn" (click)="toggleFilters()" [class.active]="filtersOpen">
+        <ion-icon name="options-outline"></ion-icon>
+        Filtres
+        <span class="filter-badge" *ngIf="activeFilterCount > 0">{{ activeFilterCount }}</span>
+      </button>
+
+      <button class="clear-btn" *ngIf="activeFilterCount > 0" (click)="clearFilters()">
+        <ion-icon name="close-outline"></ion-icon>
+        Effacer
+      </button>
+
+    </div>
+
+    <!-- ── Expanded filter panel ── -->
+    <div class="filter-panel" [class.open]="filtersOpen">
+      <div class="filter-grid">
+
+        <!-- Morphologie -->
+        <div class="fcol">
+          <p class="fcol-title">Morphologie</p>
+          <div class="check-list">
+            <label *ngFor="let b of bodyTypes" class="check-item">
+              <input type="checkbox" [(ngModel)]="tempFilters.bodyType[b]"/>
+              <span class="check-box"></span>
+              <span>{{ b }}</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Colors -->
+        <div class="fcol">
+          <p class="fcol-title">Yeux</p>
+          <div class="swatch-row">
+            <button *ngFor="let c of eyeColors" class="swatch"
+                    [title]="c.label" [style.background]="c.hex"
+                    [class.sel]="tempFilters.eyeColor === c.label"
+                    (click)="toggleSwatch('eyeColor', c.label)">
+            </button>
+          </div>
+          <p class="fcol-title mt">Cheveux</p>
+          <div class="swatch-row">
+            <button *ngFor="let c of hairColors" class="swatch"
+                    [title]="c.label" [style.background]="c.hex"
+                    [class.sel]="tempFilters.hairColor === c.label"
+                    (click)="toggleSwatch('hairColor', c.label)">
+            </button>
+          </div>
+        </div>
+
+        <!-- Ranges -->
+        <div class="fcol">
+          <p class="fcol-title">Taille (cm)</p>
+          <div class="range-row">
+            <input type="number" class="range-in" [(ngModel)]="tempFilters.heightMin" placeholder="Min"/>
+            <span class="range-dash">–</span>
+            <input type="number" class="range-in" [(ngModel)]="tempFilters.heightMax" placeholder="Max"/>
+          </div>
+          <p class="fcol-title mt">Poids (kg)</p>
+          <div class="range-row">
+            <input type="number" class="range-in" [(ngModel)]="tempFilters.weightMin" placeholder="Min"/>
+            <span class="range-dash">–</span>
+            <input type="number" class="range-in" [(ngModel)]="tempFilters.weightMax" placeholder="Max"/>
+          </div>
+        </div>
+
+        <!-- Services -->
+        <div class="fcol">
+          <p class="fcol-title">Services</p>
+          <div class="check-list">
+            <label *ngFor="let s of services" class="check-item">
+              <input type="checkbox" [(ngModel)]="tempFilters.services[s]"/>
+              <span class="check-box"></span>
+              <span>{{ s }}</span>
+            </label>
+          </div>
+          <button class="apply-btn" (click)="applyFilters()">Appliquer</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</ion-header>
+
+<!-- ░░ IONIC CONTENT ░░ -->
+<ion-content class="main-content">
+
+  <!-- Pull-to-refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="gallery-wrap">
+
+    <!-- Available workers -->
+    <section *ngIf="availableWorkers.length > 0">
+      <div class="section-label">
+        <span class="pip online"></span>
+        Disponibles maintenant
+        <span class="section-count">{{ availableWorkers.length }}</span>
+      </div>
+      <div class="worker-grid">
+        <app-worker-card
+          *ngFor="let w of availableWorkers; let i = index"
+          [worker]="w"
+          [style.animation-delay]="(i % 12 * 0.04) + 's'">
+        </app-worker-card>
+      </div>
+    </section>
+
+    <!-- Unavailable workers -->
+    <section *ngIf="unavailableWorkers.length > 0" class="unavail-section">
+      <div class="section-label">
+        <span class="pip offline"></span>
+        Non disponibles
+        <span class="section-count">{{ unavailableWorkers.length }}</span>
+      </div>
+      <div class="worker-grid faded">
+        <app-worker-card
+          *ngFor="let w of unavailableWorkers; let i = index"
+          [worker]="w"
+          [style.animation-delay]="(i % 12 * 0.04) + 's'">
+        </app-worker-card>
+      </div>
+    </section>
+
+    <!-- Loading skeleton -->
+    <div class="skeleton-grid" *ngIf="isLoading && !availableWorkers.length">
+      <div class="skeleton-card" *ngFor="let s of [1,2,3,4,5,6,7,8]"></div>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state"
+         *ngIf="!isLoading && !availableWorkers.length && !unavailableWorkers.length">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <p>Aucun profil trouvé.</p>
+      <button (click)="clearFilters()">Réinitialiser les filtres</button>
+    </div>
+
+  </div>
+
+  <!-- Infinite scroll -->
+  <ion-infinite-scroll threshold="300px" (ionInfinite)="onIonInfinite($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="crescent"
+      loadingText="Chargement...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+</ion-content>

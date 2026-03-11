@@ -1,4 +1,4 @@
-package com.serv.database;
+package com.serv.database.entities;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -19,7 +19,7 @@ import java.util.Collection;
 public class Client extends VenusUser {
 
     @OneToMany
-    Collection<Seller> favorites;
+    Collection<Worker> favorites;
 
     // TODO default location
 

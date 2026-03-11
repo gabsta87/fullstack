@@ -1,7 +1,7 @@
 package com.serv.database.repositories;
 
-import com.serv.database.Email;
-import com.serv.database.VenusUser;
+import com.serv.database.entities.Email;
+import com.serv.database.entities.VenusUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;

@@ -1,6 +1,6 @@
 package com.serv.service;
 
-import com.serv.database.Email;
+import com.serv.database.entities.Email;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Value;

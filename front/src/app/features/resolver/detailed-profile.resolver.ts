@@ -1,5 +1,5 @@
 import { ResolveFn } from '@angular/router';
-import {ProfileDetail} from "../components/profile/profile.component";
+import {ProfileDetail} from "../models/worker.model";
 import {inject} from "@angular/core";
 import {DynamicDataService} from "../services/dynamic-data.service";
 import {Observable} from "rxjs";

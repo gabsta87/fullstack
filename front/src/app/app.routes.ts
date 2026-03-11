@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { HomepageComponent } from './features/components/homepage/homepage.component';
+import { HomepageComponent } from './features/components/gallery/homepage/homepage.component';
 import { RegisterComponent } from './features/components/register-user/register-user.component';
 import {NgxPayComponent} from "./features/components/ngx-pay/ngx-pay.component";
 import {ProfileComponent} from "./features/components/profile/profile.component";

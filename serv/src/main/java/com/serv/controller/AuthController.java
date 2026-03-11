@@ -1,17 +1,14 @@
 package com.serv.controller;
 
-import com.serv.database.Email;
-import com.serv.database.PasswordResetToken;
-import com.serv.database.VenusUser;
+import com.serv.database.entities.Email;
+import com.serv.database.entities.PasswordResetToken;
+import com.serv.database.entities.VenusUser;
 import com.serv.database.repositories.PasswordResetTokenRepository;
 import com.serv.database.repositories.UserRepository;
 import com.serv.service.MailService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
