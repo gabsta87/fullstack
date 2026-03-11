@@ -43,7 +43,7 @@ public class TestDataInitializer implements ApplicationRunner {
     private String mediaBase;
 
     @Override
-    @Transactional
+//    @Transactional
     public void run(ApplicationArguments args) {
 
         // Guard — do nothing if data already exists
