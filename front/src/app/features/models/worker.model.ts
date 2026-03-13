@@ -21,7 +21,6 @@ export interface WorkerGalleryDTO {
   region: string;
   bodyType: string;
   height: number;
-  weight: number;
   services: string[];
   available: boolean;
   lastRefreshed: string; // ISO string from backend
@@ -39,7 +38,6 @@ export interface WorkerProfile {
   eyeColor: string;
   hairColor: string;
   height: number;
-  weight: number;
   services: string[];
   serviceList: ServiceItem[];
   available: boolean;
