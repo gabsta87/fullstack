@@ -1,13 +1,17 @@
 package com.serv.controller;
 
 import com.serv.dto.WorkerGalleryDTO;
+import com.serv.dto.WorkerProfileDTO;
+import com.serv.database.repositories.WorkerRepository;
 import com.serv.service.WorkerGalleryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Worker-facing read endpoints.
@@ -17,40 +21,23 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/workers")
+@Transactional(readOnly = true)   // ← add this
 public class WorkerController {
-
+    @Autowired private WorkerRepository    workerRepository;
     @Autowired private WorkerGalleryService galleryService;
-    // @Autowired private WorkerProfileService profileService; // TODO
 
-    /**
-     * Returns a page of gallery cards.
-     *
-     * Query params:
-     *   page       (default 0)
-     *   region     filter by region name
-     *   bodyType   filter
-     *   heightMin, heightMax
-     *   weightMin, weightMax
-     *   eyeColor, hairColor
-     *   services   comma-separated list
-     */
     @GetMapping
     public ResponseEntity<List<WorkerGalleryDTO>> getGallery(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam Map<String, String> filters) {
-
-        filters.remove("page"); // already extracted above
+        filters.remove("page");
         return ResponseEntity.ok(galleryService.getGalleryPage(page, filters));
     }
 
-    /**
-     * Full profile — called when the user clicks a card.
-     * Returns all photos, videos, description, reviews, etc.
-     * TODO: implement WorkerProfileService and WorkerProfileDTO
-     */
     @GetMapping("/{id}")
-    public ResponseEntity<?> getProfile(@PathVariable Long id) {
-        // return ResponseEntity.ok(profileService.getById(id));
-        return ResponseEntity.ok().build(); // placeholder
+    public ResponseEntity<WorkerProfileDTO> getProfile(@PathVariable UUID id) {
+        return workerRepository.findById(id)
+                .map(w -> ResponseEntity.ok(WorkerProfileDTO.from(w)))
+                .orElse(ResponseEntity.notFound().build());
     }
 }

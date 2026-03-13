@@ -78,9 +78,9 @@ public class WorkerGalleryService {
 
         // 3 — Assemble DTOs
         return workers.stream().map(w -> new WorkerGalleryDTO(
-                w.getId(),
+                w.getId(),         // UUID → String for JSON
                 w.getUsername(),
-                w.getBirthday(),
+                w.getBirthday(),// Date → int age
                 w.getLocation(),
                 w.getRegion(),
                 w.getBodyType(),
@@ -90,9 +90,17 @@ public class WorkerGalleryService {
                 w.getLastRefreshed(),
                 mainThumbs.getOrDefault(w.getId(), null),
                 previewThumbs.getOrDefault(w.getId(), List.of())
-                        .stream()
-                        .limit(MAX_PREVIEW_THUMBS)
-                        .toList()
+                        .stream().limit(MAX_PREVIEW_THUMBS).toList()
         )).toList();
+    }
+
+    private int calculateAge(java.util.Date birthday) {
+        if (birthday == null) return 0;
+        return java.time.Period.between(
+                birthday.toInstant()
+                        .atZone(java.time.ZoneId.systemDefault())
+                        .toLocalDate(),
+                java.time.LocalDate.now()
+        ).getYears();
     }
 }

@@ -1,5 +1,3 @@
-// src/app/features/components/profile/profile.component.ts
-
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule, DatePipe } from '@angular/common';
