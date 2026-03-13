@@ -32,17 +32,15 @@ public abstract class VenusUser {
     protected boolean enabled;
     protected boolean locked;
 
+    private static final BCryptPasswordEncoder ENCODER = new BCryptPasswordEncoder();
+
     public VenusUser(String username, Email email, String password) {
         this.username = username;
         this.email = email;
-        this.passwordHash = new BCryptPasswordEncoder().encode(password);
+        this.passwordHash = ENCODER.encode(password);
     }
 
-    public void setPassword(String password) {
-        this.passwordHash = new BCryptPasswordEncoder().encode(password);
-    }
+    public void setPassword(String password)        { this.passwordHash = ENCODER.encode(password); }
+    public boolean checkPassword(String password)   { return ENCODER.matches(password, this.passwordHash); }
 
-    public boolean checkPassword(String password) {
-        return new BCryptPasswordEncoder().matches(password, this.passwordHash);
-    }
 }

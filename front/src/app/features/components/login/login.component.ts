@@ -22,11 +22,18 @@ export class LoginComponent {
   constructor(private authService: AuthService, private router: Router) {}
 
   login(): void {
-    console.log("redirectURL : "+this.authService.getRedirectUrl());
-    this.authService.login(this.pseudo, this.password, this.authService.getRedirectUrl()).subscribe(() => {
-      console.log("login success");
-      const redirectUrl = this.authService.getRedirectUrl() || '/home';
-      this.router.navigateByUrl(redirectUrl);
-    });
+    this.errorMessage = '';
+    this.authService.login(this.pseudo, this.password, this.authService.getRedirectUrl())
+      .subscribe({
+        next: () => {
+          const redirectUrl = this.authService.getRedirectUrl() || '/home';
+          this.router.navigateByUrl(redirectUrl);
+        },
+        error: (err) => {
+          this.errorMessage = err.status === 401
+            ? 'Identifiants incorrects.'
+            : 'Une erreur est survenue. Réessayez.';
+        }
+      });
   }
 }
