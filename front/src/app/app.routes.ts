@@ -3,24 +3,27 @@ import { HomepageComponent } from './features/components/gallery/homepage/homepa
 import { RegisterComponent } from './features/components/register-user/register-user.component';
 import {NgxPayComponent} from "./features/components/ngx-pay/ngx-pay.component";
 import {ProfileComponent} from "./features/components/profile/profile.component";
-import {MainGalleryComponent} from "./features/components/main-gallery/main-gallery.component";
-import {simpleProfilesResolver} from "./features/resolver/simple-profiles.resolver";
 import {detailedProfileResolver} from "./features/resolver/detailed-profile.resolver";
 import {RegisterWorkerComponent} from "./features/components/register-worker/register-worker.component";
 import {LoginComponent} from "./features/components/login/login.component";
 import {AccountComponent} from "./features/components/account/account.component";
 import {authGuard} from "./features/guards/auth.guard";
-
+import {galleryResolver} from "./features/resolver/gallery.resolver";
 
 export const routes: Routes = [
-  { path: '', component: HomepageComponent },  // Default route (Home)
-  { path: 'home', component: HomepageComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'account', component: AccountComponent, canActivate: [authGuard] },
-  { path: 'register', component: RegisterComponent },
-  { path: 'register-worker', component: RegisterWorkerComponent },
-  { path: 'ngx-pay', component: NgxPayComponent },
-  { path: 'profile', component: ProfileComponent, resolve:{profile:detailedProfileResolver}  },
-  { path: 'gallery', component: MainGalleryComponent, resolve:{profiles:simpleProfilesResolver} },
-  { path: '**', redirectTo: '', pathMatch: 'full' } // catch-all
+  // Gallery resolver loads WorkerGalleryDTOs (with mainThumbUrl) for the homepage
+  { path: '',        component: HomepageComponent, resolve: { workers: galleryResolver } },
+  { path: 'home',    component: HomepageComponent, resolve: { workers: galleryResolver } },
+  { path: 'gallery', component: HomepageComponent, resolve: { workers: galleryResolver } },
+
+  { path: 'login',            component: LoginComponent },
+  { path: 'register',         component: RegisterComponent },
+  { path: 'register-worker',  component: RegisterWorkerComponent },
+  { path: 'ngx-pay',          component: NgxPayComponent },
+  { path: 'account',          component: AccountComponent, canActivate: [authGuard] },
+
+  // Profile uses UUID from queryParam ?id=
+  { path: 'profile', component: ProfileComponent, resolve: { profile: detailedProfileResolver } },
+
+  { path: '**', redirectTo: '', pathMatch: 'full' },
 ];

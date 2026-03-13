@@ -1,16 +1,39 @@
-import { ResolveFn } from '@angular/router';
-import {ProfileDetail} from "../models/worker.model";
-import {inject} from "@angular/core";
-import {DynamicDataService} from "../services/dynamic-data.service";
-import {Observable} from "rxjs";
+import { inject } from '@angular/core';
+import { ResolveFn, Router } from '@angular/router';
+import { WorkerService } from '../services/worker.service';
+import { WorkerProfile } from '../models/worker.model';
+import { catchError, EMPTY } from 'rxjs';
 
-export const detailedProfileResolver: ResolveFn<Observable<ProfileDetail>> = (route, state) => {
-  const dataService = inject(DynamicDataService);
+/**
+ * Loads the full WorkerProfile before the profile page renders.
+ *
+ * If the profile was prefetched during hover (stored in WorkerService cache),
+ * it returns instantly from cache. Otherwise it fetches from the API.
+ *
+ * Reads ?id= as a UUID string — matches the Worker entity's UUID primary key.
+ */
+export const detailedProfileResolver: ResolveFn<WorkerProfile> = (route) => {
+  const workerService = inject(WorkerService);
+  const router        = inject(Router);
 
-  const profileId = route.queryParamMap.get('id');
+  const id = route.queryParamMap.get('id');
 
-  if (!profileId || isNaN(Number(profileId))) {
-    throw new Error("Profile ID is missing or not a valid number.");
+  if (!id) {
+    router.navigate(['/']);
+    return EMPTY;
   }
-  return dataService.getTableDataById("worker", parseInt(profileId, 10));
+
+  // Return from prefetch cache immediately if available
+  const cached = workerService.getCachedProfile(id);
+  if (cached) return of(cached);
+
+  return workerService.getProfile(id).pipe(
+    catchError(() => {
+      router.navigate(['/']);
+      return EMPTY;
+    })
+  );
 };
+
+// needed for of()
+import { of } from 'rxjs';

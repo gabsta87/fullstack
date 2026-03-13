@@ -1,10 +1,9 @@
-
 import {
   Component, Input, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { IonCard, IonRippleEffect } from '@ionic/angular/standalone';
+import { IonRippleEffect } from '@ionic/angular/standalone';
 import { WorkerGalleryDTO } from '../../../models/worker.model';
 import { WorkerService } from '../../../services/worker.service';
 
@@ -14,20 +13,19 @@ import { WorkerService } from '../../../services/worker.service';
   styleUrls: ['./worker-card.component.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, IonCard, IonRippleEffect],
+  imports: [CommonModule, IonRippleEffect],
 })
 export class WorkerCardComponent implements OnDestroy {
 
   @Input() worker!: WorkerGalleryDTO;
 
-  // Hover carousel state
-  previewUrls: string[]  = [];
-  currentPreviewIdx      = 0;
-  isHovering             = false;
-  previewLoaded          = false;
+  previewUrls: string[] = [];
+  currentPreviewIdx     = 0;
+  isHovering            = false;
+  previewLoaded         = false;
 
-  private intervalId: ReturnType<typeof setInterval> | null = null;
-  private hoverDelayId: ReturnType<typeof setTimeout> | null = null;
+  private intervalId:   ReturnType<typeof setInterval> | null = null;
+  private hoverDelayId: ReturnType<typeof setTimeout>  | null = null;
 
   constructor(
     private workerService: WorkerService,
@@ -35,15 +33,14 @@ export class WorkerCardComponent implements OnDestroy {
     private cdr: ChangeDetectorRef,
   ) {}
 
-  // ── Hover handlers ─────────────────────────────────────────────────────────
+  // ── Hover ──────────────────────────────────────────────────────────────────
 
   onMouseEnter(): void {
     this.isHovering = true;
-
-    // Small delay so quick mouse-overs don't trigger fetches
+    // Wait 300ms before triggering fetch — avoids firing on quick mouse-overs
     this.hoverDelayId = setTimeout(() => {
       this.loadPreviewsAndStart();
-      // Start prefetching the full profile in the background
+      // Prefetch full profile in background while user looks at card
       this.workerService.prefetchProfile(this.worker.id);
     }, 300);
   }
@@ -56,16 +53,12 @@ export class WorkerCardComponent implements OnDestroy {
     this.cdr.markForCheck();
   }
 
-  // ── Carousel logic ─────────────────────────────────────────────────────────
+  // ── Carousel ───────────────────────────────────────────────────────────────
 
   private loadPreviewsAndStart(): void {
-    if (this.previewLoaded) {
-      this.startCarousel();
-      return;
-    }
-
+    if (this.previewLoaded) { this.startCarousel(); return; }
     this.workerService.getPreviewThumbs(this.worker.id).subscribe(urls => {
-      this.previewUrls  = urls;
+      this.previewUrls   = urls;
       this.previewLoaded = true;
       this.startCarousel();
       this.cdr.markForCheck();
@@ -82,19 +75,21 @@ export class WorkerCardComponent implements OnDestroy {
   }
 
   private stopCarousel(): void {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-      this.intervalId = null;
-    }
+    if (this.intervalId) { clearInterval(this.intervalId); this.intervalId = null; }
   }
 
   // ── Navigation ─────────────────────────────────────────────────────────────
 
+  /**
+   * Navigates to /profile?id={uuid}.
+   * The detailedProfileResolver will return immediately from cache
+   * if prefetchProfile() already ran during the hover.
+   */
   navigateToProfile(): void {
     this.router.navigate(['/profile'], { queryParams: { id: this.worker.id } });
   }
 
-  // ── Active image ───────────────────────────────────────────────────────────
+  // ── Display URL ────────────────────────────────────────────────────────────
 
   get displayUrl(): string | null {
     if (this.isHovering && this.previewUrls.length > 0) {

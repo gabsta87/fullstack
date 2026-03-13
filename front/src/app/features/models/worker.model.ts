@@ -1,35 +1,23 @@
-// This class is used in the gallery, to have minimal information on all profiles
-export class Profile{
-  id!: number;
-  pseudo!:string;
-  description!:string;
-  phone!:string;
-  address!:string;
-  comments!:string[];
-  mainPhoto!:string;
-}
-
-export class ProfileDetail extends Profile{
-  photos!:string[];
-}
+// src/app/features/models/worker.model.ts
 
 export interface WorkerGalleryDTO {
-  id: number;
+  id: string;              // UUID string — matches Java UUID serialised by Jackson
   name: string;
   age: number;
   location: string;
   region: string;
   bodyType: string;
   height: number;
+  weight: number;
   services: string[];
   available: boolean;
-  lastRefreshed: string; // ISO string from backend
+  lastRefreshed: string;   // ISO-8601 from backend
   mainThumbUrl: string | null;
-  previewThumbUrls: string[]; // populated lazily on hover
+  previewThumbUrls: string[]; // empty on gallery load — fetched lazily on hover
 }
 
 export interface WorkerProfile {
-  id: number;
+  id: string;              // UUID string
   name: string;
   age: number;
   location: string;
@@ -38,6 +26,7 @@ export interface WorkerProfile {
   eyeColor: string;
   hairColor: string;
   height: number;
+  weight: number;
   services: string[];
   serviceList: ServiceItem[];
   available: boolean;
@@ -53,32 +42,10 @@ export interface WorkerProfile {
   reviews: Review[];
 }
 
-export interface ServiceItem {
-  name: string;
-  price: string;
-}
-
-export interface PhotoItem {
-  id: number;
-  originalUrl: string;
-  mainThumbUrl: string;
-  previewThumbUrl: string;
-  isMain: boolean;
-}
-
-export interface VideoItem {
-  id: number;
-  url: string;
-  duration?: string;
-}
-
-export interface Review {
-  author: string;
-  authorInitial: string;
-  rating: number;
-  date: string;
-  text: string;
-}
+export interface ServiceItem  { name: string; price: string; }
+export interface PhotoItem    { id: string; originalUrl: string; mainThumbUrl: string; previewThumbUrl: string; }
+export interface VideoItem    { id: string; url: string; duration?: string; }
+export interface Review       { author: string; authorInitial: string; rating: number; date: string; text: string; }
 
 export interface GalleryFilters {
   region?: string;
