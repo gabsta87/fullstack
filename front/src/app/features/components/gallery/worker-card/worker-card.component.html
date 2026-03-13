@@ -33,10 +33,10 @@
       </span>
     </div>
 
-    <!-- Online pill -->
-    <div class="online-pill" *ngIf="worker.available">
+    <!-- Offline pill -->
+    <div class="online-pill" *ngIf="!worker.available">
       <span class="pip"></span>
-      En ligne
+      Absente
     </div>
 
     <!-- Service tags (visible on hover) -->
