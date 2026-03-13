@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional(readOnly = true) // add this
+@Transactional(readOnly = true)
 public class WorkerGalleryService {
 
     @Autowired private WorkerRepository workerRepository;
@@ -96,11 +96,50 @@ public class WorkerGalleryService {
 
     private int calculateAge(java.util.Date birthday) {
         if (birthday == null) return 0;
-        return java.time.Period.between(
-                birthday.toInstant()
-                        .atZone(java.time.ZoneId.systemDefault())
-                        .toLocalDate(),
-                java.time.LocalDate.now()
-        ).getYears();
+        java.time.LocalDate birthDate = (birthday instanceof java.sql.Date sqlDate)
+                ? sqlDate.toLocalDate()
+                : birthday.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+        return java.time.Period.between(birthDate, java.time.LocalDate.now()).getYears();
     }
+
+    /**
+     * Returns gallery DTOs for a specific list of worker IDs.
+     * Used by GET /account/favorites to return a client's saved workers.
+     */
+    @Transactional(readOnly = true)
+    public List<WorkerGalleryDTO> getGalleryByIds(List<UUID> ids) {
+        if (ids == null || ids.isEmpty()) return List.of();
+        return workerRepository.findAllById(ids).stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
+    private WorkerGalleryDTO toDTO(Worker w) {
+        String mainThumbUrl = w.getMainPhoto() != null
+                ? w.getMainPhoto().getMainThumbUrl()
+                : null;
+
+        List<String> previewThumbs = photoRepository
+                .findByWorkerIdInOrderBySortOrderAsc(List.of(w.getId()))
+                .stream()
+                .map(Photo::getPreviewThumbUrl)
+                .limit(MAX_PREVIEW_THUMBS)
+                .toList();
+
+        return new WorkerGalleryDTO(
+                w.getId(),
+                w.getUsername(),
+                w.getBirthday(),
+                w.getLocation(),
+                w.getRegion(),
+                w.getBodyType(),
+                w.getHeight(),
+                w.getServices(),
+                w.isAvailable(),
+                w.getLastRefreshed(),
+                mainThumbUrl,
+                previewThumbs
+        );
+    }
+
 }
