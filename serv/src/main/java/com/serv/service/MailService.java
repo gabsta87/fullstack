@@ -1,17 +1,21 @@
 package com.serv.service;
 
 import com.serv.database.entities.Email;
+import com.serv.database.repositories.PasswordResetTokenRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -21,6 +25,8 @@ import java.util.logging.Logger;
 
 @Service
 public class MailService {
+
+    private PasswordResetTokenRepository passwordResetTokenRepository;
 
     @Value("${spring.mail.username}")
     private String username;
@@ -88,5 +94,11 @@ public class MailService {
         message.setText(
                 "This is the test email template for your email:\n%s\n");
         return message;
+    }
+
+    @Scheduled(cron = "0 0 3 * * *") // runs at 3am daily
+    @Transactional
+    public void purgeExpiredTokens() {
+        passwordResetTokenRepository.deleteAllByExpiryDateBefore(LocalDateTime.now());
     }
 }

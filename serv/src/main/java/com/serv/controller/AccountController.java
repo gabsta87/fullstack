@@ -4,7 +4,6 @@ import com.serv.database.entities.*;
 import com.serv.common.BodyType;
 import com.serv.common.Service;
 import com.serv.database.repositories.*;
-import com.serv.dto.WorkerGalleryDTO;
 import com.serv.service.WorkerGalleryService;
 import com.serv.service.MediaStorageService;
 import jakarta.servlet.http.HttpSession;

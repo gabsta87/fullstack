@@ -22,8 +22,4 @@ public class MailController {
         return ResponseEntity.ok().body("OK");
     }
 
-//    @GetMapping("/forgotPassword")
-//    public String forgotPassword(){
-//        return "security/forgotPassword";
-//    }
 }
