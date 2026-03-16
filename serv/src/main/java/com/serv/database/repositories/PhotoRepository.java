@@ -23,6 +23,8 @@ public interface PhotoRepository extends JpaRepository<Photo, Long> {
     List<Photo> findByWorkerIdInOrderBySortOrderAsc(List<UUID> workerIds);
     void deleteByWorkerId(UUID workerId);
 
+    Optional<Photo> findById(UUID photoId);
+
     /**
      * Returns only the preview thumbnails for a list of worker IDs.
      * Used by the gallery: loads card data without fetching original URLs.

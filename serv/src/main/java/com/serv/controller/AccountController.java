@@ -61,7 +61,7 @@ public class AccountController {
         Map<String, Object> result = new HashMap<>();
         result.put("id",       user.getId().toString());
         result.put("username", user.getUsername());
-        result.put("email",    user.getEmail().getValue());
+        result.put("email",    user.getEmail());
         result.put("role",     isWorker ? "WORKER" : "CLIENT");
 
         if (isWorker) {
@@ -98,7 +98,7 @@ public class AccountController {
         if (body.containsKey("username") && !body.get("username").isBlank())
             user.setUsername(body.get("username"));
         if (body.containsKey("email") && !body.get("email").isBlank())
-            user.getEmail().setValue(body.get("email"));
+            user.setEmail(new Email(body.get("email")));
         if (body.containsKey("password") && !body.get("password").isBlank())
             user.setPassword(body.get("password"));
 
@@ -202,18 +202,31 @@ public class AccountController {
         if (worker == null) return ResponseEntity.status(401).build();
 
         try {
-            Photo photo = mediaStorageService.storePhoto(file, worker, title);
-            // If this is the first photo, set it as main
+            // 1 — Save files to disk, get back URLs
+            MediaStorageService.SavedMedia saved = mediaStorageService.savePhoto(file, worker.getId());
+
+            // 2 — Create and persist the Photo entity
+            Photo photo = new Photo();
+            photo.setWorker(worker);
+            photo.setTitle(title);
+            photo.setOriginalUrl(saved.originalUrl());
+            photo.setMainThumbUrl(saved.mainThumbUrl());
+            photo.setPreviewThumbUrl(saved.previewThumbUrl());
+            photo.setSortOrder(worker.getPhotos().size()); // append at end
+            photoRepository.save(photo);
+
+            // 3 — Set as main if first photo
             if (worker.getMainPhoto() == null) {
                 worker.setMainPhoto(photo);
                 workerRepository.save(worker);
                 session.setAttribute("user", worker);
             }
+
             return ResponseEntity.ok(Map.of(
-                    "id",            photo.getId().toString(),
-                    "mainThumbUrl",  photo.getMainThumbUrl(),
+                    "id",              photo.getId().toString(),
+                    "mainThumbUrl",    photo.getMainThumbUrl(),
                     "previewThumbUrl", photo.getPreviewThumbUrl(),
-                    "originalUrl",   photo.getOriginalUrl()
+                    "originalUrl",     photo.getOriginalUrl()
             ));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
