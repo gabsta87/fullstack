@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {Profile} from "../models/worker.model";
+import {WorkerProfile} from "../models/worker.model";
+import {environment} from "../../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class DynamicDataService {
-  private apiBaseUrl = 'http://localhost:8080/data'; // Backend URL
+  private apiBaseUrl = `${environment.apiBase}/data`; // Backend URL
 
   constructor(private http: HttpClient) {}
 
@@ -21,7 +22,7 @@ export class DynamicDataService {
     return this.http.get<any>(`${this.apiBaseUrl}/table/${tableName}/${id}`);
   }
 
-  getSimpleProfiles():Observable<Profile[]>{
-    return this.http.get<Profile[]>(`${this.apiBaseUrl}/simpleProfiles`);
+  getSimpleProfiles():Observable<WorkerProfile[]>{
+    return this.http.get<WorkerProfile[]>(`${this.apiBaseUrl}/simpleProfiles`);
   }
 }

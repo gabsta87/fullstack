@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { WorkerGalleryDTO } from '../models/worker.model';
+import {environment} from "../../../environments/environment";
 
 export interface AccountMe {
   id: string;
@@ -40,7 +41,7 @@ export interface WorkerProfileUpdate {
 
 @Injectable({ providedIn: 'root' })
 export class AccountService {
-  private base = 'http://localhost:8080/account';
+  private base = `${environment.apiBase}/account`;
 
   constructor(private http: HttpClient) {}
 

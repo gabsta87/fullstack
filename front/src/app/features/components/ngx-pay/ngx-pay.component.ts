@@ -40,7 +40,7 @@ export class NgxPayComponent implements OnInit {
     console.log("creating payment intent")
     try {
       const response = await firstValueFrom(
-        this.http.post<{ clientSecret: string }>('http://localhost:8080/payment/create-payment-intent', {
+        this.http.post<{ clientSecret: string }>(`${environment.apiBase}/payment/create-payment-intent`, {
           billValue: 2500,
           currency: 'USD',
         })

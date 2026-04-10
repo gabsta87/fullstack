@@ -3,10 +3,11 @@ import { Injectable } from '@angular/core';
 import {Observable} from "rxjs";
 import { tap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
+import {environment} from "../../../environments/environment";
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private baseUrl = 'http://localhost:8080/auth';
+  private baseUrl = `${environment.apiBase}/auth`;
   private redirectUrl = '';
   private sessionCache: { value: boolean; expires: number } | null = null;
 
