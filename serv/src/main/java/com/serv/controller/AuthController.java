@@ -20,7 +20,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
-public class AuthController extends SessionAwareController {
+public class AuthController {
 
     private final UserRepository   userRepository;
     private final ClientRepository clientRepository;
@@ -133,5 +133,19 @@ public class AuthController extends SessionAwareController {
         userRepository.save(resetToken.getUser());
         passwordResetTokenRepository.delete(resetToken);
         return ResponseEntity.ok("Password reset successful.");
+    }
+
+    private VenusUser sessionUser(HttpSession session) {
+        return (VenusUser) session.getAttribute("user");
+    }
+
+    private Worker sessionWorker(HttpSession session) {
+        VenusUser u = sessionUser(session);
+        return (u instanceof Worker w) ? w : null;
+    }
+
+    private Client sessionClient(HttpSession session) {
+        VenusUser u = sessionUser(session);
+        return (u instanceof Client c) ? c : null;
     }
 }
