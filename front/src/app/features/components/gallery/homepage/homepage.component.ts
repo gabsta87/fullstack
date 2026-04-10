@@ -5,7 +5,8 @@ import { FormsModule } from '@angular/forms';
 import {
   IonContent, IonInfiniteScroll, IonInfiniteScrollContent,
   IonRefresher, IonRefresherContent, IonHeader, IonToolbar,
-  IonTitle, IonButtons, IonButton, IonIcon,
+  IonTitle, IonButtons, IonButton, IonIcon, IonSpinner,
+  IonModal
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { optionsOutline, closeOutline, locationOutline } from 'ionicons/icons';
@@ -13,6 +14,8 @@ import { optionsOutline, closeOutline, locationOutline } from 'ionicons/icons';
 import { WorkerGalleryDTO, GalleryFilters } from '../../../models/worker.model';
 import { WorkerService } from '../../../services/worker.service';
 import { WorkerCardComponent } from '../worker-card/worker-card.component';
+import {AuthService} from "../../../services/auth.service";
+import {HttpClient} from "@angular/common/http";
 
 @Component({
   selector: 'app-homepage',
@@ -23,7 +26,8 @@ import { WorkerCardComponent } from '../worker-card/worker-card.component';
     CommonModule, FormsModule, RouterLink,
     IonContent, IonInfiniteScroll, IonInfiniteScrollContent,
     IonRefresher, IonRefresherContent, IonHeader, IonToolbar,
-    IonTitle, IonButtons, IonButton, IonIcon,
+    IonTitle, IonButtons, IonButton, IonIcon, IonSpinner,
+    IonModal,
     WorkerCardComponent,
   ],
 })
@@ -70,6 +74,8 @@ export class HomepageComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private workerService: WorkerService,
+    private authService: AuthService,
+    private http: HttpClient
   ) {
     addIcons({ optionsOutline, closeOutline, locationOutline });
     this.bodyTypes.forEach(b => this.tempFilters.bodyType[b] = false);
@@ -173,5 +179,79 @@ export class HomepageComponent implements OnInit {
     n += (this.filters.bodyType ?? []).length;
     n += (this.filters.services ?? []).length;
     return n;
+  }
+
+  // Modal state
+  loginOpen    = false;
+  registerOpen = false;
+
+// Login form
+  loginPseudo   = '';
+  loginPassword = '';
+  loginError    = '';
+  loginLoading  = false;
+
+// Register form
+  registerRole    : 'client' | 'worker' = 'client';
+  registerTouched = false;
+  registerLoading = false;
+  registerError   = '';
+  registerSuccess = '';
+  registerForm = { username: '', email: '', password: '', confirmPassword: '' };
+
+  openLogin()    { this.loginOpen    = true; }
+  openRegister() { this.registerOpen = true; }
+
+  switchToRegister() { this.loginOpen = false;    this.registerOpen = true; }
+  switchToLogin()    { this.registerOpen = false; this.loginOpen    = true; }
+
+  openResetPassword() {
+    this.loginOpen = false;
+    // TODO: open reset modal or navigate
+  }
+
+  submitLogin() {
+    this.loginError  = '';
+    this.loginLoading = true;
+    this.authService.login(this.loginPseudo, this.loginPassword, '').subscribe({
+      next: () => {
+        this.loginLoading = false;
+        this.loginOpen    = false;
+        // optionally reload workers or update nav
+      },
+      error: (err) => {
+        this.loginLoading = false;
+        this.loginError   = err.status === 401 ? 'Identifiants incorrects.' : 'Erreur serveur.';
+      }
+    });
+  }
+
+  submitRegister() {
+    this.registerTouched = true;
+    this.registerError   = '';
+    this.registerSuccess = '';
+
+    const f = this.registerForm;
+    if (!f.username || f.username.length < 3) return;
+    if (!f.email)                             return;
+    if (!f.password || f.password.length < 6) return;
+    if (f.password !== f.confirmPassword)     return;
+
+    this.registerLoading = true;
+    const endpoint = this.registerRole === 'worker'
+      ? '/auth/register/worker'
+      : '/auth/register/client';
+
+    this.http.post(endpoint, f, { withCredentials: true, responseType: 'text' }).subscribe({
+      next: () => {
+        this.registerLoading = false;
+        this.registerSuccess = 'Compte créé ! Vous pouvez maintenant vous connecter.';
+        setTimeout(() => this.switchToLogin(), 1500);
+      },
+      error: (err) => {
+        this.registerLoading = false;
+        this.registerError = err.error ?? 'Erreur lors de l\'inscription.';
+      }
+    });
   }
 }
