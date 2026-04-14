@@ -251,7 +251,7 @@ public class AccountController {
                     .filter(p -> !p.getId().equals(photoId))
                     .findFirst()
                     .ifPresentOrElse(
-                            p -> worker.setMainPhoto(p),
+                            worker::setMainPhoto,
                             () -> worker.setMainPhoto(null)
                     );
         }
