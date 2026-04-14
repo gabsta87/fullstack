@@ -8,17 +8,17 @@ import {environment} from "../../../environments/environment";
 })
 export class RegisterService {
 
-  private apiUrl = `${environment.apiBase}`;
+  private apiUrl = `${environment.apiBase}/auth/register`;
 
   constructor(private http: HttpClient) {}
 
   registerClient(username: string, email: string, password : string): Observable<any> {
     const body = { username, email , password};
-    return this.http.post(`${this.apiUrl}/addClient`, body);
+    return this.http.post(`${this.apiUrl}/client`, body);
   }
 
   registerWorker(username: string, email: string, password : string): Observable<any> {
     const body = { username, email, password };
-    return this.http.post(`${this.apiUrl}/addWorker`, body);
+    return this.http.post(`${this.apiUrl}/worker`, body);
   }
 }

@@ -15,7 +15,7 @@ import { WorkerGalleryDTO, GalleryFilters } from '../../../models/worker.model';
 import { WorkerService } from '../../../services/worker.service';
 import { WorkerCardComponent } from '../worker-card/worker-card.component';
 import {AuthService} from "../../../services/auth.service";
-import {HttpClient} from "@angular/common/http";
+import {RegisterService} from "../../../services/register.service";
 
 @Component({
   selector: 'app-homepage',
@@ -28,7 +28,7 @@ import {HttpClient} from "@angular/common/http";
     IonRefresher, IonRefresherContent, IonHeader, IonToolbar,
     IonTitle, IonButtons, IonButton, IonIcon, IonSpinner,
     IonModal,
-    WorkerCardComponent,
+    WorkerCardComponent
   ],
 })
 export class HomepageComponent implements OnInit {
@@ -75,7 +75,7 @@ export class HomepageComponent implements OnInit {
     private route: ActivatedRoute,
     private workerService: WorkerService,
     private authService: AuthService,
-    private http: HttpClient
+    private registerService : RegisterService,
   ) {
     addIcons({ optionsOutline, closeOutline, locationOutline });
     this.bodyTypes.forEach(b => this.tempFilters.bodyType[b] = false);
@@ -238,11 +238,12 @@ export class HomepageComponent implements OnInit {
     if (f.password !== f.confirmPassword)     return;
 
     this.registerLoading = true;
-    const endpoint = this.registerRole === 'worker'
-      ? '/auth/register/worker'
-      : '/auth/register/client';
 
-    this.http.post(endpoint, f, { withCredentials: true, responseType: 'text' }).subscribe({
+    const call = this.registerRole === 'worker'
+      ? this.registerService.registerWorker(f.username, f.email, f.password)
+      : this.registerService.registerClient(f.username, f.email, f.password);
+
+    call.subscribe({
       next: () => {
         this.registerLoading = false;
         this.registerSuccess = 'Compte créé ! Vous pouvez maintenant vous connecter.';
