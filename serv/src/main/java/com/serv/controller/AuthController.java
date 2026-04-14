@@ -64,6 +64,11 @@ public class AuthController {
         try {
             if (userRepository.findByUsername(req.getUsername()).isPresent())
                 return ResponseEntity.badRequest().body("Username already taken.");
+
+            // TODO check email
+
+            // TODO check password
+
             Client client = new Client(req.getUsername(), new Email(req.getEmail()), req.getPassword());
             client.setEnabled(false);
             client.setLocked(true);
@@ -79,6 +84,11 @@ public class AuthController {
         try {
             if (userRepository.findByUsername(req.getUsername()).isPresent())
                 return ResponseEntity.badRequest().body("Username already taken.");
+
+            // TODO check email
+
+            // TODO check password
+
             Worker worker = new Worker(req.getUsername(), new Email(req.getEmail()), req.getPassword());
             worker.setEnabled(false);
             worker.setLocked(true);
