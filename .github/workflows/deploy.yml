@@ -1,0 +1,23 @@
+name: Deploy Venus Project
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy with Docker Compose
+        run: |
+          # On build les nouvelles images et on relance les services
+          # --remove-orphans nettoie les anciens containers si vous changez de nom
+          docker compose up -d --build --remove-orphans
+          
+      - name: Cleanup old images
+        run: |
+          # Supprime les images "dangling" (les anciens builds inutiles)
+          docker image prune -f
