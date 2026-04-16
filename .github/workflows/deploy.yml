@@ -13,9 +13,7 @@ jobs:
 
       - name: Deploy with Docker Compose
         run: |
-          # On build les nouvelles images et on relance les services
-          # --remove-orphans nettoie les anciens containers si vous changez de nom
-          docker compose up -d --build --remove-orphans
+          docker-compose up --build -d --remove-orphans
           
       - name: Cleanup old images
         run: |
