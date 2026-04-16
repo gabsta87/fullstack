@@ -14,7 +14,7 @@ jobs:
       - name: Deploy with Docker Compose
         env:
           DOCKER_API_VERSION: "1.43"
-        run: /usr/lib/docker/cli-plugins/docker-compose up -d --build --remove-orphans
+        run: docker-compose up -d --build --remove-orphans
                   
       - name: Cleanup old images
         run: docker image prune -f
