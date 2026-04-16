@@ -12,9 +12,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy with Docker Compose
-        run: |
-          docker-compose up --build -d --remove-orphans
-          
+        run: docker compose up --build -d --remove-orphans
+                  
       - name: Cleanup old images
         run: |
           # Supprime les images "dangling" (les anciens builds inutiles)
