@@ -12,9 +12,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy with Docker Compose
-        run: docker compose -f docker-compose.yml up --build -d --remove-orphans
+        run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):$(pwd) -w $(pwd) docker/compose:latest up -d --build
                   
       - name: Cleanup old images
-        run: |
-          # Supprime les images "dangling" (les anciens builds inutiles)
-          docker image prune -f
+        run: docker image prune -f
