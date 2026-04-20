@@ -27,4 +27,3 @@ jobs:
           DOCKER_API_VERSION: "1.43"
         run: |
           docker image prune -f
-          docker builder prune -f
