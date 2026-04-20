@@ -3,7 +3,10 @@ FROM gradle:8-jdk21 AS builder
 WORKDIR /app
 COPY . .
 USER root
-RUN gradle bootJar --no-daemon --no-build-cache -Xmx512m
+
+ENV GRADLE_OPTS="-Xmx512m -XX:MaxMetaspaceSize=384m"
+
+RUN gradle bootJar --no-daemon --no-build-cache
 
 # ── Stage 2: run ──────────────────────────────────────────────────────────────
 FROM eclipse-temurin:21-jre-alpine
