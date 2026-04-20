@@ -20,6 +20,9 @@ services:
 
   backend:
     build: ./serv
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     container_name: venus-backend
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
