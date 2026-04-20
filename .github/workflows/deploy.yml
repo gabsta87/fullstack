@@ -11,7 +11,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy with Docker Compose
+      - name: Force cleanup and Deploy
         env:
           DOCKER_API_VERSION: "1.43"
           DB_NAME: ${{ secrets.DB_NAME }}
@@ -19,8 +19,7 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
         run: |
-          docker-compose down
-          
+          docker rm -f ***-db || true
           docker-compose up -d --build --remove-orphans
                   
       - name: Cleanup old images
