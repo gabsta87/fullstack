@@ -18,7 +18,10 @@ jobs:
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
-        run: docker-compose up -d --build --remove-orphans
+        run: |
+          docker-compose down
+          
+          docker-compose up -d --build --remove-orphans
                   
       - name: Cleanup old images
         run: docker image prune -f
