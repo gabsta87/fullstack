@@ -2,7 +2,6 @@
 FROM gradle:8-jdk21 AS builder
 WORKDIR /app
 COPY . .
-RUN ping -c 3 google.com
 RUN gradle bootJar --no-daemon --stacktrace --info
 
 # ── Stage 2: run ──────────────────────────────────────────────────────────────
