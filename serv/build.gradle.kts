@@ -75,7 +75,7 @@ dependencies {
 	// BCrypt for password hashing
 	implementation("org.springframework.security:spring-security-crypto:6.3.3")
 	// session management
-	implementation("org.springframework.session:spring-session-core")
+	implementation("org.springframework.session:spring-session-core:3.3.2")
 
 	// thumbnails management
 	implementation("net.coobird:thumbnailator:0.4.20")
