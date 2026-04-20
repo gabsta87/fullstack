@@ -19,7 +19,7 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
         run: |
-          docker rm -f ***-db || true
+          docker-compose down
           docker-compose up -d --build --remove-orphans
                   
       - name: Cleanup old images
