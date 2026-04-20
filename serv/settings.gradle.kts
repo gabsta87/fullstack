@@ -5,4 +5,5 @@ pluginManagement {
         maven { url = uri("https://repo.spring.io/release") }
     }
 }
+
 rootProject.name = "serv"
