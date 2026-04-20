@@ -23,4 +23,6 @@ jobs:
           docker-compose up -d --build --remove-orphans
                   
       - name: Cleanup old images
+        env:
+          DOCKER_API_VERSION: "1.43"
         run: docker image prune -f
