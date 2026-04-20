@@ -2,7 +2,8 @@
 FROM gradle:8-jdk21 AS builder
 WORKDIR /app
 COPY . .
-RUN gradle bootJar --no-daemon
+RUN ping -c 3 google.com
+RUN gradle bootJar --no-daemon --stacktrace --info
 
 # ── Stage 2: run ──────────────────────────────────────────────────────────────
 FROM eclipse-temurin:21-jre-alpine

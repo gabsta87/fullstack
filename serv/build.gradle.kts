@@ -73,7 +73,7 @@ dependencies {
 	developmentOnly("org.springframework.boot:spring-boot-devtools:3.3.4")
 
 	// BCrypt for password hashing
-	implementation("org.springframework.security:spring-security-crypto")
+	implementation("org.springframework.security:spring-security-crypto:6.3.3")
 	// session management
 	implementation("org.springframework.session:spring-session-core")
 
