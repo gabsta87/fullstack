@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -74,8 +74,9 @@ export class HomepageComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private workerService: WorkerService,
-    private authService: AuthService,
-    private registerService : RegisterService,
+    public authService: AuthService,
+    private registerService: RegisterService,
+    private cdr: ChangeDetectorRef
   ) {
     addIcons({ optionsOutline, closeOutline, locationOutline });
     this.bodyTypes.forEach(b => this.tempFilters.bodyType[b] = false);
@@ -83,8 +84,7 @@ export class HomepageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Page 0 was already fetched by galleryResolver — use it directly,
-    // no extra HTTP call needed on first render.
+    this.authService.checkSession().subscribe();
     const resolved: WorkerGalleryDTO[] = this.route.snapshot.data['workers'] ?? [];
     this.splitAndAppend(resolved);
   }
@@ -131,6 +131,26 @@ export class HomepageComponent implements OnInit {
   onRefresh(event: any): void {
     this.loadPage(true);
     setTimeout(() => event.target.complete(), 800);
+  }
+
+  onLogout() {
+    this.authService.logout().subscribe({
+      next: () => {
+        // Forcer Angular à revérifier l'état des boutons
+        this.cdr.detectChanges();
+        // TODO : redirect to gallery
+        console.log("TODO : Redirect to gallery")
+      },
+      error: () => {
+        // En cas d'erreur (comme vu sur votre capture), on force quand même
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  openAccount() {
+    // TODO : redirect to account
+    console.log("TODO : Redirect to account")
   }
 
   // ── Filters ────────────────────────────────────────────────────────────────
