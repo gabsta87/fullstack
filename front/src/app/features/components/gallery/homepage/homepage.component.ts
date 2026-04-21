@@ -136,13 +136,11 @@ export class HomepageComponent implements OnInit {
   onLogout() {
     this.authService.logout().subscribe({
       next: () => {
-        // Forcer Angular à revérifier l'état des boutons
         this.cdr.detectChanges();
         // TODO : redirect to gallery
         console.log("TODO : Redirect to gallery")
       },
       error: () => {
-        // En cas d'erreur (comme vu sur votre capture), on force quand même
         this.cdr.detectChanges();
       },
     });
