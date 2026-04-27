@@ -40,3 +40,4 @@ secrets.properties
 *.jpg
 *.jpeg
 /uploads/
+/src/main/resources/application-dev.properties
