@@ -7,6 +7,7 @@ import { WorkerService } from '../../services/worker.service';
 import { WorkerGalleryDTO, GalleryFilters } from '../../models/worker.model';
 import { WorkerCardComponent } from '../gallery/worker-card/worker-card.component';
 import { HeaderComponent } from '../header/header.component';
+import { REGIONS, BODY_TYPES, SERVICES, EYE_COLORS, HAIR_COLORS } from '../../models/worker.model';
 
 @Component({
   selector: 'app-account',
@@ -18,6 +19,15 @@ import { HeaderComponent } from '../header/header.component';
 export class AccountComponent implements OnInit {
   me: AccountMe | null = null;
   activeTab: 'feed' | 'favorites' | 'settings' = 'favorites';
+
+  readonly regions = REGIONS;
+  readonly bodyTypes = BODY_TYPES;
+  readonly availableServices = SERVICES;
+
+  selectionStates = {
+    bodyType: {} as Record<string, boolean>,
+    services: {} as Record<string, boolean>
+  };
 
   // Données
   favorites: WorkerGalleryDTO[] = [];

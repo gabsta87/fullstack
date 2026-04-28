@@ -34,20 +34,30 @@
       <div class="settings-grid">
         <div class="settings-card">
           <h3>Mes préférences de recherche</h3>
+
           <div class="field">
             <label>Région favorite</label>
-            <input type="text" [(ngModel)]="prefForm.region" placeholder="Ex: Paris">
+            <select [(ngModel)]="prefForm.region">
+              <option [value]="undefined">Toutes les régions</option>
+              <option *ngFor="let r of regions" [value]="r">{{r}}</option>
+            </select>
           </div>
-          <ion-button expand="block" (click)="savePreferences()" class="btn-gold">Mettre à jour ma galerie</ion-button>
+
+          <div class="field">
+            <label>Silhouette préférée</label>
+            <div class="checkbox-group">
+              <div *ngFor="let b of bodyTypes">
+                <input type="checkbox" [id]="'pref-'+b" [(ngModel)]="selectionStates.bodyType[b]">
+                <label [for]="'pref-'+b">{{b}}</label>
+              </div>
+            </div>
+          </div>
+
+          <ion-button expand="block" (click)="savePreferences()">
+            Enregistrer mes préférences
+          </ion-button>
         </div>
 
-        <div class="settings-card">
-          <h3>Informations personnelles</h3>
-          <div class="field">
-            <label>Email</label>
-            <input type="email" [(ngModel)]="settingsForm.email">
-          </div>
-        </div>
       </div>
     </div>
 
