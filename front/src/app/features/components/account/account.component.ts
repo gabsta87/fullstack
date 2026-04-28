@@ -1,96 +1,83 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
 import { AccountService, AccountMe, SettingsUpdate } from '../../services/account.service';
-import { WorkerGalleryDTO } from '../../models/worker.model';
-import {CommonModule} from "@angular/common";
-import {IonicModule} from "@ionic/angular";
-import {FormsModule} from "@angular/forms";
+import { WorkerService } from '../../services/worker.service';
+import { WorkerGalleryDTO, GalleryFilters } from '../../models/worker.model';
+import { WorkerCardComponent } from '../gallery/worker-card/worker-card.component';
+import { HeaderComponent } from '../header/header.component';
 
 @Component({
   selector: 'app-account',
+  standalone: true,
+  imports: [CommonModule, FormsModule, IonicModule, WorkerCardComponent, HeaderComponent],
   templateUrl: './account.component.html',
-  styleUrls: ['./account.component.scss'],
-  imports: [CommonModule, FormsModule, IonicModule],
-  standalone: true
+  styleUrls: ['./account.component.scss']
 })
 export class AccountComponent implements OnInit {
-
   me: AccountMe | null = null;
-  favorites: WorkerGalleryDTO[] = [];
-  activeTab: 'favorites' | 'settings' = 'favorites';
+  activeTab: 'feed' | 'favorites' | 'settings' = 'favorites';
 
-  // Settings form
+  // Données
+  favorites: WorkerGalleryDTO[] = [];
+  personalizedWorkers: WorkerGalleryDTO[] = [];
+
+  // Formulaires
   settingsForm: SettingsUpdate = {};
-  settingsPassword2 = '';
-  settingsSaved = false;
-  settingsError = '';
-  savingSettings = false;
+  prefForm: any = {}; // Filtres de préférence
 
   loading = true;
-  favoritesLoading = true;
 
-  constructor(private accountService: AccountService) {}
+  constructor(
+    private accountService: AccountService,
+    private workerService: WorkerService
+  ) {}
 
-  ngOnInit(): void {
-    this.accountService.getMe().subscribe({
-      next: me => {
-        this.me = me;
-        this.settingsForm = { username: me.username, email: me.email };
-        this.loading = false;
-      },
-      error: () => { this.loading = false; }
-    });
+  ngOnInit() {
+    this.loadData();
+  }
 
-    this.accountService.getFavorites().subscribe({
-      next: favs => {
-        this.favorites = favs;
-        this.favoritesLoading = false;
-      },
-      error: () => { this.favoritesLoading = false; }
+  loadData() {
+    this.accountService.getMe().subscribe(me => {
+      this.me = me;
+      this.settingsForm = { username: me.username, email: me.email };
+      // On initialise les préférences avec les données du compte (ex: region, bodyType...)
+      this.prefForm = { region: me.region, bodyType: me.bodyType };
+
+      this.loadPersonalizedFeed();
+      this.loadFavorites();
+      this.loading = false;
     });
   }
 
-  setTab(tab: 'favorites' | 'settings') {
+  loadFavorites() {
+    this.accountService.getFavorites().subscribe(favs => this.favorites = favs);
+  }
+
+  get connectedFavoritesCount(): number {
+    return this.favorites.filter(favorite => favorite.available).length;
+  }
+
+  loadPersonalizedFeed() {
+    const filters: GalleryFilters = {
+      region: this.prefForm.region,
+      bodyType: this.prefForm.bodyType
+    };
+
+    // Ajoutez ": any" ou le type spécifique de votre réponse
+    this.workerService.getWorkers(0, 10, filters).subscribe((res: any) => {
+      this.personalizedWorkers = res.content || res;
+    });
+  }
+
+  setTab(tab: 'feed' | 'favorites' | 'settings') {
     this.activeTab = tab;
-    this.settingsSaved = false;
-    this.settingsError = '';
   }
 
-  removeFavorite(workerId: string) {
-    this.accountService.removeFavorite(workerId).subscribe(() => {
-      this.favorites = this.favorites.filter(f => f.id !== workerId);
-    });
-  }
-
-  saveSettings() {
-    this.settingsError = '';
-    this.settingsSaved = false;
-
-    if (this.settingsForm.password && this.settingsForm.password !== this.settingsPassword2) {
-      this.settingsError = 'Passwords do not match.';
-      return;
-    }
-
-    const payload: SettingsUpdate = {};
-    if (this.settingsForm.username) payload.username = this.settingsForm.username;
-    if (this.settingsForm.email)    payload.email    = this.settingsForm.email;
-    if (this.settingsForm.password) payload.password = this.settingsForm.password;
-
-    this.savingSettings = true;
-    this.accountService.updateSettings(payload).subscribe({
-      next: () => {
-        this.settingsSaved = true;
-        this.savingSettings = false;
-        this.settingsForm.password = '';
-        this.settingsPassword2 = '';
-        if (this.me) {
-          this.me.username = payload.username ?? this.me.username;
-          this.me.email    = payload.email    ?? this.me.email;
-        }
-      },
-      error: () => {
-        this.settingsError = 'Failed to save settings.';
-        this.savingSettings = false;
-      }
-    });
+  savePreferences() {
+    // Ici on sauvegarde les filtres dans le profil via accountService
+    // puis on recharge le flux personnalisé
+    this.loadPersonalizedFeed();
   }
 }

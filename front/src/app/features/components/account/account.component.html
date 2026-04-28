@@ -1,113 +1,55 @@
-<!-- TODO Account management page for workers
-View all images
-View account main image (displayed as profile avatar)
-upload / remove images
-change main image
-refresh position in main gallery (paying system to get in first position)
-Change localization
-Change description
--->
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Mon compte</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-header></app-header>
 
-<ion-content class="account-content">
+<ion-content>
 
-  <div class="account-hero" *ngIf="me">
-    <div class="avatar-ring">
-      <span class="avatar-initials">{{ me.username[0] | uppercase }}</span>
-    </div>
-    <div class="hero-info">
-      <h1>{{ me.username }}</h1>
-      <span class="hero-email">{{ me.email }}</span>
-    </div>
+  <div class="tab-nav">
+    <button [class.active]="activeTab === 'feed'" (click)="setTab('feed')">Ma Galerie</button>
+    <button [class.active]="activeTab === 'favorites'" (click)="setTab('favorites')">Favoris</button>
+    <button [class.active]="activeTab === 'settings'" (click)="setTab('settings')">Réglages</button>
   </div>
 
-  <!-- Tab bar -->
-  <div class="tab-bar">
-    <button class="tab-btn" [class.active]="activeTab === 'favorites'" (click)="setTab('favorites')">
-      <ion-icon name="heart"></ion-icon>
-      Favoris
-    </button>
-    <button class="tab-btn" [class.active]="activeTab === 'settings'" (click)="setTab('settings')">
-      <ion-icon name="settings-outline"></ion-icon>
-      Paramètres
-    </button>
-  </div>
+  <div class="container main-container">
 
-  <!-- FAVORITES TAB -->
-  <div class="tab-content" *ngIf="activeTab === 'favorites'">
-
-    <div class="loading-state" *ngIf="favoritesLoading">
-      <ion-spinner name="crescent"></ion-spinner>
+    <div *ngIf="activeTab === 'feed'" class="fade-in">
+      <div class="section-header">
+        <h2>Sélectionné pour vous</h2>
+        <p>Basé sur vos préférences de recherche</p>
+      </div>
+      <div class="grid-layout">
+        <app-worker-card *ngFor="let w of personalizedWorkers" [worker]="w"></app-worker-card>
+      </div>
     </div>
 
-    <div class="empty-state" *ngIf="!favoritesLoading && favorites.length === 0">
-      <ion-icon name="heart-outline" class="empty-icon"></ion-icon>
-      <p>Vous n'avez pas encore de favoris.</p>
-      <ion-button routerLink="/home" fill="outline" size="small">Parcourir les profils</ion-button>
+    <div *ngIf="activeTab === 'favorites'" class="fade-in">
+      <div class="section-header">
+        <h2>Vos favoris ({{ favorites.length }})</h2>
+        <p>{{ connectedFavoritesCount }} profil{{ connectedFavoritesCount > 1 ? 's' : '' }} connecté{{ connectedFavoritesCount > 1 ? 's' : '' }} parmi vos favoris</p>
+      </div>
+      <div class="grid-layout">
+        <app-worker-card *ngFor="let f of favorites" [worker]="f"></app-worker-card>
+      </div>
     </div>
 
-    <div class="favorites-grid" *ngIf="!favoritesLoading && favorites.length > 0">
-      <div class="fav-card" *ngFor="let worker of favorites">
-        <!-- Thumb -->
-        <div class="fav-thumb" [style.backgroundImage]="'url(' + worker.mainThumbUrl + ')'">
-          <button class="fav-remove-btn" (click)="removeFavorite(worker.id)" title="Retirer des favoris">
-            <ion-icon name="heart" color="danger"></ion-icon>
-          </button>
-          <div class="fav-status-dot" [class.online]="worker.available"></div>
+    <div *ngIf="activeTab === 'settings'" class="fade-in">
+      <div class="settings-grid">
+        <div class="settings-card">
+          <h3>Mes préférences de recherche</h3>
+          <div class="field">
+            <label>Région favorite</label>
+            <input type="text" [(ngModel)]="prefForm.region" placeholder="Ex: Paris">
+          </div>
+          <ion-button expand="block" (click)="savePreferences()" class="btn-gold">Mettre à jour ma galerie</ion-button>
         </div>
-        <!-- Info -->
-        <div class="fav-info">
-          <span class="fav-name">{{ worker.name }}</span>
-          <span class="fav-meta">{{ worker.age }} ans · {{ worker.location }}</span>
+
+        <div class="settings-card">
+          <h3>Informations personnelles</h3>
+          <div class="field">
+            <label>Email</label>
+            <input type="email" [(ngModel)]="settingsForm.email">
+          </div>
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- SETTINGS TAB -->
-  <div class="tab-content settings-tab" *ngIf="activeTab === 'settings'">
-
-    <div class="settings-section">
-      <h2 class="section-title">Informations du compte</h2>
-
-      <div class="field-group">
-        <label>Nom d'utilisateur</label>
-        <input type="text" [(ngModel)]="settingsForm.username" placeholder="Nom d'utilisateur" />
-      </div>
-
-      <div class="field-group">
-        <label>Adresse e-mail</label>
-        <input type="email" [(ngModel)]="settingsForm.email" placeholder="Email" />
-      </div>
-    </div>
-
-    <div class="settings-section">
-      <h2 class="section-title">Changer le mot de passe</h2>
-      <p class="section-hint">Laissez vide pour ne pas modifier.</p>
-
-      <div class="field-group">
-        <label>Nouveau mot de passe</label>
-        <input type="password" [(ngModel)]="settingsForm.password" placeholder="Nouveau mot de passe" />
-      </div>
-
-      <div class="field-group">
-        <label>Confirmer le mot de passe</label>
-        <input type="password" [(ngModel)]="settingsPassword2" placeholder="Confirmer" />
-      </div>
-    </div>
-
-    <div class="form-feedback error"   *ngIf="settingsError">{{ settingsError }}</div>
-    <div class="form-feedback success" *ngIf="settingsSaved">Paramètres sauvegardés ✓</div>
-
-    <ion-button expand="block" class="save-btn" (click)="saveSettings()" [disabled]="savingSettings">
-      <ion-spinner *ngIf="savingSettings" name="crescent" slot="start"></ion-spinner>
-      Sauvegarder
-    </ion-button>
 
   </div>
-
 </ion-content>

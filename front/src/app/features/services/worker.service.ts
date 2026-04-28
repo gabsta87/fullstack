@@ -54,5 +54,34 @@ export class WorkerService {
     return this.profileCache.get(workerId) ?? null;
   }
 
+  getWorkers(page: number, size: number, filters: GalleryFilters): Observable<any> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    // Région (chaîne simple)
+    if (filters.region) {
+      params = params.set('region', filters.region);
+    }
+
+    // BodyType (Tableau -> conversion en chaîne séparée par des virgules)
+    if (filters.bodyType && filters.bodyType.length > 0) {
+      // Si c'est déjà une string (cas particulier), on l'envoie telle quelle
+      // Sinon on joint le tableau
+      const bodyTypeValue = Array.isArray(filters.bodyType)
+        ? filters.bodyType.join(',')
+        : filters.bodyType;
+
+      params = params.set('bodyType', bodyTypeValue);
+    }
+
+    // Services (Tableau -> conversion en chaîne)
+    if (filters.services && filters.services.length > 0) {
+      params = params.set('services', filters.services.join(','));
+    }
+
+    return this.http.get<any>(`${environment.apiBase}/workers`, { params });
+  }
+
   private profileCache = new Map<string, WorkerProfile>();
 }
