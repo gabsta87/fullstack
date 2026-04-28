@@ -14,8 +14,9 @@ import { optionsOutline, closeOutline, locationOutline } from 'ionicons/icons';
 import { WorkerGalleryDTO, GalleryFilters } from '../../../models/worker.model';
 import { WorkerService } from '../../../services/worker.service';
 import { WorkerCardComponent } from '../worker-card/worker-card.component';
-import {AuthService} from "../../../services/auth.service";
-import {RegisterService} from "../../../services/register.service";
+import { AuthService } from "../../../services/auth.service";
+import { RegisterService } from "../../../services/register.service";
+import { HeaderComponent } from '../../header/header.component';
 
 @Component({
   selector: 'app-homepage',
@@ -27,7 +28,7 @@ import {RegisterService} from "../../../services/register.service";
     IonContent, IonInfiniteScroll, IonInfiniteScrollContent,
     IonRefresher, IonRefresherContent, IonHeader, IonToolbar,
     IonTitle, IonButtons, IonButton, IonIcon, IonSpinner,
-    IonModal,
+    IonModal,HeaderComponent,
     WorkerCardComponent
   ],
 })

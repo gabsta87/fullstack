@@ -1,0 +1,30 @@
+<ion-header class="ion-no-border main-header">
+  <ion-toolbar>
+    <ion-title>
+      <span class="brand" routerLink="/">
+        <span class="brand-mark">◆</span> Venus
+      </span>
+    </ion-title>
+
+    <ion-buttons slot="end">
+      <ng-container *ngIf="!(authService.isAuthenticated$ | async)">
+        <ion-button (click)="loginRequested.emit()" fill="clear" class="nav-link-btn">
+          Se connecter
+        </ion-button>
+        <ion-button (click)="registerRequested.emit()" fill="solid" class="nav-cta-btn">
+          S'inscrire
+        </ion-button>
+      </ng-container>
+
+      <ng-container *ngIf="authService.isAuthenticated$ | async">
+        <ion-button (click)="openAccount()" fill="clear" class="nav-link-btn">
+          <ion-icon name="person-circle-outline" slot="start"></ion-icon>
+          Mon Compte
+        </ion-button>
+        <ion-button (click)="onLogout()" fill="clear" color="danger">
+          Se déconnecter
+        </ion-button>
+      </ng-container>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
