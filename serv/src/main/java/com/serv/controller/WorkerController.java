@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -29,9 +30,20 @@ public class WorkerController {
     @GetMapping
     public ResponseEntity<List<WorkerGalleryDTO>> getGallery(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam Map<String, String> filters) {
-        filters.remove("page");
-        return ResponseEntity.ok(galleryService.getGalleryPage(page, filters));
+            @RequestParam(required = false) String region,
+            @RequestParam(required = false) List<String> bodyType,
+            @RequestParam(required = false) List<String> services,
+            @RequestParam(required = false) String eyeColor,
+            @RequestParam(required = false) String hairColor) {
+
+        Map<String, Object> allFilters = new HashMap<>();
+        if (region != null) allFilters.put("region", region);
+        if (bodyType != null) allFilters.put("bodyType", bodyType);
+        if (services != null) allFilters.put("services", services);
+        if (eyeColor != null) allFilters.put("eyeColor", eyeColor);
+        if (hairColor != null) allFilters.put("hairColor", hairColor);
+
+        return ResponseEntity.ok(galleryService.getGalleryPage(page, allFilters));
     }
 
     @GetMapping("/{id}")

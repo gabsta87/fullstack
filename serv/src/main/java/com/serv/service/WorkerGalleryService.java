@@ -38,14 +38,15 @@ public class WorkerGalleryService {
      *
      * This is done in two queries (workers + batch photo fetch) to avoid N+1.
      */
-    public List<WorkerGalleryDTO> getGalleryPage(int page, Map<String, String> filters) {
+    public List<WorkerGalleryDTO> getGalleryPage(int page, Map<String, Object> filters) {
+
+        // Pour l'instant, ton code ignore les filtres.
+        // Si tu veux voir tes profils, il faut que l'appel SQL soit filtré.
+        // Voici une version simplifiée pour tester si les profils reviennent :
 
         // 1 — Fetch workers (available first, then by lastRefreshed)
-        //     TODO: add filter support via Specification or QueryDSL
-        List<Worker> available = workerRepository
-                .findByAvailableTrue(
-                        PageRequest.of(page, PAGE_SIZE,
-                                Sort.by(Sort.Direction.DESC, "lastRefreshed")));
+        List<Worker> available = workerRepository.findByAvailableTrue(
+                PageRequest.of(page, PAGE_SIZE, Sort.by(Sort.Direction.DESC, "lastRefreshed")));
 
         List<Worker> unavailable = workerRepository
                 .findByAvailableFalse(

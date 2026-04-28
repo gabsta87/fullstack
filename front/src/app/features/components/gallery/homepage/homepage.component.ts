@@ -11,12 +11,12 @@ import {
 import { addIcons } from 'ionicons';
 import { optionsOutline, closeOutline, locationOutline } from 'ionicons/icons';
 
-import { WorkerGalleryDTO, GalleryFilters } from '../../../models/worker.model';
 import { WorkerService } from '../../../services/worker.service';
 import { WorkerCardComponent } from '../worker-card/worker-card.component';
 import { AuthService } from "../../../services/auth.service";
 import { RegisterService } from "../../../services/register.service";
 import { HeaderComponent } from '../../header/header.component';
+import { REGIONS, BODY_TYPES, SERVICES, EYE_COLORS, HAIR_COLORS, WorkerGalleryDTO, GalleryFilters } from '../../../models/worker.model';
 
 @Component({
   selector: 'app-homepage',
@@ -36,6 +36,17 @@ export class HomepageComponent implements OnInit {
 
   @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
 
+  readonly regions    = REGIONS;
+  readonly bodyTypes  = BODY_TYPES;
+  readonly workersProvidedServices   = SERVICES;
+  readonly eyeColors  = EYE_COLORS;
+  readonly hairColors = HAIR_COLORS;
+
+  selectionStates = {
+    bodyType: {} as Record<string, boolean>,
+    services: {} as Record<string, boolean>
+  };
+
   availableWorkers:   WorkerGalleryDTO[] = [];
   unavailableWorkers: WorkerGalleryDTO[] = [];
 
@@ -45,31 +56,14 @@ export class HomepageComponent implements OnInit {
   filtersOpen = false;
   filters: GalleryFilters = {};
 
-  readonly regions   = ['Paris','Lyon','Marseille','Bordeaux','Toulouse','Nice','Nantes','Strasbourg'];
-  readonly bodyTypes = ['Mince','Athlétique','Normale','Pulpeuse','Ronde'];
-  readonly services  = ['Standard','Premium'];
-  readonly eyeColors = [
-    { label: 'Marron',   hex: '#6b3d2e' }, { label: 'Noisette', hex: '#9b6a3a' },
-    { label: 'Vert',     hex: '#4a7c59' }, { label: 'Bleu',     hex: '#4a7aaf' },
-    { label: 'Gris',     hex: '#8a9aaa' },
-  ];
-  readonly hairColors = [
-    { label: 'Noir',    hex: '#1a1410' }, { label: 'Brun',    hex: '#5c3d2e' },
-    { label: 'Châtain', hex: '#8b5e3c' }, { label: 'Blond',   hex: '#d4a847' },
-    { label: 'Roux',    hex: '#c04a1a' },
-  ];
-
-  tempFilters: {
-    bodyType: Record<string, boolean>;
-    services: Record<string, boolean>;
-    eyeColor: string; hairColor: string;
-    heightMin: number | null; heightMax: number | null;
-    weightMin: number | null; weightMax: number | null;
-  } = {
-    bodyType: {}, services: {},
-    eyeColor: '', hairColor: '',
-    heightMin: null, heightMax: null,
-    weightMin: null, weightMax: null,
+  tempFilters: GalleryFilters = {
+    region: undefined,
+    eyeColor: undefined,
+    hairColor: undefined,
+    heightMin: null,
+    heightMax: null,
+    weightMin: null,
+    weightMax: null,
   };
 
   constructor(
@@ -80,8 +74,10 @@ export class HomepageComponent implements OnInit {
     private cdr: ChangeDetectorRef
   ) {
     addIcons({ optionsOutline, closeOutline, locationOutline });
-    this.bodyTypes.forEach(b => this.tempFilters.bodyType[b] = false);
-    this.services .forEach(s => this.tempFilters.services[s] = false);
+
+    // Initialisation propre des états de cases à cocher
+    this.bodyTypes.forEach(b => this.selectionStates.bodyType[b] = false);
+    this.workersProvidedServices.forEach(s => this.selectionStates.services[s] = false);
   }
 
   ngOnInit(): void {
@@ -155,32 +151,44 @@ export class HomepageComponent implements OnInit {
   // ── Filters ────────────────────────────────────────────────────────────────
 
   onRegionChange(): void { this.loadPage(true); }
-  toggleFilters():  void { this.filtersOpen = !this.filtersOpen; }
+
+  toggleFilter(list: any[] | undefined, value: string) {
+    if (!list) return;
+    const index = list.indexOf(value);
+    if (index > -1) {
+      list.splice(index, 1);
+    } else {
+      list.push(value);
+    }
+  }
 
   applyFilters(): void {
+    const selectedBody = Object.keys(this.selectionStates.bodyType).filter(k => this.selectionStates.bodyType[k]);
+    const selectedServ = Object.keys(this.selectionStates.services).filter(k => this.selectionStates.services[k]);
+
     this.filters = {
-      ...this.filters,
-      bodyType:  Object.keys(this.tempFilters.bodyType).filter(k => this.tempFilters.bodyType[k]),
-      services:  Object.keys(this.tempFilters.services).filter(k => this.tempFilters.services[k]),
-      eyeColor:  this.tempFilters.eyeColor  || undefined,
+      region: this.tempFilters.region || undefined,
+      bodyType: selectedBody.length > 0 ? selectedBody : undefined,
+      services: selectedServ.length > 0 ? selectedServ : undefined,
+      eyeColor: this.tempFilters.eyeColor || undefined,
       hairColor: this.tempFilters.hairColor || undefined,
       heightMin: this.tempFilters.heightMin ?? undefined,
       heightMax: this.tempFilters.heightMax ?? undefined,
       weightMin: this.tempFilters.weightMin ?? undefined,
       weightMax: this.tempFilters.weightMax ?? undefined,
     };
+
     this.filtersOpen = false;
     this.loadPage(true);
   }
 
   clearFilters(): void {
     this.filters = {};
-    this.bodyTypes.forEach(b => this.tempFilters.bodyType[b] = false);
-    this.services .forEach(s => this.tempFilters.services[s] = false);
-    this.tempFilters.eyeColor  = '';
-    this.tempFilters.hairColor = '';
-    this.tempFilters.heightMin = this.tempFilters.heightMax = null;
-    this.tempFilters.weightMin = this.tempFilters.weightMax = null;
+    // Reset selection UI
+    this.bodyTypes.forEach(b => this.selectionStates.bodyType[b] = false);
+    this.workersProvidedServices.forEach(s => this.selectionStates.services[s] = false);
+    // Reset temp fields
+    this.tempFilters = { region: undefined, eyeColor: undefined, hairColor: undefined };
     this.loadPage(true);
   }
 
