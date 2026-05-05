@@ -1,0 +1,14 @@
+Account management for workers
+photos/videos management for workers
+payment system for workers (pay for a year subscription, monthly...)
+workers can updated their profile by paying a small fee (to be in the top of the list)
+
+certification about worker's photos (ask for a photo with phrase, object, pose and check if the other pictures are similar. might use a neural network if possible. Otherwise, create admin accounts to check the photos)
+
+create admin accounts for collaborators
+  check photos/videos
+  manage requests from users and workers
+  check payments
+
+When the homepage is loaded, the workers' profiles are loaded by priority. When a profile updates his priority, show a small notification to the user if he wants to reload the page.
+
