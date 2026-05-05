@@ -3,7 +3,6 @@ import { HomepageComponent } from './features/components/homepage/homepage.compo
 import {NgxPayComponent} from "./features/components/ngx-pay/ngx-pay.component";
 import {ProfileComponent} from "./features/components/profile/profile.component";
 import {detailedProfileResolver} from "./features/resolver/detailed-profile.resolver";
-import {LoginComponent} from "./features/components/login/login.component";
 import {AccountComponent} from "./features/components/account/account.component";
 import {authGuard} from "./features/guards/auth.guard";
 import {galleryResolver} from "./features/resolver/gallery.resolver";
@@ -15,7 +14,6 @@ export const routes: Routes = [
   { path: 'home',    component: HomepageComponent, resolve: { workers: galleryResolver } },
   { path: 'gallery', component: HomepageComponent, resolve: { workers: galleryResolver } },
   { path: 'profile-management', component: ProfileManagementComponent },
-  { path: 'login',              component: LoginComponent },
   { path: 'ngx-pay',            component: NgxPayComponent },
   { path: 'account',            component: AccountComponent, canActivate: [authGuard] },
 
