@@ -87,7 +87,6 @@ export class AuthModalComponent implements OnInit {
   private handleSuccess() {
     this.isLoading = false;
     this.modalCtrl.dismiss(true);
-    this.router.navigate(['/account']);
   }
 
   private handleError(err: any) {
