@@ -1,0 +1,81 @@
+<!-- ░░ DEV BAR (remove before go-live) ░░ -->
+<div class="dev-bar">
+  <span class="dev-label">🛠 Dev</span>
+  <a routerLink="/login">Login</a>
+  <a routerLink="/register">Register</a>
+  <a routerLink="/register-worker">Register worker</a>
+  <a routerLink="/account">Account</a>
+  <a routerLink="/ngx-pay">NGX Pay</a>
+  <a [routerLink]="['/profile']" [queryParams]="{ id: 1 }">Profile 1</a>
+</div>
+
+<app-header></app-header>
+
+<!-- ░░ IONIC CONTENT ░░ -->
+<ion-content class="main-content">
+
+  <!-- Pull-to-refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="gallery-wrap">
+
+    <!-- Available workers -->
+    <section *ngIf="availableWorkers.length > 0">
+      <div class="section-label">
+        <span class="pip online"></span>
+        Disponibles maintenant
+        <span class="section-count">{{ availableWorkers.length }}</span>
+      </div>
+      <div class="worker-grid">
+        <app-worker-card
+          *ngFor="let w of availableWorkers; let i = index"
+          [worker]="w"
+          [style.animation-delay]="(i % 12 * 0.04) + 's'">
+        </app-worker-card>
+      </div>
+    </section>
+
+    <!-- Unavailable workers -->
+    <section *ngIf="unavailableWorkers.length > 0" class="unavail-section">
+      <div class="section-label">
+        <span class="pip offline"></span>
+        Non disponibles
+        <span class="section-count">{{ unavailableWorkers.length }}</span>
+      </div>
+      <div class="worker-grid faded">
+        <app-worker-card
+          *ngFor="let w of unavailableWorkers; let i = index"
+          [worker]="w"
+          [style.animation-delay]="(i % 12 * 0.04) + 's'">
+        </app-worker-card>
+      </div>
+    </section>
+
+    <!-- Loading skeleton -->
+    <div class="skeleton-grid" *ngIf="isLoading && !availableWorkers.length">
+      <div class="skeleton-card" *ngFor="let s of [1,2,3,4,5,6,7,8]"></div>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state"
+         *ngIf="!isLoading && !availableWorkers.length && !unavailableWorkers.length">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <p>Aucun profil trouvé.</p>
+      <button (click)="clearFilters()">Réinitialiser les filtres</button>
+    </div>
+
+  </div>
+
+  <!-- Infinite scroll -->
+  <ion-infinite-scroll threshold="300px" (ionInfinite)="onIonInfinite($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="crescent"
+      loadingText="Chargement...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+</ion-content>

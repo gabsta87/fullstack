@@ -1,22 +1,30 @@
-import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {ActivatedRoute, RouterLink} from '@angular/router';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
 import {
-  IonContent, IonInfiniteScroll, IonInfiniteScrollContent,
-  IonRefresher, IonRefresherContent, IonHeader, IonToolbar,
-  IonTitle, IonButtons, IonButton, IonIcon, IonSpinner,
-  IonModal
+  IonContent,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
+  IonRefresher,
+  IonRefresherContent
 } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { optionsOutline, closeOutline, locationOutline } from 'ionicons/icons';
+import {addIcons} from 'ionicons';
+import {closeOutline, locationOutline, optionsOutline} from 'ionicons/icons';
 
-import { WorkerService } from '../../../services/worker.service';
-import { WorkerCardComponent } from '../worker-card/worker-card.component';
-import { AuthService } from "../../../services/auth.service";
-import { RegisterService } from "../../../services/register.service";
-import { HeaderComponent } from '../../header/header.component';
-import { REGIONS, BODY_TYPES, SERVICES, EYE_COLORS, HAIR_COLORS, WorkerGalleryDTO, GalleryFilters } from '../../../models/worker.model';
+import {WorkerService} from '../../services/worker.service';
+import {WorkerCardComponent} from '../worker-card/worker-card.component';
+import {AuthService} from "../../services/auth.service";
+import {HeaderComponent} from '../header/header.component';
+import {
+  BODY_TYPES,
+  EYE_COLORS,
+  GalleryFilters,
+  HAIR_COLORS,
+  REGIONS,
+  SERVICES,
+  WorkerGalleryDTO
+} from '../../models/worker.model';
 
 @Component({
   selector: 'app-homepage',
@@ -26,9 +34,7 @@ import { REGIONS, BODY_TYPES, SERVICES, EYE_COLORS, HAIR_COLORS, WorkerGalleryDT
   imports: [
     CommonModule, FormsModule, RouterLink,
     IonContent, IonInfiniteScroll, IonInfiniteScrollContent,
-    IonRefresher, IonRefresherContent, IonHeader, IonToolbar,
-    IonTitle, IonButtons, IonButton, IonIcon, IonSpinner,
-    IonModal,HeaderComponent,
+    IonRefresher, IonRefresherContent,HeaderComponent,
     WorkerCardComponent
   ],
 })
@@ -70,8 +76,6 @@ export class HomepageComponent implements OnInit {
     private route: ActivatedRoute,
     private workerService: WorkerService,
     public authService: AuthService,
-    private registerService: RegisterService,
-    private cdr: ChangeDetectorRef
   ) {
     addIcons({ optionsOutline, closeOutline, locationOutline });
 
@@ -128,24 +132,6 @@ export class HomepageComponent implements OnInit {
   onRefresh(event: any): void {
     this.loadPage(true);
     setTimeout(() => event.target.complete(), 800);
-  }
-
-  onLogout() {
-    this.authService.logout().subscribe({
-      next: () => {
-        this.cdr.detectChanges();
-        // TODO : redirect to gallery
-        console.log("TODO : Redirect to gallery")
-      },
-      error: () => {
-        this.cdr.detectChanges();
-      },
-    });
-  }
-
-  openAccount() {
-    // TODO : redirect to account
-    console.log("TODO : Redirect to account")
   }
 
   // ── Filters ────────────────────────────────────────────────────────────────
@@ -208,78 +194,4 @@ export class HomepageComponent implements OnInit {
     return n;
   }
 
-  // Modal state
-  loginOpen    = false;
-  registerOpen = false;
-
-// Login form
-  loginPseudo   = '';
-  loginPassword = '';
-  loginError    = '';
-  loginLoading  = false;
-
-// Register form
-  registerRole    : 'client' | 'worker' = 'client';
-  registerTouched = false;
-  registerLoading = false;
-  registerError   = '';
-  registerSuccess = '';
-  registerForm = { username: '', email: '', password: '', confirmPassword: '' };
-
-  openLogin()    { this.loginOpen    = true; }
-  openRegister() { this.registerOpen = true; }
-
-  switchToRegister() { this.loginOpen = false;    this.registerOpen = true; }
-  switchToLogin()    { this.registerOpen = false; this.loginOpen    = true; }
-
-  openResetPassword() {
-    this.loginOpen = false;
-    // TODO: open reset modal or navigate
-  }
-
-  submitLogin() {
-    this.loginError  = '';
-    this.loginLoading = true;
-    this.authService.login(this.loginPseudo, this.loginPassword, '').subscribe({
-      next: () => {
-        this.loginLoading = false;
-        this.loginOpen    = false;
-        // optionally reload workers or update nav
-      },
-      error: (err) => {
-        this.loginLoading = false;
-        this.loginError   = err.status === 401 ? 'Identifiants incorrects.' : 'Erreur serveur.';
-      }
-    });
-  }
-
-  submitRegister() {
-    this.registerTouched = true;
-    this.registerError   = '';
-    this.registerSuccess = '';
-
-    const f = this.registerForm;
-    if (!f.username || f.username.length < 3) return;
-    if (!f.email)                             return;
-    if (!f.password || f.password.length < 6) return;
-    if (f.password !== f.confirmPassword)     return;
-
-    this.registerLoading = true;
-
-    const call = this.registerRole === 'worker'
-      ? this.registerService.registerWorker(f.username, f.email, f.password)
-      : this.registerService.registerClient(f.username, f.email, f.password);
-
-    call.subscribe({
-      next: () => {
-        this.registerLoading = false;
-        this.registerSuccess = 'Compte créé ! Vous pouvez maintenant vous connecter.';
-        setTimeout(() => this.switchToLogin(), 1500);
-      },
-      error: (err) => {
-        this.registerLoading = false;
-        this.registerError = err.error ?? 'Erreur lors de l\'inscription.';
-      }
-    });
-  }
 }

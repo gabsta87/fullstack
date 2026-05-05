@@ -5,7 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { AccountService, AccountMe, SettingsUpdate } from '../../services/account.service';
 import { WorkerService } from '../../services/worker.service';
 import { WorkerGalleryDTO, GalleryFilters } from '../../models/worker.model';
-import { WorkerCardComponent } from '../gallery/worker-card/worker-card.component';
+import { WorkerCardComponent } from '../worker-card/worker-card.component';
 import { HeaderComponent } from '../header/header.component';
 import { REGIONS, BODY_TYPES, SERVICES, EYE_COLORS, HAIR_COLORS } from '../../models/worker.model';
 

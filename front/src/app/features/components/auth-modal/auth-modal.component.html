@@ -1,0 +1,60 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ mode === 'login' ? 'Se connecter' : 'Créer un compte' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()"><ion-icon name="close-outline"></ion-icon></ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="auth-form">
+
+    <!-- Role Selector (uniquement pour Register) -->
+    <div class="role-toggle" *ngIf="mode === 'register'">
+      <button type="button" [class.active]="authForm.get('role')?.value === 'client'" (click)="authForm.patchValue({role:'client'})">Client</button>
+      <button type="button" [class.active]="authForm.get('role')?.value === 'worker'" (click)="authForm.patchValue({role:'worker'})">Annonceur</button>
+    </div>
+
+    <div class="field-group">
+      <label>Nom d'utilisateur</label>
+      <input type="text" formControlName="username" placeholder="Votre pseudo" />
+    </div>
+
+    <div class="field-group" *ngIf="mode === 'register'">
+      <label>Email</label>
+      <input type="email" formControlName="email" placeholder="email@exemple.com" />
+    </div>
+
+    <div class="field-group">
+      <label>Mot de passe</label>
+      <input type="password" formControlName="password" placeholder="••••••••" />
+    </div>
+
+    <div class="field-group" *ngIf="mode === 'register'">
+      <label>Confirmer le mot de passe</label>
+      <input type="password" formControlName="confirmPassword" placeholder="••••••••" />
+      <small class="error-text" *ngIf="authForm.hasError('mismatch') && authForm.get('confirmPassword')?.touched">
+        Les mots de passe ne correspondent pas
+      </small>
+    </div>
+
+    <div class="form-feedback error" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+    <ion-button type="submit" expand="block" class="auth-btn" [disabled]="authForm.invalid || isLoading">
+      <ion-spinner *ngIf="isLoading" name="crescent" slot="start"></ion-spinner>
+      {{ mode === 'login' ? 'Se connecter' : "S'inscrire" }}
+    </ion-button>
+
+    <!-- Switches -->
+    <p class="auth-switch" *ngIf="mode === 'login'">
+      Pas encore de compte ? <a (click)="switchMode('register')">S'inscrire</a>
+    </p>
+    <p class="auth-switch" *ngIf="mode === 'register'">
+      Déjà un compte ? <a (click)="switchMode('login')">Se connecter</a>
+    </p>
+    <p class="auth-switch" *ngIf="mode === 'login'">
+      <a (click)="errorMsg = 'Fonctionnalité bientôt disponible'">Mot de passe oublié ?</a>
+    </p>
+  </form>
+</ion-content>

@@ -24,3 +24,13 @@
   --shadow-md:   0 4px 20px rgba(0,0,0,0.08);
   --shadow-lg:   0 12px 48px rgba(0,0,0,0.12);
 }
+
+ion-modal {
+  --border-radius: 16px;
+  --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+}
+
+ion-modal::part(content) {
+  border-radius: 16px;
+  overflow: hidden;
+}

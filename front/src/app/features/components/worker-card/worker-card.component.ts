@@ -4,8 +4,8 @@ import {
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonRippleEffect } from '@ionic/angular/standalone';
-import { WorkerGalleryDTO } from '../../../models/worker.model';
-import { WorkerService } from '../../../services/worker.service';
+import { WorkerGalleryDTO } from '../../models/worker.model';
+import { WorkerService } from '../../services/worker.service';
 
 @Component({
   selector: 'app-worker-card',

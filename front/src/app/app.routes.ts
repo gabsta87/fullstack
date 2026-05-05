@@ -1,10 +1,8 @@
 import { Routes } from '@angular/router';
-import { HomepageComponent } from './features/components/gallery/homepage/homepage.component';
-import { RegisterComponent } from './features/components/register-user/register-user.component';
+import { HomepageComponent } from './features/components/homepage/homepage.component';
 import {NgxPayComponent} from "./features/components/ngx-pay/ngx-pay.component";
 import {ProfileComponent} from "./features/components/profile/profile.component";
 import {detailedProfileResolver} from "./features/resolver/detailed-profile.resolver";
-import {RegisterWorkerComponent} from "./features/components/register-worker/register-worker.component";
 import {LoginComponent} from "./features/components/login/login.component";
 import {AccountComponent} from "./features/components/account/account.component";
 import {authGuard} from "./features/guards/auth.guard";
@@ -17,8 +15,6 @@ export const routes: Routes = [
   { path: 'gallery', component: HomepageComponent, resolve: { workers: galleryResolver } },
 
   { path: 'login',            component: LoginComponent },
-  { path: 'register',         component: RegisterComponent },
-  { path: 'register-worker',  component: RegisterWorkerComponent },
   { path: 'ngx-pay',          component: NgxPayComponent },
   { path: 'account',          component: AccountComponent, canActivate: [authGuard] },
 

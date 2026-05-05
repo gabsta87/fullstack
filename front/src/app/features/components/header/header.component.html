@@ -8,10 +8,10 @@
 
     <ion-buttons slot="end">
       <ng-container *ngIf="!(authService.isAuthenticated$ | async)">
-        <ion-button (click)="loginRequested.emit()" fill="clear" class="nav-link-btn">
+        <ion-button (click)="openAuth('login')" fill="clear" class="nav-link-btn">
           Se connecter
         </ion-button>
-        <ion-button (click)="registerRequested.emit()" fill="solid" class="nav-cta-btn">
+        <ion-button (click)="openAuth('register')" fill="solid" class="nav-cta-btn">
           S'inscrire
         </ion-button>
       </ng-container>

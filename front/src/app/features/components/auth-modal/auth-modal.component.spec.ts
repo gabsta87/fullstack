@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { RegisterWorkerComponent } from './register-worker.component';
+import { AuthModalComponent } from './auth-modal.component';
 
-describe('RegisterWorkerComponent', () => {
-  let component: RegisterWorkerComponent;
-  let fixture: ComponentFixture<RegisterWorkerComponent>;
+describe('AuthModalComponent', () => {
+  let component: AuthModalComponent;
+  let fixture: ComponentFixture<AuthModalComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ RegisterWorkerComponent ],
+      declarations: [ AuthModalComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(RegisterWorkerComponent);
+    fixture = TestBed.createComponent(AuthModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

@@ -1,0 +1,121 @@
+// Variables locales (pour cohérence avec la homepage)
+$background-off: #faf9f7;
+$text-dark: #1a1714;
+$accent-gold: #c8956c;
+$border-color: #e8e4df;
+$gray-text: #a09890;
+
+:host {
+  --background: #{$background-off};
+}
+
+.auth-form {
+  padding: 28px 24px 48px;
+  max-width: 400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.role-toggle {
+  display: flex;
+  background: #f0ece7;
+  border: 1px solid #{$border-color};
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 4px;
+
+  button {
+    flex: 1;
+    padding: 10px;
+    background: transparent;
+    border: none;
+    color: #{$gray-text};
+    font-family: 'Outfit', sans-serif;
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &.active {
+      background: #{$text-dark};
+      color: #{$background-off};
+    }
+  }
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #{$gray-text};
+    font-weight: 600;
+  }
+
+  .error-msg small {
+    font-size: 11px;
+    color: #c0392b;
+    display: block;
+    margin-top: 2px;
+  }
+
+  input {
+    background: #ffffff;
+    border: 1px solid #{$border-color};
+    border-radius: 8px;
+    padding: 11px 14px;
+    color: #{$text-dark};
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &::placeholder { color: #c0b8b0; }
+    &:focus {
+      border-color: #{$accent-gold};
+      box-shadow: 0 0 0 3px rgba(200, 149, 108, 0.12);
+    }
+  }
+}
+
+.form-feedback {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  &.error {
+    background: rgba(192,57,43,0.08);
+    color: #c0392b;
+    border: 1px solid rgba(192,57,43,0.2);
+  }
+}
+
+.auth-btn {
+  --background: #{$text-dark};
+  --background-hover: #a8744c;
+  --border-radius: 8px;
+  --color: #{$background-off};
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 13.5px;
+  margin-top: 4px;
+}
+
+.auth-switch {
+  text-align: center;
+  font-size: 13px;
+  color: #{$gray-text};
+  margin: 0;
+
+  a {
+    color: #{$accent-gold};
+    cursor: pointer;
+    text-decoration: underline;
+    &:hover { color: #{$text-dark}; }
+  }
+}
