@@ -1,11 +1,12 @@
 package com.serv.database.entities;
 
 import com.serv.common.Currency;
+import com.serv.common.TablesNames;
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "payments")
+@Table(name = TablesNames.PAYMENTS)
 @Data
 public class Payment {
 

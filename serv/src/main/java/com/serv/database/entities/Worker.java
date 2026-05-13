@@ -3,6 +3,7 @@ package com.serv.database.entities;
 import com.serv.common.BodyType;
 import com.serv.common.Service;
 import com.serv.common.ServiceListConverter;
+import com.serv.common.TablesNames;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,7 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @DiscriminatorValue("SELLER")
-@Table(name = "sellers")
+@Table(name = TablesNames.WORKERS)
 public class Worker extends VenusUser {
 
     @Embedded

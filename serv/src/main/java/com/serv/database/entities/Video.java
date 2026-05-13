@@ -1,9 +1,12 @@
 package com.serv.database.entities;
 
+import com.serv.common.TablesNames;
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
-@Table(name = "videos", indexes = {
+@Data
+@Table(name = TablesNames.VIDEOS, indexes = {
         @Index(name = "idx_video_worker", columnList = "worker_id")
 })
 public class Video {

@@ -1,5 +1,6 @@
 package com.serv.database.entities;
 
+import com.serv.common.TablesNames;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -7,7 +8,7 @@ import java.util.Date;
 
 @Data
 @Entity
-@Table(name = "comments")
+@Table(name = TablesNames.COMMENTS)
 public class Comment {
     @Id
     @Basic(optional = false)

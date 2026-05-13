@@ -1,5 +1,6 @@
 package com.serv.database.entities;
 
+import com.serv.common.TablesNames;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -15,7 +16,7 @@ import java.util.Collection;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @DiscriminatorValue("CLIENT")
-@Table(name = "clients")
+@Table(name = TablesNames.CLIENTS)
 public class Client extends VenusUser {
 
     @OneToMany

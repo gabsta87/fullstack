@@ -1,5 +1,6 @@
 package com.serv.database.entities;
 
+import com.serv.common.TablesNames;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,7 @@ import java.util.UUID;
 @Data
 @Entity
 @NoArgsConstructor
-@Table(name = "users") // avoiding SQL keywords
+@Table(name = TablesNames.USERS)
 @DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class VenusUser {

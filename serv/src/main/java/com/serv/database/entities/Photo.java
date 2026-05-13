@@ -1,5 +1,6 @@
 package com.serv.database.entities;
 
+import com.serv.common.TablesNames;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -9,7 +10,7 @@ import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "photos", indexes = {
+@Table(name = TablesNames.PHOTOS, indexes = {
         @Index(name = "idx_photo_worker", columnList = "worker_id")
 })
 public class Photo {
