@@ -2,7 +2,6 @@ package com.serv.controller;
 
 import com.serv.database.entities.*;
 import com.serv.common.BodyType;
-import com.serv.common.Service;
 import com.serv.database.repositories.*;
 import com.serv.service.WorkerGalleryService;
 import com.serv.service.MediaStorageService;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/account")
@@ -25,6 +25,7 @@ public class AccountController {
     private final PhotoRepository      photoRepository;
     private final WorkerGalleryService galleryService;
     private final MediaStorageService  mediaStorageService;
+    private final ServiceRepository    serviceRepository;
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
@@ -72,8 +73,7 @@ public class AccountController {
             result.put("height",       w.getHeight());
             result.put("weight",       w.getWeight());
             result.put("description",  w.getDescription());
-            result.put("services",     w.getServices() != null
-                    ? w.getServices().stream().map(Enum::name).toList() : List.of());
+            result.put("services",     w.getServices());
             result.put("mainThumbUrl", w.getMainPhoto() != null
                     ? w.getMainPhoto().getMainThumbUrl() : null);
             result.put("subscriptionDaysLeft", w.getSubscriptionDaysLeft());
@@ -179,8 +179,11 @@ public class AccountController {
         if (req.weight()      != null) worker.setWeight(req.weight());
         if (req.bodyType()    != null) worker.setBodyType(BodyType.valueOf(req.bodyType()));
         if (req.services()    != null) {
-            List<Service> svcs = req.services().stream().map(Service::valueOf).toList();
-            worker.setServices(svcs);
+            worker.setServices(req.services().stream()
+                    .map(serviceRepository::findByName)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toList()));
         }
 
         workerRepository.save(worker);

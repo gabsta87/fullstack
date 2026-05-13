@@ -1,5 +1,7 @@
 package com.serv.controller;
 
+import com.serv.database.entities.Service;
+import com.serv.database.repositories.ServiceRepository;
 import com.serv.dto.WorkerGalleryDTO;
 import com.serv.dto.WorkerProfileDTO;
 import com.serv.database.repositories.WorkerRepository;
@@ -13,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Worker-facing read endpoints.
@@ -26,6 +29,8 @@ import java.util.UUID;
 public class WorkerController {
     @Autowired private WorkerRepository    workerRepository;
     @Autowired private WorkerGalleryService galleryService;
+    @Autowired
+    private ServiceRepository serviceRepository;
 
     @GetMapping
     public ResponseEntity<List<WorkerGalleryDTO>> getGallery(
@@ -52,4 +57,12 @@ public class WorkerController {
                 .map(w -> ResponseEntity.ok(WorkerProfileDTO.from(w)))
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/services")
+    public ResponseEntity<List<String>> getWorkerServices() {
+        return ResponseEntity.ok(serviceRepository.findAll().stream()
+                .map(Service::getName)
+                .collect(Collectors.toList()));
+    }
+
 }

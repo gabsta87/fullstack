@@ -1,7 +1,7 @@
 package com.serv.dto;
 
 import com.serv.common.BodyType;
-import com.serv.common.Service;
+import com.serv.database.entities.Service;
 import lombok.Getter;
 import lombok.Setter;
 

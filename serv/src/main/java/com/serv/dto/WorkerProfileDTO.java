@@ -1,5 +1,6 @@
 package com.serv.dto;
 
+import com.serv.database.entities.Service;
 import com.serv.database.entities.Worker;
 
 import java.time.LocalDate;
@@ -17,7 +18,7 @@ public record WorkerProfileDTO(
         String       bodyType,
         int          height,
         int          weight,
-        List<String> services,
+        List<Service> services,
         boolean      available,
         String       responseTime,
         String       phone,
@@ -47,7 +48,7 @@ public record WorkerProfileDTO(
                 w.getBodyType() != null ? w.getBodyType().name() : null,
                 w.getHeight(),
                 w.getWeight(),
-                w.getServices().stream().map(Enum::name).toList(),
+                w.getServices(),
                 w.isAvailable(),
                 "< 30 min",   // TODO: real response time
                 "",           // TODO: expose phone only to logged-in users

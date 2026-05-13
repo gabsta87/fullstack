@@ -1,8 +1,6 @@
 package com.serv.database.entities;
 
 import com.serv.common.BodyType;
-import com.serv.common.Service;
-import com.serv.common.ServiceListConverter;
 import com.serv.common.TablesNames;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -38,8 +36,12 @@ public class Worker extends VenusUser {
 
     private int priority;
 
-    @Convert(converter = ServiceListConverter.class)
-    @Column(name = "services", length = 64)
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(
+            name = "workers_services",
+            joinColumns = { @JoinColumn(name = "worker_id") },
+            inverseJoinColumns = { @JoinColumn(name = "service_id") }
+    )
     private List<Service> services = new ArrayList<>();
 
     private boolean expired;

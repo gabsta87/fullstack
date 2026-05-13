@@ -1,13 +1,10 @@
 package com.serv.configuration;
 
-import com.serv.database.entities.Photo;
-import com.serv.database.entities.Worker;
+import com.serv.database.entities.*;
 import com.serv.common.BodyType;
-import com.serv.common.Service;
 import com.serv.database.repositories.PhotoRepository;
 import com.serv.database.repositories.WorkerRepository;
-import com.serv.database.entities.Email;
-import com.serv.database.entities.PhysicalAddress;
+import com.serv.database.repositories.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
@@ -15,11 +12,11 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -34,6 +31,7 @@ import java.util.List;
 @Profile("dev")
 public class TestDataInitializer implements ApplicationRunner {
 
+    @Autowired private ServiceRepository serviceRepository;
     @Autowired private WorkerRepository  workerRepository;
     @Autowired private PhotoRepository   photoRepository;
     @Autowired private PasswordEncoder   passwordEncoder;
@@ -45,10 +43,25 @@ public class TestDataInitializer implements ApplicationRunner {
     @Override
 //    @Transactional
     public void run(ApplicationArguments args) {
+        Service firstService, secondService;
+
+        if(serviceRepository.findAll().isEmpty()) {
+            System.out.println("[TestDataInitializer] Inserting test services...");
+            serviceRepository.save(new Service("Inter"));
+            serviceRepository.save(new Service("No_Sex"));
+            serviceRepository.save(new Service("Fetish"));
+            serviceRepository.save(new Service("BDSM"));
+        }else{
+            System.out.println("[TestDataInitializer] Data (Services) already present — skipping.");
+        }
+
+        firstService = serviceRepository.findAll().getFirst();
+        secondService = serviceRepository.findAll().get(1);
+
 
         // Guard — do nothing if data already exists
         if (!workerRepository.findAll().isEmpty()) {
-            System.out.println("[TestDataInitializer] Data already present — skipping.");
+            System.out.println("[TestDataInitializer] Data (Workers) already present — skipping.");
             return;
         }
 
@@ -58,45 +71,50 @@ public class TestDataInitializer implements ApplicationRunner {
                 "amelie",   "amelie@test.com",   "Amélie",   26,
                 date(1998, 3, 12), "Paris 8e",     "Paris",
                 BodyType.ATHLETIC, 168, 56,
-                List.of(Service.INTER), true,
+                true,
                 Instant.now(),
-                "amelie_main.jpg", List.of("amelie_1.jpg", "amelie_2.jpg", "amelie_3.jpg")
+                "amelie_main.jpg", List.of("amelie_1.jpg", "amelie_2.jpg", "amelie_3.jpg"),
+                firstService, secondService
         );
 
         createWorker(
                 "sofia",    "sofia@test.com",    "Sofia",    23,
                 date(2001, 7, 4),  "Lyon 2e",      "Lyon",
                 BodyType.SLIM,     172, 53,
-                List.of(Service.NO_S, Service.INTER), true,
+                true,
                 Instant.now().minusSeconds(3600),
-                "sofia_main.jpg",  List.of("sofia_1.jpg", "sofia_2.jpg")
+                "sofia_main.jpg",  List.of("sofia_1.jpg", "sofia_2.jpg"),
+                firstService
         );
 
         createWorker(
                 "lea",      "lea@test.com",      "Léa",      29,
                 date(1995, 11, 20),"Paris 11e",   "Paris",
                 BodyType.AVERAGE,  165, 60,
-                List.of(Service.NO_S), true,
+                true,
                 Instant.now().minusSeconds(7200),
-                "lea_main.jpg",    List.of("lea_1.jpg")
+                "lea_main.jpg",    List.of("lea_1.jpg"),
+                firstService
         );
 
         createWorker(
                 "camille",  "camille@test.com",  "Camille",  25,
                 date(1999, 5, 8),  "Bordeaux",    "Bordeaux",
                 BodyType.CURVY,    162, 65,
-                List.of(Service.INTER), true,
+                 true,
                 Instant.now().minusSeconds(10800),
-                "camille_main.jpg",List.of("camille_1.jpg", "camille_2.jpg")
+                "camille_main.jpg",List.of("camille_1.jpg", "camille_2.jpg"),
+                firstService
         );
 
         createWorker(
                 "ines",     "ines@test.com",     "Inès",     31,
                 date(1993, 9, 15), "Marseille",   "Marseille",
                 BodyType.SLIM,     170, 54,
-                List.of(Service.NO_S, Service.INTER), true,
+                 true,
                 Instant.now().minusSeconds(14400),
-                null, List.of()   // no photos yet — tests placeholder rendering
+                null, List.of(),   // no photos yet — tests placeholder rendering
+                secondService
         );
 
         // Unavailable workers (to test the "offline" section)
@@ -104,33 +122,56 @@ public class TestDataInitializer implements ApplicationRunner {
                 "zoe",      "zoe@test.com",      "Zoé",      24,
                 date(2000, 2, 28), "Nice",        "Nice",
                 BodyType.ATHLETIC, 169, 57,
-                List.of(Service.NO_S), false,
+                false,
                 Instant.now().minusSeconds(86400),
-                "zoe_main.jpg",    List.of("zoe_1.jpg")
+                "zoe_main.jpg",    List.of("zoe_1.jpg"),
+                firstService
         );
 
         createWorker(
                 "manon",    "manon@test.com",    "Manon",    27,
                 date(1997, 6, 3),  "Toulouse",    "Toulouse",
                 BodyType.AVERAGE,  164, 59,
-                List.of(Service.INTER), false,
+                false,
                 Instant.now().minusSeconds(172800),
-                null, List.of()
+                null, List.of(),
+                firstService
         );
 
         System.out.println("[TestDataInitializer] Done — " +
                 workerRepository.findAll().size() + " workers inserted.");
+
+        // Guard — do nothing if data already exists
+        if (!serviceRepository.findAll().isEmpty()) {
+            System.out.println("[TestDataInitializer] Services already present — skipping.");
+            return;
+        }
+
+        System.out.println("[TestDataInitializer] Inserting test workers...");
+
+        createWorkerService("Inter");
+        createWorkerService("No S");
+        createWorkerService("Fetish");
+
+        System.out.println("[TestDataInitializer] Done — " +
+                serviceRepository.findAll().size() + " workers services inserted.");
+
     }
 
     // ── Helper ────────────────────────────────────────────────────────────────
+
+    private void createWorkerService(String name){
+        Service s = new Service(name);
+        serviceRepository.save(s);
+    }
 
     private void createWorker(
             String username, String email, String displayName, int age,
             Date birthday, String location, String region,
             BodyType bodyType, int height, int weight,
-            List<Service> services, boolean available,
+            boolean available,
             Instant lastRefreshed,
-            String mainPhotoFile, List<String> extraPhotoFiles) {
+            String mainPhotoFile, List<String> extraPhotoFiles,Service... services) {
 
         Worker w = new Worker(
                 username,
@@ -146,7 +187,7 @@ public class TestDataInitializer implements ApplicationRunner {
         w.setHeight(height);
         w.setWeight(weight);
         w.setBirthday(birthday);
-        w.setServices(services);
+        w.setServices(Arrays.asList(services));
         w.setPriority(0);
         w.setExpired(false);
 
