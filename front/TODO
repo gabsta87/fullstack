@@ -1,7 +1,8 @@
 Account management for workers
+  observable on worker profile, modifications are direct to the database
 photos/videos management for workers
 payment system for workers (pay for a year subscription, monthly...)
-workers can updated their profile by paying a small fee (to be in the top of the list)
+workers can refresh(to be in the top of the list) their profile by paying a small fee
 
 certification about worker's photos (ask for a photo with phrase, object, pose and check if the other pictures are similar. might use a neural network if possible. Otherwise, create admin accounts to check the photos)
 
@@ -12,3 +13,6 @@ create admin accounts for collaborators
 
 When the homepage is loaded, the workers' profiles are loaded by priority. When a profile updates his priority, show a small notification to the user if he wants to reload the page.
 
+Advertising
+  clients can pay small fee to remove ads (2 chf per month)
+  workers can pay small fee to remove ads (2 chf per month)
