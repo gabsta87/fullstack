@@ -33,7 +33,7 @@ public class WorkerGalleryDTO {
     private String region;
     private BodyType bodyType;
     private int    height;
-    private List<Service> services;
+    private List<String> services;
     private boolean available;
     private Instant lastRefreshed;
 
@@ -54,7 +54,7 @@ public class WorkerGalleryDTO {
             UUID id, String name, Date birthday,
             String location, String region,
             BodyType bodyType, int height,
-            List<Service> services, boolean available,
+            List<String> services, boolean available,
             Instant lastRefreshed,
             String mainThumbUrl, List<String> previewThumbUrls) {
         this.id               = id;

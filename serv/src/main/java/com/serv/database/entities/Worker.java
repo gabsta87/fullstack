@@ -36,8 +36,7 @@ public class Worker extends VenusUser {
 
     private int priority;
 
-    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinTable(
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})    @JoinTable(
             name = "workers_services",
             joinColumns = { @JoinColumn(name = "worker_id") },
             inverseJoinColumns = { @JoinColumn(name = "service_id") }

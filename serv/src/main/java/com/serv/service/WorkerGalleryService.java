@@ -86,7 +86,7 @@ public class WorkerGalleryService {
                 w.getRegion(),
                 w.getBodyType(),
                 w.getHeight(),
-                w.getServices(),
+                w.getServices().stream().map(s -> s.getName()).toList(),
                 w.isAvailable(),
                 w.getLastRefreshed(),
                 mainThumbs.getOrDefault(w.getId(), null),
@@ -127,6 +127,10 @@ public class WorkerGalleryService {
                 .limit(MAX_PREVIEW_THUMBS)
                 .toList();
 
+        List<String> serviceNames = w.getServices().stream()
+                .map(s -> s.getName()) // Remplacez par le nom de l'attribut dans Service.java
+                .toList();
+
         return new WorkerGalleryDTO(
                 w.getId(),
                 w.getUsername(),
@@ -135,7 +139,7 @@ public class WorkerGalleryService {
                 w.getRegion(),
                 w.getBodyType(),
                 w.getHeight(),
-                w.getServices(),
+                serviceNames,
                 w.isAvailable(),
                 w.getLastRefreshed(),
                 mainThumbUrl,
