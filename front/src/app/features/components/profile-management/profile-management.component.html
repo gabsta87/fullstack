@@ -4,43 +4,95 @@
 
   <div class="pm-wrapper" *ngIf="me">
 
-    <div class="pm-hero-banner">
-      <div class="avatar-wrapper">
-        <img [src]="me.mainThumbUrl || 'assets/default-avatar.png'" class="profile-pic">
-      </div>
-      <div class="profile-title">
-        <h1>{{ me.username }}</h1>
-        <p class="status">{{ me.available ? '● En ligne' : '○ Hors ligne' }}</p>
-      </div>
-    </div>
-
-    <div class="pm-tabs-nav">
-      <div class="tab-item" [class.active]="activeTab === 'profile'" (click)="activeTab = 'profile'">Profil</div>
-      <div class="tab-item" [class.active]="activeTab === 'photos'" (click)="activeTab = 'photos'">Photos</div>
-    </div>
-
-    <div class="pm-card">
-      <div *ngIf="activeTab === 'profile'" class="fade-in">
-        <div class="input-group">
-          <label>Silhouette</label>
-          <select [(ngModel)]="profileForm.bodyType">
-            <option *ngFor="let type of bodyTypeOptions">
-              {{ type }}
-            </option>
-          </select>
-        </div>
-
-        <div class="input-group">
-          <label>Services proposés (depuis DB)</label>
-          <div class="services-grid">
-            <div *ngFor="let s of allServices | async" class="service-chip">
-              <input type="checkbox" [id]="s" [value]="s">
-              <label [for]="s">{{ s }}</label>
-            </div>
+    <ion-grid class="pm-hero-grid ion-no-padding">
+      <ion-row class="ion-align-items-center">
+        <ion-col size="12" size-md="auto" class="ion-text-center">
+          <div class="avatar-wrapper">
+            <ion-avatar>
+              <img [src]="me.mainThumbUrl || 'assets/default-avatar.png'" />
+            </ion-avatar>
+            <ion-fab-button size="small" class="edit-photo-btn">
+              <ion-icon name="camera"></ion-icon>
+            </ion-fab-button>
           </div>
+        </ion-col>
+        <ion-col size="12" size-md="" class="ion-text-center ion-text-md-start">
+          <div class="profile-title">
+            <h1>{{ me.username }}</h1>
+            <ion-button [color]="me.available ? 'success' : 'medium'" class="status-badge">
+              {{ me.available ? 'En ligne' : 'Hors ligne' }}
+            </ion-button>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <ion-segment [(ngModel)]="activeTab" mode="md" class="pm-segment">
+      <ion-segment-button value="profile">
+        <ion-button>Profil</ion-button>
+      </ion-segment-button>
+      <ion-segment-button value="photos">
+        <ion-button>Photos</ion-button>
+      </ion-segment-button>
+      <ion-segment-button value="settings">
+        <ion-button>Compte</ion-button>
+      </ion-segment-button>
+    </ion-segment>
+
+    <ion-card class="pm-card ion-no-margin">
+      <ion-card-content>
+
+        <div *ngIf="activeTab === 'profile'" class="fade-in">
+          <ion-grid class="ion-no-padding">
+            <ion-row>
+              <ion-col size="12" size-md="6">
+                <ion-item lines="none" class="venus-input">
+                  <ion-label position="stacked">Silhouette</ion-label>
+                  <ion-select label="Silhouette" label-placement="stacked" interface="popover" [(ngModel)]="profileForm.bodyType" placeholder="Choisir...">
+                    <ion-select-option *ngFor="let type of bodyTypesList" [value]="type">
+                      {{ bodyTypeLabels[type] }}
+                    </ion-select-option>
+                  </ion-select>
+                </ion-item>
+              </ion-col>
+
+              <ion-col size="12" size-md="6">
+                <ion-item lines="none" class="venus-input">
+                  <ion-label position="stacked">Localisation</ion-label>
+                  <ion-input type="text" [(ngModel)]="profileForm.location" placeholder="Ex: Paris 8e"></ion-input>
+                </ion-item>
+              </ion-col>
+
+              <ion-col size="12">
+                <div class="services-container">
+                  <ion-list-header class="ion-no-padding">
+                    <ion-label>Services proposés</ion-label>
+                  </ion-list-header>
+                  <div class="services-flex">
+                    <ion-chip *ngFor="let s of allServices"
+                              [outline]="!selectionStates.services[s]"
+                              [color]="selectionStates.services[s] ? 'dark' : 'medium'"
+                              (click)="selectionStates.services[s] = !selectionStates.services[s]">
+                      <ion-label>{{ s }}</ion-label>
+                      <ion-icon name="checkmark-circle" *ngIf="selectionStates.services[s]"></ion-icon>
+                    </ion-chip>
+                  </div>
+                </div>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+
+          <ion-button expand="block" class="save-btn ion-margin-top" (click)="saveProfile()">
+            Enregistrer les modifications
+          </ion-button>
         </div>
-      </div>
-    </div>
+
+        <div *ngIf="activeTab === 'photos'" class="fade-in">
+          <p class="ion-text-center">Gestion des photos à venir...</p>
+        </div>
+
+      </ion-card-content>
+    </ion-card>
 
   </div>
 </ion-content>
