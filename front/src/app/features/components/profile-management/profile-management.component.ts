@@ -3,6 +3,10 @@ import { AccountService, AccountMe, WorkerProfileUpdate } from '../../services/a
 import {CommonModule} from "@angular/common";
 import {IonicModule} from "@ionic/angular";
 import {FormsModule} from "@angular/forms";
+import {HeaderComponent} from "../header/header.component";
+import {WorkerService} from "../../services/worker.service";
+import {Observable} from "rxjs";
+import {BodyType} from "../../models/worker.model";
 
 export interface PhotoItem {
   id: string;
@@ -12,16 +16,10 @@ export interface PhotoItem {
   isMain?: boolean;
 }
 
-const ALL_SERVICES = [
-  'GFE', 'BDSM', 'MASSAGE', 'DOMINATION', 'FETISH',
-  'ROLEPLAY', 'COUPLE', 'ESCORT', 'STRIP', 'OVERNIGHT'
-];
-
-const BODY_TYPES = ['SLIM', 'ATHLETIC', 'AVERAGE', 'CURVY', 'PLUS'];
 
 @Component({
   selector: 'app-profile-management',
-  imports: [CommonModule, FormsModule, IonicModule],
+  imports: [CommonModule, FormsModule, IonicModule, HeaderComponent],
   templateUrl: './profile-management.component.html',
   styleUrls: ['./profile-management.component.scss'],
   standalone: true
@@ -34,8 +32,7 @@ export class ProfileManagementComponent implements OnInit {
   // Profile form
   profileForm: WorkerProfileUpdate = {};
   selectedServices: string[] = [];
-  allServices = ALL_SERVICES;
-  bodyTypes = BODY_TYPES;
+  allServices : Observable<string[]>;
   profileSaved = false;
   profileError = '';
   savingProfile = false;
@@ -58,8 +55,11 @@ export class ProfileManagementComponent implements OnInit {
   savingSettings = false;
 
   loading = true;
+  public bodyTypeOptions: BodyType[] = ['SLIM', 'ATHLETIC', 'AVERAGE', 'CURVY', 'ROUND'];
 
-  constructor(private accountService: AccountService) {}
+  constructor(private accountService: AccountService, private workerService: WorkerService) {
+    this.allServices = this.workerService.getWorkersServices();
+  }
 
   ngOnInit(): void {
     this.accountService.getMe().subscribe({

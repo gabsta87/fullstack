@@ -1,8 +1,17 @@
 // src/app/features/models/worker.model.ts
 
 export const REGIONS = ['Paris','Lyon','Marseille','Bordeaux','Toulouse','Nice','Nantes','Strasbourg'] as const;
-export const BODY_TYPES = ['Mince','Athlétique','Normale','Pulpeuse','Ronde'] as const;
-export const SERVICES = ['Standard','Premium'] as const;
+// Reflet exact de tes Enums Java
+export type BodyType = 'SLIM' | 'ATHLETIC' | 'AVERAGE' | 'CURVY' | 'ROUND';
+export type EyeColor = 'BROWN' | 'HAZEL' | 'GREEN' | 'BLUE' | 'GREY';
+export type HairColor = 'BLACK' | 'BROWN' | 'FAIR' | 'GINGER' | 'BLOND' | 'GREY' | 'COLORED';
+
+// Labels pour l'affichage (UI)
+export const BODY_TYPE_LABELS: Record<string, string> = {
+  SLIM: 'Mince', ATHLETIC: 'Athlétique', AVERAGE: 'Normale', CURVY: 'Pulpeuse', ROUND: 'Ronde'
+};
+// Tableau pour les itérations (Object.keys transforme l'objet en tableau de strings)
+export const BODY_TYPES_LIST = Object.keys(BODY_TYPE_LABELS);
 
 export interface ColorOption {
   label: string;
@@ -10,15 +19,16 @@ export interface ColorOption {
 }
 
 export const EYE_COLORS: ColorOption[] = [
-  { label: 'Marron',   hex: '#6b3d2e' }, { label: 'Noisette', hex: '#9b6a3a' },
-  { label: 'Vert',     hex: '#4a7c59' }, { label: 'Bleu',     hex: '#4a7aaf' },
-  { label: 'Gris',     hex: '#8a9aaa' },
+  { label: 'Brown',   hex: '#6b3d2e' }, { label: 'Hazel', hex: '#9b6a3a' },
+  { label: 'Green',     hex: '#4a7c59' }, { label: 'Blue',     hex: '#4a7aaf' },
+  { label: 'Grey',     hex: '#8a9aaa' },
 ];
 
 export const HAIR_COLORS: ColorOption[] = [
-  { label: 'Noir',    hex: '#1a1410' }, { label: 'Brun',    hex: '#5c3d2e' },
-  { label: 'Châtain', hex: '#8b5e3c' }, { label: 'Blond',   hex: '#d4a847' },
-  { label: 'Roux',    hex: '#c04a1a' },
+  { label: 'Black',    hex: '#1a1410' }, { label: 'Brown',    hex: '#5c3d2e' },
+  { label: 'Fair', hex: '#8b5e3c' }, { label: 'Blond',   hex: '#d4a847' },
+  { label: 'Ginger',    hex: '#c04a1a' }, { label : 'Colored',   hex: '#8a9aaa' },
+  { label: 'White',   hex: '#ffffff' }, { label : "Silver", hex: '#999999'},
 ];
 
 // --- Interfaces existantes ---
@@ -42,7 +52,7 @@ export interface WorkerGalleryDTO {
 export interface WorkerProfile extends WorkerGalleryDTO {
   eyeColor: string;
   hairColor: string;
-  serviceList: ServiceItem[];
+  serviceList: string[];
   responseTime: string;
   phone: string;
   rating: number;
@@ -54,7 +64,6 @@ export interface WorkerProfile extends WorkerGalleryDTO {
   reviews: Review[];
 }
 
-export interface ServiceItem  { name: string; price: string; }
 export interface PhotoItem    { id: string; originalUrl: string; mainThumbUrl: string; previewThumbUrl: string; }
 export interface VideoItem    { id: string; url: string; duration?: string; }
 export interface Review       { author: string; authorInitial: string; rating: number; date: string; text: string; }
@@ -63,7 +72,7 @@ export interface Review       { author: string; authorInitial: string; rating: n
 
 export interface GalleryFilters {
   region?: string;
-  bodyType?: string[]; // Changé en tableau pour correspondre à la logique de sélection multiple
+  bodyType?: string[];
   services?: string[];
   eyeColor?: string;
   hairColor?: string;

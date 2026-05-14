@@ -1,13 +1,19 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
-import { AccountService, AccountMe, SettingsUpdate } from '../../services/account.service';
-import { WorkerService } from '../../services/worker.service';
-import { WorkerGalleryDTO, GalleryFilters } from '../../models/worker.model';
-import { WorkerCardComponent } from '../worker-card/worker-card.component';
-import { HeaderComponent } from '../header/header.component';
-import { REGIONS, BODY_TYPES, SERVICES, EYE_COLORS, HAIR_COLORS } from '../../models/worker.model';
+import {Component, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {IonicModule} from '@ionic/angular';
+import {AccountMe, AccountService, SettingsUpdate} from '../../services/account.service';
+import {WorkerService} from '../../services/worker.service';
+import {
+  BODY_TYPE_LABELS,
+  BODY_TYPES_LIST,
+  GalleryFilters,
+  REGIONS,
+  WorkerGalleryDTO
+} from '../../models/worker.model';
+import {WorkerCardComponent} from '../worker-card/worker-card.component';
+import {HeaderComponent} from '../header/header.component';
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-account',
@@ -21,8 +27,9 @@ export class AccountComponent implements OnInit {
   activeTab: 'feed' | 'favorites' | 'settings' = 'favorites';
 
   readonly regions = REGIONS;
-  readonly bodyTypes = BODY_TYPES;
-  readonly availableServices = SERVICES;
+  readonly bodyTypesList = BODY_TYPES_LIST;
+  readonly bodyTypeLabels = BODY_TYPE_LABELS;
+  readonly availableServices:Observable<string[]>;
 
   selectionStates = {
     bodyType: {} as Record<string, boolean>,
@@ -41,8 +48,10 @@ export class AccountComponent implements OnInit {
 
   constructor(
     private accountService: AccountService,
-    private workerService: WorkerService
-  ) {}
+    private workerService: WorkerService,
+  ) {
+    this.availableServices = this.workerService.getWorkersServices();
+  }
 
   ngOnInit() {
     this.loadData();

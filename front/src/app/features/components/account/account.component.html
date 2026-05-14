@@ -46,9 +46,9 @@
           <div class="field">
             <label>Silhouette préférée</label>
             <div class="checkbox-group">
-              <div *ngFor="let b of bodyTypes">
-                <input type="checkbox" [id]="'pref-'+b" [(ngModel)]="selectionStates.bodyType[b]">
-                <label [for]="'pref-'+b">{{b}}</label>
+              <div *ngFor="let b of bodyTypesList" class="filter-chip">
+                <input type="checkbox" [id]="b" [(ngModel)]="selectionStates.bodyType[b]" />
+                <label [for]="b">{{ bodyTypeLabels[b] || b }}</label>
               </div>
             </div>
           </div>

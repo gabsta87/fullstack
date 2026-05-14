@@ -17,14 +17,14 @@ import {WorkerCardComponent} from '../worker-card/worker-card.component';
 import {AuthService} from "../../services/auth.service";
 import {HeaderComponent} from '../header/header.component';
 import {
-  BODY_TYPES,
+  BODY_TYPES_LIST, BodyType,
   EYE_COLORS,
   GalleryFilters,
   HAIR_COLORS,
   REGIONS,
-  SERVICES,
   WorkerGalleryDTO
 } from '../../models/worker.model';
+import {map} from "rxjs";
 
 @Component({
   selector: 'app-homepage',
@@ -42,19 +42,20 @@ export class HomepageComponent implements OnInit {
 
   @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
 
+  readonly bodyTypesList = BODY_TYPES_LIST;
   readonly regions    = REGIONS;
-  readonly bodyTypes  = BODY_TYPES;
-  readonly workersProvidedServices   = SERVICES;
   readonly eyeColors  = EYE_COLORS;
   readonly hairColors = HAIR_COLORS;
 
-  selectionStates = {
-    bodyType: {} as Record<string, boolean>,
-    services: {} as Record<string, boolean>
-  };
+  selectionStates: {
+    bodyType: Record<string, boolean>;
+    services: Record<string, boolean>;
+  } = { bodyType: {}, services: {} };
 
+  allWorkers :        WorkerGalleryDTO[] = [];
   availableWorkers:   WorkerGalleryDTO[] = [];
   unavailableWorkers: WorkerGalleryDTO[] = [];
+  allServices: string[] = [];
 
   currentPage = 1; // page 0 already loaded by resolver
   isLoading   = false;
@@ -78,22 +79,40 @@ export class HomepageComponent implements OnInit {
     public authService: AuthService,
   ) {
     addIcons({ optionsOutline, closeOutline, locationOutline });
-
-    // Initialisation propre des états de cases à cocher
-    this.bodyTypes.forEach(b => this.selectionStates.bodyType[b] = false);
-    this.workersProvidedServices.forEach(s => this.selectionStates.services[s] = false);
   }
 
   ngOnInit(): void {
     this.authService.checkSession().subscribe();
-    const resolved: WorkerGalleryDTO[] = this.route.snapshot.data['workers'] ?? [];
-    this.splitAndAppend(resolved);
+    this.route.data.subscribe((data) => {
+      this.allWorkers = data['workers'] || [];
+      this.allServices = data['allServices'] || [];
+
+      // 2. Initialisation dynamique des états des filtres
+      this.initFilterStates();
+    });
+    this.splitAndAppend(this.allWorkers);
   }
 
   // ── Data loading ───────────────────────────────────────────────────────────
 
+  private initFilterStates() {
+    // Initialisation des BodyTypes (toujours présents via ton modèle)
+    this.bodyTypesList.forEach(b => {
+      if (this.selectionStates.bodyType[b] === undefined) {
+        this.selectionStates.bodyType[b] = false;
+      }
+    });
+
+    // Initialisation des Services chargés dynamiquement
+    this.allServices.forEach(s => {
+      if (this.selectionStates.services[s] === undefined) {
+        this.selectionStates.services[s] = false;
+      }
+    });
+  }
+
   /** Called by infinite scroll and pull-to-refresh for pages > 0 */
-  private loadPage(reset: boolean): void {
+  private loadPage(reset: boolean = false): void {
     if (this.isLoading) return;
     if (reset) {
       this.currentPage        = 0;
@@ -171,8 +190,8 @@ export class HomepageComponent implements OnInit {
   clearFilters(): void {
     this.filters = {};
     // Reset selection UI
-    this.bodyTypes.forEach(b => this.selectionStates.bodyType[b] = false);
-    this.workersProvidedServices.forEach(s => this.selectionStates.services[s] = false);
+    this.bodyTypesList.forEach(b => this.selectionStates.bodyType[b] = false);
+    this.allServices.forEach(s => this.selectionStates.services[s] = false);
     // Reset temp fields
     this.tempFilters = { region: undefined, eyeColor: undefined, hairColor: undefined };
     this.loadPage(true);

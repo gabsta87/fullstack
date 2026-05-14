@@ -1,270 +1,46 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Gestion du profil</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-header></app-header>
 
-<ion-content class="pm-content">
+<ion-content class="pm-main-container">
 
-  <!-- Loading -->
-  <div class="loading-overlay" *ngIf="loading">
-    <ion-spinner name="crescent"></ion-spinner>
-  </div>
+  <div class="pm-wrapper" *ngIf="me">
 
-  <ng-container *ngIf="!loading && me">
-
-    <!-- Hero bar -->
-    <div class="pm-hero">
-      <div class="pm-avatar" [style.backgroundImage]="me.mainThumbUrl ? 'url(' + me.mainThumbUrl + ')' : ''">
-        <span class="pm-avatar-initial" *ngIf="!me.mainThumbUrl">{{ me.username[0] | uppercase }}</span>
+    <div class="pm-hero-banner">
+      <div class="avatar-wrapper">
+        <img [src]="me.mainThumbUrl || 'assets/default-avatar.png'" class="profile-pic">
       </div>
-      <div class="pm-hero-info">
+      <div class="profile-title">
         <h1>{{ me.username }}</h1>
-        <span class="pm-location" *ngIf="me.location">{{ me.location }}</span>
-      </div>
-
-      <!-- Availability toggle -->
-      <div class="availability-toggle" (click)="toggleAvailability()">
-        <div class="avail-dot" [class.online]="me.available" [class.spinning]="togglingAvailability"></div>
-        <span class="avail-label">{{ me.available ? 'En ligne' : 'Hors ligne' }}</span>
+        <p class="status">{{ me.available ? '● En ligne' : '○ Hors ligne' }}</p>
       </div>
     </div>
 
-    <!-- Subscription banner -->
-    <div class="subscription-banner" [class]="'sub-' + subscriptionColor">
-      <ion-icon [name]="subscriptionDaysLeft <= 0 ? 'warning-outline' : 'time-outline'"></ion-icon>
-      <span>{{ subscriptionLabel }}</span>
-      <button class="sub-action-btn" (click)="setTab('subscription')">
-        {{ subscriptionDaysLeft <= 0 ? 'Renouveler' : 'Gérer' }}
-      </button>
+    <div class="pm-tabs-nav">
+      <div class="tab-item" [class.active]="activeTab === 'profile'" (click)="activeTab = 'profile'">Profil</div>
+      <div class="tab-item" [class.active]="activeTab === 'photos'" (click)="activeTab = 'photos'">Photos</div>
     </div>
 
-    <!-- Tab bar -->
-    <div class="tab-bar">
-      <button class="tab-btn" [class.active]="activeTab === 'profile'"      (click)="setTab('profile')">
-        <ion-icon name="person-outline"></ion-icon> Profil
-      </button>
-      <button class="tab-btn" [class.active]="activeTab === 'photos'"       (click)="setTab('photos')">
-        <ion-icon name="images-outline"></ion-icon> Photos
-      </button>
-      <button class="tab-btn" [class.active]="activeTab === 'subscription'" (click)="setTab('subscription')">
-        <ion-icon name="card-outline"></ion-icon> Abonnement
-      </button>
-      <button class="tab-btn" [class.active]="activeTab === 'settings'"     (click)="setTab('settings')">
-        <ion-icon name="settings-outline"></ion-icon> Compte
-      </button>
-    </div>
-
-    <!-- ── PROFILE TAB ──────────────────────────────────────────────────── -->
-    <div class="tab-content" *ngIf="activeTab === 'profile'">
-
-      <div class="form-section">
-        <h2 class="section-title">Présentation</h2>
-        <div class="field-group">
-          <label>Bio / Description</label>
-          <textarea [(ngModel)]="profileForm.description" rows="5"
-                    placeholder="Décrivez-vous en quelques mots…"></textarea>
+    <div class="pm-card">
+      <div *ngIf="activeTab === 'profile'" class="fade-in">
+        <div class="input-group">
+          <label>Silhouette</label>
+          <select [(ngModel)]="profileForm.bodyType">
+            <option *ngFor="let type of bodyTypeOptions">
+              {{ type }}
+            </option>
+          </select>
         </div>
-      </div>
 
-      <div class="form-section">
-        <h2 class="section-title">Localisation</h2>
-        <div class="field-row">
-          <div class="field-group">
-            <label>Région</label>
-            <input type="text" [(ngModel)]="profileForm.region" placeholder="Ex: Île-de-France" />
-          </div>
-          <div class="field-group">
-            <label>Ville / Quartier</label>
-            <input type="text" [(ngModel)]="profileForm.location" placeholder="Ex: Paris 8e" />
-          </div>
-        </div>
-      </div>
-
-      <div class="form-section">
-        <h2 class="section-title">Physique</h2>
-        <div class="field-row">
-          <div class="field-group">
-            <label>Taille (cm)</label>
-            <input type="number" [(ngModel)]="profileForm.height" placeholder="170" />
-          </div>
-          <div class="field-group">
-            <label>Poids (kg)</label>
-            <input type="number" [(ngModel)]="profileForm.weight" placeholder="60" />
-          </div>
-        </div>
-        <div class="field-group">
-          <label>Morphologie</label>
-          <div class="chip-group">
-            <button class="chip"
-                    *ngFor="let bt of bodyTypes"
-                    [class.selected]="profileForm.bodyType === bt"
-                    (click)="profileForm.bodyType = bt">
-              {{ bt }}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-section">
-        <h2 class="section-title">Services proposés</h2>
-        <div class="chip-group">
-          <button class="chip"
-                  *ngFor="let svc of allServices"
-                  [class.selected]="isServiceSelected(svc)"
-                  (click)="toggleService(svc)">
-            {{ svc }}
-          </button>
-        </div>
-      </div>
-
-      <div class="form-feedback error"   *ngIf="profileError">{{ profileError }}</div>
-      <div class="form-feedback success" *ngIf="profileSaved">Profil mis à jour ✓</div>
-
-      <ion-button expand="block" class="save-btn" (click)="saveProfile()" [disabled]="savingProfile">
-        <ion-spinner *ngIf="savingProfile" name="crescent" slot="start"></ion-spinner>
-        Sauvegarder le profil
-      </ion-button>
-
-    </div>
-
-    <!-- ── PHOTOS TAB ───────────────────────────────────────────────────── -->
-    <div class="tab-content" *ngIf="activeTab === 'photos'">
-
-      <!-- Upload button -->
-      <label class="upload-area" [class.uploading]="uploadingPhoto">
-        <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden />
-        <ion-spinner *ngIf="uploadingPhoto" name="crescent"></ion-spinner>
-        <ng-container *ngIf="!uploadingPhoto">
-          <ion-icon name="cloud-upload-outline" class="upload-icon"></ion-icon>
-          <span>Ajouter une photo</span>
-        </ng-container>
-      </label>
-
-      <p class="photos-hint" *ngIf="photos.length === 0 && !uploadingPhoto">
-        Vous n'avez pas encore de photos. Téléchargez-en une pour commencer.
-      </p>
-
-      <!-- Photo grid with drag-and-drop -->
-      <div class="photos-grid" *ngIf="photos.length > 0">
-        <div class="photo-card"
-             *ngFor="let photo of photos; let i = index"
-             [class.is-main]="photo.isMain"
-             [class.drag-over]="dragOverIndex === i"
-             draggable="true"
-             (dragstart)="onDragStart(i)"
-             (dragover)="onDragOver($event, i)"
-             (drop)="onDrop(i)"
-             (dragend)="onDragEnd()">
-
-          <img [src]="photo.mainThumbUrl" [alt]="'Photo ' + (i + 1)" />
-
-          <div class="photo-overlay">
-            <span class="main-badge" *ngIf="photo.isMain">
-              <ion-icon name="star"></ion-icon> Principale
-            </span>
-            <div class="photo-actions">
-              <button class="photo-action-btn" *ngIf="!photo.isMain" (click)="setMain(photo)" title="Définir comme principale">
-                <ion-icon name="star-outline"></ion-icon>
-              </button>
-              <button class="photo-action-btn danger" (click)="deletePhoto(photo)" title="Supprimer">
-                <ion-icon name="trash-outline"></ion-icon>
-              </button>
+        <div class="input-group">
+          <label>Services proposés (depuis DB)</label>
+          <div class="services-grid">
+            <div *ngFor="let s of allServices | async" class="service-chip">
+              <input type="checkbox" [id]="s" [value]="s">
+              <label [for]="s">{{ s }}</label>
             </div>
           </div>
-
-          <div class="drag-handle">
-            <ion-icon name="reorder-three-outline"></ion-icon>
-          </div>
         </div>
       </div>
-
-      <p class="photos-hint" *ngIf="photos.length > 1">
-        Glissez-déposez les photos pour les réordonner.
-      </p>
-
     </div>
 
-    <!-- ── SUBSCRIPTION TAB ─────────────────────────────────────────────── -->
-    <div class="tab-content subscription-tab" *ngIf="activeTab === 'subscription'">
-
-      <div class="sub-card" [class]="'sub-card-' + subscriptionColor">
-        <div class="sub-card-header">
-          <ion-icon [name]="subscriptionDaysLeft <= 0 ? 'close-circle-outline' : 'checkmark-circle-outline'"
-                    class="sub-card-icon"></ion-icon>
-          <div>
-            <h2>{{ subscriptionDaysLeft <= 0 ? 'Abonnement inactif' : 'Abonnement actif' }}</h2>
-            <p>{{ subscriptionLabel }}</p>
-          </div>
-        </div>
-
-        <div class="sub-progress" *ngIf="subscriptionDaysLeft > 0">
-          <div class="sub-progress-bar" [style.width.%]="Math.min(100, subscriptionDaysLeft / 30 * 100)"></div>
-        </div>
-      </div>
-
-      <div class="sub-info-box">
-        <ion-icon name="information-circle-outline"></ion-icon>
-        <p>
-          L'abonnement permet à votre profil d'être visible dans la galerie.
-          Sans abonnement actif, votre profil est masqué des résultats.
-        </p>
-      </div>
-
-      <!-- Placeholder for payment — to be implemented -->
-      <div class="sub-plans">
-        <h3 class="section-title">Choisir une durée</h3>
-        <div class="plan-card" *ngFor="let plan of [{days: 7, label: '7 jours', price: '9,99 €'}, {days: 30, label: '30 jours', price: '29,99 €'}, {days: 90, label: '90 jours', price: '69,99 €'}]">
-          <div class="plan-info">
-            <span class="plan-label">{{ plan.label }}</span>
-            <span class="plan-price">{{ plan.price }}</span>
-          </div>
-          <ion-button size="small" fill="outline" [disabled]="true">
-            Payer <span class="soon-badge">bientôt</span>
-          </ion-button>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ── SETTINGS TAB ─────────────────────────────────────────────────── -->
-    <div class="tab-content settings-tab" *ngIf="activeTab === 'settings'">
-
-      <div class="form-section">
-        <h2 class="section-title">Informations du compte</h2>
-        <div class="field-group">
-          <label>Nom d'utilisateur</label>
-          <input type="text" [(ngModel)]="settingsForm.username" />
-        </div>
-        <div class="field-group">
-          <label>Adresse e-mail</label>
-          <input type="email" [(ngModel)]="settingsForm.email" />
-        </div>
-      </div>
-
-      <div class="form-section">
-        <h2 class="section-title">Changer le mot de passe</h2>
-        <p class="section-hint">Laissez vide pour ne pas modifier.</p>
-        <div class="field-group">
-          <label>Nouveau mot de passe</label>
-          <input type="password" [(ngModel)]="settingsForm.password" />
-        </div>
-        <div class="field-group">
-          <label>Confirmer</label>
-          <input type="password" [(ngModel)]="settingsPassword2" />
-        </div>
-      </div>
-
-      <div class="form-feedback error"   *ngIf="settingsError">{{ settingsError }}</div>
-      <div class="form-feedback success" *ngIf="settingsSaved">Paramètres sauvegardés ✓</div>
-
-      <ion-button expand="block" class="save-btn" (click)="saveSettings()" [disabled]="savingSettings">
-        <ion-spinner *ngIf="savingSettings" name="crescent" slot="start"></ion-spinner>
-        Sauvegarder
-      </ion-button>
-
-    </div>
-
-  </ng-container>
-
+  </div>
 </ion-content>

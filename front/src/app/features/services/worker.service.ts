@@ -83,5 +83,9 @@ export class WorkerService {
     return this.http.get<any>(`${environment.apiBase}/workers`, { params });
   }
 
+  getWorkersServices() {
+    return this.http.get<string[]>(`${environment.apiBase}/workers/services`);
+  }
+
   private profileCache = new Map<string, WorkerProfile>();
 }

@@ -92,13 +92,12 @@
           </ul>
         </div>
 
-        <!-- Services & prices -->
+        <!-- Services -->
         <div class="sidebar-card">
           <p class="card-label">Services & Tarifs</p>
           <div class="service-rows">
             <div class="svc-row" *ngFor="let s of worker.serviceList">
-              <span class="svc-name">{{ s.name }}</span>
-              <span class="svc-price">{{ s.price }}</span>
+              <span class="svc-name">{{ s }}</span>
             </div>
           </div>
         </div>

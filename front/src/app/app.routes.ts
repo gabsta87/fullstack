@@ -7,18 +7,16 @@ import {AccountComponent} from "./features/components/account/account.component"
 import {authGuard} from "./features/guards/auth.guard";
 import {galleryResolver} from "./features/resolver/gallery.resolver";
 import {ProfileManagementComponent} from "./features/components/profile-management/profile-management.component";
+import {servicesResolver} from "./features/resolver/services.resolver";
 
 export const routes: Routes = [
-  // Gallery resolver loads WorkerGalleryDTOs (with mainThumbUrl) for the homepage
-  { path: '',        component: HomepageComponent, resolve: { workers: galleryResolver } },
-  { path: 'home',    component: HomepageComponent, resolve: { workers: galleryResolver } },
-  { path: 'gallery', component: HomepageComponent, resolve: { workers: galleryResolver } },
-  { path: 'profile-management', component: ProfileManagementComponent },
-  { path: 'ngx-pay',            component: NgxPayComponent },
-  { path: 'account',            component: AccountComponent, canActivate: [authGuard] },
-
-  // Profile uses UUID from queryParam ?id=
-  { path: 'profile', component: ProfileComponent, resolve: { profile: detailedProfileResolver } },
+  { path: '',        component: HomepageComponent, resolve: { workers: galleryResolver, allServices : servicesResolver} },
+  { path: 'home',    component: HomepageComponent, resolve: { workers: galleryResolver, allServices : servicesResolver } },
+  { path: 'gallery', component: HomepageComponent, resolve: { workers: galleryResolver, allServices : servicesResolver } },
+  { path: 'profile', component: ProfileComponent, resolve: { profile: detailedProfileResolver }, canActivate: [authGuard]  },
+  { path: 'ngx-pay', component: NgxPayComponent, canActivate: [authGuard] },
+  { path: 'account', component: AccountComponent, canActivate: [authGuard] },
+  { path: 'profile-management', component: ProfileManagementComponent, canActivate: [authGuard] },
 
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];
