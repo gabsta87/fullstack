@@ -1,10 +1,7 @@
 package com.serv.database.entities;
 
 import com.serv.common.TablesNames;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -19,10 +16,8 @@ import java.util.Collection;
 @Table(name = TablesNames.CLIENTS)
 public class Client extends VenusUser {
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     Collection<Worker> favorites;
-
-    // TODO default location
 
     public Client(String name, Email email, String password) {
         super(name,email,password);
