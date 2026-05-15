@@ -44,7 +44,9 @@ public class Worker extends VenusUser {
     private List<Service> services = new ArrayList<>();
 
     private boolean expired;
-    private boolean available;
+    private boolean available = true;
+    private boolean verified = false;
+    private boolean disabled = false;
 
     // Instant stored as UTC timestamp
     @Column(name = "last_refreshed")
