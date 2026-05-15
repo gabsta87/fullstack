@@ -7,6 +7,7 @@ import com.serv.service.WorkerGalleryService;
 import com.serv.service.MediaStorageService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -55,7 +56,7 @@ public class AccountController {
     @Transactional(readOnly = true)
     public ResponseEntity<?> getMe(HttpSession session) {
         VenusUser user = sessionUser(session);
-        if (user == null) return ResponseEntity.status(401).build();
+        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         boolean isWorker = user instanceof Worker;
         Map<String, Object> result = new HashMap<>();
@@ -92,7 +93,7 @@ public class AccountController {
     public ResponseEntity<?> updateSettings(@RequestBody Map<String, String> body,
                                             HttpSession session) {
         VenusUser user = sessionUser(session);
-        if (user == null) return ResponseEntity.status(401).build();
+        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         if (body.containsKey("username") && !body.get("username").isBlank())
             user.setUsername(body.get("username"));
@@ -101,9 +102,10 @@ public class AccountController {
         if (body.containsKey("password") && !body.get("password").isBlank())
             user.setPassword(body.get("password"));
 
-        userRepository.save(user);
-        session.setAttribute("user", user);
-        return ResponseEntity.ok(Map.of("message", "Settings updated."));
+        VenusUser patchedUser = userRepository.save(user);
+
+        session.setAttribute("user", patchedUser);
+        return ResponseEntity.ok(patchedUser);
     }
 
     // ── CLIENT ────────────────────────────────────────────────────────────────
@@ -116,7 +118,7 @@ public class AccountController {
     @Transactional(readOnly = true)
     public ResponseEntity<?> getFavorites(HttpSession session) {
         Client client = sessionClient(session);
-        if (client == null) return ResponseEntity.status(401).build();
+        if (client == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         List<UUID> ids = client.getFavorites().stream().map(Worker::getId).toList();
         return ResponseEntity.ok(galleryService.getGalleryByIds(ids));
@@ -127,9 +129,13 @@ public class AccountController {
     @Transactional
     public ResponseEntity<?> addFavorite(@PathVariable UUID workerId, HttpSession session) {
         Client client = sessionClient(session);
-        if (client == null) return ResponseEntity.status(401).build();
+        if (client == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
-        workerRepository.findById(workerId).ifPresent(w -> client.getFavorites().add(w));
+        Optional<Worker> foundWorker = workerRepository.findById(workerId);
+
+        if (foundWorker.isEmpty()) return ResponseEntity.notFound().build();
+
+        client.getFavorites().add(foundWorker.get());
         userRepository.save(client);
         session.setAttribute("user", client);
         return ResponseEntity.ok().build();
@@ -140,7 +146,7 @@ public class AccountController {
     @Transactional
     public ResponseEntity<?> removeFavorite(@PathVariable UUID workerId, HttpSession session) {
         Client client = sessionClient(session);
-        if (client == null) return ResponseEntity.status(401).build();
+        if (client == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         client.getFavorites().removeIf(w -> w.getId().equals(workerId));
         userRepository.save(client);
@@ -156,7 +162,7 @@ public class AccountController {
     public ResponseEntity<?> setAvailability(@RequestBody Map<String, Boolean> body,
                                              HttpSession session) {
         Worker worker = sessionWorker(session);
-        if (worker == null) return ResponseEntity.status(401).build();
+        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         worker.setAvailable(body.getOrDefault("available", false));
         workerRepository.save(worker);
@@ -170,7 +176,7 @@ public class AccountController {
     public ResponseEntity<?> updateProfile(@RequestBody WorkerProfileUpdateRequest req,
                                            HttpSession session) {
         Worker worker = sessionWorker(session);
-        if (worker == null) return ResponseEntity.status(401).build();
+        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         if (req.description() != null) worker.setDescription(req.description());
         if (req.location()    != null) worker.setLocation(req.location());
@@ -201,7 +207,7 @@ public class AccountController {
                                          @RequestParam(value = "title", required = false) String title,
                                          HttpSession session) {
         Worker worker = sessionWorker(session);
-        if (worker == null) return ResponseEntity.status(401).build();
+        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         try {
             // 1 — Save files to disk, get back URLs
@@ -242,7 +248,7 @@ public class AccountController {
     @Transactional
     public ResponseEntity<?> deletePhoto(@PathVariable UUID photoId, HttpSession session) {
         Worker worker = sessionWorker(session);
-        if (worker == null) return ResponseEntity.status(401).build();
+        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         Photo photo = photoRepository.findById(photoId).orElse(null);
         if (photo == null || !photo.getWorker().getId().equals(worker.getId()))
@@ -272,7 +278,7 @@ public class AccountController {
     @Transactional
     public ResponseEntity<?> setMainPhoto(@PathVariable UUID photoId, HttpSession session) {
         Worker worker = sessionWorker(session);
-        if (worker == null) return ResponseEntity.status(401).build();
+        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         Photo photo = photoRepository.findById(photoId).orElse(null);
         if (photo == null || !photo.getWorker().getId().equals(worker.getId()))
@@ -293,7 +299,7 @@ public class AccountController {
     public ResponseEntity<?> reorderPhotos(@RequestBody List<String> orderedIds,
                                            HttpSession session) {
         Worker worker = sessionWorker(session);
-        if (worker == null) return ResponseEntity.status(401).build();
+        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         for (int i = 0; i < orderedIds.size(); i++) {
             UUID id = UUID.fromString(orderedIds.get(i));
