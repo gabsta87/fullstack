@@ -4,7 +4,7 @@ import com.serv.database.entities.Photo;
 import com.serv.database.entities.Worker;
 import com.serv.database.repositories.PhotoRepository;
 import com.serv.database.repositories.WorkerRepository;
-import com.serv.dto.WorkerGalleryDTO;
+import com.serv.dto.WorkerMinimalProfileDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
-public class WorkerGalleryService {
+public class WorkerService {
 
     @Autowired private WorkerRepository workerRepository;
     @Autowired private PhotoRepository  photoRepository;
@@ -25,7 +25,7 @@ public class WorkerGalleryService {
     private static final int PAGE_SIZE          = 24;
 
     /**
-     * Returns a page of WorkerGalleryDTOs.
+     * Returns a page of WorkerMinimalProfileDTOs
      *
      * Ordering rule:
      *   1. Available workers first, ordered by lastRefreshed DESC
@@ -38,7 +38,7 @@ public class WorkerGalleryService {
      *
      * This is done in two queries (workers + batch photo fetch) to avoid N+1.
      */
-    public List<WorkerGalleryDTO> getGalleryPage(int page, Map<String, Object> filters) {
+    public List<WorkerMinimalProfileDTO> getGalleryPage(int page, Map<String, Object> filters) {
 
         // Pour l'instant, ton code ignore les filtres.
         // Si tu veux voir tes profils, il faut que l'appel SQL soit filtré.
@@ -78,7 +78,7 @@ public class WorkerGalleryService {
                         .add(p.getPreviewThumbUrl()));
 
         // 3 — Assemble DTOs
-        return workers.stream().map(w -> new WorkerGalleryDTO(
+        return workers.stream().map(w -> new WorkerMinimalProfileDTO(
                 w.getId(),         // UUID → String for JSON
                 w.getUsername(),
                 w.getBirthday(),// Date → int age
@@ -108,14 +108,14 @@ public class WorkerGalleryService {
      * Used by GET /account/favorites to return a client's saved workers.
      */
     @Transactional(readOnly = true)
-    public List<WorkerGalleryDTO> getGalleryByIds(List<UUID> ids) {
+    public List<WorkerMinimalProfileDTO> getGalleryByIds(List<UUID> ids) {
         if (ids == null || ids.isEmpty()) return List.of();
         return workerRepository.findAllById(ids).stream()
                 .map(this::toDTO)
                 .toList();
     }
 
-    private WorkerGalleryDTO toDTO(Worker w) {
+    private WorkerMinimalProfileDTO toDTO(Worker w) {
         String mainThumbUrl = w.getMainPhoto() != null
                 ? w.getMainPhoto().getMainThumbUrl()
                 : null;
@@ -131,7 +131,7 @@ public class WorkerGalleryService {
                 .map(s -> s.getName()) // Remplacez par le nom de l'attribut dans Service.java
                 .toList();
 
-        return new WorkerGalleryDTO(
+        return new WorkerMinimalProfileDTO(
                 w.getId(),
                 w.getUsername(),
                 w.getBirthday(),

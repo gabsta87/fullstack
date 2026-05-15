@@ -3,7 +3,7 @@ package com.serv.controller;
 import com.serv.database.entities.*;
 import com.serv.common.BodyType;
 import com.serv.database.repositories.*;
-import com.serv.service.WorkerGalleryService;
+import com.serv.service.WorkerService;
 import com.serv.service.MediaStorageService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class AccountController {
     private final UserRepository       userRepository;
     private final WorkerRepository     workerRepository;
     private final PhotoRepository      photoRepository;
-    private final WorkerGalleryService galleryService;
+    private final WorkerService galleryService;
     private final MediaStorageService  mediaStorageService;
     private final ServiceRepository    serviceRepository;
 
@@ -192,9 +192,9 @@ public class AccountController {
                     .collect(Collectors.toList()));
         }
 
-        workerRepository.save(worker);
-        session.setAttribute("user", worker);
-        return ResponseEntity.ok(Map.of("message", "Profile updated."));
+        Worker savedWorker = workerRepository.save(worker);
+        session.setAttribute("user", savedWorker);
+        return ResponseEntity.ok(savedWorker);
     }
 
     /**
@@ -285,9 +285,9 @@ public class AccountController {
             return ResponseEntity.notFound().build();
 
         worker.setMainPhoto(photo);
-        workerRepository.save(worker);
-        session.setAttribute("user", worker);
-        return ResponseEntity.ok().build();
+        Worker savedWorker = workerRepository.save(worker);
+        session.setAttribute("user", savedWorker);
+        return ResponseEntity.ok(savedWorker);
     }
 
     /**

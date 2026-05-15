@@ -1,7 +1,6 @@
 package com.serv.dto;
 
 import com.serv.common.BodyType;
-import com.serv.database.entities.Service;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,7 +23,7 @@ import java.util.UUID;
  */
 @Getter
 @Setter
-public class WorkerGalleryDTO {
+public class WorkerMinimalProfileDTO {
 
     private UUID id;
     private String name;
@@ -48,9 +47,9 @@ public class WorkerGalleryDTO {
 
     // ── Constructor ───────────────────────────────────────────────────────────
 
-    public WorkerGalleryDTO() {}
+    public WorkerMinimalProfileDTO() {}
 
-    public WorkerGalleryDTO(
+    public WorkerMinimalProfileDTO(
             UUID id, String name, Date birthday,
             String location, String region,
             BodyType bodyType, int height,

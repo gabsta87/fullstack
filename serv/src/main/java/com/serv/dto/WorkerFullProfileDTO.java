@@ -9,7 +9,7 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 
-public record WorkerProfileDTO(
+public record WorkerFullProfileDTO(
         UUID         id,
         String       name,
         int          age,
@@ -27,7 +27,7 @@ public record WorkerProfileDTO(
         List<PhotoDTO> photos,
         List<VideoDTO> videos
 ) {
-    public static WorkerProfileDTO from(Worker w) {
+    public static WorkerFullProfileDTO from(Worker w) {
         String mainThumb = w.getMainPhoto() != null
                 ? w.getMainPhoto().getMainThumbUrl() : null;
 
@@ -39,7 +39,7 @@ public record WorkerProfileDTO(
                         p.getPreviewThumbUrl()))
                 .toList();
 
-        return new WorkerProfileDTO(
+        return new WorkerFullProfileDTO(
                 w.getId(),
                 w.getUsername(),
                 calculateAge(w.getBirthday()),
