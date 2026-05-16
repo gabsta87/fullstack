@@ -1,5 +1,6 @@
 package com.serv.controller;
 
+import com.serv.common.Language;
 import com.serv.database.entities.*;
 import com.serv.common.BodyType;
 import com.serv.database.repositories.*;
@@ -82,6 +83,32 @@ public class AccountController {
         }
 
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/language")
+    public ResponseEntity<?> getLanguage(HttpSession session) {
+        VenusUser user = sessionUser(session);
+        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        return ResponseEntity.ok(user.getLanguage());
+    }
+
+    @PatchMapping("/language")
+    @Transactional
+    public ResponseEntity<?> setLanguage(@RequestBody String language, HttpSession session) {
+        VenusUser user = sessionUser(session);
+        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        Language newLanguage;
+
+        try{
+            newLanguage = Language.valueOf(language);
+        }catch (IllegalArgumentException e){
+            return ResponseEntity.badRequest().build();
+        }
+
+        user.setLanguage(newLanguage);
+        userRepository.save(user);
+        return ResponseEntity.ok(user.getLanguage());
     }
 
     /**

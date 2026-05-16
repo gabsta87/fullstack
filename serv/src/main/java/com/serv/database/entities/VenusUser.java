@@ -1,5 +1,6 @@
 package com.serv.database.entities;
 
+import com.serv.common.Language;
 import com.serv.common.TablesNames;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -32,6 +33,9 @@ public abstract class VenusUser {
     protected String passwordHash;
     protected boolean enabled;
     protected boolean locked;
+
+    @Enumerated(EnumType.STRING)
+    private Language language;
 
     private static final BCryptPasswordEncoder ENCODER = new BCryptPasswordEncoder();
 
