@@ -3,59 +3,48 @@
 <ion-content>
 
   <div class="tab-nav">
-    <button [class.active]="activeTab === 'feed'" (click)="setTab('feed')">Ma Galerie</button>
     <button [class.active]="activeTab === 'favorites'" (click)="setTab('favorites')">Favoris</button>
     <button [class.active]="activeTab === 'settings'" (click)="setTab('settings')">Réglages</button>
   </div>
 
   <div class="container main-container">
 
-    <div *ngIf="activeTab === 'feed'" class="fade-in">
-      <div class="section-header">
-        <h2>Sélectionné pour vous</h2>
-        <p>Basé sur vos préférences de recherche</p>
-      </div>
-      <div class="grid-layout">
-        <app-worker-card *ngFor="let w of personalizedWorkers" [worker]="w"></app-worker-card>
-      </div>
-    </div>
-
     <div *ngIf="activeTab === 'favorites'" class="fade-in">
-      <div class="section-header">
-        <h2>Vos favoris ({{ favorites.length }})</h2>
-        <p>{{ connectedFavoritesCount }} profil{{ connectedFavoritesCount > 1 ? 's' : '' }} connecté{{ connectedFavoritesCount > 1 ? 's' : '' }} parmi vos favoris</p>
-      </div>
-      <div class="grid-layout">
-        <app-worker-card *ngFor="let f of favorites" [worker]="f"></app-worker-card>
+      <div *ngIf="favorites$ | async as favorites">
+        <div class="section-header">
+          <h2>Vos favoris ({{ favorites.length }})</h2>
+        </div>
+        <div class="grid-layout">
+          <app-worker-card *ngFor="let f of favorites" [worker]="f"></app-worker-card>
+        </div>
       </div>
     </div>
 
     <div *ngIf="activeTab === 'settings'" class="fade-in">
-      <div class="settings-grid">
-        <div class="settings-card">
-          <h3>Mes préférences de recherche</h3>
+      <div *ngIf="currentUser$ | async as user">
 
-          <div class="field">
-            <label>Région favorite</label>
-            <select [(ngModel)]="prefForm.region">
-              <option [value]="undefined">Toutes les régions</option>
-              <option *ngFor="let r of regions" [value]="r">{{r}}</option>
-            </select>
-          </div>
+        <div class="settings-grid">
+          <div class="settings-card">
+            <h3>Mes préférences de recherche</h3>
 
-          <div class="field">
-            <label>Silhouette préférée</label>
-            <div class="checkbox-group">
-              <div *ngFor="let b of bodyTypesList" class="filter-chip">
-                <input type="checkbox" [id]="b" [(ngModel)]="selectionStates.bodyType[b]" />
-                <label [for]="b">{{ bodyTypeLabels[b] || b }}</label>
+            <div class="field">
+              <label>Région favorite</label>
+              <select [(ngModel)]="user.location" (ngModelChange)="updateLocation()" class="select-input">
+                <option [value]="undefined">Toutes les régions</option>
+                <option *ngFor="let r of regions" [value]="r">{{r}}</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Silhouette préférée</label>
+              <div class="checkbox-group">
+                <div *ngFor="let b of bodyTypesList" class="filter-chip">
+                  <input type="checkbox" [id]="b" [(ngModel)]="selectionStates.bodyType[b]" />
+                  <label [for]="b">{{ bodyTypeLabels[b] || b }}</label>
+                </div>
               </div>
             </div>
           </div>
-
-          <ion-button expand="block" (click)="savePreferences()">
-            Enregistrer mes préférences
-          </ion-button>
         </div>
 
       </div>

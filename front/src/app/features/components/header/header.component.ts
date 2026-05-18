@@ -46,7 +46,7 @@ export class HeaderComponent {
   }
 
   openAccount() {
-    this.accountService.getMe().subscribe({
+    this.accountService.getCurrentProfile().subscribe({
       next: (user) => {
         const target = user.role === 'WORKER' ? '/profile-management' : '/account';
         this.router.navigate([target]);

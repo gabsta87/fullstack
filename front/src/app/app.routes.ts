@@ -8,15 +8,16 @@ import {authGuard} from "./features/guards/auth.guard";
 import {galleryResolver} from "./features/resolver/gallery.resolver";
 import {ProfileManagementComponent} from "./features/components/profile-management/profile-management.component";
 import {servicesResolver} from "./features/resolver/services.resolver";
+import {fullProfileResolver} from "./features/resolver/full-profile.resolver";
 
 export const routes: Routes = [
   { path: '',        component: HomepageComponent, resolve: { workers: galleryResolver, allServices : servicesResolver} },
   { path: 'home',    component: HomepageComponent, resolve: { workers: galleryResolver, allServices : servicesResolver } },
   { path: 'gallery', component: HomepageComponent, resolve: { workers: galleryResolver, allServices : servicesResolver } },
-  { path: 'profile', component: ProfileComponent, resolve: { profile: detailedProfileResolver }, canActivate: [authGuard]  },
+  { path: 'profile', component: ProfileComponent,  resolve: { profile: detailedProfileResolver }, canActivate: [authGuard] },
   { path: 'ngx-pay', component: NgxPayComponent, canActivate: [authGuard] },
   { path: 'account', component: AccountComponent, canActivate: [authGuard] },
-  { path: 'profile-management', component: ProfileManagementComponent, canActivate: [authGuard] },
+  { path: 'profile-management', component: ProfileManagementComponent, resolve: { profile: fullProfileResolver, services : servicesResolver }, canActivate: [authGuard] },
 
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];

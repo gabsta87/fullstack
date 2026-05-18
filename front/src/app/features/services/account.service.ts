@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { WorkerGalleryDTO } from '../models/worker.model';
+import {map, Observable, of} from 'rxjs';
+import { WorkerSimpleProfile } from '../models/worker.model';
 import {environment} from "../../../environments/environment";
+import {tap} from "rxjs/operators";
 
-export interface AccountMe {
+export interface CurrentProfile {
   id: string;
   username: string;
   email: string;
+  language: string;
   role: 'WORKER' | 'CLIENT';
   // worker-only
   available?: boolean;
@@ -23,7 +25,7 @@ export interface AccountMe {
   expired?: boolean;
 }
 
-export interface SettingsUpdate {
+export interface UserProfile {
   username?: string;
   email?: string;
   password?: string;
@@ -43,19 +45,36 @@ export interface WorkerProfileUpdate {
 export class AccountService {
   private base = `${environment.apiBase}/account`;
 
+  private currentAccount: CurrentProfile | null = null;
+
   constructor(private http: HttpClient) {}
 
-  getMe(): Observable<AccountMe> {
-    return this.http.get<AccountMe>(`${this.base}/me`, { withCredentials: true });
+  getCurrentProfile(): Observable<CurrentProfile> {
+    if (this.currentAccount) {
+      return of(this.currentAccount);
+    }
+    return this.http.get<CurrentProfile>(`${this.base}/me`, { withCredentials: true }).pipe(
+      tap(account => this.currentAccount = account)
+    );
   }
 
-  updateSettings(data: SettingsUpdate): Observable<any> {
+  updateSettings(data: UserProfile): Observable<any> {
     return this.http.patch(`${this.base}/settings`, data, { withCredentials: true });
   }
 
+  getCurrentUserLanguage(): Observable<string> {
+    return this.getCurrentProfile().pipe(
+      map(account => account.language)
+    );
+  }
+
+  setCurrentUserLanguage(lang: string): Observable<any> {
+    return this.http.patch(`${this.base}/language`, { lang }, { withCredentials: true });
+  }
+
   // CLIENT
-  getFavorites(): Observable<WorkerGalleryDTO[]> {
-    return this.http.get<WorkerGalleryDTO[]>(`${this.base}/favorites`, { withCredentials: true });
+  getFavorites(): Observable<WorkerSimpleProfile[]> {
+    return this.http.get<WorkerSimpleProfile[]>(`${this.base}/favorites`, { withCredentials: true });
   }
 
   addFavorite(workerId: string): Observable<any> {

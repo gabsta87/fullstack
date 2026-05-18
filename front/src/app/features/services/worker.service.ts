@@ -4,8 +4,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { GalleryFilters, WorkerGalleryDTO, WorkerProfile } from '../models/worker.model';
+import { WorkerSimpleProfile, WorkerProfile } from '../models/worker.model';
 import {environment} from "../../../environments/environment";
+import {GalleryFilters} from "../models/filter.model";
 
 @Injectable({ providedIn: 'root' })
 export class WorkerService {
@@ -16,7 +17,7 @@ export class WorkerService {
 
   // ── Gallery ────────────────────────────────────────────────────────────────
 
-  getGalleryPage(page: number, filters: GalleryFilters): Observable<WorkerGalleryDTO[]> {
+  getGalleryPage(page: number, filters: GalleryFilters): Observable<WorkerSimpleProfile[]> {
     let params = new HttpParams().set('page', page);
     if (filters.region)            params = params.set('region',    filters.region);
     if (filters.eyeColor)          params = params.set('eyeColor',  filters.eyeColor);
@@ -27,7 +28,7 @@ export class WorkerService {
     if (filters.weightMax != null) params = params.set('weightMax', filters.weightMax);
     if (filters.bodyType?.length)  params = params.set('bodyType',  filters.bodyType.join(','));
     if (filters.services?.length)  params = params.set('services',  filters.services.join(','));
-    return this.http.get<WorkerGalleryDTO[]>(`${this.baseUrl}`, { params })
+    return this.http.get<WorkerSimpleProfile[]>(`${this.baseUrl}`, { params })
       .pipe(catchError(() => of([])));
   }
 

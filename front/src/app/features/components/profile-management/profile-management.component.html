@@ -2,7 +2,7 @@
 
 <ion-content class="pm-main-container">
 
-  <div class="pm-wrapper" *ngIf="me">
+  <div class="pm-wrapper" *ngIf="currentUser$ | async as me ">
 
     <ion-grid class="pm-hero-grid ion-no-padding">
       <ion-row class="ion-align-items-center">
@@ -18,7 +18,7 @@
         </ion-col>
         <ion-col size="12" size-md="" class="ion-text-center ion-text-md-start">
           <div class="profile-title">
-            <h1>{{ me.username }}</h1>
+            <h1>{{ me.name }}</h1>
             <ion-button [color]="me.available ? 'success' : 'medium'" class="status-badge">
               {{ me.available ? 'En ligne' : 'Hors ligne' }}
             </ion-button>
@@ -49,8 +49,8 @@
                 <ion-item lines="none" class="venus-input">
                   <ion-label position="stacked">Silhouette</ion-label>
                   <ion-select label="Silhouette" label-placement="stacked" interface="popover" [(ngModel)]="profileForm.bodyType" placeholder="Choisir...">
-                    <ion-select-option *ngFor="let type of bodyTypesList" [value]="type">
-                      {{ bodyTypeLabels[type] }}
+                    <ion-select-option *ngFor="let type of BODY_TYPE_LABELS | keyvalue" [value]="type.key">
+                      {{ type.value }}
                     </ion-select-option>
                   </ion-select>
                 </ion-item>
@@ -68,23 +68,18 @@
                   <ion-list-header class="ion-no-padding">
                     <ion-label>Services proposés</ion-label>
                   </ion-list-header>
+
                   <div class="services-flex">
-                    <ion-chip *ngFor="let s of allServices"
-                              [outline]="!selectionStates.services[s]"
-                              [color]="selectionStates.services[s] ? 'dark' : 'medium'"
-                              (click)="selectionStates.services[s] = !selectionStates.services[s]">
-                      <ion-label>{{ s }}</ion-label>
-                      <ion-icon name="checkmark-circle" *ngIf="selectionStates.services[s]"></ion-icon>
-                    </ion-chip>
+                    <ion-checkbox *ngFor="let service of allServices"
+                              [checked]="me.serviceList.includes(service)"
+                              (click)="toggleService(me, service)">
+                      <ion-label>{{ service }}</ion-label>
+                    </ion-checkbox>
                   </div>
                 </div>
               </ion-col>
             </ion-row>
           </ion-grid>
-
-          <ion-button expand="block" class="save-btn ion-margin-top" (click)="saveProfile()">
-            Enregistrer les modifications
-          </ion-button>
         </div>
 
         <div *ngIf="activeTab === 'photos'" class="fade-in">

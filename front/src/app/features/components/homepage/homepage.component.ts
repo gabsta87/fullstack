@@ -17,14 +17,13 @@ import {WorkerCardComponent} from '../worker-card/worker-card.component';
 import {AuthService} from "../../services/auth.service";
 import {HeaderComponent} from '../header/header.component';
 import {
-  BODY_TYPES_LIST, BodyType,
+  BODY_TYPES_LIST,
   EYE_COLORS,
-  GalleryFilters,
   HAIR_COLORS,
   REGIONS,
-  WorkerGalleryDTO
+  WorkerSimpleProfile
 } from '../../models/worker.model';
-import {map} from "rxjs";
+import {GalleryFilters} from "../../models/filter.model";
 
 @Component({
   selector: 'app-homepage',
@@ -52,9 +51,9 @@ export class HomepageComponent implements OnInit {
     services: Record<string, boolean>;
   } = { bodyType: {}, services: {} };
 
-  allWorkers :        WorkerGalleryDTO[] = [];
-  availableWorkers:   WorkerGalleryDTO[] = [];
-  unavailableWorkers: WorkerGalleryDTO[] = [];
+  allWorkers :        WorkerSimpleProfile[] = [];
+  availableWorkers:   WorkerSimpleProfile[] = [];
+  unavailableWorkers: WorkerSimpleProfile[] = [];
   allServices: string[] = [];
 
   currentPage = 1; // page 0 already loaded by resolver
@@ -138,7 +137,7 @@ export class HomepageComponent implements OnInit {
     });
   }
 
-  private splitAndAppend(workers: WorkerGalleryDTO[]): void {
+  private splitAndAppend(workers: WorkerSimpleProfile[]): void {
     this.availableWorkers   = [...this.availableWorkers,   ...workers.filter(w =>  w.available)];
     this.unavailableWorkers = [...this.unavailableWorkers, ...workers.filter(w => !w.available)];
   }

@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { ResolveFn } from '@angular/router';
 import { WorkerService } from '../services/worker.service';
-import { WorkerGalleryDTO } from '../models/worker.model';
+import { WorkerSimpleProfile } from '../models/worker.model';
 import { catchError, of } from 'rxjs';
 
 /**
@@ -12,7 +12,7 @@ import { catchError, of } from 'rxjs';
  * Subsequent pages (infinite scroll) are loaded directly by the
  * HomepageComponent via WorkerService, not through the resolver.
  */
-export const galleryResolver: ResolveFn<WorkerGalleryDTO[]> = () => {
+export const galleryResolver: ResolveFn<WorkerSimpleProfile[]> = () => {
   const workerService = inject(WorkerService);
   return workerService.getGalleryPage(0, {}).pipe(
     catchError(() => of([]))

@@ -4,7 +4,7 @@ import {
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonRippleEffect } from '@ionic/angular/standalone';
-import { WorkerGalleryDTO } from '../../models/worker.model';
+import { WorkerSimpleProfile } from '../../models/worker.model';
 import { WorkerService } from '../../services/worker.service';
 
 @Component({
@@ -17,7 +17,7 @@ import { WorkerService } from '../../services/worker.service';
 })
 export class WorkerCardComponent implements OnDestroy {
 
-  @Input() worker!: WorkerGalleryDTO;
+  @Input() worker!: WorkerSimpleProfile;
 
   previewUrls: string[] = [];
   currentPreviewIdx     = 0;

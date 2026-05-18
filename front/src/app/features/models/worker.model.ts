@@ -33,7 +33,7 @@ export const HAIR_COLORS: ColorOption[] = [
 
 // --- Interfaces existantes ---
 
-export interface WorkerGalleryDTO {
+export interface WorkerSimpleProfile {
   id: string;
   name: string;
   age: number;
@@ -49,7 +49,7 @@ export interface WorkerGalleryDTO {
   previewThumbUrls: string[];
 }
 
-export interface WorkerProfile extends WorkerGalleryDTO {
+export interface WorkerProfile extends WorkerSimpleProfile {
   eyeColor: string;
   hairColor: string;
   serviceList: string[];
@@ -58,6 +58,7 @@ export interface WorkerProfile extends WorkerGalleryDTO {
   rating: number;
   reviewCount: number;
   description: string;
+  expirationDate: string;
   tags: string[];
   photos: PhotoItem[];
   videos: VideoItem[];
@@ -67,17 +68,3 @@ export interface WorkerProfile extends WorkerGalleryDTO {
 export interface PhotoItem    { id: string; originalUrl: string; mainThumbUrl: string; previewThumbUrl: string; }
 export interface VideoItem    { id: string; url: string; duration?: string; }
 export interface Review       { author: string; authorInitial: string; rating: number; date: string; text: string; }
-
-// --- Filtres typés ---
-
-export interface GalleryFilters {
-  region?: string;
-  bodyType?: string[];
-  services?: string[];
-  eyeColor?: string;
-  hairColor?: string;
-  heightMin?: number | null;
-  heightMax?: number | null;
-  weightMin?: number | null;
-  weightMax?: number | null;
-}

@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { ResolveFn, Router } from '@angular/router';
 import { WorkerService } from '../services/worker.service';
 import { WorkerProfile } from '../models/worker.model';
-import { catchError, EMPTY } from 'rxjs';
+import { catchError, EMPTY, of } from 'rxjs';
 
 /**
  * Loads the full WorkerProfile before the profile page renders.
@@ -34,6 +34,3 @@ export const detailedProfileResolver: ResolveFn<WorkerProfile> = (route) => {
     })
   );
 };
-
-// needed for of()
-import { of } from 'rxjs';
