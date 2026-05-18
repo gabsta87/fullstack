@@ -13,4 +13,10 @@ public class Location {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String region;
+
+    public Location(String name) {
+        this.region = name;
+    }
+
+    public Location() {}
 }

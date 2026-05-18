@@ -181,7 +181,7 @@ public class TestDataInitializer implements ApplicationRunner {
 
         w.setAvailable(available);
         w.setLastRefreshed(lastRefreshed);
-        w.setLocation(location);
+        w.setLocation(new Location("Geneva"));
         w.setRegion(region);
         w.setBodyType(bodyType);
         w.setHeight(height);
@@ -194,7 +194,7 @@ public class TestDataInitializer implements ApplicationRunner {
         // Physical address (minimal)
         PhysicalAddress addr = new PhysicalAddress();
         addr.setCity(location);
-        w.setAddress(addr);
+//        w.setAddress(addr);
 
         workerRepository.save(w);
 

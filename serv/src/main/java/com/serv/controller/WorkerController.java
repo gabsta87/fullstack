@@ -27,10 +27,9 @@ import java.util.stream.Collectors;
 @RequestMapping("/workers")
 @Transactional(readOnly = true)   // ← add this
 public class WorkerController {
-    @Autowired private WorkerRepository    workerRepository;
-    @Autowired private WorkerService galleryService;
-    @Autowired
-    private ServiceRepository serviceRepository;
+    @Autowired private WorkerRepository workerRepository;
+    @Autowired private WorkerService    galleryService;
+    @Autowired private ServiceRepository serviceRepository;
 
     @GetMapping
     public ResponseEntity<List<WorkerMinimalProfileDTO>> getGallery(

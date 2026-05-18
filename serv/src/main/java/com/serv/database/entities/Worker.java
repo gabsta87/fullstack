@@ -54,7 +54,6 @@ public class Worker extends VenusUser {
     private Instant lastRefreshed;
 
     private String region;
-    private String location;
 
     // Enum stored as String
     @Enumerated(EnumType.STRING)
