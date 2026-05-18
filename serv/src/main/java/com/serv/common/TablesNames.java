@@ -9,5 +9,6 @@ public final class TablesNames {
     public static final String USERS = "users";
     public static final String VIDEOS = "videos";
     public static final String SERVICES = "services";
+    public static final String LOCATIONS = "locations";
 
 }

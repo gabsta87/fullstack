@@ -64,13 +64,14 @@ public class AccountController {
         result.put("id",       user.getId().toString());
         result.put("username", user.getUsername());
         result.put("email",    user.getEmail());
+        result.put("location", user.getLocation());
         result.put("role",     isWorker ? "WORKER" : "CLIENT");
 
         if (isWorker) {
             Worker w = (Worker) user;
             result.put("available",    w.isAvailable());
             result.put("region",       w.getRegion());
-            result.put("location",     w.getLocation());
+            result.put("address",      w.getAddress());
             result.put("bodyType",     w.getBodyType() != null ? w.getBodyType().name() : null);
             result.put("height",       w.getHeight());
             result.put("weight",       w.getWeight());
@@ -80,6 +81,10 @@ public class AccountController {
                     ? w.getMainPhoto().getMainThumbUrl() : null);
             result.put("subscriptionDaysLeft", w.getSubscriptionDaysLeft());
             result.put("expired",      w.isExpired());
+        }else{
+            Client c = (Client) user;
+            result.put("favorites", c.getFavorites());
+
         }
 
         return ResponseEntity.ok(result);

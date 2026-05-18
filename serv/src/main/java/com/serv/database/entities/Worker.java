@@ -21,8 +21,8 @@ import java.util.List;
 @Table(name = TablesNames.WORKERS)
 public class Worker extends VenusUser {
 
-    @Embedded
-    private PhysicalAddress address;
+//    @Embedded
+//    private PhysicalAddress address;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "main_photo_id")
@@ -42,6 +42,7 @@ public class Worker extends VenusUser {
             inverseJoinColumns = { @JoinColumn(name = "service_id") }
     )
     private List<Service> services = new ArrayList<>();
+    private String address;
 
     private boolean expired;
     private boolean available = true;
