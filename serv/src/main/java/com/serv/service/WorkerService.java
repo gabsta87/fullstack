@@ -82,7 +82,7 @@ public class WorkerService {
                 w.getId(),         // UUID → String for JSON
                 w.getUsername(),
                 w.getBirthday(),// Date → int age
-                w.getLocation().getRegion(),
+                w.getLocation(),
                 w.getRegion(),
                 w.getBodyType(),
                 w.getHeight(),
@@ -135,7 +135,7 @@ public class WorkerService {
                 w.getId(),
                 w.getUsername(),
                 w.getBirthday(),
-                w.getLocation().getRegion(),
+                w.getLocation(),
                 w.getRegion(),
                 w.getBodyType(),
                 w.getHeight(),

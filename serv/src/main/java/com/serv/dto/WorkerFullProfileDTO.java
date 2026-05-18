@@ -43,7 +43,7 @@ public record WorkerFullProfileDTO(
                 w.getId(),
                 w.getUsername(),
                 calculateAge(w.getBirthday()),
-                w.getLocation().getRegion(),
+                w.getLocation(),
                 w.getRegion(),
                 w.getBodyType() != null ? w.getBodyType().name() : null,
                 w.getHeight(),
