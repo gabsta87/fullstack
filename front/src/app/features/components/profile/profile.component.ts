@@ -4,7 +4,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton,
-  IonButton, IonIcon, IonSpinner,
+  IonButton, IonIcon, IonSpinner, IonList, IonItem, IonLabel, IonChip,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -25,7 +25,7 @@ import { WorkerProfile, PhotoItem, VideoItem, Review } from '../../models/worker
   imports: [
     CommonModule, FormsModule, RouterLink, DatePipe,
     IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton,
-    IonButton, IonIcon, IonSpinner,
+    IonButton, IonIcon, IonSpinner, IonList, IonItem, IonLabel, IonChip,
   ],
 })
 export class ProfileComponent implements OnInit, OnDestroy {
