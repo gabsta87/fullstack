@@ -1,30 +1,31 @@
-/* Ionic variables, now in .scss */
 @import "@ionic/angular/css/core.css";
 @import "@ionic/angular/css/normalize.css";
 @import "@ionic/angular/css/structure.css";
 @import "@ionic/angular/css/typography.css";
 @import "@ionic/angular/css/palettes/dark.system.css";
+@import "@ionic/angular/css/display.css";
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
 
 :root {
-  /* Couleur principale */
   --ion-color-primary: #8b6e58;
   --ion-color-primary-rgb: 139, 110, 88;
   --ion-color-primary-contrast: #ffffff;
 
-  /* Fond et texte */
   --ion-background-color: #fcfbf9;
   --ion-text-color: #1a1714;
 
-  /* Palette de gris */
   --ion-color-medium: #a09890;
   --ion-color-dark: #1a1714;
   --ion-color-light: #ffffff;
 
-  /* Couleur sable */
   --ion-color-sand: #e8e4df;
   --ion-color-sand-rgb: 232, 228, 223;
 
-  /* Venus tokens (re-integrated here properly) */
+  /* Venus tokens */
   --bg:          #faf9f7;
   --surface:     #ffffff;
   --border:      #e8e4df;

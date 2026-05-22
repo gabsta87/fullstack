@@ -3,7 +3,16 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { IonRippleEffect } from '@ionic/angular/standalone';
+import {
+  IonBadge,
+  IonCard,
+  IonCardHeader, IonCardSubtitle,
+  IonCardTitle,
+  IonChip,
+  IonIcon,
+  IonLabel,
+  IonRippleEffect
+} from '@ionic/angular/standalone';
 import { WorkerSimpleProfile } from '../../models/worker.model';
 import { WorkerService } from '../../services/worker.service';
 
@@ -13,7 +22,7 @@ import { WorkerService } from '../../services/worker.service';
   styleUrls: ['./worker-card.component.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, IonRippleEffect],
+  imports: [CommonModule, IonRippleEffect, IonCard, IonIcon, IonBadge, IonChip, IonLabel, IonCardHeader, IonCardTitle, IonCardSubtitle],
 })
 export class WorkerCardComponent implements OnDestroy {
 
