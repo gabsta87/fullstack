@@ -1,54 +1,74 @@
 <app-header></app-header>
 
-<ion-content>
+<ion-content class="venus-content">
+  <ion-toolbar class="segment-toolbar">
+    <ion-segment [(ngModel)]="activeTab" mode="md">
+      <ion-segment-button value="favorites">
+        <ion-label>Favoris</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="settings">
+        <ion-label>Réglages</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
 
-  <div class="tab-nav">
-    <button [class.active]="activeTab === 'favorites'" (click)="setTab('favorites')">Favoris</button>
-    <button [class.active]="activeTab === 'settings'" (click)="setTab('settings')">Réglages</button>
-  </div>
+  <ion-grid fixed="false" class="ion-no-padding">
 
-  <div class="container main-container">
-
-    <div *ngIf="activeTab === 'favorites'" class="fade-in">
+    <div *ngIf="activeTab === 'favorites'" class="fade-in ion-padding">
       <div *ngIf="favorites$ | async as favorites">
         <div class="section-header">
           <h2>Vos favoris ({{ favorites.length }})</h2>
         </div>
-        <div class="grid-layout">
-          <app-worker-card *ngFor="let f of favorites" [worker]="f"></app-worker-card>
+
+        <ion-row>
+          <ion-col size="6" size-sm="4" size-md="3" size-lg="2.4" size-xl="2"
+                   *ngFor="let f of favorites">
+            <app-worker-card [worker]="f"></app-worker-card>
+          </ion-col>
+        </ion-row>
+
+        <div *ngIf="favorites.length === 0" class="empty-favorites">
+          <ion-icon name="heart-dislike-outline"></ion-icon>
+          <p>Vous n'avez pas encore de favoris.</p>
         </div>
       </div>
     </div>
 
-    <div *ngIf="activeTab === 'settings'" class="fade-in">
-      <div *ngIf="currentUser$ | async as user">
+    <div *ngIf="activeTab === 'settings'" class="fade-in ion-padding">
+      <div *ngIf="currentUser$ | async as user" class="settings-container">
 
-        <div class="settings-grid">
-          <div class="settings-card">
-            <h3>Mes préférences de recherche</h3>
+        <ion-card class="settings-card">
+          <ion-card-header>
+            <ion-card-title>Mes préférences de recherche</ion-card-title>
+          </ion-card-header>
 
-            <div class="field">
-              <label>Région favorite</label>
-              <select [(ngModel)]="user.location" (ngModelChange)="updateLocation()" class="select-input">
-                <option [value]="undefined">Toutes les régions</option>
-                <option *ngFor="let r of regions" [value]="r">{{r}}</option>
-              </select>
-            </div>
+          <ion-card-content>
+            <ion-list lines="none">
+              <ion-item class="venus-item">
+                <ion-label position="stacked">Région favorite</ion-label>
+                <ion-select [(ngModel)]="user.location" (ionChange)="updateLocation()"
+                            interface="popover" placeholder="Toutes les régions">
+                  <ion-select-option [value]="undefined">Toutes les régions</ion-select-option>
+                  <ion-select-option *ngFor="let r of regions" [value]="r">{{r}}</ion-select-option>
+                </ion-select>
+              </ion-item>
 
-            <div class="field">
-              <label>Silhouette préférée</label>
-              <div class="checkbox-group">
-                <div *ngFor="let b of bodyTypesList" class="filter-chip">
-                  <input type="checkbox" [id]="b" [(ngModel)]="selectionStates.bodyType[b]" />
-                  <label [for]="b">{{ bodyTypeLabels[b] || b }}</label>
-                </div>
+              <div class="field-label ion-margin-top">Silhouettes préférées</div>
+              <div class="chips-group">
+                <ion-chip *ngFor="let b of bodyTypesList"
+                          [outline]="!selectionStates.bodyType[b]"
+                          [color]="selectionStates.bodyType[b] ? 'primary' : 'medium'"
+                          (click)="selectionStates.bodyType[b] = !selectionStates.bodyType[b]">
+                  <ion-label>{{ bodyTypeLabels[b] || b }}</ion-label>
+                  <ion-icon name="checkmark-circle" *ngIf="selectionStates.bodyType[b]"></ion-icon>
+                </ion-chip>
               </div>
-            </div>
-          </div>
-        </div>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
 
       </div>
     </div>
 
-  </div>
+  </ion-grid>
 </ion-content>
