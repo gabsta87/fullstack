@@ -8,62 +8,39 @@
 
 <!-- ░░ IONIC CONTENT ░░ -->
 <ion-content class="main-content">
-
-  <!-- Pull-to-refresh -->
   <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <div class="gallery-wrap">
-
-    <!-- Available workers -->
+  <ion-grid>
     <section *ngIf="availableWorkers.length > 0">
       <div class="section-label">
         <span class="pip online"></span>
-        Disponibles maintenant
-        <span class="section-count">{{ availableWorkers.length }}</span>
+        Disponibles maintenant ({{ availableWorkers.length }})
       </div>
-      <div class="worker-grid">
-        <app-worker-card
-          *ngFor="let w of availableWorkers; let i = index"
-          [worker]="w"
-          [style.animation-delay]="(i % 12 * 0.04) + 's'">
-        </app-worker-card>
-      </div>
+
+      <ion-row>
+        <ion-col size="12" size-sm="6" size-md="4" size-lg="3" size-xl="2"
+                 *ngFor="let w of availableWorkers; let i = index">
+          <app-worker-card [worker]="w"></app-worker-card>
+        </ion-col>
+      </ion-row>
     </section>
 
-    <!-- Unavailable workers -->
-    <section *ngIf="unavailableWorkers.length > 0" class="unavail-section">
+    <section *ngIf="unavailableWorkers.length > 0" class="ion-margin-top">
       <div class="section-label">
         <span class="pip offline"></span>
-        Non disponibles
-        <span class="section-count">{{ unavailableWorkers.length }}</span>
+        Non disponibles ({{ unavailableWorkers.length }})
       </div>
-      <div class="worker-grid faded">
-        <app-worker-card
-          *ngFor="let w of unavailableWorkers; let i = index"
-          [worker]="w"
-          [style.animation-delay]="(i % 12 * 0.04) + 's'">
-        </app-worker-card>
-      </div>
+
+      <ion-row class="faded">
+        <ion-col size="12" size-sm="6" size-md="4" size-lg="3" size-xl="2"
+                 *ngFor="let w of unavailableWorkers">
+          <app-worker-card [worker]="w"></app-worker-card>
+        </ion-col>
+      </ion-row>
     </section>
-
-    <!-- Loading skeleton -->
-    <div class="skeleton-grid" *ngIf="isLoading && !availableWorkers.length">
-      <div class="skeleton-card" *ngFor="let s of [1,2,3,4,5,6,7,8]"></div>
-    </div>
-
-    <!-- Empty state -->
-    <div class="empty-state"
-         *ngIf="!isLoading && !availableWorkers.length && !unavailableWorkers.length">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-      </svg>
-      <p>Aucun profil trouvé.</p>
-      <button (click)="clearFilters()">Réinitialiser les filtres</button>
-    </div>
-
-  </div>
+  </ion-grid>
 
   <!-- Infinite scroll -->
   <ion-infinite-scroll threshold="300px" (ionInfinite)="onIonInfinite($event)">

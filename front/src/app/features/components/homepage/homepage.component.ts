@@ -3,11 +3,12 @@ import {ActivatedRoute, RouterLink} from '@angular/router';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {
-  IonContent,
+  IonCol,
+  IonContent, IonGrid,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
   IonRefresher,
-  IonRefresherContent
+  IonRefresherContent, IonRow
 } from '@ionic/angular/standalone';
 import {addIcons} from 'ionicons';
 import {closeOutline, locationOutline, optionsOutline} from 'ionicons/icons';
@@ -33,8 +34,8 @@ import {GalleryFilters} from "../../models/filter.model";
   imports: [
     CommonModule, FormsModule, RouterLink,
     IonContent, IonInfiniteScroll, IonInfiniteScrollContent,
-    IonRefresher, IonRefresherContent,HeaderComponent,
-    WorkerCardComponent
+    IonRefresher, IonRefresherContent, HeaderComponent,
+    WorkerCardComponent, IonGrid, IonRow, IonCol
   ],
 })
 export class HomepageComponent implements OnInit {
