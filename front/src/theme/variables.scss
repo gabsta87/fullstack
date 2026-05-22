@@ -1,0 +1,45 @@
+/* Ionic variables, now in .scss */
+@import "@ionic/angular/css/core.css";
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/palettes/dark.system.css";
+
+:root {
+  /* Couleur principale */
+  --ion-color-primary: #8b6e58;
+  --ion-color-primary-rgb: 139, 110, 88;
+  --ion-color-primary-contrast: #ffffff;
+
+  /* Fond et texte */
+  --ion-background-color: #fcfbf9;
+  --ion-text-color: #1a1714;
+
+  /* Palette de gris */
+  --ion-color-medium: #a09890;
+  --ion-color-dark: #1a1714;
+  --ion-color-light: #ffffff;
+
+  /* Couleur sable */
+  --ion-color-sand: #e8e4df;
+  --ion-color-sand-rgb: 232, 228, 223;
+
+  /* Venus tokens (re-integrated here properly) */
+  --bg:          #faf9f7;
+  --surface:     #ffffff;
+  --border:      #e8e4df;
+  --border-soft: #f0ece7;
+  --text:        #1a1714;
+  --text-mid:    #6b6560;
+  --text-muted:  #a09890;
+  --accent:      #c8956c;
+  --accent-2:    #8b6f5e;
+  --accent-light:#f5ede6;
+  --green:       #3a7d5a;
+  --green-bg:    #eef6f1;
+  --radius-sm:   8px;
+  --radius-md:   14px;
+  --radius-lg:   22px;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.06);
+  --shadow-md:   0 4px 20px rgba(0,0,0,0.08);
+}

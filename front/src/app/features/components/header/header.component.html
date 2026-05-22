@@ -1,10 +1,19 @@
 <ion-header class="ion-no-border main-header">
   <ion-toolbar>
-    <ion-title>
-      <span class="brand" routerLink="/">
-        <span class="brand-mark">◆</span> Venus
-      </span>
-    </ion-title>
+    <ion-header class="ion-no-border main-header">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button routerLink="/" fill="clear" class="brand-button">
+        <span class="brand">
+          <span class="brand-mark">◆</span> Venus
+        </span>
+          </ion-button>
+        </ion-buttons>
+
+        <ion-buttons slot="end">
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
 
     <ion-buttons slot="end">
       <ng-container *ngIf="!(authService.isAuthenticated$ | async)">
