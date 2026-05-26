@@ -72,7 +72,7 @@ export class ProfileManagementComponent implements OnInit {
 
   toggleService(profile: WorkerProfile, service: string) {
     // Copie ou récupération de la liste actuelle
-    let currentServices = [...(profile.serviceList || [])];
+    let currentServices = [...(profile.services || [])];
 
     if (currentServices.includes(service)) {
       // Si le service y est, on le retire
@@ -88,7 +88,7 @@ export class ProfileManagementComponent implements OnInit {
       next: () => {
         // Optionnel : Si ton currentUser$ ne se recharge pas automatiquement
         // depuis le serveur après le changement, tu peux mettre à jour localement l'objet
-        profile.serviceList = currentServices;
+        profile.services = currentServices;
       },
       error: (err) => {
         console.error('Erreur lors de la mise à jour du service', err);

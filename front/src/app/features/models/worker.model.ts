@@ -52,7 +52,7 @@ export interface WorkerSimpleProfile {
 export interface WorkerProfile extends WorkerSimpleProfile {
   eyeColor: string;
   hairColor: string;
-  serviceList: string[];
+  services: string[];
   responseTime: string;
   phone: string;
   rating: number;

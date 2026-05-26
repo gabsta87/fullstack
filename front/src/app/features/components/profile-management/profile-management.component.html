@@ -71,7 +71,7 @@
 
                   <div class="services-flex">
                     <ion-checkbox *ngFor="let service of allServices"
-                              [checked]="me.serviceList.includes(service)"
+                              [checked]="me.services.includes(service)"
                               (click)="toggleService(me, service)">
                       <ion-label>{{ service }}</ion-label>
                     </ion-checkbox>
