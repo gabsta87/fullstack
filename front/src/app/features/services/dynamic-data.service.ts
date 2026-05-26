@@ -8,25 +8,30 @@ import {environment} from "../../../environments/environment";
   providedIn: 'root'
 })
 export class DynamicDataService {
-  private apiBaseUrl = `${environment.apiBase}/data`; // Backend URL
+  private baseUrl = `${environment.apiBase}`;
+  private dataBaseUrl = `${environment.apiBase}/data`; // Backend URL
 
   constructor(private http: HttpClient) {}
 
   // Fetch all rows from a specific table
   getTableData(tableName: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiBaseUrl}/table/${tableName}`);
+    return this.http.get<any[]>(`${this.dataBaseUrl}/table/${tableName}`);
   }
 
   // Fetch a specific row by ID from a specific table
   getTableDataById(tableName: string, id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiBaseUrl}/table/${tableName}/${id}`);
+    return this.http.get<any>(`${this.dataBaseUrl}/table/${tableName}/${id}`);
   }
 
   getSimpleProfiles():Observable<WorkerSimpleProfile[]>{
-    return this.http.get<WorkerSimpleProfile[]>(`${this.apiBaseUrl}/simpleProfiles`);
+    return this.http.get<WorkerSimpleProfile[]>(`${this.baseUrl}/simpleProfiles`);
   }
 
   getFullProfile(id: string): Observable<WorkerProfile> {
-    return this.http.get<WorkerProfile>(`${this.apiBaseUrl}/workers/${id}`);
+    return this.http.get<WorkerProfile>(`${this.baseUrl}/workers/${id}`);
+  }
+
+  getMyFullProfile(): Observable<WorkerProfile> {
+    return this.http.get<WorkerProfile>(`${this.baseUrl}/workers/me`, { withCredentials: true });
   }
 }

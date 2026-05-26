@@ -4,7 +4,8 @@ import { AuthService } from "../../services/auth.service";
 import { AccountService } from "../../services/account.service";
 import { CommonModule } from "@angular/common";
 import { IonicModule, ModalController } from "@ionic/angular"; // Ajout ModalController
-import { AuthModalComponent } from "../auth-modal/auth-modal.component"; // Chemin à vérifier
+import { AuthModalComponent } from "../auth-modal/auth-modal.component";
+import {firstValueFrom} from "rxjs"; // Chemin à vérifier
 
 @Component({
   selector: 'app-header',
@@ -45,7 +46,15 @@ export class HeaderComponent {
     });
   }
 
-  openAccount() {
+  async openAccount() {
+    const isAuthenticated = await firstValueFrom(this.authService.isAuthenticated$);
+
+    if (!isAuthenticated) {
+      console.error("Utilisateur non authentifié");
+      this.router.navigate(['/login']);
+      return;
+    }
+
     this.accountService.getCurrentProfile().subscribe({
       next: (user) => {
         const target = user.role === 'WORKER' ? '/profile-management' : '/account';
