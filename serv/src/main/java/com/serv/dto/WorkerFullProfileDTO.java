@@ -18,7 +18,7 @@ public record WorkerFullProfileDTO(
         String       bodyType,
         int          height,
         int          weight,
-        List<Service> services,
+        List<String> services,
         boolean      available,
         String       responseTime,
         String       phone,
@@ -48,7 +48,7 @@ public record WorkerFullProfileDTO(
                 w.getBodyType() != null ? w.getBodyType().name() : null,
                 w.getHeight(),
                 w.getWeight(),
-                w.getServices(),
+                w.getServices().stream().map(Service::getName).toList(),
                 w.isAvailable(),
                 "< 30 min",   // TODO: real response time
                 "",           // TODO: expose phone only to logged-in users
