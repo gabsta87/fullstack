@@ -1,12 +1,15 @@
 package com.serv.controller;
 
 import com.serv.database.entities.Service;
+import com.serv.database.entities.VenusUser;
 import com.serv.database.repositories.ServiceRepository;
 import com.serv.dto.WorkerMinimalProfileDTO;
 import com.serv.dto.WorkerFullProfileDTO;
 import com.serv.database.repositories.WorkerRepository;
 import com.serv.service.WorkerService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -55,6 +58,23 @@ public class WorkerController {
         return workerRepository.findById(id)
                 .map(w -> ResponseEntity.ok(WorkerFullProfileDTO.from(w)))
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<WorkerFullProfileDTO> getCurrentWorkerProfile(HttpSession session) {
+        VenusUser user = (VenusUser) session.getAttribute("user");
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        if (user.isClient()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return workerRepository.findByUsername(user.getUsername())
+                .map(w -> ResponseEntity.ok(WorkerFullProfileDTO.from(w)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/services")

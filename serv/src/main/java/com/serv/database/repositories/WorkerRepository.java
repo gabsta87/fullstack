@@ -21,6 +21,8 @@ public interface WorkerRepository extends JpaRepository<Worker, UUID> {
 
     List<Worker> findByAvailableFalse(Pageable pageable);
 
+    Optional<Worker> findByUsername(String name);
+
     @Query("SELECT w FROM Worker w LEFT JOIN FETCH w.services")
     List<Worker> findAllWithServices();
 
