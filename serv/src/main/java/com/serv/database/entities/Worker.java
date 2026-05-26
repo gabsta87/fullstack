@@ -103,4 +103,8 @@ public class Worker extends VenusUser {
         this.subscriptionExpiresAt = base.plus(days, java.time.temporal.ChronoUnit.DAYS);
         this.expired = getSubscriptionDaysLeft() <= 0;
     }
+
+    public boolean isClient() {
+        return false;
+    }
 }

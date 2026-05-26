@@ -49,4 +49,6 @@ public abstract class VenusUser {
     public void setPassword(String password)        { this.passwordHash = ENCODER.encode(password); }
     public boolean checkPassword(String password)   { return ENCODER.matches(password, this.passwordHash); }
 
+    public abstract boolean isClient();
+
 }

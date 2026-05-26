@@ -24,4 +24,8 @@ public class Client extends VenusUser {
     public Client(String name, Email email, String password) {
         super(name,email,password);
     }
+
+    public boolean isClient() {
+        return true;
+    }
 }
