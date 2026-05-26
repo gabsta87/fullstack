@@ -12,7 +12,7 @@
     </ion-segment>
   </ion-toolbar>
 
-  <ion-grid fixed="false" class="ion-no-padding">
+  <ion-grid [fixed]="false" class="ion-no-padding">
 
     <div *ngIf="activeTab === 'favorites'" class="fade-in ion-padding">
       <div *ngIf="favorites$ | async as favorites">

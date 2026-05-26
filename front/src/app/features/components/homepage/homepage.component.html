@@ -1,8 +1,8 @@
 <!-- ░░ DEV BAR (remove before go-live) ░░ -->
-<div class="dev-bar">
-  <span class="dev-label">🛠 Dev</span>
-  <a routerLink="/ngx-pay">NGX Pay</a>
-</div>
+<!--<div class="dev-bar">-->
+<!--  <span class="dev-label">🛠 Dev</span>-->
+<!--  <a routerLink="/ngx-pay">NGX Pay</a>-->
+<!--</div>-->
 
 <app-header></app-header>
 
@@ -14,10 +14,6 @@
 
   <ion-grid>
     <section *ngIf="availableWorkers.length > 0">
-      <div class="section-label">
-        <span class="pip online"></span>
-        Disponibles maintenant ({{ availableWorkers.length }})
-      </div>
 
       <ion-row>
         <ion-col size="12" size-sm="6" size-md="4" size-lg="3" size-xl="2"
@@ -28,10 +24,6 @@
     </section>
 
     <section *ngIf="unavailableWorkers.length > 0" class="ion-margin-top">
-      <div class="section-label">
-        <span class="pip offline"></span>
-        Non disponibles ({{ unavailableWorkers.length }})
-      </div>
 
       <ion-row class="faded">
         <ion-col size="12" size-sm="6" size-md="4" size-lg="3" size-xl="2"
