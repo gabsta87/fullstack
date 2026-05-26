@@ -1,5 +1,6 @@
 package com.serv.controller;
 
+import com.serv.database.entities.Photo;
 import com.serv.database.repositories.PhotoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class WorkerPreviewController {
         List<String> urls = photoRepository
                 .findByWorkerIdOrderBySortOrderAscIdAsc(id)
                 .stream()
-                .map(p -> p.getPreviewThumbUrl())
+                .map(Photo::getPreviewThumbUrl)
                 .filter(url -> url != null && !url.isBlank())
                 .limit(5)
                 .toList();
