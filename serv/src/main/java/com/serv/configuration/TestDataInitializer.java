@@ -181,20 +181,14 @@ public class TestDataInitializer implements ApplicationRunner {
 
         w.setAvailable(available);
         w.setLastRefreshed(lastRefreshed);
-        w.setLocation("Geneva");
-        w.setRegion(region);
+        w.setLocation(location);
         w.setBodyType(bodyType);
         w.setHeight(height);
         w.setWeight(weight);
         w.setBirthday(birthday);
         w.setServices(Arrays.asList(services));
-        w.setPriority(0);
+        w.setGalleryPositionIndex(0);
         w.setExpired(false);
-
-        // Physical address (minimal)
-        PhysicalAddress addr = new PhysicalAddress();
-        addr.setCity(location);
-//        w.setAddress(addr);
 
         workerRepository.save(w);
 

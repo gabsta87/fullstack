@@ -25,7 +25,4 @@ public class Client extends VenusUser {
         super(name,email,password);
     }
 
-    public boolean isClient() {
-        return true;
-    }
 }

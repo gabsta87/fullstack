@@ -34,7 +34,7 @@ public class Payment {
     @Column(name="currency")
     private Currency currency;
 
-//    @Column(name = "card_number")
+//    @Column(userName = "card_number")
     @Transient
     private String cardNumber;
 
@@ -47,7 +47,7 @@ public class Payment {
     @Column(name = "token")
     private String token;
 
-    //    @Column(name = "cvc")
+    //    @Column(userName = "cvc")
     @Transient
     private String cvc;
 

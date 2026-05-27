@@ -60,32 +60,37 @@ public class AccountController {
         VenusUser user = sessionUser(session);
         if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
-        boolean isWorker = !user.isClient();
         Map<String, Object> result = new HashMap<>();
 
         result.put("id",       user.getId().toString());
         result.put("username", user.getUsername());
         result.put("email",    user.getEmail());
         result.put("location", user.getLocation());
-        result.put("role",     isWorker ? "WORKER" : "CLIENT");
+        result.put("role",     user.getRole().toString());
 
-        if (isWorker) {
-            Worker w = (Worker) user;
-            result.put("available",    w.isAvailable());
-            result.put("region",       w.getRegion());
-            result.put("address",      w.getAddress());
-            result.put("bodyType",     w.getBodyType() != null ? w.getBodyType().name() : null);
-            result.put("height",       w.getHeight());
-            result.put("weight",       w.getWeight());
-            result.put("description",  w.getDescription());
-            result.put("services",     w.getServices().stream().map(Service::getName).toList());
-            result.put("mainThumbUrl", w.getMainPhoto() != null
-                    ? w.getMainPhoto().getMainThumbUrl() : null);
-            result.put("subscriptionDaysLeft", w.getSubscriptionDaysLeft());
-            result.put("expired",      w.isExpired());
-        }else{
-            Client c = (Client) user;
-            result.put("favorites", c.getFavorites());
+        switch (user.getRole()) {
+            case WORKER:
+                Worker w = (Worker) user;
+                result.put("available",    w.isAvailable());
+                result.put("region",       w.getRegion());
+                result.put("address",      w.getAddress());
+                result.put("bodyType",     w.getBodyType() != null ? w.getBodyType().name() : null);
+                result.put("height",       w.getHeight());
+                result.put("weight",       w.getWeight());
+                result.put("description",  w.getDescription());
+                result.put("services",     w.getServices().stream().map(Service::getName).toList());
+                result.put("mainThumbUrl", w.getMainPhoto() != null
+                        ? w.getMainPhoto().getMainThumbUrl() : null);
+                result.put("subscriptionDaysLeft", w.getSubscriptionDaysLeft());
+                result.put("expired",      w.isExpired());
+                break;
+            case CLIENT:
+                Client c = (Client) user;
+                result.put("favorites", c.getFavorites());
+                break;
+            case ADMIN:
+                // TODO: Add admin-specific fields
+                break;
         }
 
         return ResponseEntity.ok(result);
@@ -146,7 +151,7 @@ public class AccountController {
         if (client == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         List<UUID> ids = client.getFavorites().stream().map(Worker::getId).toList();
-        return ResponseEntity.ok(galleryService.getGalleryByIds(ids));
+        return ResponseEntity.ok(galleryService.getGallery(ids));
     }
 
     /** POST /account/favorites/{workerId} */

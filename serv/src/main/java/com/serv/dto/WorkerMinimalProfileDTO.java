@@ -1,13 +1,16 @@
 package com.serv.dto;
 
-import com.serv.common.BodyType;
+import com.serv.database.entities.Photo;
+import com.serv.database.entities.Service;
+import com.serv.database.entities.Worker;
+import com.serv.service.WorkerService;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
+import static com.serv.service.WorkerService.MAX_PREVIEW_THUMBS;
 
 /**
  * Lightweight DTO returned by GET /workers (the main gallery endpoint).
@@ -23,18 +26,19 @@ import java.util.UUID;
  */
 @Getter
 @Setter
-public class WorkerMinimalProfileDTO {
+public class WorkerMinimalProfileDTO implements Comparable<WorkerMinimalProfileDTO>{
 
-    private UUID id;
+    private String id;
     private String name;
-    private Date   birthday;
+    private int    age;
     private String location;
     private String region;
-    private BodyType bodyType;
+    private String bodyType;
     private int    height;
+    private int galleryIndex;
+    private String lastRefreshed;
     private List<String> services;
     private boolean available;
-    private Instant lastRefreshed;
 
     /** The 600×800 main card thumbnail — always loaded */
     private String mainThumbUrl;
@@ -47,24 +51,41 @@ public class WorkerMinimalProfileDTO {
 
     // ── Constructor ───────────────────────────────────────────────────────────
 
+    public static WorkerMinimalProfileDTO from(Worker w){
+        return new WorkerMinimalProfileDTO(
+            w.getId(), w.getUsername(), WorkerService.calculateAge(w.getBirthday()),
+            w.getLocation(), w.getRegion(),
+            w.getBodyType().toString(), w.getHeight(),
+            w.getServices().stream().map(Service::getName).toList(), w.isAvailable(),
+            w.getGalleryPositionIndex(),
+            w.getMainPhoto().getMainThumbUrl(), w.getPhotos().stream().map(Photo::getPreviewThumbUrl).limit(MAX_PREVIEW_THUMBS).toList()
+        );
+    }
+
     public WorkerMinimalProfileDTO(
-            UUID id, String name, Date birthday,
+            UUID id, String name, int age,
             String location, String region,
-            BodyType bodyType, int height,
+            String bodyType, int height,
             List<String> services, boolean available,
-            Instant lastRefreshed,
+            int galleryIndex,
             String mainThumbUrl, List<String> previewThumbUrls) {
-        this.id               = id;
+        this.id               = id.toString();
         this.name             = name;
-        this.birthday         = birthday;
+        this.age              = age;
         this.location         = location;
         this.region           = region;
         this.bodyType         = bodyType;
         this.height           = height;
         this.services         = services;
         this.available        = available;
-        this.lastRefreshed    = lastRefreshed;
+        this.galleryIndex     = galleryIndex;
         this.mainThumbUrl     = mainThumbUrl;
         this.previewThumbUrls = previewThumbUrls;
+    }
+
+    @Override
+    public int compareTo(WorkerMinimalProfileDTO o) {
+        // A greater index means closer to the top of the gallery.
+        return o.galleryIndex - this.galleryIndex;
     }
 }

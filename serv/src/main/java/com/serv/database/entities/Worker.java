@@ -6,7 +6,6 @@ import com.serv.common.UserRole;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -16,14 +15,10 @@ import java.util.List;
 
 @Data
 @Entity
-@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @DiscriminatorValue("WORKER")
 @Table(name = TablesNames.WORKERS)
 public class Worker extends VenusUser {
-
-//    @Embedded
-//    private PhysicalAddress address;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "main_photo_id")
@@ -35,7 +30,14 @@ public class Worker extends VenusUser {
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<Comment> comments = new ArrayList<>();
 
-    private int priority;
+    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Collection<Video> videos = new ArrayList<>();
+    private String phone;
+    private String eyeColor;
+    private String hairColor;
+    private String gender;
+
+    private int galleryPositionIndex;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -111,7 +113,4 @@ public class Worker extends VenusUser {
         this.expired = getSubscriptionDaysLeft() <= 0;
     }
 
-    public boolean isClient() {
-        return false;
-    }
 }

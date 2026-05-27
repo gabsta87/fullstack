@@ -1,6 +1,5 @@
 package com.serv.service;
 
-import com.serv.database.entities.Photo;
 import com.serv.database.entities.Worker;
 import com.serv.database.repositories.PhotoRepository;
 import com.serv.database.repositories.WorkerRepository;
@@ -21,8 +20,8 @@ public class WorkerService {
     @Autowired private WorkerRepository workerRepository;
     @Autowired private PhotoRepository  photoRepository;
 
-    private static final int MAX_PREVIEW_THUMBS = 5;
-    private static final int PAGE_SIZE          = 24;
+    public static final int MAX_PREVIEW_THUMBS = 5;
+    public static final int PAGE_SIZE          = 24;
 
     /**
      * Returns a page of WorkerMinimalProfileDTOs
@@ -40,9 +39,10 @@ public class WorkerService {
      */
     public List<WorkerMinimalProfileDTO> getGalleryPage(int page, Map<String, Object> filters) {
 
-        // Pour l'instant, ton code ignore les filtres.
+        // TODO apply filters to the query
+        // TODO sorting by galleryIndex desc
+        // Pour l'instant, le code ignore les filtres.
         // Si tu veux voir tes profils, il faut que l'appel SQL soit filtré.
-        // Voici une version simplifiée pour tester si les profils reviennent :
 
         // 1 — Fetch workers (available first, then by lastRefreshed)
         List<Worker> available = workerRepository.findByAvailableTrue(
@@ -78,24 +78,13 @@ public class WorkerService {
                         .add(p.getPreviewThumbUrl()));
 
         // 3 — Assemble DTOs
-        return workers.stream().map(w -> new WorkerMinimalProfileDTO(
-                w.getId(),         // UUID → String for JSON
-                w.getUsername(),
-                w.getBirthday(),// Date → int age
-                w.getLocation(),
-                w.getRegion(),
-                w.getBodyType(),
-                w.getHeight(),
-                w.getServices().stream().map(s -> s.getName()).toList(),
-                w.isAvailable(),
-                w.getLastRefreshed(),
-                mainThumbs.getOrDefault(w.getId(), null),
-                previewThumbs.getOrDefault(w.getId(), List.of())
-                        .stream().limit(MAX_PREVIEW_THUMBS).toList()
-        )).toList();
+        return workers.stream()
+                .map(WorkerMinimalProfileDTO::from)
+                .sorted(WorkerMinimalProfileDTO::compareTo)
+                .toList();
     }
 
-    private int calculateAge(java.util.Date birthday) {
+    public static int calculateAge(java.util.Date birthday) {
         if (birthday == null) return 0;
         java.time.LocalDate birthDate = (birthday instanceof java.sql.Date sqlDate)
                 ? sqlDate.toLocalDate()
@@ -108,43 +97,12 @@ public class WorkerService {
      * Used by GET /account/favorites to return a client's saved workers.
      */
     @Transactional(readOnly = true)
-    public List<WorkerMinimalProfileDTO> getGalleryByIds(List<UUID> ids) {
+    public List<WorkerMinimalProfileDTO> getGallery(List<UUID> ids) {
         if (ids == null || ids.isEmpty()) return List.of();
         return workerRepository.findAllById(ids).stream()
-                .map(this::toDTO)
+                .map(WorkerMinimalProfileDTO::from)
+                .sorted(WorkerMinimalProfileDTO::compareTo)
                 .toList();
-    }
-
-    private WorkerMinimalProfileDTO toDTO(Worker w) {
-        String mainThumbUrl = w.getMainPhoto() != null
-                ? w.getMainPhoto().getMainThumbUrl()
-                : null;
-
-        List<String> previewThumbs = photoRepository
-                .findByWorkerIdInOrderBySortOrderAsc(List.of(w.getId()))
-                .stream()
-                .map(Photo::getPreviewThumbUrl)
-                .limit(MAX_PREVIEW_THUMBS)
-                .toList();
-
-        List<String> serviceNames = w.getServices().stream()
-                .map(s -> s.getName()) // Remplacez par le nom de l'attribut dans Service.java
-                .toList();
-
-        return new WorkerMinimalProfileDTO(
-                w.getId(),
-                w.getUsername(),
-                w.getBirthday(),
-                w.getLocation(),
-                w.getRegion(),
-                w.getBodyType(),
-                w.getHeight(),
-                serviceNames,
-                w.isAvailable(),
-                w.getLastRefreshed(),
-                mainThumbUrl,
-                previewThumbs
-        );
     }
 
 }
