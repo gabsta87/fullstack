@@ -46,10 +46,9 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session != null) session.invalidate();
-        return ResponseEntity.ok("Logged out successfully.");
+    public ResponseEntity<String> logout(HttpSession session) {
+        session.invalidate();
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/session-check")
