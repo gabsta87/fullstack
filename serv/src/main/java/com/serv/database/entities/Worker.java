@@ -17,7 +17,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@DiscriminatorValue("SELLER")
+@DiscriminatorValue("WORKER")
 @Table(name = TablesNames.WORKERS)
 public class Worker extends VenusUser {
 
@@ -36,7 +36,8 @@ public class Worker extends VenusUser {
 
     private int priority;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})    @JoinTable(
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
             name = "workers_services",
             joinColumns = { @JoinColumn(name = "worker_id") },
             inverseJoinColumns = { @JoinColumn(name = "service_id") }
