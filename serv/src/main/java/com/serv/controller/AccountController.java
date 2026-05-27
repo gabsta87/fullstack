@@ -91,14 +91,6 @@ public class AccountController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/language")
-    public ResponseEntity<?> getLanguage(HttpSession session) {
-        VenusUser user = sessionUser(session);
-        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-
-        return ResponseEntity.ok(user.getLanguage());
-    }
-
     @PatchMapping("/language")
     @Transactional
     public ResponseEntity<?> setLanguage(@RequestBody String language, HttpSession session) {
