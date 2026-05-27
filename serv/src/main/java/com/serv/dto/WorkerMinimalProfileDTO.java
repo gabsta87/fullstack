@@ -47,8 +47,6 @@ public class WorkerMinimalProfileDTO {
 
     // ── Constructor ───────────────────────────────────────────────────────────
 
-    public WorkerMinimalProfileDTO() {}
-
     public WorkerMinimalProfileDTO(
             UUID id, String name, Date birthday,
             String location, String region,

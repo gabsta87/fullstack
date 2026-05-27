@@ -2,6 +2,7 @@ package com.serv.database.entities;
 
 import com.serv.common.Language;
 import com.serv.common.TablesNames;
+import com.serv.common.UserRole;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,6 +38,8 @@ public abstract class VenusUser {
 
     @Enumerated(EnumType.STRING)
     private Language language;
+    @Enumerated(EnumType.STRING)
+    protected UserRole role = UserRole.CLIENT;
 
     private static final BCryptPasswordEncoder ENCODER = new BCryptPasswordEncoder();
 

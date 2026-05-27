@@ -5,6 +5,7 @@ import com.serv.database.repositories.ClientRepository;
 import com.serv.database.repositories.PasswordResetTokenRepository;
 import com.serv.database.repositories.UserRepository;
 import com.serv.database.repositories.WorkerRepository;
+import com.serv.dto.VenusUserDTO;
 import com.serv.service.MailService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -37,9 +38,7 @@ public class AuthController {
 
         if (userOpt.isPresent() && userOpt.get().checkPassword(request.getPassword())) {
             session.setAttribute("user", userOpt.get());
-            String redirectTo = (request.getRedirectTo() != null && !request.getRedirectTo().isEmpty())
-                    ? request.getRedirectTo() : "/home";
-            return ResponseEntity.ok(Map.of("message", "Login successful!", "redirectTo", redirectTo));
+            return ResponseEntity.ok(VenusUserDTO.from(userOpt.get()));
         }
 
         return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials."));

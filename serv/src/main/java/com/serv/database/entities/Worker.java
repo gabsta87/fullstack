@@ -2,6 +2,7 @@ package com.serv.database.entities;
 
 import com.serv.common.BodyType;
 import com.serv.common.TablesNames;
+import com.serv.common.UserRole;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -81,6 +82,11 @@ public class Worker extends VenusUser {
 
     public Worker(String username, Email email, String password) {
         super(username, email, password);
+        this.role = UserRole.WORKER;
+    }
+
+    public Worker() {
+        this.role = UserRole.WORKER;
     }
 
     /**
