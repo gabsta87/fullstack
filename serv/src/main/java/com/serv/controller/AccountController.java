@@ -4,6 +4,7 @@ import com.serv.common.Language;
 import com.serv.database.entities.*;
 import com.serv.common.BodyType;
 import com.serv.database.repositories.*;
+import com.serv.dto.WorkerFullProfileDTO;
 import com.serv.service.WorkerService;
 import com.serv.service.MediaStorageService;
 import jakarta.servlet.http.HttpSession;
@@ -59,8 +60,9 @@ public class AccountController {
         VenusUser user = sessionUser(session);
         if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
-        boolean isWorker = user instanceof Worker;
+        boolean isWorker = !user.isClient();
         Map<String, Object> result = new HashMap<>();
+
         result.put("id",       user.getId().toString());
         result.put("username", user.getUsername());
         result.put("email",    user.getEmail());
@@ -76,7 +78,7 @@ public class AccountController {
             result.put("height",       w.getHeight());
             result.put("weight",       w.getWeight());
             result.put("description",  w.getDescription());
-            result.put("services",     w.getServices());
+            result.put("services",     w.getServices().stream().map(Service::getName).toList());
             result.put("mainThumbUrl", w.getMainPhoto() != null
                     ? w.getMainPhoto().getMainThumbUrl() : null);
             result.put("subscriptionDaysLeft", w.getSubscriptionDaysLeft());
@@ -84,7 +86,6 @@ public class AccountController {
         }else{
             Client c = (Client) user;
             result.put("favorites", c.getFavorites());
-
         }
 
         return ResponseEntity.ok(result);
@@ -227,6 +228,22 @@ public class AccountController {
         Worker savedWorker = workerRepository.save(worker);
         session.setAttribute("user", savedWorker);
         return ResponseEntity.ok(savedWorker);
+    }
+
+    @PatchMapping("/worker/updateservices")
+    public ResponseEntity<WorkerFullProfileDTO> updateServices(@RequestBody List<String> services, HttpSession session) {
+        Worker worker = sessionWorker(session);
+
+        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        List<Service> serviceList = services.stream().map(serviceRepository::findByName).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+
+        worker.setServices(serviceList);
+        workerRepository.save(worker);
+
+        session.setAttribute("user", worker);
+
+        return ResponseEntity.ok(WorkerFullProfileDTO.from(worker));
     }
 
     /**

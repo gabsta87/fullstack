@@ -60,23 +60,6 @@ public class WorkerController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/me")
-    public ResponseEntity<WorkerFullProfileDTO> getCurrentWorkerProfile(HttpSession session) {
-        VenusUser user = (VenusUser) session.getAttribute("user");
-
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        if (user.isClient()) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
-        return workerRepository.findByUsername(user.getUsername())
-                .map(w -> ResponseEntity.ok(WorkerFullProfileDTO.from(w)))
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
     @GetMapping("/services")
     public ResponseEntity<List<String>> getWorkerServices() {
         return ResponseEntity.ok(serviceRepository.findAll().stream()
