@@ -46,7 +46,6 @@ public class Worker extends VenusUser {
             inverseJoinColumns = { @JoinColumn(name = "service_id") }
     )
     private List<Service> services = new ArrayList<>();
-    private String address;
 
     private boolean expired;
     private boolean available = true;

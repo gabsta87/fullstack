@@ -32,7 +32,11 @@ public abstract class VenusUser {
     protected String passwordHash;
     protected boolean enabled;
     protected boolean locked;
+//    @ManyToOne
+//    @JoinColumn(username = "location_id")
+//    protected Location location;
     protected String location;
+    protected String region;
 
     @Enumerated(EnumType.STRING)
     private Language language;

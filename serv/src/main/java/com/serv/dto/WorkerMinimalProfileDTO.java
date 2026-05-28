@@ -29,7 +29,7 @@ import static com.serv.service.WorkerService.MAX_PREVIEW_THUMBS;
 public class WorkerMinimalProfileDTO implements Comparable<WorkerMinimalProfileDTO>{
 
     private String id;
-    private String name;
+    private String username;
     private int    age;
     private String location;
     private String region;
@@ -58,7 +58,8 @@ public class WorkerMinimalProfileDTO implements Comparable<WorkerMinimalProfileD
             w.getBodyType().toString(), w.getHeight(),
             w.getServices().stream().map(Service::getName).toList(), w.isAvailable(),
             w.getGalleryPositionIndex(),
-            w.getMainPhoto().getMainThumbUrl(), w.getPhotos().stream().map(Photo::getPreviewThumbUrl).limit(MAX_PREVIEW_THUMBS).toList()
+            w.getMainPhoto() != null ? w.getMainPhoto().getMainThumbUrl() : null,
+            w.getPhotos().stream().map(Photo::getPreviewThumbUrl).limit(MAX_PREVIEW_THUMBS).toList()
         );
     }
 
@@ -70,7 +71,7 @@ public class WorkerMinimalProfileDTO implements Comparable<WorkerMinimalProfileD
             int galleryIndex,
             String mainThumbUrl, List<String> previewThumbUrls) {
         this.id               = id.toString();
-        this.name             = name;
+        this.username = name;
         this.age              = age;
         this.location         = location;
         this.region           = region;

@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public record WorkerFullProfileDTO(
         UUID         id,
-        String       name,
+        String       username,
         int          age,
         String       location,
         String       region,

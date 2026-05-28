@@ -68,7 +68,7 @@ public class TestDataInitializer implements ApplicationRunner {
         System.out.println("[TestDataInitializer] Inserting test workers...");
 
         createWorker(
-                "amelie",   "amelie@test.com",   "Amélie",   26,
+                "amelie",   "amelie@test.com",   "Amélie",
                 date(1998, 3, 12), "Paris 8e",     "Paris",
                 BodyType.ATHLETIC, 168, 56,
                 true,
@@ -78,7 +78,7 @@ public class TestDataInitializer implements ApplicationRunner {
         );
 
         createWorker(
-                "sofia",    "sofia@test.com",    "Sofia",    23,
+                "sofia",    "sofia@test.com",    "Sofia",
                 date(2001, 7, 4),  "Lyon 2e",      "Lyon",
                 BodyType.SLIM,     172, 53,
                 true,
@@ -88,7 +88,7 @@ public class TestDataInitializer implements ApplicationRunner {
         );
 
         createWorker(
-                "lea",      "lea@test.com",      "Léa",      29,
+                "lea",      "lea@test.com",      "Léa",
                 date(1995, 11, 20),"Paris 11e",   "Paris",
                 BodyType.AVERAGE,  165, 60,
                 true,
@@ -98,7 +98,7 @@ public class TestDataInitializer implements ApplicationRunner {
         );
 
         createWorker(
-                "camille",  "camille@test.com",  "Camille",  25,
+                "camille",  "camille@test.com",  "Camille",
                 date(1999, 5, 8),  "Bordeaux",    "Bordeaux",
                 BodyType.CURVY,    162, 65,
                  true,
@@ -108,7 +108,7 @@ public class TestDataInitializer implements ApplicationRunner {
         );
 
         createWorker(
-                "ines",     "ines@test.com",     "Inès",     31,
+                "ines",     "ines@test.com",     "Inès",
                 date(1993, 9, 15), "Marseille",   "Marseille",
                 BodyType.SLIM,     170, 54,
                  true,
@@ -119,7 +119,7 @@ public class TestDataInitializer implements ApplicationRunner {
 
         // Unavailable workers (to test the "offline" section)
         createWorker(
-                "zoe",      "zoe@test.com",      "Zoé",      24,
+                "zoe",      "zoe@test.com",      "Zoé",
                 date(2000, 2, 28), "Nice",        "Nice",
                 BodyType.ATHLETIC, 169, 57,
                 false,
@@ -129,7 +129,7 @@ public class TestDataInitializer implements ApplicationRunner {
         );
 
         createWorker(
-                "manon",    "manon@test.com",    "Manon",    27,
+                "manon",    "manon@test.com",    "Manon",
                 date(1997, 6, 3),  "Toulouse",    "Toulouse",
                 BodyType.AVERAGE,  164, 59,
                 false,
@@ -166,7 +166,7 @@ public class TestDataInitializer implements ApplicationRunner {
     }
 
     private void createWorker(
-            String username, String email, String displayName, int age,
+            String username, String email, String displayName,
             Date birthday, String location, String region,
             BodyType bodyType, int height, int weight,
             boolean available,
@@ -182,6 +182,7 @@ public class TestDataInitializer implements ApplicationRunner {
         w.setAvailable(available);
         w.setLastRefreshed(lastRefreshed);
         w.setLocation(location);
+        w.setRegion(region);
         w.setBodyType(bodyType);
         w.setHeight(height);
         w.setWeight(weight);

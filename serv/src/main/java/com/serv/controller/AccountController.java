@@ -73,7 +73,6 @@ public class AccountController {
                 Worker w = (Worker) user;
                 result.put("available",    w.isAvailable());
                 result.put("region",       w.getRegion());
-                result.put("address",      w.getAddress());
                 result.put("bodyType",     w.getBodyType() != null ? w.getBodyType().name() : null);
                 result.put("height",       w.getHeight());
                 result.put("weight",       w.getWeight());
@@ -209,7 +208,7 @@ public class AccountController {
         if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         if (req.description() != null) worker.setDescription(req.description());
-        if (req.location()    != null) worker.setLocation(req.location());
+        if (req.location()    != null) worker.setLocation(req.location);
         if (req.region()      != null) worker.setRegion(req.region());
         if (req.height()      != null) worker.setHeight(req.height());
         if (req.weight()      != null) worker.setWeight(req.weight());
