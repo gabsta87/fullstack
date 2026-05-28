@@ -8,7 +8,6 @@ import {ClientPrivateAccount, WorkerPrivateAccount} from "../models/user.model";
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private baseUrl = `${environment.apiBase}/auth`;
-  private redirectUrl = '';
   private sessionCache: { value: boolean; expires: number } | null = null;
 
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
@@ -58,6 +57,4 @@ export class AuthService {
     );
   }
 
-  setRedirectUrl(url: string) { this.redirectUrl = url; }
-  getRedirectUrl()            { return this.redirectUrl; }
 }

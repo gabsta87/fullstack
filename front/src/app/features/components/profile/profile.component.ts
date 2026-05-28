@@ -36,6 +36,7 @@ import {
 
 import {PhotoItem, Review, VideoItem} from '../../models/items.model';
 import {WorkerFullProfile} from "../../models/user.model";
+import {HeaderComponent} from "../header/header.component";
 
 @Component({
   selector: 'app-profile',
@@ -44,7 +45,7 @@ import {WorkerFullProfile} from "../../models/user.model";
   standalone: true,
   imports: [
     CommonModule, FormsModule, IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton,
-    IonButton, IonIcon, IonList, IonItem, IonLabel, IonChip,
+    IonButton, IonIcon, IonList, IonItem, IonLabel, IonChip, HeaderComponent,
   ],
 })
 export class ProfileComponent implements OnInit, OnDestroy {

@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
-import { Router, RouterLink } from "@angular/router";
-import { AuthService } from "../../services/auth.service";
-import { ClientAccountService } from "../../services/client-account.service";
-import { CommonModule } from "@angular/common";
-import { IonicModule, ModalController } from "@ionic/angular"; // Ajout ModalController
-import { AuthModalComponent } from "../auth-modal/auth-modal.component";
-import {firstValueFrom} from "rxjs"; // Chemin à vérifier
+import {Component} from '@angular/core';
+import {Router, RouterLink} from "@angular/router";
+import {AuthService} from "../../services/auth.service";
+import {ClientAccountService} from "../../services/client-account.service";
+import {CommonModule} from "@angular/common";
+import {IonicModule, ModalController} from "@ionic/angular";
+import {AuthModalComponent} from "../auth-modal/auth-modal.component";
+import {firstValueFrom} from "rxjs";
 
 @Component({
   selector: 'app-header',
