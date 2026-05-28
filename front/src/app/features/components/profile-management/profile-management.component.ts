@@ -1,14 +1,15 @@
 import {Component, OnInit, Signal} from '@angular/core';
-import { AccountService, WorkerProfileUpdate } from '../../services/account.service';
 import {CommonModule} from "@angular/common";
 import {IonicModule} from "@ionic/angular";
 import {FormsModule} from "@angular/forms";
 import {HeaderComponent} from "../header/header.component";
 import {WorkerService} from "../../services/worker.service";
 import {BehaviorSubject, firstValueFrom, map, Observable} from "rxjs";
-import {BODY_TYPE_LABELS, WorkerProfile} from "../../models/worker.model";
+import {BODY_TYPE_LABELS} from "../../models/items.model";
 import {ActivatedRoute} from "@angular/router";
 import {toSignal} from "@angular/core/rxjs-interop";
+import {WorkerFullProfile, WorkerPrivateAccount, WorkerProfileUpdate} from "../../models/user.model";
+import {WorkerAccountService} from "../../services/worker-account.service";
 
 export interface PhotoItem {
   id: string;
@@ -28,8 +29,8 @@ export interface PhotoItem {
 export class ProfileManagementComponent implements OnInit {
 
   activeTab: 'profile' | 'photos' | 'settings' | 'subscription' = 'profile';
-  currentUser$ : Observable<WorkerProfile>;
-  currentUser : Signal<WorkerProfile | undefined>;
+  currentUser$ : Observable<WorkerPrivateAccount>;
+  currentUser : Signal<WorkerPrivateAccount | undefined>;
   allServices : string[] | undefined;
 
   // Profile form
@@ -49,7 +50,7 @@ export class ProfileManagementComponent implements OnInit {
   settingsError = '';
   savingSettings = false;
 
-  constructor(private accountService: AccountService, private workerService: WorkerService, private route : ActivatedRoute) {
+  constructor(private accountService: WorkerAccountService, private workerService: WorkerService, private route : ActivatedRoute) {
     this.currentUser$ = this.route.data.pipe(map(data => data['profile']));
     this.currentUser = toSignal(this.currentUser$);
   }
@@ -70,29 +71,20 @@ export class ProfileManagementComponent implements OnInit {
     param.next(!param.value);
   }
 
-  toggleService(profile: WorkerProfile, service: string) {
-    // Copie ou récupération de la liste actuelle
-    let currentServices = [...(profile.services || [])];
-
-    if (currentServices.includes(service)) {
-      // Si le service y est, on le retire
-      currentServices = currentServices.filter(s => s !== service);
+  toggleService(me: WorkerFullProfile, service: string) {
+    // 1. Calculer la nouvelle liste localement
+    let updatedServices = [...me.services];
+    if (updatedServices.includes(service)) {
+      updatedServices = updatedServices.filter(s => s !== service);
     } else {
-      // Sinon, on l'ajoute
-      currentServices.push(service);
+      updatedServices.push(service);
     }
+    console.log("Services à envoyer au serveur:", updatedServices);
 
-    // Ici, tu appelles ton service pour mettre à jour directement la DB.
-    // Exemple si tu as une méthode de mise à jour partielle :
-    this.accountService.updateProfile({ services: currentServices }).subscribe({
-      next: () => {
-        // Optionnel : Si ton currentUser$ ne se recharge pas automatiquement
-        // depuis le serveur après le changement, tu peux mettre à jour localement l'objet
-        profile.services = currentServices;
-      },
-      error: (err) => {
-        console.error('Erreur lors de la mise à jour du service', err);
-      }
+    // 2. Envoyer au serveur
+    // this.accountService.updateServices(updatedServices);
+    this.accountService.updateServices(updatedServices).subscribe(() => {
+      console.log("updated profile")
     });
   }
 
@@ -153,7 +145,7 @@ export class ProfileManagementComponent implements OnInit {
     if (this.settingsForm.password) payload.password = this.settingsForm.password;
 
     this.savingSettings = true;
-    this.accountService.updateSettings(payload);
+    // this.accountService.updateSettings(payload);
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────

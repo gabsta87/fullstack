@@ -1,4 +1,4 @@
-// src/app/features/models/worker.model.ts
+// src/app/features/models/items.model.ts
 
 export const REGIONS = ['Paris','Lyon','Marseille','Bordeaux','Toulouse','Nice','Nantes','Strasbourg'] as const;
 // Reflet exact de tes Enums Java
@@ -31,40 +31,6 @@ export const HAIR_COLORS: ColorOption[] = [
   { label: 'White',   hex: '#ffffff' }, { label : "Silver", hex: '#999999'},
 ];
 
-// --- Interfaces existantes ---
-
-export interface WorkerSimpleProfile {
-  id: string;
-  name: string;
-  age: number;
-  location: string;
-  region: string;
-  bodyType: string;
-  height: number;
-  weight: number;
-  services: string[];
-  available: boolean;
-  lastRefreshed: string;
-  mainThumbUrl: string | null;
-  previewThumbUrls: string[];
-}
-
-export interface WorkerProfile extends WorkerSimpleProfile {
-  eyeColor: string;
-  hairColor: string;
-  services: string[];
-  responseTime: string;
-  phone: string;
-  rating: number;
-  reviewCount: number;
-  description: string;
-  expirationDate: string;
-  tags: string[];
-  photos: PhotoItem[];
-  videos: VideoItem[];
-  reviews: Review[];
-}
-
-export interface PhotoItem    { id: string; originalUrl: string; mainThumbUrl: string; previewThumbUrl: string; }
+export interface PhotoItem    { id: string; originalUrl: string; previewThumbUrl: string; }
 export interface VideoItem    { id: string; url: string; duration?: string; }
-export interface Review       { author: string; authorInitial: string; rating: number; date: string; text: string; }
+export interface Review       { author: string; date: string; text: string; }

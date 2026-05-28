@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router, RouterLink } from "@angular/router";
 import { AuthService } from "../../services/auth.service";
-import { AccountService } from "../../services/account.service";
+import { ClientAccountService } from "../../services/client-account.service";
 import { CommonModule } from "@angular/common";
 import { IonicModule, ModalController } from "@ionic/angular"; // Ajout ModalController
 import { AuthModalComponent } from "../auth-modal/auth-modal.component";
@@ -18,7 +18,7 @@ export class HeaderComponent {
 
   constructor(
     public authService: AuthService,
-    private accountService: AccountService,
+    private accountService: ClientAccountService,
     private router: Router,
     private modalCtrl: ModalController // Injecté ici
   ) {}
@@ -55,8 +55,9 @@ export class HeaderComponent {
       return;
     }
 
-    this.accountService.getCurrentProfile().subscribe({
+    this.accountService.getCurrentAccount().subscribe({
       next: (user) => {
+        console.log("User profile role :", user.role);
         const target = user.role === 'WORKER' ? '/profile-management' : '/account';
         this.router.navigate([target]);
       },

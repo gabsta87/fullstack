@@ -18,7 +18,7 @@
 
     <div class="field-group">
       <label>Nom d'utilisateur</label>
-      <input type="text" formControlName="username" placeholder="Votre pseudo" />
+      <input type="text" #input formControlName="username" placeholder="Votre pseudo" />
     </div>
 
     <div class="field-group" *ngIf="mode === 'register'">

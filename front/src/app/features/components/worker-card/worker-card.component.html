@@ -2,7 +2,7 @@
   <ion-ripple-effect></ion-ripple-effect>
 
   <div class="wcard-photo" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
-    <img *ngIf="displayUrl" [src]="displayUrl" [alt]="worker.name" class="wcard-img" loading="lazy" />
+    <img *ngIf="displayUrl" [src]="displayUrl" [alt]="worker.username" class="wcard-img" loading="lazy" />
 
     <div *ngIf="!displayUrl" class="wcard-ph">
       <ion-icon name="person-circle-outline"></ion-icon>
@@ -20,7 +20,7 @@
   </div>
 
   <ion-card-header>
-    <ion-card-title>{{ worker.name }}</ion-card-title>
+    <ion-card-title>{{ worker.username }}</ion-card-title>
     <ion-card-subtitle>{{ worker.location }}</ion-card-subtitle>
   </ion-card-header>
 </ion-card>

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {WorkerProfile, WorkerSimpleProfile} from "../models/worker.model";
+import {WorkerFullProfile, WorkerSimpleProfile} from "../models/items.model";
 import {environment} from "../../../environments/environment";
 
 @Injectable({
@@ -25,13 +25,5 @@ export class DynamicDataService {
 
   getSimpleProfiles():Observable<WorkerSimpleProfile[]>{
     return this.http.get<WorkerSimpleProfile[]>(`${this.baseUrl}/simpleProfiles`);
-  }
-
-  getFullProfile(id: string): Observable<WorkerProfile> {
-    return this.http.get<WorkerProfile>(`${this.baseUrl}/workers/${id}`);
-  }
-
-  getMyFullProfile(): Observable<WorkerProfile> {
-    return this.http.get<WorkerProfile>(`${this.baseUrl}/workers/me`, { withCredentials: true });
   }
 }

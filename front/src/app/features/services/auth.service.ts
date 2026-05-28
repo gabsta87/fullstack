@@ -1,8 +1,9 @@
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { Injectable } from '@angular/core';
-import { tap, catchError } from 'rxjs/operators';
+import {HttpClient} from '@angular/common/http';
+import {BehaviorSubject, Observable, of} from 'rxjs';
+import {Injectable} from '@angular/core';
+import {catchError, tap} from 'rxjs/operators';
 import {environment} from "../../../environments/environment";
+import {ClientPrivateAccount, WorkerPrivateAccount} from "../models/user.model";
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -15,11 +16,10 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  login(pseudo: string, password: string, redirectUrl: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/login`, { pseudo, password, redirectUrl }, { withCredentials: true }).pipe(
+  login(pseudo: string, password: string): Observable<WorkerPrivateAccount | ClientPrivateAccount> {
+    return this.http.post<WorkerPrivateAccount | ClientPrivateAccount>(`${this.baseUrl}/login`, { pseudo, password }, { withCredentials: true }).pipe(
       tap(() => {
         this.isAuthenticatedSubject.next(true);
-        this.sessionCache = { value: true, expires: Date.now() + 60_000 };
       })
     );
   }

@@ -1,21 +1,41 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { CommonModule, DatePipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
 import {
-  IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton,
-  IonButton, IonIcon, IonSpinner, IonList, IonItem, IonLabel, IonChip,
+  IonBackButton,
+  IonButton,
+  IonButtons,
+  IonChip,
+  IonContent,
+  IonHeader,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonToolbar,
 } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
+import {addIcons} from 'ionicons';
 import {
-  callOutline, logoWhatsapp, heartOutline, heart,
-  notificationsOutline, notifications, warningOutline,
-  chevronBackOutline, chevronForwardOutline, closeOutline,
-  playCircleOutline, locationOutline, calendarOutline,
-  bodyOutline, timeOutline,
+  bodyOutline,
+  calendarOutline,
+  callOutline,
+  chevronBackOutline,
+  chevronForwardOutline,
+  closeOutline,
+  heart,
+  heartOutline,
+  locationOutline,
+  logoWhatsapp,
+  notifications,
+  notificationsOutline,
+  playCircleOutline,
+  timeOutline,
+  warningOutline,
 } from 'ionicons/icons';
 
-import { WorkerProfile, PhotoItem, VideoItem, Review } from '../../models/worker.model';
+import {PhotoItem, Review, VideoItem} from '../../models/items.model';
+import {WorkerFullProfile} from "../../models/user.model";
 
 @Component({
   selector: 'app-profile',
@@ -23,14 +43,13 @@ import { WorkerProfile, PhotoItem, VideoItem, Review } from '../../models/worker
   styleUrls: ['./profile.component.scss'],
   standalone: true,
   imports: [
-    CommonModule, FormsModule, RouterLink, DatePipe,
-    IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton,
-    IonButton, IonIcon, IonSpinner, IonList, IonItem, IonLabel, IonChip,
+    CommonModule, FormsModule, IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton,
+    IonButton, IonIcon, IonList, IonItem, IonLabel, IonChip,
   ],
 })
 export class ProfileComponent implements OnInit, OnDestroy {
 
-  worker: WorkerProfile | null = null;
+  worker: WorkerFullProfile | null = null;
   isLoading = false; // resolver already waited — no spinner needed on normal load
 
   isLoggedIn     = true;   // TODO: inject AuthService
@@ -129,13 +148,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
   submitReview(): void {
     if (!this.worker || !this.newReview.text || !this.newReview.rating) return;
     const r: Review = {
-      author: 'Vous', authorInitial: 'V',
-      rating: this.newReview.rating,
+      author: 'Vous',
       date:   new Date().toISOString(),
       text:   this.newReview.text,
     };
     this.worker.reviews.unshift(r);
-    this.worker.reviewCount++;
     this.newReview = { rating: 0, text: '' };
     // TODO: ReviewService.post(this.worker.id, r)
   }

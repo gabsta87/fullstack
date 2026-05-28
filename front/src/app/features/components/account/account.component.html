@@ -1,6 +1,6 @@
 <app-header></app-header>
 
-<ion-content class="venus-content">
+<ion-content *ngIf="currentUser$ | async as user" class="venus-content">
   <ion-toolbar class="segment-toolbar">
     <ion-segment [(ngModel)]="activeTab" mode="md">
       <ion-segment-button value="favorites">
@@ -15,27 +15,25 @@
   <ion-grid [fixed]="false" class="ion-no-padding">
 
     <div *ngIf="activeTab === 'favorites'" class="fade-in ion-padding">
-      <div *ngIf="favorites$ | async as favorites">
         <div class="section-header">
-          <h2>Vos favoris ({{ favorites.length }})</h2>
+          <h2>Vos favoris ({{ user.favorites.length }})</h2>
         </div>
 
         <ion-row>
           <ion-col size="6" size-sm="4" size-md="3" size-lg="2.4" size-xl="2"
-                   *ngFor="let f of favorites">
+                   *ngFor="let f of user.favorites">
             <app-worker-card [worker]="f"></app-worker-card>
           </ion-col>
         </ion-row>
 
-        <div *ngIf="favorites.length === 0" class="empty-favorites">
+        <div *ngIf="user.favorites.length === 0" class="empty-favorites">
           <ion-icon name="heart-dislike-outline"></ion-icon>
           <p>Vous n'avez pas encore de favoris.</p>
         </div>
-      </div>
     </div>
 
     <div *ngIf="activeTab === 'settings'" class="fade-in ion-padding">
-      <div *ngIf="currentUser$ | async as user" class="settings-container">
+      <div class="settings-container">
 
         <ion-card class="settings-card">
           <ion-card-header>

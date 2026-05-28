@@ -13,7 +13,7 @@
       <aside class="sidebar">
         <div class="profile-card">
           <img [src]="worker.mainThumbUrl" alt="Avatar" class="avatar-img">
-          <h2>{{ worker.name }}</h2>
+          <h2>{{ worker.username }}</h2>
           <p class="location"><ion-icon name="location-outline"></ion-icon> {{ worker.location }}</p>
         </div>
 
@@ -39,7 +39,7 @@
             </ion-item>
             <ion-item>
               <ion-icon name="time-outline" slot="start"></ion-icon>
-              <ion-label>Réponse : {{ worker.responseTime }}</ion-label>
+              <ion-label>Age : {{ worker.age }}</ion-label>
             </ion-item>
           </ion-list>
         </div>
@@ -60,14 +60,14 @@
           <p>{{ worker.description }}</p>
 
           <div class="chips-group ion-margin-top">
-            <ion-chip *ngFor="let s of worker.serviceList">
+            <ion-chip *ngFor="let s of worker.services">
               <ion-label>{{ s }}</ion-label>
             </ion-chip>
           </div>
         </div>
 
         <div class="profile-card ion-margin-top">
-          <h3>Avis ({{ worker.reviewCount }})</h3>
+          <h3>Avis ({{ worker.reviews.length }})</h3>
         </div>
       </main>
 

@@ -1,8 +1,8 @@
 import { inject } from '@angular/core';
 import { ResolveFn } from '@angular/router';
 import { WorkerService } from '../services/worker.service';
-import { WorkerSimpleProfile } from '../models/worker.model';
 import { catchError, of } from 'rxjs';
+import {WorkerSimpleProfile} from "../models/user.model";
 
 /**
  * Loads the first page of gallery cards before the homepage renders.

@@ -13,8 +13,8 @@ import {
   IonLabel,
   IonRippleEffect
 } from '@ionic/angular/standalone';
-import { WorkerSimpleProfile } from '../../models/worker.model';
 import { WorkerService } from '../../services/worker.service';
+import {WorkerSimpleProfile} from "../../models/user.model";
 
 @Component({
   selector: 'app-worker-card',

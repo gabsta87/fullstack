@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {BehaviorSubject, firstValueFrom} from "rxjs";
 import languageData from "../../assets/lang/data.json";
-import {AccountService} from "./account.service";
+import {ClientAccountService} from "./client-account.service";
 
 @Injectable({
   providedIn: 'root'
@@ -12,15 +12,15 @@ export class LanguageManagerService {
   currentLanguageFlag!: string;
   currentCode!: string;
 
-  constructor(private readonly account: AccountService) {
+  constructor(private readonly account: ClientAccountService) {
     this.loadUserLanguage()
 
     if (!this.currentLanguage$.value)
       this.changeLanguageTo("EN");
   }
 
-  async loadUserLanguage() {
-    let dbLanguage = await firstValueFrom(this.account.getCurrentUserLanguage());
+  loadUserLanguage() {
+    let dbLanguage = this.account.getCurrentUserLanguage();
 
     if (dbLanguage == undefined)
       dbLanguage = "EN";

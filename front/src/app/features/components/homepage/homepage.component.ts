@@ -1,14 +1,16 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {ActivatedRoute, RouterLink} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {
   IonCol,
-  IonContent, IonGrid,
+  IonContent,
+  IonGrid,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
   IonRefresher,
-  IonRefresherContent, IonRow
+  IonRefresherContent,
+  IonRow
 } from '@ionic/angular/standalone';
 import {addIcons} from 'ionicons';
 import {closeOutline, locationOutline, optionsOutline} from 'ionicons/icons';
@@ -17,14 +19,9 @@ import {WorkerService} from '../../services/worker.service';
 import {WorkerCardComponent} from '../worker-card/worker-card.component';
 import {AuthService} from "../../services/auth.service";
 import {HeaderComponent} from '../header/header.component';
-import {
-  BODY_TYPES_LIST,
-  EYE_COLORS,
-  HAIR_COLORS,
-  REGIONS,
-  WorkerSimpleProfile
-} from '../../models/worker.model';
+import {BODY_TYPES_LIST, EYE_COLORS, HAIR_COLORS, REGIONS,} from '../../models/items.model';
 import {GalleryFilters} from "../../models/filter.model";
+import {WorkerSimpleProfile} from "../../models/user.model";
 
 @Component({
   selector: 'app-homepage',
@@ -32,8 +29,7 @@ import {GalleryFilters} from "../../models/filter.model";
   styleUrls: ['./homepage.component.scss'],
   standalone: true,
   imports: [
-    CommonModule, FormsModule, RouterLink,
-    IonContent, IonInfiniteScroll, IonInfiniteScrollContent,
+    CommonModule, FormsModule, IonContent, IonInfiniteScroll, IonInfiniteScrollContent,
     IonRefresher, IonRefresherContent, HeaderComponent,
     WorkerCardComponent, IonGrid, IonRow, IonCol
   ],

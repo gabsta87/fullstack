@@ -1,10 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { AuthService } from '../../services/auth.service';
 import { RegisterService } from '../../services/register.service';
+import {BaseUser} from "../../models/user.model";
 
 @Component({
   selector: 'app-auth-modal',
@@ -15,6 +16,7 @@ import { RegisterService } from '../../services/register.service';
 })
 export class AuthModalComponent implements OnInit {
   @Input() mode: 'login' | 'register' = 'login';
+  @ViewChild('input') myInput!: ElementRef;
 
   authForm!: FormGroup;
   errorMsg = '';
@@ -30,6 +32,10 @@ export class AuthModalComponent implements OnInit {
 
   ngOnInit() {
     this.initForm();
+  }
+
+  ngAfterViewInit(){
+    setTimeout(() => this.myInput.nativeElement.focus(),150);
   }
 
   initForm() {
@@ -62,23 +68,31 @@ export class AuthModalComponent implements OnInit {
 
   onSubmit() {
     if (this.authForm.invalid) return;
+
     this.isLoading = true;
     this.errorMsg = '';
 
     const { username, password, email, role } = this.authForm.value;
 
     if (this.mode === 'login') {
-      this.authService.login(username, password, '').subscribe({
-        next: () => this.handleSuccess(),
-        error: (err) => this.handleError(err)
+      this.authService.login(username, password).subscribe({
+        next: (user: BaseUser) => {
+          const target = user.role === 'WORKER' ? '/profile-management' : '/account';
+          this.router.navigate([target]);
+          this.modalCtrl.dismiss(true);
+        },
+        error: () => {
+          this.errorMsg = "Pseudo ou mot de passe incorrect.";
+          this.isLoading = false;
+        }
       });
     } else {
-      const call = role === 'worker'
+      const call = role === 'WORKER'
         ? this.registerService.registerWorker(username, email, password)
         : this.registerService.registerClient(username, email, password);
 
       call.subscribe({
-        next: () => this.authService.login(username, password, '').subscribe(() => this.handleSuccess()),
+        next: () => this.authService.login(username, password).subscribe(() => this.handleSuccess()),
         error: (err) => this.handleError(err)
       });
     }

@@ -2,17 +2,13 @@ import {Component, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {IonicModule} from '@ionic/angular';
-import {CurrentProfile, AccountService} from '../../services/account.service';
+import {ClientAccountService} from '../../services/client-account.service';
 import {WorkerService} from '../../services/worker.service';
-import {
-  BODY_TYPE_LABELS,
-  BODY_TYPES_LIST,
-  REGIONS,
-  WorkerSimpleProfile
-} from '../../models/worker.model';
+import {BODY_TYPE_LABELS, BODY_TYPES_LIST, REGIONS,} from '../../models/items.model';
 import {WorkerCardComponent} from '../worker-card/worker-card.component';
 import {HeaderComponent} from '../header/header.component';
 import {firstValueFrom, Observable} from "rxjs";
+import {ClientPrivateAccount} from "../../models/user.model";
 
 @Component({
   selector: 'app-account',
@@ -22,7 +18,7 @@ import {firstValueFrom, Observable} from "rxjs";
   styleUrls: ['./account.component.scss']
 })
 export class AccountComponent implements OnInit {
-  currentUser$: Observable<CurrentProfile>;
+  currentUser$: Observable<ClientPrivateAccount>;
   activeTab: 'feed' | 'favorites' | 'settings' = 'favorites';
 
   readonly regions = REGIONS;
@@ -30,20 +26,16 @@ export class AccountComponent implements OnInit {
   readonly bodyTypeLabels = BODY_TYPE_LABELS;
   availableServices: string[] | undefined;
 
-  favorites$:Observable< WorkerSimpleProfile[]>;
-
   selectionStates = {
     bodyType: {} as Record<string, boolean>,
     services: {} as Record<string, boolean>
   };
 
   constructor(
-    private accountService: AccountService,
+    private accountService: ClientAccountService,
     private workerService: WorkerService,
   ) {
-    this.currentUser$ = this.accountService.getCurrentProfile();
-
-    this.favorites$ = this.accountService.getFavorites();
+    this.currentUser$ = this.accountService.getCurrentAccount();
   }
 
   async ngOnInit(): Promise<void> {
