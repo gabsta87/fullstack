@@ -87,7 +87,7 @@ export class AuthModalComponent implements OnInit {
         }
       });
     } else {
-      const call = role === 'WORKER'
+      const call = role === 'worker'
         ? this.registerService.registerWorker(username, email, password)
         : this.registerService.registerClient(username, email, password);
 
