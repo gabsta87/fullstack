@@ -77,7 +77,7 @@ export class AuthModalComponent implements OnInit {
     if (this.mode === 'login') {
       this.authService.login(username, password).subscribe({
         next: (user: BaseUser) => {
-          const target = user.role === 'WORKER' ? '/profile-management' : '/account';
+          const target = user.role == 'WORKER' ? '/profile-management' : '/account';
           this.router.navigate([target]);
           this.modalCtrl.dismiss(true);
         },

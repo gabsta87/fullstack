@@ -9,8 +9,7 @@ export const workerOnlyGuard: CanActivateFn = (route, state) => {
 
   return accountService.getCurrentAccount().pipe(
     map(user => {
-      if (user?.role === 'WORKER') return true;
-      return false;
+      return user?.role == 'WORKER';
     })
   );
 };
