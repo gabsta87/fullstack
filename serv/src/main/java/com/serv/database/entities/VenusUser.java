@@ -39,7 +39,7 @@ public abstract class VenusUser {
     protected String region;
 
     @Enumerated(EnumType.STRING)
-    private Language language;
+    private Language language = Language.EN;
     @Enumerated(EnumType.STRING)
     protected UserRole role = UserRole.CLIENT;
 

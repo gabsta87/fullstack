@@ -16,7 +16,7 @@ public record VenusUserDTO(
                 u.getUsername(),
                 u.getLocation(),
                 u.getRole().toString(),
-                u.getLanguage().toString(),
+                u.getLanguage() != null ? u.getLanguage().toString() : "",
                 u.getRegion()
         );
     }
