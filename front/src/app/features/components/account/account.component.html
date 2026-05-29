@@ -14,7 +14,7 @@
 
   <ion-grid [fixed]="false" class="ion-no-padding">
 
-    <div *ngIf="activeTab === 'favorites'" class="fade-in ion-padding">
+    <div *ngIf="activeTab === 'favorites' && user.favorites" class="fade-in ion-padding">
         <div class="section-header">
           <h2>Vos favoris ({{ user.favorites.length }})</h2>
         </div>
