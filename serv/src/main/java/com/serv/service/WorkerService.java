@@ -3,10 +3,12 @@ package com.serv.service;
 import com.serv.database.entities.Worker;
 import com.serv.database.repositories.PhotoRepository;
 import com.serv.database.repositories.WorkerRepository;
+import com.serv.database.repositories.filters.WorkerSpecifications;
 import com.serv.dto.WorkerMinimalProfileDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,19 +41,28 @@ public class WorkerService {
      */
     public List<WorkerMinimalProfileDTO> getGalleryPage(int page, Map<String, Object> filters) {
 
+        Specification<Worker> spec = Specification
+                .where(WorkerSpecifications.isAvailable())
+                .and(WorkerSpecifications.isNotDisabled());
+
         // TODO apply filters to the query
         // TODO sorting by galleryIndex desc
-        // Pour l'instant, le code ignore les filtres.
-        // Si tu veux voir tes profils, il faut que l'appel SQL soit filtré.
 
         // 1 — Fetch workers (available first, then by lastRefreshed)
-        List<Worker> available = workerRepository.findByAvailableTrue(
-                PageRequest.of(page, PAGE_SIZE, Sort.by(Sort.Direction.DESC, "lastRefreshed")));
+        List<Worker> available = workerRepository.findAll(
+                spec,
+                PageRequest.of(page, PAGE_SIZE, Sort.by(Sort.Direction.DESC, "galleryPositionIndex"))
+        ).getContent();
 
-        List<Worker> unavailable = workerRepository
-                .findByAvailableFalse(
-                        PageRequest.of(page, PAGE_SIZE,
-                                Sort.by(Sort.Direction.DESC, "lastRefreshed")));
+        System.out.println("GetGalleryPage : " + Arrays.toString(available.stream().map(Worker::getUsername).toArray()));
+        spec = Specification
+                .where(WorkerSpecifications.isNotAvailable())
+                .and(WorkerSpecifications.isNotDisabled());
+
+        List<Worker> unavailable = workerRepository.findAll(
+                spec,
+                PageRequest.of(page, PAGE_SIZE, Sort.by(Sort.Direction.DESC, "galleryPositionIndex"))
+        ).getContent();
 
         List<Worker> workers = new ArrayList<>();
         workers.addAll(available);
@@ -99,7 +110,19 @@ public class WorkerService {
     @Transactional(readOnly = true)
     public List<WorkerMinimalProfileDTO> getGallery(List<UUID> ids) {
         if (ids == null || ids.isEmpty()) return List.of();
-        return workerRepository.findAllById(ids).stream()
+
+        List<Worker> all = workerRepository.findAllById(ids).stream()
+                .toList();
+
+        System.out.println("GetGallery all : "+Arrays.toString(all.stream().map(Worker::getUsername).toArray()));
+
+        List<Worker> available = workerRepository.findAllById(ids).stream()
+                .filter(worker -> !worker.isDisabled())
+                .toList();
+
+        System.out.println("GetGallery filtered : "+Arrays.toString(available.stream().map(Worker::getUsername).toArray()));
+
+        return workerRepository.findAllById(ids).stream().filter(worker -> !worker.isDisabled())
                 .map(WorkerMinimalProfileDTO::from)
                 .sorted(WorkerMinimalProfileDTO::compareTo)
                 .toList();

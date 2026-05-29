@@ -55,7 +55,8 @@ public class WorkerMinimalProfileDTO implements Comparable<WorkerMinimalProfileD
         return new WorkerMinimalProfileDTO(
             w.getId(), w.getUsername(), WorkerService.calculateAge(w.getBirthday()),
             w.getLocation(), w.getRegion(),
-            w.getBodyType().toString(), w.getHeight(),
+            w.getBodyType() != null ? w.getBodyType().toString() : null,
+            w.getHeight(),
             w.getServices().stream().map(Service::getName).toList(), w.isAvailable(),
             w.getGalleryPositionIndex(),
             w.getMainPhoto() != null ? w.getMainPhoto().getMainThumbUrl() : null,

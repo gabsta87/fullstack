@@ -50,7 +50,6 @@ public class Worker extends VenusUser {
     private boolean expired;
     private boolean available = true;
     private boolean verified = false;
-    private boolean disabled = false;
 
     // Instant stored as UTC timestamp
     @Column(name = "last_refreshed")

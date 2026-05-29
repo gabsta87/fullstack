@@ -10,6 +10,7 @@ import com.serv.service.MailService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,17 +62,16 @@ public class AuthController {
     public ResponseEntity<String> registerClient(@RequestBody Requests.RegisterRequest req) {
         try {
             if (userRepository.findByUsername(req.getUsername()).isPresent())
-                return ResponseEntity.badRequest().body("Username already taken.");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Username already taken.");
 
             // TODO check email
 
             // TODO check password
 
             Client client = new Client(req.getUsername(), new Email(req.getEmail()), req.getPassword());
-            client.setEnabled(false);
             client.setLocked(true);
             clientRepository.save(client);
-            return ResponseEntity.ok("Registered successfully.");
+            return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -81,18 +81,18 @@ public class AuthController {
     public ResponseEntity<String> registerWorker(@RequestBody Requests.RegisterRequest req) {
         try {
             if (userRepository.findByUsername(req.getUsername()).isPresent())
-                return ResponseEntity.badRequest().body("Username already taken.");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Username already taken.");
 
             // TODO check email
 
             // TODO check password
 
             Worker worker = new Worker(req.getUsername(), new Email(req.getEmail()), req.getPassword());
-            worker.setEnabled(false);
+            worker.setDisabled(true);
             worker.setLocked(true);
             worker.setExpired(true);
             workerRepository.save(worker);
-            return ResponseEntity.ok("Registered successfully.");
+            return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
