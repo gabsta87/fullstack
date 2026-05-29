@@ -9,6 +9,7 @@ import {ClientPrivateAccount, WorkerPrivateAccount} from "../models/user.model";
 export class AuthService {
   private baseUrl = `${environment.apiBase}/auth`;
   private sessionCache: { value: boolean; expires: number } | null = null;
+  private redirectUrl = '';
 
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
@@ -57,4 +58,6 @@ export class AuthService {
     );
   }
 
+  setRedirectUrl(url: string) { this.redirectUrl = url; }
+  getRedirectUrl()            { return this.redirectUrl; }
 }
