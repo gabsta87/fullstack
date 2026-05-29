@@ -36,6 +36,7 @@ public class Worker extends VenusUser {
     private String eyeColor;
     private String hairColor;
     private String gender;
+    protected boolean disabled = false;
 
     private int galleryPositionIndex;
 

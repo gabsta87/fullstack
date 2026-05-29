@@ -30,7 +30,6 @@ public abstract class VenusUser {
     @Basic(optional = false)
     @Column(nullable = false)
     protected String passwordHash;
-    protected boolean disabled = false;
     protected boolean locked;
 //    @ManyToOne
 //    @JoinColumn(username = "location_id")
