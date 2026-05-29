@@ -58,7 +58,7 @@ public class AccountController {
     @Transactional(readOnly = true)
     public ResponseEntity<?> getMe(HttpSession session) {
         VenusUser user = sessionUser(session);
-        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         Map<String, Object> result = new HashMap<>();
 
@@ -99,13 +99,13 @@ public class AccountController {
     @Transactional
     public ResponseEntity<?> setLanguage(@RequestBody String language, HttpSession session) {
         VenusUser user = sessionUser(session);
-        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
         Language newLanguage;
 
         try{
             newLanguage = Language.valueOf(language);
         }catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("Invalid language code.");
         }
 
         user.setLanguage(newLanguage);
@@ -147,7 +147,7 @@ public class AccountController {
     @Transactional(readOnly = true)
     public ResponseEntity<?> getFavorites(HttpSession session) {
         Client client = sessionClient(session);
-        if (client == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (client == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         List<UUID> ids = client.getFavorites().stream().map(Worker::getId).toList();
         return ResponseEntity.ok(galleryService.getGallery(ids));
@@ -158,11 +158,11 @@ public class AccountController {
     @Transactional
     public ResponseEntity<?> addFavorite(@PathVariable UUID workerId, HttpSession session) {
         Client client = sessionClient(session);
-        if (client == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (client == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         Optional<Worker> foundWorker = workerRepository.findById(workerId);
 
-        if (foundWorker.isEmpty()) return ResponseEntity.notFound().build();
+        if (foundWorker.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Worker not found.");
 
         client.getFavorites().add(foundWorker.get());
         userRepository.save(client);
@@ -175,7 +175,7 @@ public class AccountController {
     @Transactional
     public ResponseEntity<?> removeFavorite(@PathVariable UUID workerId, HttpSession session) {
         Client client = sessionClient(session);
-        if (client == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (client == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         client.getFavorites().removeIf(w -> w.getId().equals(workerId));
         userRepository.save(client);
@@ -191,7 +191,7 @@ public class AccountController {
     public ResponseEntity<?> setAvailability(@RequestBody Map<String, Boolean> body,
                                              HttpSession session) {
         Worker worker = sessionWorker(session);
-        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         worker.setAvailable(body.getOrDefault("available", false));
         workerRepository.save(worker);
@@ -205,7 +205,7 @@ public class AccountController {
     public ResponseEntity<?> updateProfile(@RequestBody WorkerProfileUpdateRequest req,
                                            HttpSession session) {
         Worker worker = sessionWorker(session);
-        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         if (req.description() != null) worker.setDescription(req.description());
         if (req.location()    != null) worker.setLocation(req.location);
@@ -227,10 +227,10 @@ public class AccountController {
     }
 
     @PatchMapping("/worker/updateservices")
-    public ResponseEntity<WorkerFullProfileDTO> updateServices(@RequestBody List<String> services, HttpSession session) {
+    public ResponseEntity<?> updateServices(@RequestBody List<String> services, HttpSession session) {
         Worker worker = sessionWorker(session);
 
-        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         List<Service> serviceList = services.stream().map(serviceRepository::findByName).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
 
@@ -252,7 +252,7 @@ public class AccountController {
                                          @RequestParam(value = "title", required = false) String title,
                                          HttpSession session) {
         Worker worker = sessionWorker(session);
-        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         try {
             // 1 — Save files to disk, get back URLs
@@ -293,7 +293,7 @@ public class AccountController {
     @Transactional
     public ResponseEntity<?> deletePhoto(@PathVariable UUID photoId, HttpSession session) {
         Worker worker = sessionWorker(session);
-        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         Photo photo = photoRepository.findById(photoId).orElse(null);
         if (photo == null || !photo.getWorker().getId().equals(worker.getId()))
@@ -323,7 +323,7 @@ public class AccountController {
     @Transactional
     public ResponseEntity<?> setMainPhoto(@PathVariable UUID photoId, HttpSession session) {
         Worker worker = sessionWorker(session);
-        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         Photo photo = photoRepository.findById(photoId).orElse(null);
         if (photo == null || !photo.getWorker().getId().equals(worker.getId()))
@@ -344,7 +344,7 @@ public class AccountController {
     public ResponseEntity<?> reorderPhotos(@RequestBody List<String> orderedIds,
                                            HttpSession session) {
         Worker worker = sessionWorker(session);
-        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         for (int i = 0; i < orderedIds.size(); i++) {
             UUID id = UUID.fromString(orderedIds.get(i));
