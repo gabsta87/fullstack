@@ -41,8 +41,7 @@ public class AuthController {
             session.setAttribute("user", userOpt.get());
             return ResponseEntity.ok(VenusUserDTO.from(userOpt.get()));
         }
-
-        return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials."));
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid credentials.");
     }
 
     @PostMapping("/logout")
@@ -53,7 +52,14 @@ public class AuthController {
 
     @GetMapping("/session-check")
     public ResponseEntity<?> sessionCheck(HttpSession session) {
-        return ResponseEntity.ok(session.getAttribute("user") != null);
+        Object user = session.getAttribute("user");
+
+        if (user == null) {
+             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("isAuth", false));
+        }
+
+        // Si l'utilisateur est trouvé, on renvoie les deux
+        return ResponseEntity.ok(Map.of("isAuth", true, "user", user));
     }
 
     // ── Registration ──────────────────────────────────────────────────────────
