@@ -210,6 +210,7 @@ public class AccountController {
         return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
     }
 
+    @Transactional
     @PatchMapping("/worker/updateservices")
     public ResponseEntity<?> updateServices(@RequestBody List<String> services, HttpSession session) {
         Worker worker = workerRepository.findByIdWithPhotos(sessionWorker(session).getId()).orElse(null);
