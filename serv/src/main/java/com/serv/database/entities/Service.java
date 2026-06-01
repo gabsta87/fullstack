@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @Entity
 @NoArgsConstructor
@@ -20,9 +18,6 @@ public class Service {
     @Basic(optional = false)
     @Column(nullable = false)
     private String name;
-
-    @ManyToMany(mappedBy = "services", cascade = CascadeType.ALL)
-    List<Worker> workers;
 
     public Service(String name) {
         this.name = name;
