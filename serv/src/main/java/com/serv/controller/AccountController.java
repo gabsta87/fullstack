@@ -25,6 +25,7 @@ public class AccountController {
 
     private final UserRepository       userRepository;
     private final WorkerRepository     workerRepository;
+    private final ClientRepository     clientRepository;
     private final PhotoRepository      photoRepository;
     private final WorkerService galleryService;
     private final MediaStorageService  mediaStorageService;
@@ -48,51 +49,34 @@ public class AccountController {
 
     // ── Shared ────────────────────────────────────────────────────────────────
 
-    /**
-     * GET /account/me
-     * Returns current user info + role-specific fields.
-     * Angular uses this on page load to decide which page to render
-     * and pre-fill the settings form.
-     */
     @GetMapping("/me")
     @Transactional(readOnly = true)
     public ResponseEntity<?> getMe(HttpSession session) {
         VenusUser user = sessionUser(session);
         if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("id",       user.getId().toString());
-        result.put("username", user.getUsername());
-        result.put("email",    user.getEmail());
-        result.put("location", user.getLocation());
-        result.put("role",     user.getRole().toString());
+        // Utilisez l'ID de l'utilisateur pour recharger une instance "fraîche" depuis la base
+        // Cela permet à Hibernate de gérer l'objet dans la transaction actuelle
 
         switch (user.getRole()) {
             case WORKER:
-                Worker w = (Worker) user;
-                result.put("available",    w.isAvailable());
-                result.put("region",       w.getRegion());
-                result.put("bodyType",     w.getBodyType() != null ? w.getBodyType().name() : null);
-                result.put("height",       w.getHeight());
-                result.put("weight",       w.getWeight());
-                result.put("description",  w.getDescription());
-                result.put("services",     w.getServices().stream().map(Service::getName).toList());
-                result.put("mainThumbUrl", w.getMainPhoto() != null
-                        ? w.getMainPhoto().getMainThumbUrl() : null);
-                result.put("subscriptionDaysLeft", w.getSubscriptionDaysLeft());
-                result.put("expired",      w.isExpired());
-                break;
+                // On cherche par ID dans le repository des Workers
+                return workerRepository.findByIdWithPhotos(user.getId())
+                        .map(worker -> ResponseEntity.ok(WorkerFullProfileDTO.from(worker)))
+                        .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+
             case CLIENT:
-                Client c = (Client) user;
-                result.put("favorites", c.getFavorites());
-                break;
+                // Même logique pour les clients si besoin
+                return clientRepository.findById(user.getId())
+                        .map(ResponseEntity::ok) // Ou votre DTO Client
+                        .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+
             case ADMIN:
-                // TODO: Add admin-specific fields
+                // ...
                 break;
         }
 
-        return ResponseEntity.ok(result);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     @PatchMapping("/language")
@@ -223,12 +207,12 @@ public class AccountController {
 
         Worker savedWorker = workerRepository.save(worker);
         session.setAttribute("user", savedWorker);
-        return ResponseEntity.ok(savedWorker);
+        return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
     }
 
     @PatchMapping("/worker/updateservices")
     public ResponseEntity<?> updateServices(@RequestBody List<String> services, HttpSession session) {
-        Worker worker = sessionWorker(session);
+        Worker worker = workerRepository.findByIdWithPhotos(sessionWorker(session).getId()).orElse(null);
 
         if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
@@ -332,7 +316,7 @@ public class AccountController {
         worker.setMainPhoto(photo);
         Worker savedWorker = workerRepository.save(worker);
         session.setAttribute("user", savedWorker);
-        return ResponseEntity.ok(savedWorker);
+        return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
     }
 
     /**
