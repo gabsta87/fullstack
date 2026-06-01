@@ -1,10 +1,10 @@
 package com.serv.database.repositories;
 
 import com.serv.database.entities.Worker;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
@@ -18,13 +18,8 @@ public interface WorkerRepository extends JpaRepository<Worker, UUID>, JpaSpecif
     @NonNull
     Optional<Worker> findById(@NonNull UUID id);
 
-    List<Worker> findByAvailableTrue(Pageable pageable);
+    @Query("SELECT w FROM Worker w LEFT JOIN FETCH w.photos WHERE w.id = :id")
+    Optional<Worker> findByIdWithPhotos(@Param("id") UUID id);
 
-    @Query("SELECT w FROM Worker w WHERE w.available = true AND w.disabled = false")
-    List<Worker> findByAvailableTrueAndDisabledFalse(Pageable pageable);
-
-    List<Worker> findByAvailableFalse(Pageable pageable);
-
-    List<Worker> findByAvailableFalseAndDisabledFalse(Pageable pageable);
-
+    List<Worker> findByServicesId(Integer serviceId);
 }

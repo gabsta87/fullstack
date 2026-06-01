@@ -16,11 +16,11 @@ public record WorkerFullProfileDTO(
         String       location,
         String       region,
         String       bodyType,
+        String       role,
         int          height,
         int          weight,
         List<String> services,
         boolean      available,
-        String       responseTime,
         String       phone,
         String       description,
         String       mainThumbUrl,
@@ -46,13 +46,13 @@ public record WorkerFullProfileDTO(
                 w.getLocation(),
                 w.getRegion(),
                 w.getBodyType() != null ? w.getBodyType().name() : null,
+                w.getRole().name(),
                 w.getHeight(),
                 w.getWeight(),
                 w.getServices().stream().map(Service::getName).toList(),
                 w.isAvailable(),
-                "< 30 min",   // TODO: real response time
-                "",           // TODO: expose phone only to logged-in users
-                "",           // TODO: add description field to Worker
+                w.getPhone(),
+                w.getDescription(),
                 mainThumb,
                 photos,
                 List.of()     // TODO: videos when Video entity is enabled

@@ -6,6 +6,8 @@ import com.serv.common.UserRole;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -20,18 +22,33 @@ import java.util.List;
 @Table(name = TablesNames.WORKERS)
 public class Worker extends VenusUser {
 
+    @ToString.Exclude
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "main_photo_id")
     private Photo mainPhoto;
 
+    @ToString.Exclude
+    @BatchSize(size = 20)
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<Photo> photos = new ArrayList<>();
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<Comment> comments = new ArrayList<>();
 
+    @ToString.Exclude
+    @BatchSize(size = 20)
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<Video> videos = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "workers_services", // Table de jointure
+            joinColumns = @JoinColumn(name = "worker_id"),
+            inverseJoinColumns = @JoinColumn(name = "service_id")
+    )
+    private List<Service> services = new ArrayList<>();
+
     private String phone;
     private String eyeColor;
     private String hairColor;
@@ -39,14 +56,6 @@ public class Worker extends VenusUser {
     protected boolean disabled = false;
 
     private int galleryPositionIndex;
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "workers_services",
-            joinColumns = { @JoinColumn(name = "worker_id") },
-            inverseJoinColumns = { @JoinColumn(name = "service_id") }
-    )
-    private List<Service> services = new ArrayList<>();
 
     private boolean expired;
     private boolean available = true;
