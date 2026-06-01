@@ -19,7 +19,7 @@ export const routes: Routes = [
   { path: 'profile', component: ProfileComponent,  resolve: { profile: profileVisitingResolver } },
   { path: 'ngx-pay', component: NgxPayComponent, canActivate: [authGuard] },
   { path: 'account', component: AccountComponent, resolve: { profile: accountResolver }, canActivate: [authGuard] },
-  { path: 'profile-management', component: ProfileManagementComponent, resolve: { profile: profileManagementResolver, services : servicesResolver }, canActivate: [workerOnlyGuard] },
+  { path: 'profile-management', component: ProfileManagementComponent, resolve: { profile: profileManagementResolver, services : servicesResolver }, canActivate: [authGuard, workerOnlyGuard] },
 
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];
