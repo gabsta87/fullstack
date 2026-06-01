@@ -1,8 +1,9 @@
 import {Injectable} from '@angular/core';
-import {Observable} from "rxjs";
+import {BehaviorSubject, Observable, of} from "rxjs";
 import {WorkerFullProfile, WorkerPrivateAccount, WorkerProfileUpdate} from "../models/user.model";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../../environments/environment";
+import {tap} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -10,18 +11,27 @@ import {environment} from "../../../environments/environment";
 export class WorkerAccountService {
 
   private base = `${environment.apiBase}/account`;
-  private currentAccount$: Observable<WorkerPrivateAccount> | null = null;
+
+  private accountSubject = new BehaviorSubject<WorkerPrivateAccount | null>(null);
 
   constructor(private http: HttpClient) { }
 
   getCurrentAccount(): Observable<WorkerPrivateAccount> {
-    if (!this.currentAccount$) {
-      this.currentAccount$ = this.http.get<WorkerPrivateAccount>(`${this.base}/me`, { withCredentials: true });
+    const current = this.accountSubject.value;
+    if (current) {
+      return of(current);
     }
-    return this.currentAccount$;
+
+    // Sinon on récupère
+    return this.http.get<WorkerPrivateAccount>(`${this.base}/me`, { withCredentials: true }).pipe(
+      tap(account => this.accountSubject.next(account))
+    );
   }
 
-  // WORKER
+  clearCache() {
+    this.accountSubject.next(null);
+  }
+
   setAvailability(available: boolean): Observable<any> {
     return this.http.patch(`${this.base}/worker/availability`, { available }, { withCredentials: true });
   }

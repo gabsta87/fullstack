@@ -1,11 +1,9 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { IonicModule, ModalController } from '@ionic/angular';
-import { AuthService } from '../../services/auth.service';
-import { RegisterService } from '../../services/register.service';
-import {BaseUser} from "../../models/user.model";
+import {CommonModule} from '@angular/common';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {IonicModule, ModalController} from '@ionic/angular';
+import {AuthService} from '../../services/auth.service';
+import {RegisterService} from '../../services/register.service';
 
 @Component({
   selector: 'app-auth-modal',
@@ -27,7 +25,6 @@ export class AuthModalComponent implements OnInit {
     private authService: AuthService,
     private registerService: RegisterService,
     private modalCtrl: ModalController,
-    private router: Router
   ) {}
 
   ngOnInit() {
@@ -76,9 +73,8 @@ export class AuthModalComponent implements OnInit {
 
     if (this.mode === 'login') {
       this.authService.login(username, password).subscribe({
-        next: (user: BaseUser) => {
-          const target = user.role == 'WORKER' ? '/profile-management' : '/account';
-          this.router.navigate([target]);
+        next: () => {
+          this.isLoading = false;
           this.modalCtrl.dismiss(true);
         },
         error: () => {

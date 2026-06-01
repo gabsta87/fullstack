@@ -6,6 +6,7 @@ import {CommonModule} from "@angular/common";
 import {IonicModule, ModalController} from "@ionic/angular";
 import {AuthModalComponent} from "../auth-modal/auth-modal.component";
 import {firstValueFrom} from "rxjs";
+import {WorkerAccountService} from "../../services/worker-account.service";
 
 @Component({
   selector: 'app-header',
@@ -18,7 +19,8 @@ export class HeaderComponent {
 
   constructor(
     public authService: AuthService,
-    private accountService: ClientAccountService,
+    private clientAccountService: ClientAccountService,
+    private workerAccountService: WorkerAccountService,
     private router: Router,
     private modalCtrl: ModalController // Injecté ici
   ) {}
@@ -29,15 +31,7 @@ export class HeaderComponent {
       component: AuthModalComponent,
       componentProps: { mode }
     });
-
     await modal.present();
-
-    // On attend la fermeture pour voir si on doit rediriger
-    const { data } = await modal.onWillDismiss();
-    if (data === true) {
-      // Si la modale a renvoyé 'true' (succès), on gère la redirection ici
-      this.openAccount();
-    }
   }
 
   onLogout() {
@@ -50,18 +44,28 @@ export class HeaderComponent {
     const isAuthenticated = await firstValueFrom(this.authService.isAuthenticated$);
 
     if (!isAuthenticated) {
-      console.error("Utilisateur non authentifié");
-      this.router.navigate(['/login']);
+      await this.openAuth('login');
       return;
     }
 
-    this.accountService.getCurrentAccount().subscribe({
-      next: (user) => {
-        console.log("User profile role :", user.role);
-        const target = user.role === 'WORKER' ? '/profile-management' : '/account';
-        this.router.navigate([target]);
-      },
-      error: () => this.router.navigate(['/account'])
-    });
+    // Si on est ici, c'est que l'utilisateur est authentifié
+    const user = this.authService.getUser();
+
+    // Navigation basée sur le rôle
+    if (user?.role === "WORKER") {
+      this.router.navigate(['/profile-management']);
+    } else if (user?.role === "CLIENT") {
+      this.router.navigate(['/account']);
+    } else {
+      // Si le rôle est nul (ex: refresh F5), on récupère le profil
+      // Note : assurez-vous que votre service met à jour authService.currentAccount
+      this.workerAccountService.getCurrentAccount().subscribe({
+        next: (profile) => this.router.navigate(['/profile-management']),
+        error: () => this.clientAccountService.getCurrentAccount().subscribe({
+          next: () => this.router.navigate(['/account']),
+          error: () => console.error("Impossible de déterminer le rôle")
+        })
+      });
+    }
   }
 }
