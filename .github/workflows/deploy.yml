@@ -26,7 +26,8 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
         run: |
-          docker-compose up -d --remove-orphans
+          docker-compose -p venus down
+          docker-compose -p venus up -d --remove-orphans
                   
       - name: Cleanup old images
         env:
