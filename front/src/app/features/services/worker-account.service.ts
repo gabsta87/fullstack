@@ -22,7 +22,6 @@ export class WorkerAccountService {
       return of(current);
     }
 
-    // Sinon on récupère
     return this.http.get<WorkerPrivateAccount>(`${this.base}/me`, { withCredentials: true }).pipe(
       tap(account => this.accountSubject.next(account))
     );

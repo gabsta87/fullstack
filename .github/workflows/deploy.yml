@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build new images
-        run: docker-compose build --pull
+        run: docker-compose -p venus build --no-cache --pull
 
       - name: Stop and remove old containers
         run: docker-compose down
@@ -27,7 +27,7 @@ jobs:
           DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
         run: |
           docker-compose -p venus down
-          docker-compose -p venus up -d --remove-orphans
+          docker-compose -p venus up -d --remove-orphans --force-recreate
                   
       - name: Cleanup old images
         env:
