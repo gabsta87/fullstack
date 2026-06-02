@@ -13,10 +13,14 @@ services:
       - db-data:/var/lib/mysql
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}" ]
-      interval: 10s
-      timeout: 5s
-      retries: 15
+      interval: 20s
+      timeout: 10s
+      retries: 10
       start_period: 120s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
 
   backend:
     build: ./serv
@@ -29,8 +33,18 @@ services:
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_TESTONBORROW: "true"
+      SPRING_DATASOURCE_VALIDATIONQUERY: "SELECT 1"
+      SPRING_JPA_PROPERTIES_HIBERNATE_CONNECTION_TIMEOUT: "30000"
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQLDialect
+      JAVA_OPTS: "-Xms512m -Xmx1024m"
     volumes:
       - media-data:/var/serv-media
+    deploy:
+      resources:
+        limits:
+          memory: 1.5G 
+          cpus: '1.0'
     depends_on:
       db:
         condition: service_healthy
