@@ -1,5 +1,5 @@
 import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, Observable, of} from 'rxjs';
+import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {catchError, tap} from 'rxjs/operators';
 import {environment} from "../../../environments/environment";
@@ -65,8 +65,6 @@ export class AuthService {
         this.clientService.clearCache();
       }),
       catchError((err) => {
-        // Même en cas d'erreur (ex: 200 OK mais corps vide),
-        // on force l'état déconnecté localement
         this.isAuthenticatedSubject.next(false);
         this.sessionCache = null;
         return of(null);
@@ -79,28 +77,27 @@ export class AuthService {
   }
 
   checkSession(): Observable<boolean> {
-    // Return cached value if still fresh (60s)
     if (this.sessionCache && Date.now() < this.sessionCache.expires) {
-      console.log("checkSession: Using cached value");
       return of(this.sessionCache.value);
     }
-    console.log("checkSession: Calling server...");
-    return this.http.get<boolean>(`${this.baseUrl}/session-check`,
-      { withCredentials: true }).pipe(
+
+    return this.http.get<boolean>(`${this.baseUrl}/session-check`, { withCredentials: true }).pipe(
       tap(isAuth => {
-        console.log("checkSession: Server response:", isAuth);
         this.isAuthenticatedSubject.next(isAuth);
         this.sessionCache = { value: isAuth, expires: Date.now() + 60_000 };
       }),
       catchError((error) => {
         if (error.status === 401) {
-          console.log("checkSession : Session expirée (401)");
-        }else{
-          console.error("checkSession : Server error ",error.status);
+          console.warn("Session expirée (401)");
+          this.isAuthenticatedSubject.next(false);
+          this.sessionCache = null;
+          return of(false); // On renvoie false, le Guard redirigera vers login
         }
-        this.isAuthenticatedSubject.next(false);
+
+        console.error("Erreur serveur/réseau :", error.status);
         this.sessionCache = null;
-        return of(false);
+
+        return throwError(() => error);
       })
     );
   }
