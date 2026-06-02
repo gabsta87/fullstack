@@ -1,6 +1,4 @@
-# docker-compose.yml
 services:
-
   db:
     image: mysql:9.0
     container_name: venus-db
@@ -24,30 +22,34 @@ services:
 
   backend:
     build: ./serv
-    dns:
-      - 8.8.8.8
-      - 1.1.1.1
     container_name: venus-backend
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SPRING_PROFILES_ACTIVE: prod
+      
+      # Configuration pour la stabilité au démarrage
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQLDialect
       SPRING_DATASOURCE_TESTONBORROW: "true"
       SPRING_DATASOURCE_VALIDATIONQUERY: "SELECT 1"
-      SPRING_JPA_PROPERTIES_HIBERNATE_CONNECTION_TIMEOUT: "30000"
-      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQLDialect
+      
+      # HikariCP : ne pas crasher si la DB est lente à répondre
+      SPRING_DATASOURCE_HIKARI_CONNECTIONTIMEOUT: "60000"
+      SPRING_DATASOURCE_HIKARI_INITIALIZATIONFAILTIMEOUT: "-1"
+      
+      # Mémoire
       JAVA_OPTS: "-Xms512m -Xmx1024m"
+      
     volumes:
       - media-data:/var/serv-media
-    deploy:
-      resources:
-        limits:
-          memory: 1.5G 
-          cpus: '1.0'
     depends_on:
       db:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 1.5G
 
   frontend:
     build: ./front
@@ -56,14 +58,6 @@ services:
       - "8888:80"
     depends_on:
       - backend
-
-  adminer:
-    image: adminer
-    container_name: venus-adminer
-    ports:
-      - "8081:8080"
-    depends_on:
-      - db
 
 volumes:
   db-data:

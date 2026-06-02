@@ -11,7 +11,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Smart Deploy to Synology
+      - name: Build new images
+        run: docker-compose build --pull
+
+      - name: Stop and remove old containers
+        run: docker-compose down
+
+      - name: Deploy new stack
         env:
           DOCKER_API_VERSION: "1.43"
           DB_NAME: ${{ secrets.DB_NAME }}
@@ -19,7 +25,6 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
         run: |
-          docker-compose build --pull
           docker-compose up -d --remove-orphans
                   
       - name: Cleanup old images
