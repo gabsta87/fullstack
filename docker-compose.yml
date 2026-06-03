@@ -36,8 +36,12 @@ services:
       
       # HikariCP : ne pas crasher si la DB est lente à répondre
       SPRING_DATASOURCE_HIKARI_CONNECTIONTIMEOUT: "60000"
-      SPRING_DATASOURCE_HIKARI_INITIALIZATIONFAILTIMEOUT: "60000"
+      SPRING_DATASOURCE_HIKARI_INITIALIZATIONFAILTIMEOUT: "30000"
       SPRING_JPA_PROPERTIES_HIBERNATE_CONNECTION_TIMEOUT: "60000"
+      
+      SPRING_JPA_HIBERNATE_DDL_AUTO: "none"
+      
+      SPRING_APPLICATION_JSON: '{"media.upload.base": "/var/serv-media", "media.public.url": "/media"}'
       
       # Mémoire
       JAVA_OPTS: "-Xms512m -Xmx1024m"
