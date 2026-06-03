@@ -43,8 +43,8 @@ dependencies {
 
 	// MySQL JDBC driver
 //	runtimeOnly("com.mysql:mysql-connector-j")
-//	implementation("com.mysql:mysql-connector-j:8.3.0")
-	runtimeOnly("com.mysql:mysql-connector-j:9.0.0")
+	runtimeOnly("com.mysql:mysql-connector-j:8.3.0")
+//	runtimeOnly("com.mysql:mysql-connector-j:9.0.0")
 
 	// Online payment
 	implementation("com.stripe:stripe-java:27.1.0")
