@@ -100,6 +100,50 @@ public class MediaStorageService {
         );
     }
 
+    public SavedMedia store(MultipartFile file, UUID workerId) throws IOException {
+        validateImage(file);
+
+        String uuid = UUID.randomUUID().toString();
+        String ext = getExtension(file.getOriginalFilename());
+
+        // 1. Définition des chemins (Indépendant de l'OS, Java gère les /)
+        Path workerDir = Paths.get(uploadBase, "originals", workerId.toString());
+        Path mainThumbDir = Paths.get(uploadBase, "thumbs", "main", workerId.toString());
+        Path prevThumbDir = Paths.get(uploadBase, "thumbs", "preview", workerId.toString());
+
+        Files.createDirectories(workerDir);
+        Files.createDirectories(mainThumbDir);
+        Files.createDirectories(prevThumbDir);
+
+        String fileName = uuid + ext;
+        Path originalPath = workerDir.resolve(fileName);
+        Path mainThumbPath = mainThumbDir.resolve(uuid + "_main" + ext);
+        Path prevThumbPath = prevThumbDir.resolve(uuid + "_prev" + ext);
+
+        // 2. Sauvegarde de l'original
+        Files.copy(file.getInputStream(), originalPath);
+
+        // 3. Génération des miniatures avec Thumbnailator
+        // Main Thumb: 600x800 (Portrait)
+        Thumbnails.of(originalPath.toFile())
+                .size(MAIN_THUMB_W, MAIN_THUMB_H)
+                .crop(Positions.CENTER)
+                .toFile(mainThumbPath.toFile());
+
+        // Preview Thumb: 400x300 (Paysage)
+        Thumbnails.of(originalPath.toFile())
+                .size(PREV_THUMB_W, PREV_THUMB_H)
+                .crop(Positions.CENTER)
+                .toFile(prevThumbPath.toFile());
+
+        // 4. Retourner les chemins relatifs pour la base de données
+        return new SavedMedia(
+                publicBaseUrl + "/originals/" + workerId + "/" + fileName,
+                publicBaseUrl + "/thumbs/main/" + workerId + "/" + uuid + "_main" + ext,
+                publicBaseUrl + "/thumbs/preview/" + workerId + "/" + uuid + "_prev" + ext
+        );
+    }
+
     /**
      * Saves a video file (no thumbnail generation — handled client-side or separately).
      */
