@@ -1,6 +1,6 @@
 import {Component, OnInit, Signal} from '@angular/core';
 import {CommonModule} from "@angular/common";
-import {IonicModule} from "@ionic/angular";
+import {IonicModule, ItemReorderEventDetail} from "@ionic/angular";
 import {FormsModule} from "@angular/forms";
 import {HeaderComponent} from "../header/header.component";
 import {WorkerService} from "../../services/worker.service";
@@ -90,18 +90,47 @@ export class ProfileManagementComponent implements OnInit {
 
   // ── Photos ────────────────────────────────────────────────────────────────
 
-  onFileSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (!input.files?.length) return;
-    const file = input.files[0];
-    this.uploadPhoto(file);
-    input.value = ''; // reset so same file can be re-selected
+  async onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    // Supposons que vous avez un service pour appeler l'API
+    try {
+      await this.accountService.uploadPhoto(formData.get('file') as File).pipe();
+    } catch (err) {
+      console.error("Erreur upload", err);
+    }
+  }
+
+  // 2. Gérer le réordonnancement (Drag & Drop)
+  async doReorder(event: CustomEvent<ItemReorderEventDetail>) {
+    // Le tableau local est mis à jour automatiquement par Ionic
+    this.photos = event.detail.complete(this.photos);
+
+    // Envoyer le nouvel ordre au backend
+    const orderedIds = this.photos.map(p => p.id);
+    await this.accountService.reorderPhotos(orderedIds);
   }
 
   uploadPhoto(file: File) {
     this.uploadingPhoto = true;
     this.accountService.uploadPhoto(file);
   }
+
+  // async addImageToGallery(event: any) {
+  //
+  //   let data = {} as any;
+  //   data.file = event.target.files[0];
+  //   data.name = data.file.name;
+  //   data.collectionId = this.imagesCollections[this.selectedGallery].id;
+  //
+  //   this.isLoadingGallery.next(true);
+  //   await this.storage.addImageToGallery(data);
+  //   this.isLoadingGallery.next(false);
+  // }
 
   setMain(photo: PhotoItem) {
     this.accountService.setMainPhoto(photo.id);
