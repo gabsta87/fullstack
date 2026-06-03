@@ -125,7 +125,7 @@ public class AccountController {
 
     /**
      * GET /account/favorites
-     * Returns favorited workers as gallery DTOs — reuses the same worker-card component.
+     * Returns favorite workers as gallery DTOs — reuses the same worker-card component.
      */
     @GetMapping("/favorites")
     @Transactional(readOnly = true)
@@ -229,7 +229,7 @@ public class AccountController {
 
     /**
      * POST /account/worker/photos
-     * Upload a new photo — generates main thumb + preview thumb.
+     * Upload a new photo — generates the main thumb and preview thumb.
      */
     @PostMapping("/worker/photos")
     @Transactional
