@@ -2,7 +2,6 @@ services:
   db:
     image: mysql:9.0
     container_name: venus-db
-    command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_DATABASE: ${DB_NAME}
       MYSQL_USER: ${DB_USER}
@@ -43,7 +42,7 @@ services:
       LOGGING_LEVEL_ORG_HIBERNATE: "DEBUG"
       LOGGING_LEVEL_ORG_HIBERNATE_SQL: "DEBUG"
       LOGGING_LEVEL_ORG_HIBERNATE_TYPE_DESCRIPTOR_SQL: "TRACE"
-      
+
       SPRING_JPA_HIBERNATE_DDL_AUTO: "none"
       
       SPRING_APPLICATION_JSON: '{"media.upload.base": "/var/serv-media", "media.public.url": "/media"}'
