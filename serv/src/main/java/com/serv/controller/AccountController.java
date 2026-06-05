@@ -236,27 +236,36 @@ public class AccountController {
     public ResponseEntity<?> uploadPhoto(@RequestParam("file") MultipartFile file,
                                          @RequestParam(value = "title", required = false) String title,
                                          HttpSession session) {
-        Worker worker = sessionWorker(session);
-        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
+
+        Worker sessionWorker = sessionWorker(session);
+        if (sessionWorker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
+        if (file == null) return ResponseEntity.badRequest().body("No file provided.");
+
+        Optional<Worker> workerOpt = workerRepository.findByIdWithPhotos(sessionWorker.getId());
+        if (workerOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Worker not found.");
+        }
+        Worker worker = workerOpt.get();
+
+        System.out.println("Saving photo for worker " + worker.getId() + " with title:" + file.getOriginalFilename());
 
         try {
-            // 1 — Save files to disk, get back URLs
             MediaStorageService.SavedMedia saved = mediaStorageService.savePhoto(file, worker.getId());
 
-            // 2 — Create and persist the Photo entity
             Photo photo = new Photo();
             photo.setWorker(worker);
             photo.setTitle(title);
             photo.setOriginalUrl(saved.originalUrl());
             photo.setMainThumbUrl(saved.mainThumbUrl());
             photo.setPreviewThumbUrl(saved.previewThumbUrl());
-            photo.setSortOrder(worker.getPhotos().size()); // append at end
+
+            photo.setSortOrder(worker.getPhotos().size());
             photoRepository.save(photo);
 
-            // 3 — Set as main if first photo
             if (worker.getMainPhoto() == null) {
                 worker.setMainPhoto(photo);
                 workerRepository.save(worker);
+
                 session.setAttribute("user", worker);
             }
 
