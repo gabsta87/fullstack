@@ -94,15 +94,14 @@ export class ProfileManagementComponent implements OnInit {
     const file: File = event.target.files[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append('file', file);
-
-    // Supposons que vous avez un service pour appeler l'API
-    try {
-      await this.accountService.uploadPhoto(formData.get('file') as File).pipe();
-    } catch (err) {
-      console.error("Erreur upload", err);
-    }
+    this.accountService.uploadPhoto(file).subscribe({
+      next: (response) => {
+        console.log("Upload réussi !", response);
+      },
+      error: (err) => {
+        console.error("Erreur upload", err);
+      }
+    });
   }
 
   // 2. Gérer le réordonnancement (Drag & Drop)
@@ -113,11 +112,6 @@ export class ProfileManagementComponent implements OnInit {
     // Envoyer le nouvel ordre au backend
     const orderedIds = this.photos.map(p => p.id);
     await this.accountService.reorderPhotos(orderedIds);
-  }
-
-  uploadPhoto(file: File) {
-    this.uploadingPhoto = true;
-    this.accountService.uploadPhoto(file);
   }
 
   // async addImageToGallery(event: any) {
