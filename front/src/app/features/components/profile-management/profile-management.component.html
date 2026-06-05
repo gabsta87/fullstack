@@ -91,15 +91,20 @@
           </ion-button>
 
           <ion-reorder-group [disabled]="false" (ionItemReorder)="doReorder($event)">
-            <ion-grid>
+            <ion-grid class="ion-no-padding ion-padding-horizontal">
               <ion-row>
-                <ion-col size="6" size-md="4" *ngFor="let photo of photos">
-                  <ion-item lines="none">
-                    <ion-thumbnail slot="start">
-                      <img [src]="photo.previewThumbUrl" />
-                    </ion-thumbnail>
-                    <ion-reorder slot="end"></ion-reorder>
-                  </ion-item>
+                <ion-col size="4" size-md="3" *ngFor="let photo of me.photos" class="ion-padding-tiny">
+                  <div class="gallery-item">
+                    <img [src]="photo.previewThumbUrl" class="gallery-img" />
+                    <div class="gallery-actions-overlay">
+                      <ion-button color="danger" fill="clear" size="small" (click)="deletePhoto(photo)">
+                        <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                      </ion-button>
+                      <ion-reorder>
+                        <ion-icon name="move" color="light"></ion-icon>
+                      </ion-reorder>
+                    </div>
+                  </div>
                 </ion-col>
               </ion-row>
             </ion-grid>

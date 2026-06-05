@@ -4,20 +4,13 @@ import {IonicModule, ItemReorderEventDetail} from "@ionic/angular";
 import {FormsModule} from "@angular/forms";
 import {HeaderComponent} from "../header/header.component";
 import {WorkerService} from "../../services/worker.service";
-import {BehaviorSubject, firstValueFrom, map, Observable} from "rxjs";
-import {BODY_TYPE_LABELS} from "../../models/items.model";
+import {BehaviorSubject, firstValueFrom, map, Observable, switchMap} from "rxjs";
+import {BODY_TYPE_LABELS, PhotoItem} from "../../models/items.model";
 import {ActivatedRoute} from "@angular/router";
 import {toSignal} from "@angular/core/rxjs-interop";
 import {WorkerFullProfile, WorkerPrivateAccount, WorkerProfileUpdate} from "../../models/user.model";
 import {WorkerAccountService} from "../../services/worker-account.service";
-
-export interface PhotoItem {
-  id: string;
-  mainThumbUrl: string;
-  previewThumbUrl: string;
-  originalUrl: string;
-  isMain?: boolean;
-}
+import {tap} from "rxjs/operators";
 
 @Component({
   selector: 'app-profile-management',
@@ -32,6 +25,8 @@ export class ProfileManagementComponent implements OnInit {
   currentUser$ : Observable<WorkerPrivateAccount>;
   currentUser : Signal<WorkerPrivateAccount | undefined>;
   allServices : string[] | undefined;
+
+  private refreshUser$ = new BehaviorSubject<void>(undefined);
 
   // Profile form
   profileForm: WorkerProfileUpdate = {};
@@ -51,12 +46,30 @@ export class ProfileManagementComponent implements OnInit {
   savingSettings = false;
 
   constructor(private accountService: WorkerAccountService, private workerService: WorkerService, private route : ActivatedRoute) {
-    this.currentUser$ = this.route.data.pipe(map(data => data['profile']));
+    this.currentUser$ = this.refreshUser$.pipe(
+      switchMap((_, index) => {
+        // Au tout premier affichage (index === 0), on prend les données résolues par la route
+        if (index === 0) {
+          return this.route.data.pipe(map(data => data['profile']));
+        }
+        // Pour les fois suivantes, on va chercher les données fraîches du serveur
+        // (En supposant que vous ayez une méthode getMe() qui appelle l'API GET /account/me)
+        return this.accountService.getCurrentAccount();
+      }),
+      // 3. À chaque fois que l'utilisateur change, on met à jour automatiquement le tableau de photos
+      tap(user => {
+        if (user && user.photos) {
+          this.photos = user.photos;
+        }
+      })
+    );
+
     this.currentUser = toSignal(this.currentUser$);
   }
 
   async ngOnInit(): Promise<void> {
     this.allServices = await firstValueFrom(this.route.data.pipe(map(data => data['services'])));
+    this.currentUser$ = this.accountService.listenToMyAccount();
   }
 
   setTab(tab: 'profile' | 'photos' | 'settings' | 'subscription') {
@@ -97,6 +110,7 @@ export class ProfileManagementComponent implements OnInit {
     this.accountService.uploadPhoto(file).subscribe({
       next: (response) => {
         console.log("Upload réussi !", response);
+        this.refreshUser$.next();
       },
       error: (err) => {
         console.error("Erreur upload", err);
