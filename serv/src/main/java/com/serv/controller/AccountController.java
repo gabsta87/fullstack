@@ -289,7 +289,10 @@ public class AccountController {
 
             session.setAttribute("user", worker);
 
-            sseStreamService.emitAccountUpdate(worker.getId(), WorkerFullProfileDTO.from(worker));
+            Worker freshWorker = workerRepository.findByIdWithPhotos(worker.getId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker introuvable"));
+
+            sseStreamService.emitAccountUpdate(worker.getId(), WorkerFullProfileDTO.from(freshWorker));
 
             return ResponseEntity.ok(Map.of(
                     "id",              photo.getId().toString(),
@@ -348,7 +351,10 @@ public class AccountController {
 
         session.setAttribute("user", worker);
 
-        sseStreamService.emitAccountUpdate(worker.getId(), WorkerFullProfileDTO.from(worker));
+        Worker freshWorker = workerRepository.findByIdWithPhotos(worker.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker introuvable"));
+
+        sseStreamService.emitAccountUpdate(worker.getId(), WorkerFullProfileDTO.from(freshWorker));
 
         return ResponseEntity.ok().build();
     }
