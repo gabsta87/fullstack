@@ -1,46 +1,84 @@
-import {Injectable} from '@angular/core';
+import {Injectable, NgZone} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Observable, of} from 'rxjs';
+import {BehaviorSubject, Observable, of} from 'rxjs';
 import {environment} from "../../../environments/environment";
 import {tap} from "rxjs/operators";
-import {ClientPrivateAccount,} from "../models/user.model";
+import {ClientPrivateAccount} from "../models/user.model";
 
 @Injectable({ providedIn: 'root' })
 export class ClientAccountService {
   private base = `${environment.apiBase}/account`;
 
-  private currentAccount: ClientPrivateAccount | null = null;
+  private accountSubject = new BehaviorSubject<ClientPrivateAccount | null>(null);
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private zone : NgZone) {}
 
   getCurrentAccount(): Observable<ClientPrivateAccount> {
-    if (this.currentAccount) {
-      return of(this.currentAccount);
+    const current = this.accountSubject.value;
+    if (current) {
+      return of(current);
     }
     return this.http.get<ClientPrivateAccount>(`${this.base}/me`, { withCredentials: true }).pipe(
-      tap(account => this.currentAccount = account)
+      tap(account => this.accountSubject.next(account))
     );
   }
 
   clearCache() {
-    this.currentAccount = null;
+    this.accountSubject.next(null);
   }
+
+  listenToMyAccount(): Observable<ClientPrivateAccount> {
+    return new Observable<ClientPrivateAccount>(observer => {
+
+      // 1 — On distribue IMMÉDIATEMENT les données déjà chargées par le Resolver
+      if (this.accountSubject.value) {
+        observer.next(this.accountSubject.value);
+      }
+
+      // 2 — On ouvre la connexion temps réel pour les futures modifications
+      const eventSource = new EventSource(`${this.base}/client/stream`, { withCredentials: true });
+
+      eventSource.addEventListener('account-update', (event: MessageEvent) => {
+        this.zone.run(() => {
+          const updatedAccount = JSON.parse(event.data);
+
+          // On met à jour le BehaviorSubject central pour garder le cache synchro
+          this.accountSubject.next(updatedAccount);
+
+          // On pousse la mise à jour à l'IHM
+          observer.next(updatedAccount);
+        });
+      });
+
+      eventSource.onerror = (error) => {
+        this.zone.run(() => observer.error(error));
+      };
+
+      // Nettoyage à la destruction du composant
+      return () => eventSource.close();
+    });
+  }
+
+  // SETTINGS
 
   updateSettings(data: ClientPrivateAccount): Observable<any> {
     return this.http.patch(`${this.base}/settings`, data, { withCredentials: true });
   }
 
+  // LANGUAGE
+
   getCurrentUserLanguage(): string {
-    if(!this.currentAccount)
-      return "EN";
-    return this.currentAccount?.language;
+    const current = this.accountSubject.value;
+    if (!current) return "EN";
+    return current.language;
   }
 
   setCurrentUserLanguage(lang: string): Observable<any> {
     return this.http.patch(`${this.base}/language`, { lang }, { withCredentials: true });
   }
 
-  // CLIENT
+  // FAVORITES
+
   addFavorite(workerId: string): Observable<any> {
     return this.http.post(`${this.base}/favorites/${workerId}`, {}, { withCredentials: true });
   }

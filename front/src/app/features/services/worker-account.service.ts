@@ -71,10 +71,13 @@ export class WorkerAccountService {
     return this.http.patch(`${this.base}/worker/profile`, data, { withCredentials: true });
   }
 
+  // SERVICES
+
   updateServices(services: string[]): Observable<WorkerFullProfile> {
-    console.log("updateServices : updating ", services);
     return this.http.patch<WorkerFullProfile>(`${this.base}/worker/updateservices`, services, { withCredentials: true });
   }
+
+  // PHOTOS
 
   uploadPhoto(file: File, title?: string): Observable<any> {
     const fd = new FormData();
