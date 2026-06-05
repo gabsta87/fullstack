@@ -31,14 +31,6 @@ public record WorkerFullProfileDTO(
         String mainThumb = w.getMainPhoto() != null
                 ? w.getMainPhoto().getMainThumbUrl() : null;
 
-        List<PhotoDTO> photos = w.getPhotos().stream()
-                .map(p -> new PhotoDTO(
-                        p.getId().toString(),
-                        p.getOriginalUrl(),
-                        p.getMainThumbUrl(),
-                        p.getPreviewThumbUrl()))
-                .toList();
-
         return new WorkerFullProfileDTO(
                 w.getId(),
                 w.getUsername(),
@@ -54,7 +46,9 @@ public record WorkerFullProfileDTO(
                 w.getPhone(),
                 w.getDescription(),
                 mainThumb,
-                photos,
+                w.getPhotos().stream()
+                        .map(PhotoDTO::from)
+                        .toList(),
                 List.of()     // TODO: videos when Video entity is enabled
         );
     }
@@ -76,13 +70,6 @@ public record WorkerFullProfileDTO(
 
         return Period.between(birthDate, LocalDate.now()).getYears();
     }
-
-    public record PhotoDTO(
-            String id,
-            String originalUrl,
-            String mainThumbUrl,
-            String previewThumbUrl
-    ) {}
 
     public record VideoDTO(String id, String url, String duration) {}
 }

@@ -100,48 +100,40 @@ public class MediaStorageService {
         );
     }
 
-    public SavedMedia store(MultipartFile file, UUID workerId) throws IOException {
-        validateImage(file);
+    public void deletePhotoFiles(UUID workerId, String originalUrl, String mainThumbUrl, String previewThumbUrl) {
+        try {
+            deletePhysicalFile("originals", workerId, originalUrl);
+            deletePhysicalFile("thumbs/main", workerId, mainThumbUrl);
+            deletePhysicalFile("thumbs/preview", workerId, previewThumbUrl);
+        } catch (IOException e) {
+            System.err.println("Erreur lors de la suppression physique des fichiers pour le worker " + workerId + ": " + e.getMessage());
+        }
+    }
 
-        String uuid = UUID.randomUUID().toString();
-        String ext = getExtension(file.getOriginalFilename());
+    private void deletePhysicalFile(String subdir, UUID workerId, String url) throws IOException {
+        if (url == null || !url.contains("/")) return;
 
-        // 1. Définition des chemins (Indépendant de l'OS, Java gère les /)
-        Path workerDir = Paths.get(uploadBase, "originals", workerId.toString());
-        Path mainThumbDir = Paths.get(uploadBase, "thumbs", "main", workerId.toString());
-        Path prevThumbDir = Paths.get(uploadBase, "thumbs", "preview", workerId.toString());
+        // Extrait le nom du fichier
+        String filename = url.substring(url.lastIndexOf('/') + 1);
 
-        Files.createDirectories(workerDir);
-        Files.createDirectories(mainThumbDir);
-        Files.createDirectories(prevThumbDir);
+        // Reconstruit le chemin absolu (ex: /var/media/originals/worker-uuid/file.jpg)
+        Path filePath = Paths.get(uploadBase, subdir, String.valueOf(workerId), filename);
 
-        String fileName = uuid + ext;
-        Path originalPath = workerDir.resolve(fileName);
-        Path mainThumbPath = mainThumbDir.resolve(uuid + "_main" + ext);
-        Path prevThumbPath = prevThumbDir.resolve(uuid + "_prev" + ext);
+        // 1 — Supprime le fichier image
+        Files.deleteIfExists(filePath);
 
-        // 2. Sauvegarde de l'original
-        Files.copy(file.getInputStream(), originalPath);
-
-        // 3. Génération des miniatures avec Thumbnailator
-        // Main Thumb: 600x800 (Portrait)
-        Thumbnails.of(originalPath.toFile())
-                .size(MAIN_THUMB_W, MAIN_THUMB_H)
-                .crop(Positions.CENTER)
-                .toFile(mainThumbPath.toFile());
-
-        // Preview Thumb: 400x300 (Paysage)
-        Thumbnails.of(originalPath.toFile())
-                .size(PREV_THUMB_W, PREV_THUMB_H)
-                .crop(Positions.CENTER)
-                .toFile(prevThumbPath.toFile());
-
-        // 4. Retourner les chemins relatifs pour la base de données
-        return new SavedMedia(
-                publicBaseUrl + "/originals/" + workerId + "/" + fileName,
-                publicBaseUrl + "/thumbs/main/" + workerId + "/" + uuid + "_main" + ext,
-                publicBaseUrl + "/thumbs/preview/" + workerId + "/" + uuid + "_prev" + ext
-        );
+        // 2 — Nettoyage du dossier parent (ex: /var/media/originals/worker-uuid/)
+        Path parentDir = filePath.getParent();
+        if (parentDir != null && Files.isDirectory(parentDir)) {
+            // Ouvre un flux sur le contenu du dossier
+            try (var entries = Files.newDirectoryStream(parentDir)) {
+                // Si le dossier n'a aucun élément suivant, il est vide
+                if (!entries.iterator().hasNext()) {
+                    Files.delete(parentDir);
+                    System.out.println("Dossier vide nettoyé avec succès : " + parentDir);
+                }
+            }
+        }
     }
 
     /**

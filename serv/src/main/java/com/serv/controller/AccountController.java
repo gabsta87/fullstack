@@ -4,7 +4,9 @@ import com.serv.common.Language;
 import com.serv.database.entities.*;
 import com.serv.common.BodyType;
 import com.serv.database.repositories.*;
+import com.serv.dto.VenusUserDTO;
 import com.serv.dto.WorkerFullProfileDTO;
+import com.serv.service.SseStreamService;
 import com.serv.service.WorkerService;
 import com.serv.service.MediaStorageService;
 import jakarta.servlet.http.HttpSession;
@@ -14,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,6 +34,7 @@ public class AccountController {
     private final WorkerService galleryService;
     private final MediaStorageService  mediaStorageService;
     private final ServiceRepository    serviceRepository;
+    private final SseStreamService     sseStreamService;
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
@@ -79,6 +84,14 @@ public class AccountController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
+    @GetMapping("/worker/stream")
+    public SseEmitter streamAccount(HttpSession session) {
+        Worker worker = sessionWorker(session);
+        if (worker == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+
+        return sseStreamService.createStream(worker.getId());
+    }
+
     @PatchMapping("/language")
     @Transactional
     public ResponseEntity<?> setLanguage(@RequestBody String language, HttpSession session) {
@@ -118,6 +131,9 @@ public class AccountController {
         VenusUser patchedUser = userRepository.save(user);
 
         session.setAttribute("user", patchedUser);
+
+        sseStreamService.emitAccountUpdate(user.getId(), VenusUserDTO.from(user));
+
         return ResponseEntity.ok(patchedUser);
     }
 
@@ -260,14 +276,20 @@ public class AccountController {
             photo.setPreviewThumbUrl(saved.previewThumbUrl());
 
             photo.setSortOrder(worker.getPhotos().size());
-            photoRepository.save(photo);
 
             if (worker.getMainPhoto() == null) {
                 worker.setMainPhoto(photo);
-                workerRepository.save(worker);
-
                 session.setAttribute("user", worker);
             }
+
+
+            worker.addPhoto(photo);
+            photoRepository.save(photo);
+            workerRepository.save(worker);
+
+            session.setAttribute("user", worker);
+
+            sseStreamService.emitAccountUpdate(worker.getId(), WorkerFullProfileDTO.from(worker));
 
             return ResponseEntity.ok(Map.of(
                     "id",              photo.getId().toString(),
@@ -286,14 +308,30 @@ public class AccountController {
     @DeleteMapping("/worker/photos/{photoId}")
     @Transactional
     public ResponseEntity<?> deletePhoto(@PathVariable UUID photoId, HttpSession session) {
-        Worker worker = sessionWorker(session);
-        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
+        Worker sessionWorker = sessionWorker(session);
+        if (sessionWorker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
+        if (photoId == null) return ResponseEntity.badRequest().body("No file provided.");
+
+        Optional<Worker> workerOpt = workerRepository.findByIdWithPhotos(sessionWorker.getId());
+        if (workerOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Worker not found.");
+        }
+        Worker worker = workerOpt.get();
+        System.out.println("Deleting photo " + photoId + " for worker " + worker.getId());
 
         Photo photo = photoRepository.findById(photoId).orElse(null);
         if (photo == null || !photo.getWorker().getId().equals(worker.getId()))
             return ResponseEntity.notFound().build();
 
-        // If deleting main photo, pick next available
+        // 1 — Suppression des fichiers physiques sur le disque (Original + Thumbs)
+        mediaStorageService.deletePhotoFiles(
+                worker.getId(),
+                photo.getOriginalUrl(),
+                photo.getMainThumbUrl(),
+                photo.getPreviewThumbUrl()
+        );
+
+        // 2 — Si on supprime la photo principale, on choisit la suivante disponible
         if (worker.getMainPhoto() != null && worker.getMainPhoto().getId().equals(photoId)) {
             worker.getPhotos().stream()
                     .filter(p -> !p.getId().equals(photoId))
@@ -303,9 +341,15 @@ public class AccountController {
                             () -> worker.setMainPhoto(null)
                     );
         }
-        worker.getPhotos().remove(photo);
+
+        // 3 — Suppression en base de données (déclenché par l'orphanRemoval = true)
+        worker.removePhoto(photo);
         workerRepository.save(worker);
+
         session.setAttribute("user", worker);
+
+        sseStreamService.emitAccountUpdate(worker.getId(), WorkerFullProfileDTO.from(worker));
+
         return ResponseEntity.ok().build();
     }
 
@@ -326,6 +370,7 @@ public class AccountController {
         worker.setMainPhoto(photo);
         Worker savedWorker = workerRepository.save(worker);
         session.setAttribute("user", savedWorker);
+        sseStreamService.emitAccountUpdate(worker.getId(), WorkerFullProfileDTO.from(worker));
         return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
     }
 

@@ -121,4 +121,12 @@ public class Worker extends VenusUser {
         this.expired = getSubscriptionDaysLeft() <= 0;
     }
 
+    public void addPhoto(Photo photo) {
+        this.photos.add(photo);
+    }
+
+    public void removePhoto(Photo photo) {
+        this.photos.remove(photo);
+    }
+
 }
