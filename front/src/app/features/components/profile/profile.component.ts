@@ -72,7 +72,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       notificationsOutline, notifications, warningOutline,
       chevronBackOutline, chevronForwardOutline, closeOutline,
       playCircleOutline, locationOutline, calendarOutline,
-      bodyOutline, timeOutline,
+      bodyOutline, timeOutline
     });
   }
 

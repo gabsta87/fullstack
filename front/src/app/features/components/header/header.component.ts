@@ -7,6 +7,18 @@ import {IonicModule, ModalController} from "@ionic/angular";
 import {AuthModalComponent} from "../auth-modal/auth-modal.component";
 import {firstValueFrom} from "rxjs";
 import {WorkerAccountService} from "../../services/worker-account.service";
+import {addIcons} from "ionicons";
+import {
+  bodyOutline,
+  calendarOutline,
+  callOutline, chevronBackOutline, chevronForwardOutline, closeOutline,
+  heart,
+  heartOutline, locationOutline,
+  logoWhatsapp,
+  notifications,
+  notificationsOutline, personCircleOutline, playCircleOutline, timeOutline,
+  warningOutline
+} from "ionicons/icons";
 
 @Component({
   selector: 'app-header',
@@ -23,7 +35,11 @@ export class HeaderComponent {
     private workerAccountService: WorkerAccountService,
     private router: Router,
     private modalCtrl: ModalController // Injecté ici
-  ) {}
+  ) {
+    addIcons({
+      personCircleOutline
+    });
+  }
 
   // Fonction centrale pour ouvrir la modale
   async openAuth(mode: 'login' | 'register') {

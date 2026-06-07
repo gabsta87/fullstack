@@ -15,6 +15,8 @@ import {
 } from '@ionic/angular/standalone';
 import { WorkerService } from '../../services/worker.service';
 import {WorkerSimpleProfile} from "../../models/user.model";
+import {addIcons} from "ionicons";
+import {personCircleOutline} from "ionicons/icons";
 
 @Component({
   selector: 'app-worker-card',
@@ -40,7 +42,11 @@ export class WorkerCardComponent implements OnDestroy {
     private workerService: WorkerService,
     private router: Router,
     private cdr: ChangeDetectorRef,
-  ) {}
+  ) {
+    addIcons({
+      personCircleOutline
+    });
+  }
 
   // ── Hover ──────────────────────────────────────────────────────────────────
 
