@@ -10,30 +10,30 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class SseStreamService {
-    // Stocke les connexions actives par ID de Worker
+    // Stocke les connexions actives par ID de User
     private final Map<UUID, SseEmitter> emitters = new ConcurrentHashMap<>();
 
-    public SseEmitter createStream(UUID workerId) {
+    public SseEmitter createStream(UUID userId) {
         // Timeout de 30 minutes (ajustable)
         SseEmitter emitter = new SseEmitter(30 * 60 * 1000L);
 
-        emitters.put(workerId, emitter);
+        emitters.put(userId, emitter);
 
         // Nettoyage en cas de déconnexion
-        emitter.onCompletion(() -> emitters.remove(workerId));
-        emitter.onTimeout(() -> emitters.remove(workerId));
-        emitter.onError((e) -> emitters.remove(workerId));
+        emitter.onCompletion(() -> emitters.remove(userId));
+        emitter.onTimeout(() -> emitters.remove(userId));
+        emitter.onError((e) -> emitters.remove(userId));
 
         return emitter;
     }
 
-    public void emitAccountUpdate(UUID workerId, Object data) {
-        SseEmitter emitter = emitters.get(workerId);
+    public void emitAccountUpdate(UUID userId, Object data) {
+        SseEmitter emitter = emitters.get(userId);
         if (emitter != null) {
             try {
                 emitter.send(SseEmitter.event().name("account-update").data(data));
             } catch (IOException e) {
-                emitters.remove(workerId);
+                emitters.remove(userId);
             }
         }
     }
