@@ -265,7 +265,6 @@ public class AccountController {
 
         Worker sessionWorker = sessionWorker(session);
         if (sessionWorker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
-        if (file == null) return ResponseEntity.badRequest().body("No file provided.");
 
         Optional<Worker> workerOpt = workerRepository.findByIdWithPhotos(sessionWorker.getId());
         if (workerOpt.isEmpty()) {
