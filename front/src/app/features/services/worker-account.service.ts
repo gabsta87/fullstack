@@ -79,21 +79,20 @@ export class WorkerAccountService {
 
   // PHOTOS
 
-  uploadPhoto(file: File, title?: string): Observable<any> {
+  async uploadPhoto(file: File, title?: string): Promise<any> {
     const fd = new FormData();
-    console.log("uploadPhoto : ", file);
+    console.log("uploadPhoto : ", file, " to ",this.base,"/worker/photos}");
     fd.append('file', file);
     if (title) fd.append('title', title);
-    console.log("uploadPhoto : ", fd);
-    return this.http.post(`${this.base}/worker/photos`, fd, { withCredentials: true });
+    return await firstValueFrom(this.http.post(`${this.base}/worker/photos`, fd, { withCredentials: true }));
   }
 
   async deletePhoto(photoId: string): Promise<void> {
     await firstValueFrom(this.http.delete(`${this.base}/worker/photos/${photoId}`, { withCredentials: true }));
   }
 
-  setMainPhoto(photoId: string): Observable<any> {
-    return this.http.patch(`${this.base}/worker/photos/${photoId}/main`, {}, { withCredentials: true });
+  async setMainPhoto(photoId: string): Promise<any> {
+    return await firstValueFrom(this.http.patch(`${this.base}/worker/photos/${photoId}/main`, {}, { withCredentials: true }));
   }
 
   reorderPhotos(orderedIds: string[]): Observable<any> {
