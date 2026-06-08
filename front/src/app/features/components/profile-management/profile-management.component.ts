@@ -1,16 +1,17 @@
-import {Component, OnInit, Signal} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {CommonModule} from "@angular/common";
 import {IonicModule, ItemReorderEventDetail} from "@ionic/angular";
 import {FormsModule} from "@angular/forms";
 import {HeaderComponent} from "../header/header.component";
 import {WorkerService} from "../../services/worker.service";
-import {BehaviorSubject, firstValueFrom, map, Observable, of, switchMap} from "rxjs";
+import {BehaviorSubject, firstValueFrom, map, Observable} from "rxjs";
 import {BODY_TYPE_LABELS, PhotoItem} from "../../models/items.model";
 import {ActivatedRoute} from "@angular/router";
-import {toSignal} from "@angular/core/rxjs-interop";
 import {WorkerFullProfile, WorkerPrivateAccount, WorkerProfileUpdate} from "../../models/user.model";
 import {WorkerAccountService} from "../../services/worker-account.service";
 import {tap} from "rxjs/operators";
+import {addIcons} from "ionicons";
+import {addCircleOutline, trashOutline, move, camera} from "ionicons/icons";
 
 @Component({
   selector: 'app-profile-management',
@@ -40,7 +41,11 @@ export class ProfileManagementComponent implements OnInit {
   settingsError = '';
   savingSettings = false;
 
-  constructor(private accountService: WorkerAccountService, private workerService: WorkerService, private route : ActivatedRoute) {  }
+  constructor(private accountService: WorkerAccountService, private workerService: WorkerService, private route : ActivatedRoute) {
+    addIcons({
+      addCircleOutline,trashOutline,move, camera
+    });
+  }
 
   async ngOnInit(): Promise<void> {
     this.allServices = await firstValueFrom(this.route.data.pipe(map(data => data['services'])));
