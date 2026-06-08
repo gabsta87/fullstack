@@ -36,7 +36,7 @@ export class WorkerAccountService {
       }
 
       // 2 — On ouvre la connexion temps réel pour les futures modifications
-      const eventSource = new EventSource(`${this.base}/worker/stream`, { withCredentials: true });
+      const eventSource = new EventSource(`${this.base}/stream`, { withCredentials: true });
 
       eventSource.addEventListener('account-update', (event: MessageEvent) => {
         this.zone.run(() => {
