@@ -4,6 +4,7 @@ import com.serv.common.Language;
 import com.serv.database.entities.*;
 import com.serv.common.BodyType;
 import com.serv.database.repositories.*;
+import com.serv.dto.ClientDTO;
 import com.serv.dto.VenusUserDTO;
 import com.serv.dto.WorkerFullProfileDTO;
 import com.serv.service.SseStreamService;
@@ -60,12 +61,12 @@ public class AccountController {
         VenusUser user = sessionUser(session);
         if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
-        // Utilisez l'ID de l'utilisateur pour recharger une instance "fraîche" depuis la base
+        // Utilisez l'id de l'utilisateur pour recharger une instance "fraîche" depuis la base
         // Cela permet à Hibernate de gérer l'objet dans la transaction actuelle
 
         switch (user.getRole()) {
             case WORKER:
-                // On cherche par ID dans le repository des Workers
+                // On cherche par id dans le repository des Workers
                 return workerRepository.findByIdWithPhotos(user.getId())
                         .map(worker -> ResponseEntity.ok(WorkerFullProfileDTO.from(worker)))
                         .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
@@ -73,7 +74,7 @@ public class AccountController {
             case CLIENT:
                 // Même logique pour les clients si besoin
                 return clientRepository.findById(user.getId())
-                        .map(ResponseEntity::ok) // Ou votre DTO Client
+                        .map(client -> ResponseEntity.ok(ClientDTO.from(client)))
                         .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 
             case ADMIN:
@@ -84,12 +85,13 @@ public class AccountController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    @GetMapping("/worker/stream")
-    public SseEmitter streamAccount(HttpSession session) {
-        Worker worker = sessionWorker(session);
-        if (worker == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-
-        return sseStreamService.createStream(worker.getId());
+    @GetMapping("/stream")
+    public SseEmitter stream(HttpSession session) {
+        VenusUser user = sessionUser(session);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not logged in.");
+        }
+        return sseStreamService.createStream(user.getId());
     }
 
     @PatchMapping("/language")
@@ -107,7 +109,14 @@ public class AccountController {
 
         user.setLanguage(newLanguage);
         userRepository.save(user);
-        return ResponseEntity.ok(user.getLanguage());
+
+        VenusUser patchedUser = userRepository.save(user);
+
+        session.setAttribute("user", patchedUser);
+
+        sseStreamService.emitEvent(patchedUser.getId(), "account-update", VenusUserDTO.from(patchedUser));
+
+        return ResponseEntity.ok(patchedUser);
     }
 
     /**
@@ -132,7 +141,7 @@ public class AccountController {
 
         session.setAttribute("user", patchedUser);
 
-        sseStreamService.emitAccountUpdate(user.getId(), VenusUserDTO.from(user));
+        sseStreamService.emitEvent(patchedUser.getId(), "account-update", VenusUserDTO.from(patchedUser));
 
         return ResponseEntity.ok(patchedUser);
     }
@@ -289,10 +298,10 @@ public class AccountController {
 
             session.setAttribute("user", worker);
 
-            Worker freshWorker = workerRepository.findByIdWithPhotos(worker.getId())
+            Worker savedWorker = workerRepository.findByIdWithPhotos(worker.getId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker introuvable"));
 
-            sseStreamService.emitAccountUpdate(worker.getId(), WorkerFullProfileDTO.from(freshWorker));
+            sseStreamService.emitEvent(worker.getId(), "account-update", WorkerFullProfileDTO.from(savedWorker));
 
             return ResponseEntity.ok(Map.of(
                     "id",              photo.getId().toString(),
@@ -351,10 +360,10 @@ public class AccountController {
 
         session.setAttribute("user", worker);
 
-        Worker freshWorker = workerRepository.findByIdWithPhotos(worker.getId())
+        Worker savedWorker = workerRepository.findByIdWithPhotos(worker.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker introuvable"));
 
-        sseStreamService.emitAccountUpdate(worker.getId(), WorkerFullProfileDTO.from(freshWorker));
+        sseStreamService.emitEvent(worker.getId(), "account-update", WorkerFullProfileDTO.from(savedWorker));
 
         return ResponseEntity.ok().build();
     }
@@ -376,7 +385,9 @@ public class AccountController {
         worker.setMainPhoto(photo);
         Worker savedWorker = workerRepository.save(worker);
         session.setAttribute("user", savedWorker);
-        sseStreamService.emitAccountUpdate(worker.getId(), WorkerFullProfileDTO.from(worker));
+
+        sseStreamService.emitEvent(worker.getId(), "account-update", WorkerFullProfileDTO.from(savedWorker));
+
         return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
     }
 
