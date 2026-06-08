@@ -98,7 +98,7 @@ export class AuthService {
 
     this.eventSource.onerror = (error) => {
       console.error("Erreur ou déconnexion du flux SSE d'authentification", error);
-      // Optionnel : Vous pourriez invalider le cache ici si vous souhaitez être strict sur la coupure réseau
+      this.handleLocalLogout();
     };
   }
 
