@@ -7,12 +7,15 @@ import com.serv.database.repositories.UserRepository;
 import com.serv.database.repositories.WorkerRepository;
 import com.serv.dto.VenusUserDTO;
 import com.serv.service.MailService;
+import com.serv.service.SseStreamService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -29,6 +32,7 @@ public class AuthController {
     private final WorkerRepository workerRepository;
     private final MailService      mailService;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final SseStreamService sseStreamService;
 
     // ── Login / Logout ────────────────────────────────────────────────────────
 
@@ -55,11 +59,10 @@ public class AuthController {
         Object user = session.getAttribute("user");
 
         if (user == null) {
-             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("isAuth", false));
+             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // Si l'utilisateur est trouvé, on renvoie les deux
-        return ResponseEntity.ok(Map.of("isAuth", true, "user", user));
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     // ── Registration ──────────────────────────────────────────────────────────
@@ -147,19 +150,5 @@ public class AuthController {
         userRepository.save(resetToken.getUser());
         passwordResetTokenRepository.delete(resetToken);
         return ResponseEntity.ok("Password reset successful.");
-    }
-
-    private VenusUser sessionUser(HttpSession session) {
-        return (VenusUser) session.getAttribute("user");
-    }
-
-    private Worker sessionWorker(HttpSession session) {
-        VenusUser u = sessionUser(session);
-        return (u instanceof Worker w) ? w : null;
-    }
-
-    private Client sessionClient(HttpSession session) {
-        VenusUser u = sessionUser(session);
-        return (u instanceof Client c) ? c : null;
     }
 }
