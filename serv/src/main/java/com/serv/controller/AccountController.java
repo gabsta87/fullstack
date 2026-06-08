@@ -87,7 +87,8 @@ public class AccountController {
 
     @GetMapping("/stream")
     public SseEmitter stream(HttpSession session) {
-        VenusUser user = sessionUser(session);
+        VenusUser user = (VenusUser) session.getAttribute("user");
+
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not logged in.");
         }

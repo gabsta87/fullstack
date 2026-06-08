@@ -57,7 +57,7 @@ public class MediaStorageService {
      * the public URLs for the original, main thumb and preview thumb.
      *
      * @param file      the uploaded file
-     * @param workerId  ID of the worker this photo belongs to
+     * @param workerId  id of the worker this photo belongs to
      */
     public SavedMedia savePhoto(MultipartFile file, UUID workerId) throws IOException {
 

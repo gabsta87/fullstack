@@ -28,7 +28,7 @@ public class ItemController {
         return nativeQuery.getResultList();
     }
 
-    // Fetch a specific item from a table by ID
+    // Fetch a specific item from a table by id
     @GetMapping("/table/{tableName}/{id}")
     public Map<String, Object> getTableDataById(@PathVariable String tableName, @PathVariable Long id) {
         String query = String.format("SELECT * FROM %s WHERE id = :id", tableName);

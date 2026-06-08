@@ -4,36 +4,55 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 public class SseStreamService {
-    // Stocke les connexions actives par ID de User
-    private final Map<UUID, SseEmitter> emitters = new ConcurrentHashMap<>();
+    // Permet de stocker PLUSIEURS connexions actives pour un même UUID utilisateur
+    private final Map<UUID, List<SseEmitter>> emitters = new ConcurrentHashMap<>();
 
     public SseEmitter createStream(UUID userId) {
-        // Timeout de 30 minutes (ajustable)
+        // Timeout de 30 minutes
         SseEmitter emitter = new SseEmitter(30 * 60 * 1000L);
 
-        emitters.put(userId, emitter);
+        // Ajoute l'émetteur à la liste de l'utilisateur
+        emitters.computeIfAbsent(userId, k -> new CopyOnWriteArrayList<>()).add(emitter);
 
-        // Nettoyage en cas de déconnexion
-        emitter.onCompletion(() -> emitters.remove(userId));
-        emitter.onTimeout(() -> emitters.remove(userId));
-        emitter.onError((e) -> emitters.remove(userId));
+        // Nettoyage lors de la déconnexion
+        emitter.onCompletion(() -> removeEmitter(userId, emitter));
+        emitter.onTimeout(() -> removeEmitter(userId, emitter));
+        emitter.onError((e) -> removeEmitter(userId, emitter));
 
         return emitter;
     }
 
-    public void emitAccountUpdate(UUID userId, Object data) {
-        SseEmitter emitter = emitters.get(userId);
-        if (emitter != null) {
-            try {
-                emitter.send(SseEmitter.event().name("account-update").data(data));
-            } catch (IOException e) {
+    private void removeEmitter(UUID userId, SseEmitter emitter) {
+        List<SseEmitter> userEmitters = emitters.get(userId);
+        if (userEmitters != null) {
+            userEmitters.remove(emitter);
+            if (userEmitters.isEmpty()) {
                 emitters.remove(userId);
+            }
+        }
+    }
+
+    /**
+     * Méthode générique pour envoyer n'importe quel type d'événement à un utilisateur
+     */
+    public void emitEvent(UUID userId, String eventName, Object data) {
+        List<SseEmitter> userEmitters = emitters.get(userId);
+        if (userEmitters != null) {
+            for (SseEmitter emitter : userEmitters) {
+                try {
+                    // On utilise .name() pour qualifier l'événement côté Frontend
+                    emitter.send(SseEmitter.event().name(eventName).data(data));
+                } catch (IOException e) {
+                    removeEmitter(userId, emitter);
+                }
             }
         }
     }
