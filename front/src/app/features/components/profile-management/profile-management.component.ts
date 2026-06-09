@@ -151,22 +151,42 @@ export class ProfileManagementComponent implements OnInit {
     this.accountService.deletePhoto(photo.id);
   }
 
-  // Drag-and-drop reorder
-  onDragStart(index: number) { this.draggedIndex = index; }
+  // DRAG AND DROP REORDER
+
+  onDragStart(index: number) {
+    this.draggedIndex = index;
+  }
 
   onDragOver(event: DragEvent, index: number) {
-    event.preventDefault();
+    event.preventDefault(); // Indispensable pour autoriser le "drop"
     this.dragOverIndex = index;
   }
 
-  onDrop(targetIndex: number) {
+  async onDrop(targetIndex: number) {
     if (this.draggedIndex === null || this.draggedIndex === targetIndex) return;
+
+    // 1. On réorganise le tableau localement pour un rendu visuel instantané
+    const movedPhoto = this.photos[this.draggedIndex];
+    this.photos.splice(this.draggedIndex, 1);       // Supprime de l'ancienne position
+    this.photos.splice(targetIndex, 0, movedPhoto); // Insère à la nouvelle position
+
+    // Reset des index de drag
     this.draggedIndex  = null;
     this.dragOverIndex = null;
-    this.accountService.reorderPhotos(this.photos.map(p => p.id));
+
+    // 2. On extrait les IDs ordonnés et on synchronise avec le serveur
+    const orderedIds = this.photos.map(p => p.id);
+    try {
+      await this.accountService.reorderPhotos(orderedIds);
+    } catch (error) {
+      console.error("Erreur lors de la sauvegarde de l'ordre des photos", error);
+    }
   }
 
-  onDragEnd() { this.draggedIndex = null; this.dragOverIndex = null; }
+  onDragEnd() {
+    this.draggedIndex = null;
+    this.dragOverIndex = null;
+  }
 
   // ── Settings ──────────────────────────────────────────────────────────────
 
