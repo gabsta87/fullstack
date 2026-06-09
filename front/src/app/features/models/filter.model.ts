@@ -4,8 +4,4 @@ export interface GalleryFilters {
   services?: string[];
   eyeColor?: string;
   hairColor?: string;
-  heightMin?: number | null;
-  heightMax?: number | null;
-  weightMin?: number | null;
-  weightMax?: number | null;
 }

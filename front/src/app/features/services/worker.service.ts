@@ -22,10 +22,6 @@ export class WorkerService {
     if (filters.region)            params = params.set('region',    filters.region);
     if (filters.eyeColor)          params = params.set('eyeColor',  filters.eyeColor);
     if (filters.hairColor)         params = params.set('hairColor', filters.hairColor);
-    if (filters.heightMin != null) params = params.set('heightMin', filters.heightMin);
-    if (filters.heightMax != null) params = params.set('heightMax', filters.heightMax);
-    if (filters.weightMin != null) params = params.set('weightMin', filters.weightMin);
-    if (filters.weightMax != null) params = params.set('weightMax', filters.weightMax);
     if (filters.bodyType?.length)  params = params.set('bodyType',  filters.bodyType.join(','));
     if (filters.services?.length)  params = params.set('services',  filters.services.join(','));
     return this.http.get<WorkerSimpleProfile[]>(`${this.baseUrl}`, { params })

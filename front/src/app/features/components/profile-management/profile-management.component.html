@@ -45,6 +45,43 @@
         <div *ngIf="activeTab === 'profile'" class="fade-in">
           <ion-grid class="ion-no-padding">
             <ion-row>
+
+              <ion-col size="12">
+                <ion-item lines="none" class="venus-input">
+                  <ion-label position="stacked">Description</ion-label>
+                  <ion-textarea [(ngModel)]="profileForm.description"
+                                [debounce]="500"
+                                [autoGrow]="true"
+                                (ionChange)="updateProfileField('description', $event.detail.value)"
+                                placeholder="Décrivez votre profil, vos spécialités..."></ion-textarea>
+                </ion-item>
+              </ion-col>
+
+              <ion-col size="12" size-md="6">
+                <ion-item lines="none" class="venus-input">
+                  <ion-label position="stacked">Localisation</ion-label>
+                  <ion-select label="Localisation" label-placement="stacked" interface="popover"
+                              [(ngModel)]="profileForm.location"
+                              (ionChange)="updateProfileField('location', $event.detail.value)"
+                              placeholder="Choisir une ville...">
+                    <ion-select-option *ngFor="let region of REGIONS" [value]="region">
+                      {{ region }}
+                    </ion-select-option>
+                  </ion-select>
+                </ion-item>
+              </ion-col>
+
+              <ion-col size="12" size-md="6">
+                <ion-item lines="none" class="venus-input">
+                  <ion-label position="stacked">Téléphone</ion-label>
+                  <ion-input type="tel"
+                             [(ngModel)]="profileForm.phone"
+                             [debounce]="500"
+                             (ionChange)="updateProfileField('phone', $event.detail.value)"
+                             placeholder="Ex: +33 6 12 34 56 78"></ion-input>
+                </ion-item>
+              </ion-col>
+
               <ion-col size="12" size-md="6">
                 <ion-item lines="none" class="venus-input">
                   <ion-label position="stacked">Silhouette</ion-label>
@@ -61,12 +98,30 @@
 
               <ion-col size="12" size-md="6">
                 <ion-item lines="none" class="venus-input">
-                  <ion-label position="stacked">Localisation</ion-label>
-                  <ion-input type="text"
-                             [(ngModel)]="profileForm.location"
-                             [debounce]="500"
-                             (ionChange)="updateProfileField('location', $event.detail.value)"
-                             placeholder="Ex: Paris 8e"></ion-input>                </ion-item>
+                  <ion-label position="stacked">Couleur des yeux</ion-label>
+                  <ion-select label="Couleur des yeux" label-placement="stacked" interface="popover"
+                              [(ngModel)]="profileForm.eyeColor"
+                              (ionChange)="updateProfileField('eyeColor', $event.detail.value)"
+                              placeholder="Choisir...">
+                    <ion-select-option *ngFor="let eye of EYE_COLOR_LABELS | keyvalue" [value]="eye.key">
+                      {{ eye.value }}
+                    </ion-select-option>
+                  </ion-select>
+                </ion-item>
+              </ion-col>
+
+              <ion-col size="12" size-md="6">
+                <ion-item lines="none" class="venus-input">
+                  <ion-label position="stacked">Couleur des cheveux</ion-label>
+                  <ion-select label="Couleur des cheveux" label-placement="stacked" interface="popover"
+                              [(ngModel)]="profileForm.hairColor"
+                              (ionChange)="updateProfileField('hairColor', $event.detail.value)"
+                              placeholder="Choisir...">
+                    <ion-select-option *ngFor="let hair of HAIR_COLOR_LABELS | keyvalue" [value]="hair.key">
+                      {{ hair.value }}
+                    </ion-select-option>
+                  </ion-select>
+                </ion-item>
               </ion-col>
 
               <ion-col size="12">
@@ -77,13 +132,14 @@
 
                   <div class="services-flex">
                     <ion-checkbox *ngFor="let service of allServices"
-                              [checked]="me.services.includes(service)"
-                              (click)="toggleService(me, service)">
+                                  [checked]="me.services.includes(service)"
+                                  (click)="toggleService(me, service)">
                       <ion-label>{{ service }}</ion-label>
                     </ion-checkbox>
                   </div>
                 </div>
               </ion-col>
+
             </ion-row>
           </ion-grid>
         </div>

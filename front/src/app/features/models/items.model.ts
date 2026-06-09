@@ -6,12 +6,31 @@ export type BodyType = 'SLIM' | 'ATHLETIC' | 'AVERAGE' | 'CURVY' | 'ROUND';
 export type EyeColor = 'BROWN' | 'HAZEL' | 'GREEN' | 'BLUE' | 'GREY';
 export type HairColor = 'BLACK' | 'BROWN' | 'FAIR' | 'GINGER' | 'BLOND' | 'GREY' | 'COLORED';
 
-// Labels pour l'affichage (UI)
 export const BODY_TYPE_LABELS: Record<string, string> = {
   SLIM: 'Mince', ATHLETIC: 'Athlétique', AVERAGE: 'Normale', CURVY: 'Pulpeuse', ROUND: 'Ronde'
 };
-// Tableau pour les itérations (Object.keys transforme l'objet en tableau de strings)
 export const BODY_TYPES_LIST = Object.keys(BODY_TYPE_LABELS);
+
+export const EYE_COLOR_LABELS: Record<string, string> = {
+  BROWN: 'Marron',
+  HAZEL: 'Noisette',
+  GREEN: 'Vert',
+  BLUE: 'Bleu',
+  GREY: 'Gris'
+};
+export const EYES_COLOR_LIST = Object.keys(EYE_COLOR_LABELS);
+
+export const HAIR_COLOR_LABELS: Record<string, string> = {
+  BLACK: 'Noir',
+  BROWN: 'Châtain / Brun',
+  FAIR: 'Châtain clair',
+  GINGER: 'Roux',
+  BLOND: 'Blond',
+  GREY: 'Argent',
+  COLORED: 'Coloré'
+};
+export const HAIR_COLOR_LIST = Object.keys(HAIR_COLOR_LABELS);
+
 
 export interface ColorOption {
   label: string;

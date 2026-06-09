@@ -4,7 +4,7 @@ import {IonicModule, ItemReorderEventDetail} from "@ionic/angular";
 import {FormsModule} from "@angular/forms";
 import {HeaderComponent} from "../header/header.component";
 import {firstValueFrom, map, Observable} from "rxjs";
-import {BODY_TYPE_LABELS, PhotoItem} from "../../models/items.model";
+import {BODY_TYPE_LABELS, PhotoItem, EYE_COLOR_LABELS, HAIR_COLOR_LABELS, REGIONS} from "../../models/items.model";
 import {ActivatedRoute} from "@angular/router";
 import {WorkerFullProfile, WorkerPrivateAccount, WorkerProfileUpdate} from "../../models/user.model";
 import {WorkerAccountService} from "../../services/worker-account.service";
@@ -241,4 +241,7 @@ export class ProfileManagementComponent implements OnInit {
   }
 
   protected readonly BODY_TYPE_LABELS = BODY_TYPE_LABELS;
+  protected readonly EYE_COLOR_LABELS = EYE_COLOR_LABELS;
+  protected readonly HAIR_COLOR_LABELS = HAIR_COLOR_LABELS;
+  protected readonly REGIONS = REGIONS;
 }

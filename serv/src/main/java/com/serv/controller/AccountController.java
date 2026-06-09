@@ -224,6 +224,16 @@ public class AccountController {
         if (req.location()    != null) worker.setLocation(req.location);
         if (req.region()      != null) worker.setRegion(req.region());
         if (req.bodyType()    != null) worker.setBodyType(BodyType.valueOf(req.bodyType()));
+        if (req.eyeColor()    != null) worker.setEyeColor(req.eyeColor());
+        if (req.hairColor()   != null) worker.setHairColor(req.hairColor());
+        if (req.phone()       != null) worker.setPhone(req.phone());
+
+        if (req.mainPhotoId() != null) {
+            Optional<Photo> newPhoto = photoRepository.findById(UUID.fromString(req.mainPhotoId()));
+            if (newPhoto.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Photo not found.");
+            worker.setMainPhoto(newPhoto.get());
+        }
+
         if (req.services()    != null) {
             worker.setServices(req.services().stream()
                     .map(serviceRepository::findByName)
@@ -426,9 +436,11 @@ public class AccountController {
             String description,
             String location,
             String region,
-            Integer height,
-            Integer weight,
+            String eyeColor,
+            String hairColor,
+            String phone,
             String bodyType,
+            String mainPhotoId,
             List<String> services
     ) {}
 }

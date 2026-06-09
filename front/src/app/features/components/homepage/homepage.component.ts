@@ -63,10 +63,6 @@ export class HomepageComponent implements OnInit {
     region: undefined,
     eyeColor: undefined,
     hairColor: undefined,
-    heightMin: null,
-    heightMax: null,
-    weightMin: null,
-    weightMax: null,
   };
 
   constructor(
@@ -173,10 +169,6 @@ export class HomepageComponent implements OnInit {
       services: selectedServ.length > 0 ? selectedServ : undefined,
       eyeColor: this.tempFilters.eyeColor || undefined,
       hairColor: this.tempFilters.hairColor || undefined,
-      heightMin: this.tempFilters.heightMin ?? undefined,
-      heightMax: this.tempFilters.heightMax ?? undefined,
-      weightMin: this.tempFilters.weightMin ?? undefined,
-      weightMax: this.tempFilters.weightMax ?? undefined,
     };
 
     this.filtersOpen = false;
@@ -202,8 +194,6 @@ export class HomepageComponent implements OnInit {
     if (this.filters.region)    n++;
     if (this.filters.eyeColor)  n++;
     if (this.filters.hairColor) n++;
-    if (this.filters.heightMin != null || this.filters.heightMax != null) n++;
-    if (this.filters.weightMin != null || this.filters.weightMax != null) n++;
     n += (this.filters.bodyType ?? []).length;
     n += (this.filters.services ?? []).length;
     return n;
