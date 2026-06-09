@@ -1,3 +1,6 @@
+image selection for workers : only jpg and supported formats
+
+
 Account management for workers
   observable on worker profile, modifications are direct to the database
 photos/videos management for workers

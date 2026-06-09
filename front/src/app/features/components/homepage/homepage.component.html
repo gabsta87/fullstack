@@ -5,6 +5,101 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
+  <div class="filter-banner">
+    <ion-grid class="ion-no-padding">
+      <ion-row class="ion-align-items-center">
+
+        <ion-col size="12" size-sm="4" size-md="4" class="filter-col">
+          <ion-item lines="none" class="filter-input-item">
+            <ion-icon name="location-outline" slot="start" class="filter-icon"></ion-icon>
+            <ion-select aria-label="Région" interface="popover"
+                        [(ngModel)]="filters.region"
+                        (ionChange)="onRegionChange()"
+                        placeholder="Toutes les régions">
+              <ion-select-option [value]="undefined">Toutes les régions</ion-select-option>
+              <ion-select-option *ngFor="let region of regions" [value]="region">
+                {{ region }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+
+        <ion-col size="12" size-sm="4" size-md="5" class="filter-col">
+          <ion-item lines="none" class="filter-input-item">
+            <ion-icon name="business-outline" slot="start" class="filter-icon"></ion-icon>
+            <ion-input aria-label="Localisation"
+                       [(ngModel)]="tempFilters.location"
+                       placeholder="Localisation (Ex: Ville, quartier...)"></ion-input>
+          </ion-item>
+        </ion-col>
+
+        <ion-col size="12" size-sm="4" size-md="3" class="filter-actions ion-text-end">
+
+          <ion-button fill="clear"
+                      color="medium"
+                      size="small"
+                      (click)="clearFilters()"
+                      [disabled]="!hasActiveFilters()"
+                      class="ion-no-margin">
+            Effacer
+          </ion-button>
+
+          <ion-button fill="outline" class="more-filters-btn" (click)="showMoreFilters = !showMoreFilters">
+            <ion-icon slot="start" [name]="showMoreFilters ? 'close-outline' : 'options-outline'"></ion-icon>
+            Filtres
+          </ion-button>
+        </ion-col>
+
+      </ion-row>
+
+      <ion-row *ngIf="showMoreFilters" class="advanced-filters-row fade-in">
+
+        <ion-col size="12" size-sm="4">
+          <ion-item lines="none" class="filter-input-item">
+            <ion-select aria-label="Silhouette" interface="popover"
+                        [(ngModel)]="filters.bodyType"
+                        (ionChange)="applyFilters()"
+                        placeholder="Toutes les silhouettes">
+              <ion-select-option [value]="undefined">Toutes les silhouettes</ion-select-option>
+              <ion-select-option *ngFor="let type of BODY_TYPE_LABELS | keyvalue" [value]="type.key">
+                {{ type.value }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+
+        <ion-col size="12" size-sm="4">
+          <ion-item lines="none" class="filter-input-item">
+            <ion-select aria-label="Yeux" interface="popover"
+                        [(ngModel)]="filters.eyeColor"
+                        (ionChange)="applyFilters()"
+                        placeholder="Toutes les couleurs d'yeux">
+              <ion-select-option [value]="undefined">Toutes les couleurs d'yeux</ion-select-option>
+              <ion-select-option *ngFor="let eye of EYE_COLOR_LABELS | keyvalue" [value]="eye.key">
+                {{ eye.value }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+
+        <ion-col size="12" size-sm="4">
+          <ion-item lines="none" class="filter-input-item">
+            <ion-select aria-label="Cheveux" interface="popover"
+                        [(ngModel)]="filters.hairColor"
+                        (ionChange)="applyFilters()"
+                        placeholder="Toutes les couleurs de cheveux">
+              <ion-select-option [value]="undefined">Toutes les couleurs de cheveux</ion-select-option>
+              <ion-select-option *ngFor="let hair of HAIR_COLOR_LABELS | keyvalue" [value]="hair.key">
+                {{ hair.value }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+
+      </ion-row>
+    </ion-grid>
+  </div>
+
   <ion-grid>
     <section *ngIf="availableWorkers.length > 0">
 
