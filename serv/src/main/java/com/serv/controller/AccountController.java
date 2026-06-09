@@ -223,8 +223,6 @@ public class AccountController {
         if (req.description() != null) worker.setDescription(req.description());
         if (req.location()    != null) worker.setLocation(req.location);
         if (req.region()      != null) worker.setRegion(req.region());
-        if (req.height()      != null) worker.setHeight(req.height());
-        if (req.weight()      != null) worker.setWeight(req.weight());
         if (req.bodyType()    != null) worker.setBodyType(BodyType.valueOf(req.bodyType()));
         if (req.services()    != null) {
             worker.setServices(req.services().stream()
@@ -236,7 +234,9 @@ public class AccountController {
 
         Worker savedWorker = workerRepository.save(worker);
         session.setAttribute("user", savedWorker);
-        return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
+        WorkerFullProfileDTO dto = WorkerFullProfileDTO.from(savedWorker);
+        sseStreamService.emitEvent(worker.getId(), "account-update", dto);
+        return ResponseEntity.ok().body(dto);
     }
 
     @Transactional

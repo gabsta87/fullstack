@@ -11,7 +11,6 @@ import {WorkerAccountService} from "../../services/worker-account.service";
 import {tap} from "rxjs/operators";
 import {addIcons} from "ionicons";
 import {addCircleOutline, camera, move, trashOutline} from "ionicons/icons";
-import e from "express";
 
 @Component({
   selector: 'app-profile-management',
@@ -49,10 +48,21 @@ export class ProfileManagementComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.allServices = await firstValueFrom(this.route.data.pipe(map(data => data['services'])));
+
+    // 1. Récupérer les données initiales du compte fournies par le Resolver
+    const initialProfile = await firstValueFrom(this.route.data.pipe(map(data => data['profile'])));
+    if (initialProfile) {
+      this.profileForm = {
+        bodyType: initialProfile.bodyType,
+        location: initialProfile.location,
+        description: initialProfile.description
+      };
+    }
+
+    // 2. Écouter le flux SSE temps réel pour les futures mises à jour (ex: photos)
     this.currentUser$ = this.accountService.listenToMyAccount().pipe(
       tap(user => {
         if (user && user.photos) {
-          // La galerie se synchronise automatiquement à chaque émission du serveur !
           this.photos = user.photos;
         }
       })
@@ -88,6 +98,17 @@ export class ProfileManagementComponent implements OnInit {
       await this.accountService.setAvailability(currentAvailability);
     } catch (error) {
       console.error("Erreur lors du changement de disponibilité", error);
+    }
+  }
+
+  async updateProfileField(field: keyof WorkerProfileUpdate, value: any) {
+    console.log(`Mise à jour du champ [${field}] avec la valeur :`, value);
+    try {
+      // On utilise la syntaxe JavaScript de propriété calculée en envoyant
+      // uniquement l'objet partiel : { bodyType: '...' } ou { location: '...' }
+      await this.accountService.updateProfile({ [field]: value });
+    } catch (error) {
+      console.error(`Erreur lors de la mise à jour du champ ${field}`, error);
     }
   }
 

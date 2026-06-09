@@ -77,8 +77,15 @@ export class WorkerAccountService {
     return updatedAccount;
   }
 
-  async updateProfile(data: WorkerProfileUpdate): Promise<any> {
-    await firstValueFrom(this.http.patch(`${this.base}/worker/profile`, data, { withCredentials: true }))
+  async updateProfile(data: WorkerProfileUpdate): Promise<WorkerPrivateAccount> {
+    const updatedAccount = await firstValueFrom(
+      this.http.patch<WorkerPrivateAccount>(`${this.base}/worker/profile`, data, { withCredentials: true })
+    );
+
+    // On pousse instantanément la mise à jour dans le BehaviorSubject local
+    this.accountSubject.next(updatedAccount);
+
+    return updatedAccount;
   }
 
   // SERVICES

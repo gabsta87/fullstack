@@ -72,9 +72,6 @@ public class Worker extends VenusUser {
     @Column(name = "body_type", length = 16)
     private BodyType bodyType;
 
-    private int height;
-    private int weight;
-
     // Date stored as DATE only (no time component)
     @Temporal(TemporalType.DATE)
     @Column(name = "birthday")
