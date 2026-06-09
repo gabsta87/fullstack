@@ -1,10 +1,12 @@
 image selection for workers : only jpg and supported formats
 homepage/gallery : apply filters by making the right request to the server
+profile : favorite button : add favorite worker to the user's profile if logged, else show a popup to log in
+login : redirect to account/profile-management once logged
+profile management : workers can choose spoken languages and level for each language
+header : add flags for each language (popup menu)
 
 
-Account management for workers
-  observable on worker profile, modifications are direct to the database
-photos/videos management for workers
+videos management for workers
 payment system for workers (pay for a year subscription, monthly...)
 workers can refresh(to be in the top of the list) their profile by paying a small fee
 

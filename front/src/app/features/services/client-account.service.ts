@@ -1,6 +1,6 @@
 import {Injectable, NgZone} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, Observable, of} from 'rxjs';
+import {BehaviorSubject, firstValueFrom, Observable, of} from 'rxjs';
 import {environment} from "../../../environments/environment";
 import {tap} from "rxjs/operators";
 import {ClientPrivateAccount} from "../models/user.model";
@@ -61,8 +61,9 @@ export class ClientAccountService {
 
   // SETTINGS
 
-  updateSettings(data: ClientPrivateAccount): Observable<any> {
-    return this.http.patch(`${this.base}/settings`, data, { withCredentials: true });
+  async updateSettings(data: ClientPrivateAccount): Promise<any> {
+    console.log("updateSettings : ", data);
+    return await firstValueFrom(this.http.patch(`${this.base}/data`, data, { withCredentials: true }));
   }
 
   // LANGUAGE
@@ -73,18 +74,18 @@ export class ClientAccountService {
     return current.language;
   }
 
-  setCurrentUserLanguage(lang: string): Observable<any> {
-    return this.http.patch(`${this.base}/language`, { lang }, { withCredentials: true });
+  async setCurrentUserLanguage(lang: string): Promise<any> {
+    return await firstValueFrom(this.http.patch(`${this.base}/language`, { lang }, { withCredentials: true }));
   }
 
   // FAVORITES
 
-  addFavorite(workerId: string): Observable<any> {
-    return this.http.post(`${this.base}/favorites/${workerId}`, {}, { withCredentials: true });
+  async addFavorite(workerId: string): Promise<any> {
+    return await firstValueFrom(this.http.post(`${this.base}/favorites/${workerId}`, {}, { withCredentials: true }));
   }
 
-  removeFavorite(workerId: string): Observable<any> {
-    return this.http.delete(`${this.base}/favorites/${workerId}`, { withCredentials: true });
+  async removeFavorite(workerId: string): Promise<any> {
+    return await firstValueFrom(this.http.delete(`${this.base}/favorites/${workerId}`, { withCredentials: true }));
   }
 
 }
