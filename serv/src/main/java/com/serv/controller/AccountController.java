@@ -200,13 +200,16 @@ public class AccountController {
     @Transactional
     public ResponseEntity<?> setAvailability(@RequestBody Map<String, Boolean> body,
                                              HttpSession session) {
+        System.out.println("setAvailability: " + body + "");
         Worker worker = sessionWorker(session);
         if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         worker.setAvailable(body.getOrDefault("available", false));
-        workerRepository.save(worker);
-        session.setAttribute("user", worker);
-        return ResponseEntity.ok(Map.of("available", worker.isAvailable()));
+        Worker savedWorker = workerRepository.save(worker);
+        session.setAttribute("user", savedWorker);
+        WorkerFullProfileDTO dto = WorkerFullProfileDTO.from(savedWorker);
+        sseStreamService.emitEvent(worker.getId(), "account-update", dto);
+        return ResponseEntity.ok().body(dto);
     }
 
     /** PATCH /account/worker/profile */
