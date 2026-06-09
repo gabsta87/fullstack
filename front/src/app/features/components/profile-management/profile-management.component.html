@@ -27,17 +27,19 @@
       </ion-row>
     </ion-grid>
 
-    <ion-segment [(ngModel)]="activeTab" mode="md" class="pm-segment">
-      <ion-segment-button value="profile">
-        <ion-button>Profil</ion-button>
-      </ion-segment-button>
-      <ion-segment-button value="photos">
-        <ion-button>Photos</ion-button>
-      </ion-segment-button>
-      <ion-segment-button value="settings">
-        <ion-button>Compte</ion-button>
-      </ion-segment-button>
-    </ion-segment>
+    <ion-toolbar class="segment-toolbar">
+      <ion-segment [(ngModel)]="activeTab" mode="md">
+        <ion-segment-button value="profile">
+          <ion-label>Profil</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="photos">
+          <ion-label>Photos</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="settings">
+          <ion-label>Compte</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </ion-toolbar>
 
     <ion-card class="pm-card ion-no-margin">
       <ion-card-content>

@@ -1,4 +1,5 @@
 image selection for workers : only jpg and supported formats
+homepage/gallery : apply filters by making the right request to the server
 
 
 Account management for workers

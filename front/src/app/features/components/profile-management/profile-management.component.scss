@@ -55,3 +55,28 @@
   gap: 8px;
   margin-top: 10px;
 }
+
+.segment-toolbar {
+  --background: var(--surface, #ffffff);
+  --border-color: var(--border, #e8e4df);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid var(--border, #e8e4df);
+  margin-bottom: 20px;
+
+  ion-segment {
+    max-width: 600px;
+    margin: 0 auto;
+    --background: transparent;
+
+    ion-segment-button {
+      --color: var(--text-muted, #888888);
+      --color-checked: var(--accent, #1a1714);
+      --indicator-color: var(--accent, #1a1714);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+  }
+}
