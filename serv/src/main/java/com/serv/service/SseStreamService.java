@@ -24,8 +24,16 @@ public class SseStreamService {
 
         // Nettoyage lors de la déconnexion
         emitter.onCompletion(() -> removeEmitter(userId, emitter));
-        emitter.onTimeout(() -> removeEmitter(userId, emitter));
-        emitter.onError((e) -> removeEmitter(userId, emitter));
+
+        emitter.onTimeout(() -> {
+            emitter.complete();
+            removeEmitter(userId, emitter);
+        });
+
+        emitter.onError((e) -> {
+            emitter.completeWithError(e);
+            removeEmitter(userId, emitter);
+        });
 
         return emitter;
     }
