@@ -249,11 +249,16 @@ public class AccountController {
         List<Service> serviceList = services.stream().map(serviceRepository::findByName).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
 
         worker.setServices(serviceList);
-        workerRepository.save(worker);
 
-        session.setAttribute("user", worker);
+        Worker savedWorker = workerRepository.save(worker);
 
-        return ResponseEntity.ok(WorkerFullProfileDTO.from(worker));
+        session.setAttribute("user", savedWorker);
+
+        WorkerFullProfileDTO dto = WorkerFullProfileDTO.from(savedWorker);
+
+        sseStreamService.emitEvent(worker.getId(), "account-update", dto);
+
+        return ResponseEntity.ok(dto);
     }
 
     /**

@@ -84,7 +84,13 @@ export class WorkerAccountService {
   // SERVICES
 
   async updateServices(services: string[]): Promise<any> {
-    await firstValueFrom(this.http.patch<WorkerFullProfile>(`${this.base}/worker/updateservices`, services, { withCredentials: true }))
+    const updatedAccount = await firstValueFrom(
+      this.http.patch<WorkerPrivateAccount>(`${this.base}/worker/updateservices`, services, { withCredentials: true })
+    );
+
+    this.accountSubject.next(updatedAccount);
+
+    return updatedAccount;
   }
 
   // PHOTOS
