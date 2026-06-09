@@ -184,8 +184,6 @@ public class TestDataInitializer implements ApplicationRunner {
         w.setLocation(location);
         w.setRegion(region);
         w.setBodyType(bodyType);
-        w.setHeight(height);
-        w.setWeight(weight);
         w.setBirthday(birthday);
         w.setServices(Arrays.asList(services));
         w.setGalleryPositionIndex(0);

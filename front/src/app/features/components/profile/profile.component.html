@@ -68,7 +68,7 @@
           </div>
         </div>
 
-        <div class="profile-card ion-margin-top">
+        <div *ngIf="worker.reviews" class="profile-card ion-margin-top">
           <h3>Avis ({{ worker.reviews.length }})</h3>
         </div>
       </main>

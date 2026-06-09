@@ -56,7 +56,6 @@ public class WorkerMinimalProfileDTO implements Comparable<WorkerMinimalProfileD
             w.getId(), w.getUsername(), WorkerService.calculateAge(w.getBirthday()),
             w.getLocation(), w.getRegion(),
             w.getBodyType() != null ? w.getBodyType().toString() : null,
-            w.getHeight(),
             w.getServices().stream().map(Service::getName).toList(), w.isAvailable(),
             w.getGalleryPositionIndex(),
             w.getMainPhoto() != null ? w.getMainPhoto().getMainThumbUrl() : null,
@@ -67,7 +66,7 @@ public class WorkerMinimalProfileDTO implements Comparable<WorkerMinimalProfileD
     public WorkerMinimalProfileDTO(
             UUID id, String name, int age,
             String location, String region,
-            String bodyType, int height,
+            String bodyType,
             List<String> services, boolean available,
             int galleryIndex,
             String mainThumbUrl, List<String> previewThumbUrls) {
@@ -77,7 +76,6 @@ public class WorkerMinimalProfileDTO implements Comparable<WorkerMinimalProfileD
         this.location         = location;
         this.region           = region;
         this.bodyType         = bodyType;
-        this.height           = height;
         this.services         = services;
         this.available        = available;
         this.galleryIndex     = galleryIndex;

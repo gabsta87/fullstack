@@ -53,13 +53,13 @@ public class Worker extends VenusUser {
     private String eyeColor;
     private String hairColor;
     private String gender;
-    protected boolean disabled = false;
+    protected boolean disabled;
 
     private int galleryPositionIndex;
 
     private boolean expired;
-    private boolean available = true;
-    private boolean verified = false;
+    private boolean available;
+    private boolean verified;
 
     // Instant stored as UTC timestamp
     @Column(name = "last_refreshed")
