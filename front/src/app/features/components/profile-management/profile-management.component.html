@@ -19,7 +19,7 @@
         <ion-col size="12" size-md="" class="ion-text-center ion-text-md-start">
           <div class="profile-title">
             <h1>{{ me.username }}</h1>
-            <ion-button [color]="me.available ? 'success' : 'medium'" class="status-badge">
+            <ion-button [color]="me.available ? 'success' : 'medium'" class="status-badge" (click)="toggleAvailable(!me.available)">
               {{ me.available ? 'En ligne' : 'Hors ligne' }}
             </ion-button>
           </div>

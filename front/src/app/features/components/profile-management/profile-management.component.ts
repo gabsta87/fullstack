@@ -3,15 +3,15 @@ import {CommonModule} from "@angular/common";
 import {IonicModule, ItemReorderEventDetail} from "@ionic/angular";
 import {FormsModule} from "@angular/forms";
 import {HeaderComponent} from "../header/header.component";
-import {WorkerService} from "../../services/worker.service";
-import {BehaviorSubject, firstValueFrom, map, Observable} from "rxjs";
+import {firstValueFrom, map, Observable} from "rxjs";
 import {BODY_TYPE_LABELS, PhotoItem} from "../../models/items.model";
 import {ActivatedRoute} from "@angular/router";
 import {WorkerFullProfile, WorkerPrivateAccount, WorkerProfileUpdate} from "../../models/user.model";
 import {WorkerAccountService} from "../../services/worker-account.service";
 import {tap} from "rxjs/operators";
 import {addIcons} from "ionicons";
-import {addCircleOutline, trashOutline, move, camera} from "ionicons/icons";
+import {addCircleOutline, camera, move, trashOutline} from "ionicons/icons";
+import e from "express";
 
 @Component({
   selector: 'app-profile-management',
@@ -41,7 +41,7 @@ export class ProfileManagementComponent implements OnInit {
   settingsError = '';
   savingSettings = false;
 
-  constructor(private accountService: WorkerAccountService, private workerService: WorkerService, private route : ActivatedRoute) {
+  constructor(private accountService: WorkerAccountService, private route : ActivatedRoute) {
     addIcons({
       addCircleOutline,trashOutline,move, camera
     });
@@ -67,10 +67,6 @@ export class ProfileManagementComponent implements OnInit {
 
   // ── Value modification ─────────────────────────────────────────────────────────
 
-  toggle(param: BehaviorSubject<boolean>) {
-    param.next(!param.value);
-  }
-
   toggleService(me: WorkerFullProfile, service: string) {
     // 1. Calculer la nouvelle liste localement
     let updatedServices = [...me.services];
@@ -83,9 +79,16 @@ export class ProfileManagementComponent implements OnInit {
 
     // 2. Envoyer au serveur
     // this.accountService.updateServices(updatedServices);
-    this.accountService.updateServices(updatedServices).subscribe(() => {
-      console.log("updated profile")
-    });
+    this.accountService.updateServices(updatedServices);
+  }
+
+  async toggleAvailable(currentAvailability: boolean) {
+    console.log("toggling availability to", currentAvailability);
+    try {
+      await this.accountService.setAvailability(currentAvailability);
+    } catch (error) {
+      console.error("Erreur lors du changement de disponibilité", error);
+    }
   }
 
   // ── Photos ────────────────────────────────────────────────────────────────

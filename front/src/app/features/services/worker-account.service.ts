@@ -63,18 +63,28 @@ export class WorkerAccountService {
     this.accountSubject.next(null);
   }
 
-  setAvailability(available: boolean): Observable<any> {
-    return this.http.patch(`${this.base}/worker/availability`, { available }, { withCredentials: true });
+  async setAvailability(available: boolean): Promise<any> {
+    const updatedAccount = await firstValueFrom(
+      this.http.patch<WorkerPrivateAccount>(
+        `${this.base}/worker/availability`,
+        { available },
+        { withCredentials: true }
+      )
+    );
+
+    this.accountSubject.next(updatedAccount);
+
+    return updatedAccount;
   }
 
-  updateProfile(data: WorkerProfileUpdate): Observable<any> {
-    return this.http.patch(`${this.base}/worker/profile`, data, { withCredentials: true });
+  async updateProfile(data: WorkerProfileUpdate): Promise<any> {
+    await firstValueFrom(this.http.patch(`${this.base}/worker/profile`, data, { withCredentials: true }))
   }
 
   // SERVICES
 
-  updateServices(services: string[]): Observable<WorkerFullProfile> {
-    return this.http.patch<WorkerFullProfile>(`${this.base}/worker/updateservices`, services, { withCredentials: true });
+  async updateServices(services: string[]): Promise<any> {
+    await firstValueFrom(this.http.patch<WorkerFullProfile>(`${this.base}/worker/updateservices`, services, { withCredentials: true }))
   }
 
   // PHOTOS
@@ -92,10 +102,10 @@ export class WorkerAccountService {
   }
 
   async setMainPhoto(photoId: string): Promise<any> {
-    return await firstValueFrom(this.http.patch(`${this.base}/worker/photos/${photoId}/main`, {}, { withCredentials: true }));
+    await firstValueFrom(this.http.patch(`${this.base}/worker/photos/${photoId}/main`, {}, { withCredentials: true }));
   }
 
-  reorderPhotos(orderedIds: string[]): Observable<any> {
-    return this.http.patch(`${this.base}/worker/photos/reorder`, orderedIds, { withCredentials: true });
+  async reorderPhotos(orderedIds: string[]): Promise<any> {
+    await firstValueFrom(this.http.patch(`${this.base}/worker/photos/reorder`, orderedIds, { withCredentials: true }));
   }
 }
