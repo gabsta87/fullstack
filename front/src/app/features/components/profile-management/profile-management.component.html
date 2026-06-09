@@ -185,6 +185,18 @@
           </ion-grid>
         </div>
 
+        <div *ngIf="activeTab === 'settings'" class="fade-in">
+          <app-account-settings
+            [initialUsername]="me.username"
+            [initialEmail]="me.email"
+            [isWorker]="true"
+            [subscriptionLabel]="subscriptionLabel$ | async"
+            [subscriptionColor]="subscriptionColor$ | async"
+            (onSaveSettings)="handleSettingsSave($event)"
+            (onManageSubscription)="handleSubscriptionClick()">
+          </app-account-settings>
+        </div>
+
       </ion-card-content>
     </ion-card>
 

@@ -9,6 +9,9 @@
       <ion-segment-button value="settings">
         <ion-label>Réglages</ion-label>
       </ion-segment-button>
+      <ion-segment-button value="account">
+        <ion-label>Compte</ion-label>
+      </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
 
@@ -66,6 +69,15 @@
         </ion-card>
 
       </div>
+    </div>
+
+    <div *ngIf="activeTab === 'account'" class="fade-in ion-padding">
+      <app-account-settings
+        [initialUsername]="user.username"
+        [initialEmail]="user.email"
+        [isWorker]="false"
+        (onSaveSettings)="handleSettingsSave($event)">
+      </app-account-settings>
     </div>
 
   </ion-grid>

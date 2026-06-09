@@ -11,10 +11,11 @@ import {WorkerAccountService} from "../../services/worker-account.service";
 import {tap} from "rxjs/operators";
 import {addIcons} from "ionicons";
 import {addCircleOutline, camera, move, trashOutline} from "ionicons/icons";
+import {AccountSettingsComponent} from "../account-settings/account-settings.component";
 
 @Component({
   selector: 'app-profile-management',
-  imports: [CommonModule, FormsModule, IonicModule, HeaderComponent],
+  imports: [CommonModule, FormsModule, IonicModule, HeaderComponent, AccountSettingsComponent],
   templateUrl: './profile-management.component.html',
   styleUrls: ['./profile-management.component.scss'],
   standalone: true
@@ -206,6 +207,24 @@ export class ProfileManagementComponent implements OnInit {
 
     this.savingSettings = true;
     // this.accountService.updateSettings(payload);
+  }
+
+  async handleSettingsSave(event: any) {
+    const { payload, setLoading, setSuccess, setError } = event;
+
+    try {
+      await this.accountService.updateProfileData(payload);
+      setSuccess('Vos paramètres de compte ont été mis à jour avec succès.');
+    } catch (err: any) {
+      setError(err?.error?.message || 'Une erreur est survenue lors de la mise à jour.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  handleSubscriptionClick() {
+    console.log("Redirection vers la passerelle de paiement / Stripe / etc.");
+    // Votre logique de modal ou de redirection vers le renouvellement
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
