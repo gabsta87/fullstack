@@ -1,24 +1,32 @@
 package com.serv.controller;
 
+import com.serv.common.UserRole;
 import com.serv.database.entities.*;
 import com.serv.database.repositories.ClientRepository;
 import com.serv.database.repositories.PasswordResetTokenRepository;
 import com.serv.database.repositories.UserRepository;
 import com.serv.database.repositories.WorkerRepository;
 import com.serv.dto.VenusUserDTO;
+import com.serv.dto.WorkerFullProfileDTO;
+import com.serv.service.AuthService;
 import com.serv.service.MailService;
 import com.serv.service.SseStreamService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,19 +41,36 @@ public class AuthController {
     private final MailService      mailService;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final SseStreamService sseStreamService;
+    private final AuthService authService;
 
     // ── Login / Logout ────────────────────────────────────────────────────────
 
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody Requests.LoginRequest request,
-                                        HttpSession session) {
-        Optional<VenusUser> userOpt = userRepository.findByUsername(request.getPseudo());
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response) {
+        VenusUser user = authService.verifyCredentials(loginRequest.pseudo(), loginRequest.password());
 
-        if (userOpt.isPresent() && userOpt.get().checkPassword(request.getPassword())) {
-            session.setAttribute("user", userOpt.get());
-            return ResponseEntity.ok(VenusUserDTO.from(userOpt.get()));
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials.");
         }
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid credentials.");
+
+        String roleName = "ROLE_" + user.getRole().toString();
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(roleName));
+
+        // 3. On passe la liste 'authorities' au constructeur
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(user, null, authorities);
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        SecurityContextHolder.setContext(context);
+
+        // 3. OBLIGATOIRE EN SPRING 6 : On sauvegarde ce badge dans la session HTTP
+        new HttpSessionSecurityContextRepository().saveContext(context, request, response);
+
+        // Vous pouvez laisser cette ligne si votre code actuel l'utilise
+        request.getSession().setAttribute("user", user);
+
+        return ResponseEntity.ok(VenusUserDTO.from(user));
     }
 
     @PostMapping("/logout")
@@ -151,4 +176,7 @@ public class AuthController {
         passwordResetTokenRepository.delete(resetToken);
         return ResponseEntity.ok("Password reset successful.");
     }
+
+    public record LoginRequest(String pseudo, String password) { }
+
 }

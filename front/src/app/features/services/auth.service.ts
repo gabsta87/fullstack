@@ -1,5 +1,5 @@
 import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
+import {BehaviorSubject, map, Observable, of, throwError} from 'rxjs';
 import {Injectable, NgZone} from '@angular/core';
 import {catchError, tap} from 'rxjs/operators';
 import {environment} from "../../../environments/environment";
@@ -36,9 +36,10 @@ export class AuthService {
       tap((user) => {
         this.currentAccount = user;
         this.isAuthenticatedSubject.next(true);
-
-        // 🚀 CONNEXION TEMPS RÉEL IMMÉDIATE
-        this.establishRealTimeStream();
+        setTimeout(() => {
+          console.log("Démarrage du flux SSE après enregistrement du cookie...");
+          this.establishRealTimeStream();
+        }, 200);
       })
     );
   }
@@ -48,7 +49,9 @@ export class AuthService {
       return of(this.sessionCache.value);
     }
 
-    return this.http.get<boolean>(`${this.baseUrl}/session-check`, { withCredentials: true }).pipe(
+    // On attend un retour vide <void>
+    return this.http.get<void>(`${this.baseUrl}/session-check`, { withCredentials: true }).pipe(
+      map(() => true),
       tap(() => {
         console.log("Session active");
         this.isAuthenticatedSubject.next(true);
@@ -59,7 +62,7 @@ export class AuthService {
       catchError((error) => {
         this.handleLocalLogout();
         if (error.status === 401) {
-          return of(false);
+          return of(false); // 🎯 Si le serveur répond 401, on renvoie 'false' proprement
         }
         return throwError(() => error);
       })

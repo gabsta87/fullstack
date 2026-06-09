@@ -13,6 +13,7 @@ import com.serv.service.MediaStorageService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/account")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 @RequiredArgsConstructor
 public class AccountController {
 
@@ -85,14 +87,17 @@ public class AccountController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    @GetMapping("/stream")
-    public SseEmitter stream(HttpSession session) {
+    @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public ResponseEntity<SseEmitter> stream(HttpSession session) {
         VenusUser user = (VenusUser) session.getAttribute("user");
 
         if (user == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not logged in.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        return sseStreamService.createStream(user.getId());
+
+        SseEmitter emitter = new SseEmitter();
+
+        return ResponseEntity.ok(emitter);
     }
 
     @PatchMapping("/language")
@@ -121,22 +126,19 @@ public class AccountController {
     }
 
     /**
-     * PATCH /account/settings
+     * PATCH /account/data
      * Update username, email, or password — works for both roles.
      */
-    @PatchMapping("/settings")
+    @PatchMapping("/data")
     @Transactional
-    public ResponseEntity<?> updateSettings(@RequestBody Map<String, String> body,
+    public ResponseEntity<?> updateSettings(@RequestBody AccountDataRequest req,
                                             HttpSession session) {
         VenusUser user = sessionUser(session);
         if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
-        if (body.containsKey("username") && !body.get("username").isBlank())
-            user.setUsername(body.get("username"));
-        if (body.containsKey("email") && !body.get("email").isBlank())
-            user.setEmail(new Email(body.get("email")));
-        if (body.containsKey("password") && !body.get("password").isBlank())
-            user.setPassword(body.get("password"));
+        if(req.username() != null) user.setUsername(req.username());
+        if(req.email() != null) user.setEmail(new Email(req.email()));
+        if(req.password() != null) user.setPassword(req.password());
 
         VenusUser patchedUser = userRepository.save(user);
 
@@ -442,5 +444,11 @@ public class AccountController {
             String bodyType,
             String mainPhotoId,
             List<String> services
+    ) {}
+
+    public record AccountDataRequest(
+            String username,
+            String email,
+            String password
     ) {}
 }

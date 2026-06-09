@@ -73,13 +73,19 @@ export class AuthModalComponent implements OnInit {
 
     if (this.mode === 'login') {
       this.authService.login(username, password).subscribe({
-        next: () => {
+        next: (user) => {
+          console.log("Connexion réussie !", user);
           this.isLoading = false;
           this.modalCtrl.dismiss(true);
         },
-        error: () => {
-          this.errorMsg = "Pseudo ou mot de passe incorrect.";
-          this.isLoading = false;
+        error: (err) => {
+          console.error("Erreur reçue du serveur :", err);
+
+          if (err.status === 403) {
+            this.errorMsg = "Identifiants ou mot de passe incorrects.";
+          } else {
+            this.errorMsg = "Une erreur est survenue lors de la connexion.";
+          }
         }
       });
     } else {
