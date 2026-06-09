@@ -76,6 +76,7 @@ export class HomepageComponent implements OnInit {
     location?: string;
     eyeColor?: string;
     hairColor?: string;
+    name?: string;
   } = {};
 
   // 2. Filtres "Multiples" (Checkbox / Swatches cochés à true/false)

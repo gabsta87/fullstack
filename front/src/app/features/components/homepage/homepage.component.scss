@@ -58,6 +58,7 @@ ion-grid {
     height: 38px; // Fixe une hauteur de ligne fine et constante
     display: flex;
     align-items: center;
+    padding-right: 12px;
 
     ion-select, ion-input {
       font-size: 0.88rem;

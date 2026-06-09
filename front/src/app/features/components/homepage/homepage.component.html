@@ -9,7 +9,7 @@
     <ion-grid class="ion-no-padding">
       <ion-row class="ion-align-items-center">
 
-        <ion-col size="12" size-sm="4" size-md="4" class="filter-col">
+        <ion-col size="12" size-sm="3" size-md="3" class="filter-col">
           <ion-item lines="none" class="filter-input-item">
             <ion-icon name="location-outline" slot="start" class="filter-icon"></ion-icon>
             <ion-select aria-label="Région" interface="popover"
@@ -24,7 +24,7 @@
           </ion-item>
         </ion-col>
 
-        <ion-col size="12" size-sm="4" size-md="5" class="filter-col">
+        <ion-col size="12" size-sm="3" size-md="3" class="filter-col">
           <ion-item lines="none" class="filter-input-item">
             <ion-icon name="business-outline" slot="start" class="filter-icon"></ion-icon>
             <ion-input aria-label="Localisation"
@@ -33,14 +33,32 @@
           </ion-item>
         </ion-col>
 
-        <ion-col size="12" size-sm="4" size-md="3" class="filter-actions ion-text-end">
+        <ion-col size="12" size-sm="3" size-md="3" class="filter-col">
+          <ion-item lines="none" class="filter-input-item">
+            <ion-icon name="business-outline" slot="start" class="filter-icon"></ion-icon>
+            <ion-input aria-label="Localisation"
+                       [(ngModel)]="tempFilters.name"
+                       placeholder="Nom"></ion-input>
+          </ion-item>
+        </ion-col>
 
-          <ion-button fill="clear"
+        <ion-col size="12" size-sm="3" size-md="3" class="filter-actions ion-text-end">
+
+          <ion-button *ngIf="!hasActiveFilters()"
+                      fill="outline" class="more-filters-btn"
                       color="medium"
                       size="small"
                       (click)="clearFilters()"
-                      [disabled]="!hasActiveFilters()"
-                      class="ion-no-margin">
+          >
+            Charger filtres préférés
+          </ion-button>
+
+          <ion-button *ngIf="hasActiveFilters()"
+                      fill="outline" class="more-filters-btn"
+                      color="medium"
+                      size="small"
+                      (click)="clearFilters()"
+          >
             Effacer
           </ion-button>
 
