@@ -13,7 +13,7 @@
           <ion-item lines="none" class="filter-input-item">
             <ion-icon name="location-outline" slot="start" class="filter-icon"></ion-icon>
             <ion-select aria-label="Zone Supérieure" interface="popover"
-                        [(ngModel)]="filters.parentZoneId"
+                        [(ngModel)]="parentZoneId"
                         (ionChange)="onParentZoneChange()"
                         placeholder="Toutes les régions">
               <ion-select-option [value]="undefined">Toutes les régions</ion-select-option>
@@ -25,10 +25,10 @@
         </ion-col>
 
         <ion-col size="12" size-sm="3" size-md="3" class="filter-col">
-          <ion-item lines="none" class="filter-input-item" [disabled]="!filters.parentZoneId">
+          <ion-item lines="none" class="filter-input-item" [disabled]="!parentZoneId">
             <ion-icon name="business-outline" slot="start" class="filter-icon"></ion-icon>
             <ion-select aria-label="Zone Inférieure" interface="popover"
-                        [(ngModel)]="filters.childZoneId"
+                        [(ngModel)]="childZoneId"
                         (ionChange)="applyFilters()"
                         placeholder="Toutes les localisations">
               <ion-select-option [value]="undefined">Toutes les localisations</ion-select-option>

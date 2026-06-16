@@ -1,6 +1,5 @@
 export interface GalleryFilters {
-  parentZoneId?: number;
-  childZoneId?: number;
+  zoneId?: number;
   bodyType?: string[];
   services?: string[];
   eyeColor?: string;

@@ -20,8 +20,7 @@ export class WorkerService {
   getGalleryPage(page: number, filters: GalleryFilters): Observable<WorkerSimpleProfile[]> {
     let params = new HttpParams().set('page', page);
     if (filters.username)          params = params.set('username',  filters.username);
-    if (filters.parentZoneId)      params = params.set('region',    filters.parentZoneId);
-    if (filters.childZoneId)       params = params.set('location',  filters.childZoneId);
+    if (filters.zoneId)            params = params.set('zoneId',    filters.zoneId);
     if (filters.eyeColor)          params = params.set('eyeColor',  filters.eyeColor);
     if (filters.hairColor)         params = params.set('hairColor', filters.hairColor);
     if (filters.bodyType?.length)  params = params.set('bodyType',  filters.bodyType.join(','));

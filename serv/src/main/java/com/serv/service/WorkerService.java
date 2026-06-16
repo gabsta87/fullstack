@@ -5,6 +5,7 @@ import com.serv.database.repositories.PhotoRepository;
 import com.serv.database.repositories.WorkerRepository;
 import com.serv.database.repositories.filters.WorkerSpecifications;
 import com.serv.dto.WorkerMinimalProfileDTO;
+import jakarta.persistence.criteria.JoinType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -28,9 +29,7 @@ public class WorkerService {
 
     public List<WorkerMinimalProfileDTO> getGalleryPage(int page, Map<String, Object> filters) {
 
-        System.out.println("applying "+filters.size()+" filters");
-
-        System.out.println("filters : "+filters);
+        System.out.println("applying "+filters.size()+" filters : "+filters);
 
         // 1. On prépare la base : Uniquement les profils non désactivés + les filtres dynamiques
         Specification<Worker> spec = Specification
@@ -79,14 +78,19 @@ public class WorkerService {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            // 1. Filtrage Géographique par ID (Zéro erreur de chaîne de caractères)
-            if (filters.containsKey("childZoneId")) {
-                Integer childId = Integer.parseInt(filters.get("childZoneId").toString());
-                predicates.add(cb.equal(root.get("geographicZone").get("id"), childId));
-            } else if (filters.containsKey("parentZoneId")) {
-                // Si seule la zone supérieure est sélectionnée, on prend tous les profils des sous-localisations
-                Integer parentId = Integer.parseInt(filters.get("parentZoneId").toString());
-                predicates.add(cb.equal(root.get("geographicZone").get("parent").get("id"), parentId));
+            // 1. Filtrage Géographique par ID
+            if (filters.containsKey("zoneId")) {
+                Integer zoneId = (Integer) filters.get("zoneId");
+
+                // 1. Jointure explicite en LEFT JOIN pour ne pas perdre les zones sans parent
+                var zoneJoin = root.join("geographicZone", JoinType.LEFT);
+                var parentJoin = zoneJoin.join("parent", JoinType.LEFT);
+
+                // 2. Condition : Soit la zone est la bonne, soit le parent est la bonne
+                Predicate isDirectlyInZone = cb.equal(zoneJoin.get("id"), zoneId);
+                Predicate isInSubZone = cb.equal(parentJoin.get("id"), zoneId);
+
+                predicates.add(cb.or(isDirectlyInZone, isInSubZone));
             }
 
             // 2. Filtrage par caractéristiques physiques blindé contre la casse (cb.lower)

@@ -27,7 +27,6 @@ import {
   BODY_TYPES_LIST,
   EYE_COLOR_LABELS,
   HAIR_COLOR_LABELS,
-  REGIONS
 } from "../../models/items.model";
 import {WorkerSimpleProfile} from "../../models/user.model";
 import {GalleryFilters, GeographicZone} from "../../models/filter.model";
@@ -58,6 +57,8 @@ export class HomepageComponent implements OnInit {
   isLoading = false;
   noMoreData = false;
   currentPage = 0; // Commencer à 0 pour correspondre à Spring Boot (Page 0)
+  childZoneId : number = -1;
+  parentZoneId : number = -1;
 
   allWorkers: WorkerSimpleProfile[] = [];
   allServices: string[] = [];
@@ -103,6 +104,8 @@ export class HomepageComponent implements OnInit {
 
   clearFilters(): void {
     this.filters = {};
+    this.childZoneId = -1;
+    this.parentZoneId = -1;
     this.availableChildZones = [];
     this.applyFilters();
   }
@@ -112,22 +115,34 @@ export class HomepageComponent implements OnInit {
 
     if (reset) {
       this.currentPage = 0;
+      this.allWorkers = [];
       this.noMoreData = false;
       if (this.infiniteScroll) this.infiniteScroll.disabled = false;
     }
 
     this.isLoading = true;
 
-    // Nettoyage strict : On supprime tout ce qui est null, undefined ou vide ""
+    const requestFilters = { ...this.filters };
+
+    if (this.childZoneId > -1) {
+      requestFilters.zoneId = this.childZoneId;
+    } else if (this.parentZoneId > -1) {
+      requestFilters.zoneId = this.parentZoneId;
+    }
+
+    // Nettoyage strict
     const cleanFilters = Object.fromEntries(
-      Object.entries(this.filters).filter(([_, v]) => v !== undefined && v !== null && v !== '')
+      Object.entries(requestFilters).filter(([_, v]) => v !== undefined && v !== null && v !== '' && v !== -1)
     );
+
+
+    console.log("fitlers : ",cleanFilters)
 
     this.workerService.getGalleryPage(this.currentPage, cleanFilters).subscribe({
       next: workers => {
+        this.allWorkers = reset ? workers : [...this.allWorkers, ...workers];
         if (!workers || !workers.length) {
           this.noMoreData = true;
-          if (this.infiniteScroll) this.infiniteScroll.disabled = true;
         } else {
           this.currentPage++;
         }
@@ -139,10 +154,10 @@ export class HomepageComponent implements OnInit {
 
   onParentZoneChange() {
     // 1. Reset de la sous-localisation précédemment sélectionnée
-    this.filters.childZoneId = undefined;
+    this.childZoneId = -1;
 
     // 2. Trouver l'objet parent sélectionné pour extraire ses sous-zones rattachées
-    const selectedParent = this.parentZones.find(z => z.id === this.filters.parentZoneId);
+    const selectedParent = this.parentZones.find(z => z.id === this.parentZoneId);
     this.availableChildZones = selectedParent && selectedParent.subZones ? selectedParent.subZones : [];
 
     // 3. Lancer la recherche automatique

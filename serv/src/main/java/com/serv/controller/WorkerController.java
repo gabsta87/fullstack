@@ -78,7 +78,6 @@ public class WorkerController {
                 .filter(z -> z.getParent() == null)
                 .map(GeographicZoneDTO::from)
                 .toList();
-        System.out.println("GetLocationsTree : "+roots.stream().map(GeographicZoneDTO::getName).toList());
         return ResponseEntity.ok(roots);
     }
 }
