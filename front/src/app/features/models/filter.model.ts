@@ -1,6 +1,6 @@
 export interface GalleryFilters {
   zoneId?: number;
-  bodyType?: string[];
+  bodyType?: string;
   services?: string[];
   eyeColor?: string;
   hairColor?: string;
