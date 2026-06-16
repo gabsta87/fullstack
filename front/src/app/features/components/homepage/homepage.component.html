@@ -43,10 +43,11 @@
           <ion-item lines="none" class="filter-input-item">
             <ion-icon name="person-outline" slot="start" class="filter-icon"></ion-icon>
             <ion-input aria-label="Nom"
-                       [(ngModel)]="filters.username"
-                       (ionChange)="applyFilters()"
-                       [debounce]="500"
-                       placeholder="Nom"></ion-input>
+                placeholder="Nom..."
+                [value]="filters.username || ''"
+                (ionInput)="onSearchInput($event)"
+                (keyup.enter)="applyFilters()">
+            </ion-input>
           </ion-item>
         </ion-col>
 

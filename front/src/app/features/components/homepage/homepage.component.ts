@@ -32,6 +32,7 @@ import {WorkerSimpleProfile} from "../../models/user.model";
 import {GalleryFilters, GeographicZone} from "../../models/filter.model";
 import {WorkerService} from "../../services/worker.service";
 import {AuthService} from "../../services/auth.service";
+import {debounceTime, distinctUntilChanged, Subject} from "rxjs";
 
 @Component({
   selector: 'app-homepage',
@@ -59,6 +60,7 @@ export class HomepageComponent implements OnInit {
   currentPage = 0; // Commencer à 0 pour correspondre à Spring Boot (Page 0)
   childZoneId : number = -1;
   parentZoneId : number = -1;
+  private searchSubject = new Subject<string>();
 
   allWorkers: WorkerSimpleProfile[] = [];
   allServices: string[] = [];
@@ -85,6 +87,18 @@ export class HomepageComponent implements OnInit {
       this.parentZones = data['locations'] || [];
     });
 
+    this.searchSubject.pipe(
+      debounceTime(400),        //  Attend 400ms de pause dans la frappe avant d'agir
+      distinctUntilChanged()    //  Évite de renvoyer une requête si le mot est le même
+    ).subscribe(searchTerm => {
+      this.filters.username = searchTerm;
+      this.applyFilters();      // Lance la recherche serveur automatiquement
+    });
+  }
+
+  onSearchInput(event: any) {
+    const value = event.target.value || '';
+    this.searchSubject.next(value.trim());
   }
 
   toggleMoreFilters() {
