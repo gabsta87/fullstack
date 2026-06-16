@@ -10,7 +10,7 @@ public record WorkerMinimalProfileDTO (
         String id,
         String username,
         int    age,
-        ZoneLightDTO geographicZone, // 🎯 On remet l'objet attendu par le Front
+        ZoneLightDTO geographicZone,
         String bodyType,
         int galleryIndex,
         List<String> services,
