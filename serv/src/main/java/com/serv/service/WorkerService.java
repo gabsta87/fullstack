@@ -1,5 +1,8 @@
 package com.serv.service;
 
+import com.serv.common.BodyType;
+import com.serv.common.EyeColor;
+import com.serv.common.HairColor;
 import com.serv.database.entities.Worker;
 import com.serv.database.repositories.PhotoRepository;
 import com.serv.database.repositories.WorkerRepository;
@@ -101,34 +104,43 @@ public class WorkerService {
                 predicates.add(cb.or(isDirectlyInZone, isInSubZone));
             }
 
-            // 2. Filtrage par caractéristiques physiques blindé contre la casse (cb.lower)
-            if (filters.containsKey("eyeColor")) {
-                String eye = filters.get("eyeColor").toString().trim().toLowerCase();
-                if (!eye.isEmpty()) {
-                    predicates.add(cb.equal(cb.lower(root.get("eyeColor")), eye));
-                }
-            }
-            if (filters.containsKey("hairColor")) {
-                String hair = filters.get("hairColor").toString().trim().toLowerCase();
-                if (!hair.isEmpty()) {
-                    predicates.add(cb.equal(cb.lower(root.get("hairColor")), hair));
+            // --- FILTRE SILHOUETTE ---
+            if (filters.containsKey("bodyType")) {
+                String bodyVal = filters.get("bodyType").toString().trim();
+                if (!bodyVal.isEmpty()) {
+                    try {
+                        // 🎯 Pas de cb.lower() ! On compare l'enum directement.
+                        BodyType enumValue = BodyType.valueOf(bodyVal.toUpperCase());
+                        predicates.add(cb.equal(root.get("bodyType"), enumValue));
+                    } catch (IllegalArgumentException e) {
+                        // Si la chaîne reçue ne correspond à aucun Enum (ex: chaîne vide ou invalide)
+                    }
                 }
             }
 
-            // 3. Traitement robuste de l'Enum BodyType
-            if (filters.containsKey("bodyType")) {
-                Object bodyTypeData = filters.get("bodyType");
-                try {
-                    if (bodyTypeData instanceof Collection<?> collection) {
-                        List<com.serv.common.BodyType> enums = collection.stream()
-                                .map(obj -> com.serv.common.BodyType.valueOf(obj.toString().trim().toUpperCase()))
-                                .toList();
-                        if (!enums.isEmpty()) predicates.add(root.get("bodyType").in(enums));
-                    } else {
-                        predicates.add(cb.equal(root.get("bodyType"), com.serv.common.BodyType.valueOf(bodyTypeData.toString().trim().toUpperCase())));
+            // --- FILTRE YEUX ---
+            if (filters.containsKey("eyeColor")) {
+                String eyeVal = filters.get("eyeColor").toString().trim();
+                if (!eyeVal.isEmpty()) {
+                    try {
+                        EyeColor enumValue = EyeColor.valueOf(eyeVal.toUpperCase());
+                        predicates.add(cb.equal(root.get("eyeColor"), enumValue));
+                    } catch (IllegalArgumentException e) {
+                        // Ignoré si invalide
                     }
-                } catch (IllegalArgumentException e) {
-                    // Ignore si la valeur reçue ne mappe pas l'enum
+                }
+            }
+
+            // --- FILTRE CHEVEUX ---
+            if (filters.containsKey("hairColor")) {
+                String hairVal = filters.get("hairColor").toString().trim();
+                if (!hairVal.isEmpty()) {
+                    try {
+                        HairColor enumValue = HairColor.valueOf(hairVal.toUpperCase());
+                        predicates.add(cb.equal(root.get("hairColor"), enumValue));
+                    } catch (IllegalArgumentException e) {
+                        // Ignoré si invalide
+                    }
                 }
             }
 

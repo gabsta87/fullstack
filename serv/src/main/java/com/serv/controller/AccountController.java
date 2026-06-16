@@ -1,5 +1,7 @@
 package com.serv.controller;
 
+import com.serv.common.EyeColor;
+import com.serv.common.HairColor;
 import com.serv.common.Language;
 import com.serv.database.entities.*;
 import com.serv.common.BodyType;
@@ -229,8 +231,8 @@ public class AccountController {
             worker.setGeographicZone(geographicZoneRepository.findById(req.geographicZoneId()).get());
 
         if (req.bodyType()    != null) worker.setBodyType(BodyType.valueOf(req.bodyType()));
-        if (req.eyeColor()    != null) worker.setEyeColor(req.eyeColor());
-        if (req.hairColor()   != null) worker.setHairColor(req.hairColor());
+        if (req.eyeColor()    != null) worker.setEyeColor(EyeColor.valueOf(req.eyeColor()));
+        if (req.hairColor()   != null) worker.setHairColor(HairColor.valueOf(req.hairColor()));
         if (req.phone()       != null) worker.setPhone(req.phone());
 
         if (req.mainPhotoId() != null) {
