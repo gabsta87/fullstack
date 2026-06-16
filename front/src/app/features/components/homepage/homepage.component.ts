@@ -73,7 +73,7 @@ export class HomepageComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private workerService: WorkerService,
-    public authService: AuthService,
+    private authService: AuthService,
   ) {
     addIcons({ optionsOutline, closeOutline, locationOutline });
   }
@@ -106,7 +106,14 @@ export class HomepageComponent implements OnInit {
   }
 
   get activeFilterCount(): number {
-    return Object.values(this.filters).filter(v => v !== undefined && v !== null && v !== '').length;
+    const baseFiltersCount = Object.values(this.filters).filter(
+      v => v !== undefined && v !== null && v !== ''
+    ).length;
+
+    const hasParent = typeof this.parentZoneId === 'number' && this.parentZoneId > -1;
+    const hasChild = typeof this.childZoneId === 'number' && this.childZoneId > -1;
+
+    return baseFiltersCount + (hasParent ? 1 : 0) + (hasChild ? 1 : 0);
   }
 
   hasActiveFilters(): boolean {
@@ -148,7 +155,6 @@ export class HomepageComponent implements OnInit {
     const cleanFilters = Object.fromEntries(
       Object.entries(requestFilters).filter(([_, v]) => v !== undefined && v !== null && v !== '' && v !== -1)
     );
-
 
     console.log("fitlers : ",cleanFilters)
 
