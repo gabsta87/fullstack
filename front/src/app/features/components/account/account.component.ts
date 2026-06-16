@@ -10,6 +10,7 @@ import {HeaderComponent} from '../header/header.component';
 import {firstValueFrom, Observable} from "rxjs";
 import {ClientPrivateAccount} from "../../models/user.model";
 import {AccountSettingsComponent} from "../account-settings/account-settings.component";
+import {GeographicZone} from "../../models/filter.model";
 
 @Component({
   selector: 'app-account',
@@ -22,7 +23,7 @@ export class AccountComponent implements OnInit {
   currentUser$: Observable<ClientPrivateAccount>;
   activeTab: 'favorites' | 'settings' | 'account' = 'favorites';
 
-  readonly regions = REGIONS;
+  regions!:GeographicZone[] ;
   readonly bodyTypesList = BODY_TYPES_LIST;
   readonly bodyTypeLabels = BODY_TYPE_LABELS;
   availableServices: string[] | undefined;
@@ -41,6 +42,7 @@ export class AccountComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.availableServices = await firstValueFrom(this.workerService.getWorkersServices());
+    this.regions = await this.workerService.getGeographicZones();
   }
 
   setTab(tab: 'account' | 'favorites' | 'settings') {

@@ -2,11 +2,11 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import {firstValueFrom, Observable, of} from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { WorkerSimpleProfile, WorkerFullProfile } from '../models/user.model';
 import {environment} from "../../../environments/environment";
-import {GalleryFilters} from "../models/filter.model";
+import {GalleryFilters, GeographicZone} from "../models/filter.model";
 
 @Injectable({ providedIn: 'root' })
 export class WorkerService {
@@ -19,7 +19,9 @@ export class WorkerService {
 
   getGalleryPage(page: number, filters: GalleryFilters): Observable<WorkerSimpleProfile[]> {
     let params = new HttpParams().set('page', page);
-    if (filters.region)            params = params.set('region',    filters.region);
+    if (filters.username)          params = params.set('username',  filters.username);
+    if (filters.parentZoneId)      params = params.set('region',    filters.parentZoneId);
+    if (filters.childZoneId)       params = params.set('location',  filters.childZoneId);
     if (filters.eyeColor)          params = params.set('eyeColor',  filters.eyeColor);
     if (filters.hairColor)         params = params.set('hairColor', filters.hairColor);
     if (filters.bodyType?.length)  params = params.set('bodyType',  filters.bodyType.join(','));
@@ -53,6 +55,10 @@ export class WorkerService {
 
   getWorkersServices() {
     return this.http.get<string[]>(`${this.baseUrl}/services`);
+  }
+
+  async getGeographicZones(): Promise<GeographicZone[]> {
+    return firstValueFrom(this.http.get<GeographicZone[]>(`${this.baseUrl}/locations`));
   }
 
   private profileCache = new Map<string, WorkerFullProfile>();

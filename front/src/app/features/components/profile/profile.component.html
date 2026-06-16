@@ -16,7 +16,7 @@
         <div class="profile-card">
           <img [src]="worker.mainThumbUrl" alt="Avatar" class="avatar-img">
           <h2>{{ worker.username }}</h2>
-          <p class="location"><ion-icon name="location-outline"></ion-icon> {{ worker.location }}</p>
+          <p class="location"><ion-icon name="location-outline"></ion-icon> {{ worker.geographicZone?.name }}</p>
         </div>
 
         <div class="profile-card actions-card">

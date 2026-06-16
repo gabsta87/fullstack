@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import jakarta.persistence.criteria.Predicate;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,53 +26,33 @@ public class WorkerService {
     public static final int MAX_PREVIEW_THUMBS = 5;
     public static final int PAGE_SIZE          = 24;
 
-    /**
-     * Returns a page of WorkerMinimalProfileDTOs
-     *
-     * Ordering rule:
-     *   1. Available workers first, ordered by lastRefreshed DESC
-     *   2. Unavailable workers after, same ordering
-     *
-     * For each worker we attach:
-     *   - mainThumbUrl     : the main photo's mainThumbUrl
-     *   - previewThumbUrls : up to MAX_PREVIEW_THUMBS previewThumbUrls
-     *                        (all photos, not just main)
-     *
-     * This is done in two queries (workers + batch photo fetch) to avoid N+1.
-     */
     public List<WorkerMinimalProfileDTO> getGalleryPage(int page, Map<String, Object> filters) {
 
+        System.out.println("applying "+filters.size()+" filters");
+
+        System.out.println("filters : "+filters);
+
+        // 1. On prépare la base : Uniquement les profils non désactivés + les filtres dynamiques
         Specification<Worker> spec = Specification
-                .where(WorkerSpecifications.isAvailable())
-                .and(WorkerSpecifications.isNotDisabled());
+                .where(WorkerSpecifications.isNotDisabled())
+                .and(buildDynamicFilters(filters));
 
-        // TODO apply filters to the query
-        // TODO sorting by galleryIndex desc
+        // 2. LA MAGIE DU MULTI-TRI :
+        // D'abord 'available' (true avant false), puis 'galleryPositionIndex' par ordre décroissant
+        Sort doubleSort = Sort.by(Sort.Direction.DESC, "available")
+                .and(Sort.by(Sort.Direction.DESC, "galleryPositionIndex"));
 
-        // 1 — Fetch workers (available first, then by lastRefreshed)
-        List<Worker> available = workerRepository.findAll(
+        // 3. Une seule et unique requête propre, paginée au niveau SQL
+        List<Worker> workers = workerRepository.findAll(
                 spec,
-                PageRequest.of(page, PAGE_SIZE, Sort.by(Sort.Direction.DESC, "galleryPositionIndex"))
+                PageRequest.of(page, PAGE_SIZE, doubleSort)
         ).getContent();
 
-        System.out.println("GetGalleryPage : " + Arrays.toString(available.stream().map(Worker::getUsername).toArray()));
-        spec = Specification
-                .where(WorkerSpecifications.isNotAvailable())
-                .and(WorkerSpecifications.isNotDisabled());
-
-        List<Worker> unavailable = workerRepository.findAll(
-                spec,
-                PageRequest.of(page, PAGE_SIZE, Sort.by(Sort.Direction.DESC, "galleryPositionIndex"))
-        ).getContent();
-
-        List<Worker> workers = new ArrayList<>();
-        workers.addAll(available);
-        workers.addAll(unavailable);
-        workers = workers.subList(0, Math.min(PAGE_SIZE, workers.size()));
+        System.out.println("found workers : "+workers.size());
 
         if (workers.isEmpty()) return List.of();
 
-        // 2 — Main thumbs come directly from the worker (no extra query)
+        // 4. Récupération des images principales (sans requête supplémentaire grâce à ton modèle)
         Map<UUID, String> mainThumbs = workers.stream()
                 .filter(w -> w.getMainPhoto() != null)
                 .collect(Collectors.toMap(
@@ -79,7 +60,7 @@ public class WorkerService {
                         w -> w.getMainPhoto().getMainThumbUrl()
                 ));
 
-        // Preview thumbs — batch fetch, grouped by workerId
+        // Batch fetch des miniatures de preview, groupées par workerId
         List<UUID> workerIds = workers.stream().map(Worker::getId).toList();
         Map<UUID, List<String>> previewThumbs = new HashMap<>();
         photoRepository
@@ -88,11 +69,74 @@ public class WorkerService {
                         .computeIfAbsent(p.getWorker().getId(), k -> new ArrayList<>())
                         .add(p.getPreviewThumbUrl()));
 
-        // 3 — Assemble DTOs
+        // 5. Assemblage des DTOs (Tri conservé fidèlement depuis la base de données)
         return workers.stream()
                 .map(WorkerMinimalProfileDTO::from)
-                .sorted(WorkerMinimalProfileDTO::compareTo)
                 .toList();
+    }
+
+    private Specification<Worker> buildDynamicFilters(Map<String, Object> filters) {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            // 1. Filtrage Géographique par ID (Zéro erreur de chaîne de caractères)
+            if (filters.containsKey("childZoneId")) {
+                Integer childId = Integer.parseInt(filters.get("childZoneId").toString());
+                predicates.add(cb.equal(root.get("geographicZone").get("id"), childId));
+            } else if (filters.containsKey("parentZoneId")) {
+                // Si seule la zone supérieure est sélectionnée, on prend tous les profils des sous-localisations
+                Integer parentId = Integer.parseInt(filters.get("parentZoneId").toString());
+                predicates.add(cb.equal(root.get("geographicZone").get("parent").get("id"), parentId));
+            }
+
+            // 2. Filtrage par caractéristiques physiques blindé contre la casse (cb.lower)
+            if (filters.containsKey("eyeColor")) {
+                String eye = filters.get("eyeColor").toString().trim().toLowerCase();
+                if (!eye.isEmpty()) {
+                    predicates.add(cb.equal(cb.lower(root.get("eyeColor")), eye));
+                }
+            }
+            if (filters.containsKey("hairColor")) {
+                String hair = filters.get("hairColor").toString().trim().toLowerCase();
+                if (!hair.isEmpty()) {
+                    predicates.add(cb.equal(cb.lower(root.get("hairColor")), hair));
+                }
+            }
+
+            // 3. Traitement robuste de l'Enum BodyType
+            if (filters.containsKey("bodyType")) {
+                Object bodyTypeData = filters.get("bodyType");
+                try {
+                    if (bodyTypeData instanceof Collection<?> collection) {
+                        List<com.serv.common.BodyType> enums = collection.stream()
+                                .map(obj -> com.serv.common.BodyType.valueOf(obj.toString().trim().toUpperCase()))
+                                .toList();
+                        if (!enums.isEmpty()) predicates.add(root.get("bodyType").in(enums));
+                    } else {
+                        predicates.add(cb.equal(root.get("bodyType"), com.serv.common.BodyType.valueOf(bodyTypeData.toString().trim().toUpperCase())));
+                    }
+                } catch (IllegalArgumentException e) {
+                    // Ignore si la valeur reçue ne mappe pas l'enum
+                }
+            }
+
+            // 4. Filtre Username & Services (Inchangés mais sécurisés)
+            if (filters.containsKey("username")) {
+                String searchName = filters.get("username").toString().toLowerCase().trim();
+                if (!searchName.isEmpty()) {
+                    predicates.add(cb.like(cb.lower(root.get("username")), "%" + searchName + "%"));
+                }
+            }
+            if (filters.containsKey("services")) {
+                List<?> services = (List<?>) filters.get("services");
+                if (!services.isEmpty()) {
+                    query.distinct(true);
+                    predicates.add(root.join("services").get("name").in(services));
+                }
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
     }
 
     public static int calculateAge(java.util.Date birthday) {
@@ -108,7 +152,7 @@ public class WorkerService {
      * Used by GET /account/favorites to return a client's saved workers.
      */
     @Transactional(readOnly = true)
-    public List<WorkerMinimalProfileDTO> getGallery(List<UUID> ids) {
+    public List<WorkerMinimalProfileDTO> getGalleryByIds(List<UUID> ids) {
         if (ids == null || ids.isEmpty()) return List.of();
 
         List<Worker> all = workerRepository.findAllById(ids).stream()

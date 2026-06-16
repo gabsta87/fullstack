@@ -1,28 +1,22 @@
-import {ResolveFn, Router} from '@angular/router';
+import {ResolveFn} from '@angular/router';
 import {inject} from "@angular/core";
 import {WorkerService} from "../services/worker.service";
-import {catchError, EMPTY, of} from "rxjs";
+import {catchError, of} from "rxjs";
 import {WorkerFullProfile} from "../models/user.model";
 
-export const profileVisitingResolver: ResolveFn<WorkerFullProfile> = (route, state) => {
+export const profileVisitingResolver: ResolveFn<WorkerFullProfile | null> = (route) => {
   const workerService = inject(WorkerService);
-  const router        = inject(Router);
-
   const id = route.queryParamMap.get('id');
 
-  if (!id) {
-    router.navigate(['/']);
-    return EMPTY;
-  }
+  if (!id) return of(null);
 
-  // Return from prefetch cache immediately if available
   const cached = workerService.getCachedProfile(id);
   if (cached) return of(cached);
 
   return workerService.getProfile(id).pipe(
-    catchError(() => {
-      router.navigate(['/']);
-      return EMPTY;
+    catchError((err) => {
+      console.error("Erreur lors de la récupération du profil :", err);
+      return of(null);
     })
   );
 };

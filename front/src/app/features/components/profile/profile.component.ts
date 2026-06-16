@@ -52,9 +52,6 @@ import {HeaderComponent} from "../header/header.component";
 export class ProfileComponent implements OnInit, OnDestroy {
 
   worker: WorkerFullProfile | null = null;
-  isLoading = false; // resolver already waited — no spinner needed on normal load
-
-  isLoggedIn     = true;   // TODO: inject AuthService
   isFavorite     = false;
   notifyEnabled  = false;
 
@@ -81,6 +78,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     // The resolver already fetched (or cache-hit) the profile —
     // it's available synchronously here, no subscribe needed.
     this.worker = this.route.snapshot.data['profile'] ?? null;
+    console.log("Worker : ", this.worker);
   }
 
   // ── Lightbox ──────────────────────────────────────────────────────────────

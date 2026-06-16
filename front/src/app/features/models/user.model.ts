@@ -1,11 +1,11 @@
 import {PhotoItem, Review, VideoItem} from "./items.model";
+import {GeographicZone} from "./filter.model";
 
 export interface BaseUser {
   id: string;
   username: string;
   role: 'WORKER' | 'CLIENT' | 'ADMIN';
-  location: string;
-  region : string;
+  geographicZone: GeographicZone;
 }
 
 // PRIVATE DATA
@@ -52,7 +52,7 @@ export interface WorkerFullProfile extends WorkerSimpleProfile {
 
 export interface WorkerProfileUpdate {
   description?: string;
-  location?: string;
+  geographicZoneId?: number;
   bodyType?: string;
   services?: string[];
   eyeColor?: string;
@@ -60,4 +60,3 @@ export interface WorkerProfileUpdate {
   phone?: string;
   mainPhotoId?: string;
 }
-

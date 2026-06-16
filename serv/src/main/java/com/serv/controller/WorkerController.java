@@ -2,7 +2,9 @@ package com.serv.controller;
 
 import com.serv.database.entities.Service;
 import com.serv.database.entities.VenusUser;
+import com.serv.database.repositories.GeographicZoneRepository;
 import com.serv.database.repositories.ServiceRepository;
+import com.serv.dto.GeographicZoneDTO;
 import com.serv.dto.WorkerMinimalProfileDTO;
 import com.serv.dto.WorkerFullProfileDTO;
 import com.serv.database.repositories.WorkerRepository;
@@ -33,18 +35,21 @@ public class WorkerController {
     @Autowired private WorkerRepository workerRepository;
     @Autowired private WorkerService    galleryService;
     @Autowired private ServiceRepository serviceRepository;
+    @Autowired private GeographicZoneRepository zoneRepository;
 
     @GetMapping
     public ResponseEntity<List<WorkerMinimalProfileDTO>> getGallery(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(required = false) String region,
+            @RequestParam(required = false) Integer zoneId,
+            @RequestParam(required = false) String username,
             @RequestParam(required = false) List<String> bodyType,
             @RequestParam(required = false) List<String> services,
             @RequestParam(required = false) String eyeColor,
             @RequestParam(required = false) String hairColor) {
 
         Map<String, Object> allFilters = new HashMap<>();
-        if (region != null) allFilters.put("region", region);
+        if (zoneId != null) allFilters.put("zoneId", zoneId);
+        if (username != null) allFilters.put("username", username);
         if (bodyType != null) allFilters.put("bodyType", bodyType);
         if (services != null) allFilters.put("services", services);
         if (eyeColor != null) allFilters.put("eyeColor", eyeColor);
@@ -67,4 +72,13 @@ public class WorkerController {
                 .collect(Collectors.toList()));
     }
 
+    @GetMapping("/locations")
+    public ResponseEntity<List<GeographicZoneDTO>> getLocationsTree() {
+        List<GeographicZoneDTO> roots = zoneRepository.findAll().stream()
+                .filter(z -> z.getParent() == null)
+                .map(GeographicZoneDTO::from)
+                .toList();
+        System.out.println("GetLocationsTree : "+roots.stream().map(GeographicZoneDTO::getName).toList());
+        return ResponseEntity.ok(roots);
+    }
 }

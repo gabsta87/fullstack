@@ -12,6 +12,7 @@ import {tap} from "rxjs/operators";
 import {addIcons} from "ionicons";
 import {addCircleOutline, camera, move, trashOutline} from "ionicons/icons";
 import {AccountSettingsComponent} from "../account-settings/account-settings.component";
+import {GeographicZone} from "../../models/filter.model";
 
 @Component({
   selector: 'app-profile-management',
@@ -27,6 +28,7 @@ export class ProfileManagementComponent implements OnInit {
   currentUser$! : Observable<WorkerPrivateAccount>;
   allServices!  : string[];
   photos!       : PhotoItem[];
+  allLocations! : GeographicZone[];
 
   // Profile form
   profileForm: WorkerProfileUpdate = {};
@@ -48,19 +50,23 @@ export class ProfileManagementComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this.allServices = await firstValueFrom(this.route.data.pipe(map(data => data['services'])));
 
-    // 1. Récupérer les données initiales du compte fournies par le Resolver
+    this.route.data.subscribe((data) => {
+      this.allServices = data['services'] || [];
+      this.allLocations = data['locations'] || [];
+      console.log(`locations : ${this.allLocations}`);
+    });
     const initialProfile = await firstValueFrom(this.route.data.pipe(map(data => data['profile'])));
+
     if (initialProfile) {
       this.profileForm = {
         bodyType: initialProfile.bodyType,
-        location: initialProfile.location,
+        geographicZoneId: initialProfile.geographicZoneId,
         description: initialProfile.description
       };
     }
 
-    // 2. Écouter le flux SSE temps réel pour les futures mises à jour (ex: photos)
+    // Écouter le flux SSE temps réel pour les futures mises à jour (ex: photos)
     this.currentUser$ = this.accountService.listenToMyAccount().pipe(
       tap(user => {
         if (user && user.photos) {

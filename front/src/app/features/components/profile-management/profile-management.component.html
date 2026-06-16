@@ -63,11 +63,11 @@
                 <ion-item lines="none" class="venus-input">
                   <ion-label position="stacked">Localisation</ion-label>
                   <ion-select label="Localisation" label-placement="stacked" interface="popover"
-                              [(ngModel)]="profileForm.location"
-                              (ionChange)="updateProfileField('location', $event.detail.value)"
+                              [(ngModel)]="profileForm.geographicZoneId"
+                              (ionChange)="updateProfileField('geographicZoneId', $event.detail.value)"
                               placeholder="Choisir une ville...">
-                    <ion-select-option *ngFor="let region of REGIONS" [value]="region">
-                      {{ region }}
+                    <ion-select-option *ngFor="let region of allLocations" [value]="region.id">
+                      {{ region.name }}
                     </ion-select-option>
                   </ion-select>
                 </ion-item>

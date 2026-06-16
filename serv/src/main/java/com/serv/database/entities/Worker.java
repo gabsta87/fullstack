@@ -65,7 +65,10 @@ public class Worker extends VenusUser {
     @Column(name = "last_refreshed")
     private Instant lastRefreshed;
 
-    private String region;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "geographic_zone_id")
+    @ToString.Exclude
+    private GeographicZone geographicZone;
 
     // Enum stored as String
     @Enumerated(EnumType.STRING)

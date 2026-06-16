@@ -2,9 +2,11 @@ package com.serv.database.entities;
 
 import com.serv.common.TablesNames;
 import com.serv.common.UserRole;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.Collection;
 
@@ -18,7 +20,11 @@ public class Client extends VenusUser {
     @OneToMany(fetch = FetchType.EAGER)
     Collection<Worker> favorites;
 
-    // add filters
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "geographic_zone_id")
+    @ToString.Exclude
+    @Nullable
+    private GeographicZone geographicZone;
 
     public Client(String name, Email email, String password) {
         super(name,email,password);

@@ -12,13 +12,28 @@
         <ion-col size="12" size-sm="3" size-md="3" class="filter-col">
           <ion-item lines="none" class="filter-input-item">
             <ion-icon name="location-outline" slot="start" class="filter-icon"></ion-icon>
-            <ion-select aria-label="Région" interface="popover"
-                        [(ngModel)]="filters.region"
-                        (ionChange)="onRegionChange()"
+            <ion-select aria-label="Zone Supérieure" interface="popover"
+                        [(ngModel)]="filters.parentZoneId"
+                        (ionChange)="onParentZoneChange()"
                         placeholder="Toutes les régions">
               <ion-select-option [value]="undefined">Toutes les régions</ion-select-option>
-              <ion-select-option *ngFor="let region of regions" [value]="region">
-                {{ region }}
+              <ion-select-option *ngFor="let zone of parentZones" [value]="zone.id">
+                {{ zone.name }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+
+        <ion-col size="12" size-sm="3" size-md="3" class="filter-col">
+          <ion-item lines="none" class="filter-input-item" [disabled]="!filters.parentZoneId">
+            <ion-icon name="business-outline" slot="start" class="filter-icon"></ion-icon>
+            <ion-select aria-label="Zone Inférieure" interface="popover"
+                        [(ngModel)]="filters.childZoneId"
+                        (ionChange)="applyFilters()"
+                        placeholder="Toutes les localisations">
+              <ion-select-option [value]="undefined">Toutes les localisations</ion-select-option>
+              <ion-select-option *ngFor="let subZone of availableChildZones" [value]="subZone.id">
+                {{ subZone.name }}
               </ion-select-option>
             </ion-select>
           </ion-item>
@@ -26,43 +41,25 @@
 
         <ion-col size="12" size-sm="3" size-md="3" class="filter-col">
           <ion-item lines="none" class="filter-input-item">
-            <ion-icon name="business-outline" slot="start" class="filter-icon"></ion-icon>
-            <ion-input aria-label="Localisation"
-                       [(ngModel)]="tempFilters.location"
-                       placeholder="Localisation (Ex: Ville, quartier...)"></ion-input>
-          </ion-item>
-        </ion-col>
-
-        <ion-col size="12" size-sm="3" size-md="3" class="filter-col">
-          <ion-item lines="none" class="filter-input-item">
-            <ion-icon name="business-outline" slot="start" class="filter-icon"></ion-icon>
-            <ion-input aria-label="Localisation"
-                       [(ngModel)]="tempFilters.name"
+            <ion-icon name="person-outline" slot="start" class="filter-icon"></ion-icon>
+            <ion-input aria-label="Nom"
+                       [(ngModel)]="filters.username"
+                       (ionChange)="applyFilters()"
+                       [debounce]="500"
                        placeholder="Nom"></ion-input>
           </ion-item>
         </ion-col>
 
         <ion-col size="12" size-sm="3" size-md="3" class="filter-actions ion-text-end">
-
-          <ion-button *ngIf="!hasActiveFilters()"
-                      fill="outline" class="more-filters-btn"
-                      color="medium"
-                      size="small"
-                      (click)="clearFilters()"
-          >
-            Charger filtres préférés
-          </ion-button>
-
           <ion-button *ngIf="hasActiveFilters()"
                       fill="outline" class="more-filters-btn"
                       color="medium"
                       size="small"
-                      (click)="clearFilters()"
-          >
+                      (click)="clearFilters()">
             Effacer
           </ion-button>
 
-          <ion-button fill="outline" class="more-filters-btn" (click)="showMoreFilters = !showMoreFilters">
+          <ion-button fill="outline" class="more-filters-btn" (click)="toggleMoreFilters()">
             <ion-icon slot="start" [name]="showMoreFilters ? 'close-outline' : 'options-outline'"></ion-icon>
             Filtres
           </ion-button>
@@ -71,14 +68,13 @@
       </ion-row>
 
       <ion-row *ngIf="showMoreFilters" class="advanced-filters-row fade-in">
-
         <ion-col size="12" size-sm="4">
           <ion-item lines="none" class="filter-input-item">
             <ion-select aria-label="Silhouette" interface="popover"
                         [(ngModel)]="filters.bodyType"
                         (ionChange)="applyFilters()"
                         placeholder="Toutes les silhouettes">
-              <ion-select-option [value]="undefined">Toutes les silhouettes</ion-select-option>
+              <ion-select-option value="">Toutes les silhouettes</ion-select-option>
               <ion-select-option *ngFor="let type of BODY_TYPE_LABELS | keyvalue" [value]="type.key">
                 {{ type.value }}
               </ion-select-option>
@@ -92,7 +88,7 @@
                         [(ngModel)]="filters.eyeColor"
                         (ionChange)="applyFilters()"
                         placeholder="Toutes les couleurs d'yeux">
-              <ion-select-option [value]="undefined">Toutes les couleurs d'yeux</ion-select-option>
+              <ion-select-option value="">Toutes les couleurs d'yeux</ion-select-option>
               <ion-select-option *ngFor="let eye of EYE_COLOR_LABELS | keyvalue" [value]="eye.key">
                 {{ eye.value }}
               </ion-select-option>
@@ -113,39 +109,22 @@
             </ion-select>
           </ion-item>
         </ion-col>
-
       </ion-row>
     </ion-grid>
   </div>
 
   <ion-grid>
-    <section *ngIf="availableWorkers.length > 0">
-
+    <section *ngIf="allWorkers.length > 0">
       <ion-row>
         <ion-col size="12" size-sm="6" size-md="4" size-lg="3" size-xl="2"
-                 *ngFor="let w of availableWorkers; let i = index">
-          <app-worker-card [worker]="w"></app-worker-card>
-        </ion-col>
-      </ion-row>
-    </section>
-
-    <section *ngIf="unavailableWorkers.length > 0" class="ion-margin-top">
-
-      <ion-row class="faded">
-        <ion-col size="12" size-sm="6" size-md="4" size-lg="3" size-xl="2"
-                 *ngFor="let w of unavailableWorkers">
-          <app-worker-card [worker]="w"></app-worker-card>
+                 *ngFor="let w of allWorkers">
+          <app-worker-card [worker]="w" [class.faded]="!w.available"></app-worker-card>
         </ion-col>
       </ion-row>
     </section>
   </ion-grid>
 
-  <!-- Infinite scroll -->
   <ion-infinite-scroll threshold="300px" (ionInfinite)="onIonInfinite($event)">
-    <ion-infinite-scroll-content
-      loadingSpinner="crescent"
-      loadingText="Chargement...">
-    </ion-infinite-scroll-content>
+    <ion-infinite-scroll-content loadingSpinner="crescent" loadingText="Chargement..."></ion-infinite-scroll-content>
   </ion-infinite-scroll>
-
 </ion-content>

@@ -34,10 +34,11 @@ public class AccountController {
     private final WorkerRepository     workerRepository;
     private final ClientRepository     clientRepository;
     private final PhotoRepository      photoRepository;
-    private final WorkerService galleryService;
+    private final WorkerService        galleryService;
     private final MediaStorageService  mediaStorageService;
     private final ServiceRepository    serviceRepository;
     private final SseStreamService     sseStreamService;
+    private final GeographicZoneRepository geographicZoneRepository;
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
@@ -162,7 +163,7 @@ public class AccountController {
         if (client == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         List<UUID> ids = client.getFavorites().stream().map(Worker::getId).toList();
-        return ResponseEntity.ok(galleryService.getGallery(ids));
+        return ResponseEntity.ok(galleryService.getGalleryByIds(ids));
     }
 
     /** POST /account/favorites/{workerId} */
@@ -223,8 +224,10 @@ public class AccountController {
         if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         if (req.description() != null) worker.setDescription(req.description());
-        if (req.location()    != null) worker.setLocation(req.location);
-        if (req.region()      != null) worker.setRegion(req.region());
+
+        if (req.geographicZoneId() > -1 && geographicZoneRepository.findById(req.geographicZoneId()).isPresent())
+            worker.setGeographicZone(geographicZoneRepository.findById(req.geographicZoneId()).get());
+
         if (req.bodyType()    != null) worker.setBodyType(BodyType.valueOf(req.bodyType()));
         if (req.eyeColor()    != null) worker.setEyeColor(req.eyeColor());
         if (req.hairColor()   != null) worker.setHairColor(req.hairColor());
@@ -436,8 +439,7 @@ public class AccountController {
 
     public record WorkerProfileUpdateRequest(
             String description,
-            String location,
-            String region,
+            int geographicZoneId,
             String eyeColor,
             String hairColor,
             String phone,
