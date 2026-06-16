@@ -19,7 +19,10 @@ import java.util.List;
 @Entity
 @EqualsAndHashCode(callSuper = true)
 @DiscriminatorValue("WORKER")
-@Table(name = TablesNames.WORKERS)
+@Table(name = TablesNames.WORKERS, indexes = {
+        @Index(name = "idx_worker_available_position", columnList = "available, galleryPositionIndex"),
+        @Index(name = "idx_worker_zone", columnList = "geographic_zone_id")
+})
 public class Worker extends VenusUser {
 
     @ToString.Exclude

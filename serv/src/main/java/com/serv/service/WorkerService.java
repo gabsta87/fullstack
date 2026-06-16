@@ -70,7 +70,15 @@ public class WorkerService {
 
         // 5. Assemblage des DTOs (Tri conservé fidèlement depuis la base de données)
         return workers.stream()
-                .map(WorkerMinimalProfileDTO::from)
+                .map(w -> {
+                    // On récupère les previews associées à ce worker précis depuis notre Map optimisée
+                    List<String> previews = previewThumbs.getOrDefault(w.getId(), List.of());
+                    // On limite à MAX_PREVIEW_THUMBS si ce n'est pas déjà fait dans la requête
+                    if (previews.size() > MAX_PREVIEW_THUMBS) {
+                        previews = previews.subList(0, MAX_PREVIEW_THUMBS);
+                    }
+                    return WorkerMinimalProfileDTO.from(w, previews);
+                })
                 .toList();
     }
 
@@ -159,20 +167,16 @@ public class WorkerService {
     public List<WorkerMinimalProfileDTO> getGalleryByIds(List<UUID> ids) {
         if (ids == null || ids.isEmpty()) return List.of();
 
-        List<Worker> all = workerRepository.findAllById(ids).stream()
-                .toList();
+        // 1. Un seul appel SQL pour récupérer tous les workers concernés
+        List<Worker> workersFromDb = workerRepository.findAllById(ids);
 
-        System.out.println("GetGallery all : "+Arrays.toString(all.stream().map(Worker::getUsername).toArray()));
+        System.out.println("GetGallery all : " + Arrays.toString(workersFromDb.stream().map(Worker::getUsername).toArray()));
 
-        List<Worker> available = workerRepository.findAllById(ids).stream()
-                .filter(worker -> !worker.isDisabled())
-                .toList();
-
-        System.out.println("GetGallery filtered : "+Arrays.toString(available.stream().map(Worker::getUsername).toArray()));
-
-        return workerRepository.findAllById(ids).stream().filter(worker -> !worker.isDisabled())
-                .map(WorkerMinimalProfileDTO::from)
-                .sorted(WorkerMinimalProfileDTO::compareTo)
+        // 2. Filtrage, mapping et tri en une seule passe propre
+        return workersFromDb.stream()
+                .filter(worker -> !worker.isDisabled()) // Exclure les désactivés
+                .map(WorkerMinimalProfileDTO::from)     // Utilise la surcharge à 1 paramètre automatiquement
+                .sorted()                               // Utilise la méthode compareTo implémentée dans le Record
                 .toList();
     }
 
