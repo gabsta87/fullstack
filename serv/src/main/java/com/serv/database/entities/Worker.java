@@ -1,8 +1,6 @@
 package com.serv.database.entities;
 
-import com.serv.common.BodyType;
-import com.serv.common.TablesNames;
-import com.serv.common.UserRole;
+import com.serv.common.*;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -52,10 +50,20 @@ public class Worker extends VenusUser {
     )
     private List<Service> services = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "body_type", length = 16)
+    private BodyType bodyType;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "eye_color")
+    private EyeColor eyeColor;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "hair_color")
+    private HairColor hairColor;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender")
+    private Gender gender;
+
     private String phone;
-    private String eyeColor;
-    private String hairColor;
-    private String gender;
     protected boolean disabled;
 
     private int galleryPositionIndex;
@@ -72,11 +80,6 @@ public class Worker extends VenusUser {
     @JoinColumn(name = "geographic_zone_id")
     @ToString.Exclude
     private GeographicZone geographicZone;
-
-    // Enum stored as String
-    @Enumerated(EnumType.STRING)
-    @Column(name = "body_type", length = 16)
-    private BodyType bodyType;
 
     // Date stored as DATE only (no time component)
     @Temporal(TemporalType.DATE)
