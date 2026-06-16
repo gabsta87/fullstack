@@ -18,8 +18,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @DiscriminatorValue("WORKER")
 @Table(name = TablesNames.WORKERS, indexes = {
-        @Index(name = "idx_worker_available_position", columnList = "available, galleryPositionIndex"),
-        @Index(name = "idx_worker_zone", columnList = "geographic_zone_id")
+        @Index(name = "idx_worker_available_position", columnList = "available, galleryPositionIndex")
 })
 public class Worker extends VenusUser {
 
@@ -75,11 +74,6 @@ public class Worker extends VenusUser {
     // Instant stored as UTC timestamp
     @Column(name = "last_refreshed")
     private Instant lastRefreshed;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "geographic_zone_id")
-    @ToString.Exclude
-    private GeographicZone geographicZone;
 
     // Date stored as DATE only (no time component)
     @Temporal(TemporalType.DATE)

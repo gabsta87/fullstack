@@ -20,12 +20,6 @@ public class Client extends VenusUser {
     @OneToMany(fetch = FetchType.EAGER)
     Collection<Worker> favorites;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "geographic_zone_id")
-    @ToString.Exclude
-    @Nullable
-    private GeographicZone geographicZone;
-
     public Client(String name, Email email, String password) {
         super(name,email,password);
         this.role = UserRole.CLIENT;

@@ -6,6 +6,7 @@ import com.serv.common.UserRole;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.UUID;
@@ -13,7 +14,9 @@ import java.util.UUID;
 @Data
 @Entity
 @NoArgsConstructor
-@Table(name = TablesNames.USERS)
+@Table(name = TablesNames.USERS, indexes = {
+        @Index(name = "idx_user_zone", columnList = "geographic_zone_id")
+})
 @DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class VenusUser {
@@ -31,6 +34,11 @@ public abstract class VenusUser {
     @Column(nullable = false)
     protected String passwordHash;
     protected boolean locked;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "geographic_zone_id")
+    @ToString.Exclude
+    private GeographicZone geographicZone;
 
     @Enumerated(EnumType.STRING)
     private Language language = Language.EN;
