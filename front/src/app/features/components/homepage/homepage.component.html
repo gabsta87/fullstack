@@ -75,7 +75,7 @@
                         [(ngModel)]="filters.bodyType"
                         (ionChange)="applyFilters()"
                         placeholder="Toutes les silhouettes">
-              <ion-select-option value="">Toutes les silhouettes</ion-select-option>
+              <ion-select-option [value]="null">Toutes les silhouettes</ion-select-option>
               <ion-select-option *ngFor="let type of BODY_TYPE_LABELS | keyvalue" [value]="type.key">
                 {{ type.value }}
               </ion-select-option>
@@ -89,7 +89,7 @@
                         [(ngModel)]="filters.eyeColor"
                         (ionChange)="applyFilters()"
                         placeholder="Toutes les couleurs d'yeux">
-              <ion-select-option value="">Toutes les couleurs d'yeux</ion-select-option>
+              <ion-select-option [value]="null">Toutes les couleurs d'yeux</ion-select-option>
               <ion-select-option *ngFor="let eye of EYE_COLOR_LABELS | keyvalue" [value]="eye.key">
                 {{ eye.value }}
               </ion-select-option>
@@ -103,7 +103,7 @@
                         [(ngModel)]="filters.hairColor"
                         (ionChange)="applyFilters()"
                         placeholder="Toutes les couleurs de cheveux">
-              <ion-select-option [value]="undefined">Toutes les couleurs de cheveux</ion-select-option>
+              <ion-select-option [value]="null">Toutes les couleurs de cheveux</ion-select-option>
               <ion-select-option *ngFor="let hair of HAIR_COLOR_LABELS | keyvalue" [value]="hair.key">
                 {{ hair.value }}
               </ion-select-option>
