@@ -125,7 +125,7 @@
     </section>
   </ion-grid>
 
-  <ion-infinite-scroll threshold="300px" (ionInfinite)="onIonInfinite($event)">
+  <ion-infinite-scroll threshold="50px" (ionInfinite)="onIonInfinite($event)" [disabled]="noMoreData">
     <ion-infinite-scroll-content loadingSpinner="crescent" loadingText="Chargement..."></ion-infinite-scroll-content>
   </ion-infinite-scroll>
 </ion-content>

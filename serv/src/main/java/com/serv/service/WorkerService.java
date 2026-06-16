@@ -32,7 +32,7 @@ public class WorkerService {
 
     public List<WorkerMinimalProfileDTO> getGalleryPage(int page, Map<String, Object> filters) {
 
-        System.out.println("applying "+filters.size()+" filters : "+filters);
+        System.out.println("Applying " + filters.size() + " filters : " + filters);
 
         // 1. On prépare la base : Uniquement les profils non désactivés + les filtres dynamiques
         Specification<Worker> spec = Specification
@@ -43,6 +43,7 @@ public class WorkerService {
         // D'abord 'available' (true avant false), puis 'galleryPositionIndex' par ordre décroissant
         Sort doubleSort = Sort.by(Sort.Direction.DESC, "available")
                 .and(Sort.by(Sort.Direction.DESC, "galleryPositionIndex"));
+//                .and(Sort.by(Sort.Direction.ASC, "id"));
 
         // 3. Une seule et unique requête propre, paginée au niveau SQL
         List<Worker> workers = workerRepository.findAll(

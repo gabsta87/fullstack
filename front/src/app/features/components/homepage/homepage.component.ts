@@ -57,7 +57,7 @@ export class HomepageComponent implements OnInit {
   showMoreFilters = false;
   isLoading = false;
   noMoreData = false;
-  currentPage = 0; // Commencer à 0 pour correspondre à Spring Boot (Page 0)
+  currentPage = 0;
   childZoneId : number = -1;
   parentZoneId : number = -1;
   private searchSubject = new Subject<string>();
@@ -85,14 +85,25 @@ export class HomepageComponent implements OnInit {
       this.allWorkers = data['workers'] || [];
       this.allServices = data['allServices'] || [];
       this.parentZones = data['locations'] || [];
+
+      if (this.allWorkers.length > 0) {
+        if (this.allWorkers.length < 24) {
+          this.noMoreData = true;
+          setTimeout(() => {
+            if (this.infiniteScroll) this.infiniteScroll.disabled = true;
+          }, 100);
+        } else {
+          this.currentPage = 1;
+        }
+      }
     });
 
     this.searchSubject.pipe(
-      debounceTime(400),        //  Attend 400ms de pause dans la frappe avant d'agir
-      distinctUntilChanged()    //  Évite de renvoyer une requête si le mot est le même
+      debounceTime(400),
+      distinctUntilChanged()
     ).subscribe(searchTerm => {
       this.filters.username = searchTerm;
-      this.applyFilters();      // Lance la recherche serveur automatiquement
+      this.applyFilters();
     });
   }
 
@@ -131,8 +142,11 @@ export class HomepageComponent implements OnInit {
     this.applyFilters();
   }
 
-  private loadPage(reset: boolean = false): void {
-    if (this.isLoading) return;
+  private loadPage(reset: boolean = false, event?: any): void {
+    if (this.isLoading) {
+      if (event) event.target.complete();
+      return;
+    }
 
     if (reset) {
       this.currentPage = 0;
@@ -142,7 +156,6 @@ export class HomepageComponent implements OnInit {
     }
 
     this.isLoading = true;
-
     const requestFilters = { ...this.filters };
 
     if (this.childZoneId > -1) {
@@ -151,24 +164,28 @@ export class HomepageComponent implements OnInit {
       requestFilters.zoneId = this.parentZoneId;
     }
 
-    // Nettoyage strict
     const cleanFilters = Object.fromEntries(
       Object.entries(requestFilters).filter(([_, v]) => v !== undefined && v !== null && v !== '' && v !== -1)
     );
 
-    console.log("fitlers : ",cleanFilters)
-
     this.workerService.getGalleryPage(this.currentPage, cleanFilters).subscribe({
       next: workers => {
         this.allWorkers = reset ? workers : [...this.allWorkers, ...workers];
-        if (!workers || !workers.length) {
+
+        if (!workers || workers.length < 24) {
           this.noMoreData = true;
+          if (this.infiniteScroll) this.infiniteScroll.disabled = true;
         } else {
           this.currentPage++;
         }
+
+        if (event) event.target.complete();
         this.isLoading = false;
       },
-      error: () => { this.isLoading = false; },
+      error: () => {
+        if (event) event.target.complete();
+        this.isLoading = false;
+      },
     });
   }
 
@@ -185,8 +202,8 @@ export class HomepageComponent implements OnInit {
   }
 
   onIonInfinite(event: any): void {
-    this.loadPage(false);
-    setTimeout(() => event.target.complete(), 500);
+    // 🎯 On délègue la responsabilité du "complete" à la méthode qui gère le réseau
+    this.loadPage(false, event);
   }
 
   onRefresh(event: any): void {
