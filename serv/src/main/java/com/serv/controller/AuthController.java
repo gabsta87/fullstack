@@ -1,16 +1,13 @@
 package com.serv.controller;
 
-import com.serv.common.UserRole;
 import com.serv.database.entities.*;
 import com.serv.database.repositories.ClientRepository;
 import com.serv.database.repositories.PasswordResetTokenRepository;
 import com.serv.database.repositories.UserRepository;
 import com.serv.database.repositories.WorkerRepository;
 import com.serv.dto.VenusUserDTO;
-import com.serv.dto.WorkerFullProfileDTO;
 import com.serv.service.AuthService;
 import com.serv.service.MailService;
-import com.serv.service.SseStreamService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -40,7 +37,6 @@ public class AuthController {
     private final WorkerRepository workerRepository;
     private final MailService      mailService;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
-    private final SseStreamService sseStreamService;
     private final AuthService authService;
 
     // ── Login / Logout ────────────────────────────────────────────────────────
