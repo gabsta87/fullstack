@@ -42,7 +42,7 @@ public class WorkerController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(required = false) Integer zoneId,
             @RequestParam(required = false) String username,
-            @RequestParam(required = false) List<String> bodyType,
+            @RequestParam(required = false) String bodyType,
             @RequestParam(required = false) List<String> services,
             @RequestParam(required = false) String eyeColor,
             @RequestParam(required = false) String hairColor) {
