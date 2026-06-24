@@ -11,6 +11,8 @@ public class GeographicZoneDTO {
     private List<GeographicZoneDTO> subZones;
 
     public static GeographicZoneDTO from(GeographicZone zone) {
+        if(zone == null)
+            return null;
         GeographicZoneDTO dto = new GeographicZoneDTO();
         dto.setId(zone.getId());
         dto.setName(zone.getName());
