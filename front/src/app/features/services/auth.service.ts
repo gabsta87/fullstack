@@ -85,12 +85,12 @@ export class AuthService {
    * Initialise la connexion SSE pour suivre l'état de la session
    */
   private establishRealTimeStream() {
-    if (this.eventSource) return; // Évite les doublons
+    if (this.eventSource) return;
 
     console.log(`establishing connexion to ${this.accountUrl}/stream`)
     this.eventSource = new EventSource(`${this.accountUrl}/stream`, { withCredentials: true });
 
-    // 🚨 Écoute d'une invalidation de session poussée par le serveur
+    // ✅ CAS 1 : Le serveur valide explicitement que la session est morte
     this.eventSource.addEventListener('session-expired', (event: MessageEvent) => {
       this.zone.run(() => {
         console.warn("Session invalidée à distance par le serveur :", event.data);
@@ -99,9 +99,10 @@ export class AuthService {
       });
     });
 
+    // ✅ CAS 2 : Simple coupure réseau (ex: tunnel, mise en arrière-plan)
     this.eventSource.onerror = (error) => {
-      console.error("Erreur ou déconnexion du flux SSE d'authentification", error);
-      this.handleLocalLogout();
+      // On laisse le navigateur tenter de se reconnecter tout seul en tâche de fond.
+      console.warn("Flux SSE interrompu temporairement. Reconnexion automatique en cours...");
     };
   }
 
