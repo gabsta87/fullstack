@@ -225,10 +225,17 @@ public class AccountController {
         Worker worker = sessionWorker(session);
         if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
+        System.out.println("updateProfile: " + req);
+
         if (req.description() != null) worker.setDescription(req.description());
 
-        if (req.geographicZoneId() > -1 && geographicZoneRepository.findById(req.geographicZoneId()).isPresent())
-            worker.setGeographicZone(geographicZoneRepository.findById(req.geographicZoneId()).get());
+        if (req.geographicZoneId() != null){
+            try{
+                Integer id= Integer.parseInt(req.geographicZoneId());
+                if(geographicZoneRepository.findById(id).isPresent())
+                    worker.setGeographicZone(geographicZoneRepository.findById(id).get());
+            }catch (NumberFormatException ignored){}
+        }
 
         if (req.bodyType()    != null) worker.setBodyType(BodyType.valueOf(req.bodyType()));
         if (req.eyeColor()    != null) worker.setEyeColor(EyeColor.valueOf(req.eyeColor()));
@@ -441,7 +448,7 @@ public class AccountController {
 
     public record WorkerProfileUpdateRequest(
             String description,
-            int geographicZoneId,
+            String geographicZoneId,
             String eyeColor,
             String hairColor,
             String phone,
