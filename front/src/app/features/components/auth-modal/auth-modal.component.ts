@@ -81,9 +81,13 @@ export class AuthModalComponent implements OnInit {
         error: (err) => {
           console.error("Erreur reçue du serveur :", err);
 
-          if (err.status === 403) {
+          this.isLoading = false;
+
+          if (err.status === 401) {
             this.errorMsg = "Identifiants ou mot de passe incorrects.";
-          } else {
+          } else if(err.status == 403){
+            this.errorMsg = "Requête interdite.";
+          }else{
             this.errorMsg = "Une erreur est survenue lors de la connexion.";
           }
         }
