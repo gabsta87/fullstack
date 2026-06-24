@@ -54,7 +54,7 @@ export class ProfileManagementComponent implements OnInit {
     this.route.data.subscribe((data) => {
       this.allServices = data['services'] || [];
       this.allLocations = data['locations'] || [];
-      console.log(`locations : ${this.allLocations}`);
+      console.log("locations :",this.allLocations);
     });
     const initialProfile = await firstValueFrom(this.route.data.pipe(map(data => data['profile'])));
 
