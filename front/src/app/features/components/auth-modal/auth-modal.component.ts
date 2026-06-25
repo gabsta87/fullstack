@@ -45,7 +45,7 @@ export class AuthModalComponent implements OnInit {
       }, { validators: this.passwordMatchValidator });
     } else {
       this.authForm = this.fb.group({
-        email: ['', Validators.required, Validators.email],
+        email: ['', [Validators.required, Validators.email]],
         password: ['', Validators.required]
       });
     }
