@@ -13,10 +13,11 @@ import {addIcons} from "ionicons";
 import {addCircleOutline, camera, move, trashOutline} from "ionicons/icons";
 import {AccountSettingsComponent} from "../account-settings/account-settings.component";
 import {GeographicZone} from "../../models/filter.model";
+import {ZoneSelectorComponent} from "../zone-selector/zone-selector.component";
 
 @Component({
   selector: 'app-profile-management',
-  imports: [CommonModule, FormsModule, IonicModule, HeaderComponent, AccountSettingsComponent],
+  imports: [CommonModule, FormsModule, IonicModule, HeaderComponent, AccountSettingsComponent, ZoneSelectorComponent],
   templateUrl: './profile-management.component.html',
   styleUrls: ['./profile-management.component.scss'],
   standalone: true

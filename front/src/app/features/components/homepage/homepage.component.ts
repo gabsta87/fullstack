@@ -33,6 +33,7 @@ import {GalleryFilters, GeographicZone} from "../../models/filter.model";
 import {WorkerService} from "../../services/worker.service";
 import {AuthService} from "../../services/auth.service";
 import {debounceTime, distinctUntilChanged, Subject} from "rxjs";
+import {ZoneSelectorComponent} from "../zone-selector/zone-selector.component";
 
 @Component({
   selector: 'app-homepage',
@@ -42,14 +43,14 @@ import {debounceTime, distinctUntilChanged, Subject} from "rxjs";
   imports: [
     CommonModule, FormsModule, IonContent, IonInfiniteScroll, IonInfiniteScrollContent,
     IonRefresher, IonRefresherContent, HeaderComponent, WorkerCardComponent,
-    IonGrid, IonRow, IonCol, IonItem, IonSelect, IonSelectOption, IonIcon, IonInput, IonButton
+    IonGrid, IonRow, IonCol, IonItem, IonSelect, IonSelectOption, IonIcon, IonInput, IonButton,
+    ZoneSelectorComponent
   ],
 })
 export class HomepageComponent implements OnInit {
 
   @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
 
-  readonly bodyTypesList = BODY_TYPES_LIST;
   readonly BODY_TYPE_LABELS = BODY_TYPE_LABELS;
   readonly EYE_COLOR_LABELS = EYE_COLOR_LABELS;
   readonly HAIR_COLOR_LABELS = HAIR_COLOR_LABELS;
@@ -58,8 +59,8 @@ export class HomepageComponent implements OnInit {
   isLoading = false;
   noMoreData = false;
   currentPage = 0;
-  childZoneId : number = -1;
-  parentZoneId : number = -1;
+  childZoneId : number | undefined = undefined;
+  parentZoneId : number | undefined = undefined;
   private searchSubject = new Subject<string>();
 
   allWorkers: WorkerSimpleProfile[] = [];
@@ -158,9 +159,9 @@ export class HomepageComponent implements OnInit {
     this.isLoading = true;
     const requestFilters = { ...this.filters };
 
-    if (this.childZoneId > -1) {
+    if (this.childZoneId != undefined) {
       requestFilters.zoneId = this.childZoneId;
-    } else if (this.parentZoneId > -1) {
+    } else if (this.parentZoneId != undefined) {
       requestFilters.zoneId = this.parentZoneId;
     }
 
@@ -187,18 +188,6 @@ export class HomepageComponent implements OnInit {
         this.isLoading = false;
       },
     });
-  }
-
-  onParentZoneChange() {
-    // 1. Reset de la sous-localisation précédemment sélectionnée
-    this.childZoneId = -1;
-
-    // 2. Trouver l'objet parent sélectionné pour extraire ses sous-zones rattachées
-    const selectedParent = this.parentZones.find(z => z.id === this.parentZoneId);
-    this.availableChildZones = selectedParent && selectedParent.subZones ? selectedParent.subZones : [];
-
-    // 3. Lancer la recherche automatique
-    this.applyFilters();
   }
 
   onIonInfinite(event: any): void {

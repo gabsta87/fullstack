@@ -1,0 +1,27 @@
+// Mode pour s'intégrer dans les formulaires de comptes (un en dessous de l'autre ou côte à côte sur écran large)
+.form-profile-mode {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  gap: 16px;
+
+  .zone-col {
+    flex: 1;
+    min-width: 200px; // Aligné proprement sur les grilles mobiles
+  }
+}
+
+// Mode horizontal condensé pour la bannière de la Homepage
+.filter-banner-mode {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+
+  .zone-col {
+    flex: 1;
+  }
+}
+
+.disabled-col {
+  opacity: 0.6;
+}

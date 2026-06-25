@@ -4,20 +4,21 @@ import {FormsModule} from '@angular/forms';
 import {IonicModule} from '@ionic/angular';
 import {ClientAccountService} from '../../services/client-account.service';
 import {WorkerService} from '../../services/worker.service';
-import {BODY_TYPE_LABELS, BODY_TYPES_LIST, REGIONS,} from '../../models/items.model';
+import {BODY_TYPE_LABELS, BODY_TYPES_LIST,} from '../../models/items.model';
 import {WorkerCardComponent} from '../worker-card/worker-card.component';
 import {HeaderComponent} from '../header/header.component';
-import {firstValueFrom, Observable} from "rxjs";
+import {Observable} from "rxjs";
 import {ClientPrivateAccount} from "../../models/user.model";
 import {AccountSettingsComponent} from "../account-settings/account-settings.component";
 import {GeographicZone} from "../../models/filter.model";
 import {ActivatedRoute} from "@angular/router";
 import {tap} from "rxjs/operators";
+import {ZoneSelectorComponent} from "../zone-selector/zone-selector.component";
 
 @Component({
   selector: 'app-account',
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, WorkerCardComponent, HeaderComponent, AccountSettingsComponent],
+  imports: [CommonModule, FormsModule, IonicModule, WorkerCardComponent, HeaderComponent, AccountSettingsComponent, ZoneSelectorComponent],
   templateUrl: './account.component.html',
   styleUrls: ['./account.component.scss']
 })
@@ -29,7 +30,7 @@ export class AccountComponent implements OnInit {
   readonly bodyTypesList = BODY_TYPES_LIST;
   readonly bodyTypeLabels = BODY_TYPE_LABELS;
   availableServices: string[] | undefined;
-  selectedZoneId: number = -1;
+  selectedZoneId: number | undefined = undefined;
 
   selectionStates = {
     bodyType: {} as Record<string, boolean>,
@@ -77,7 +78,6 @@ export class AccountComponent implements OnInit {
       user.geographicZone = selectedRegion || null;
     }
 
-    // Lance ton traitement existant (ex: sauvegarde API)
     this.updateLocation();
   }
 

@@ -59,18 +59,12 @@
                 </ion-item>
               </ion-col>
 
-              <ion-col size="12" size-md="6">
-                <ion-item lines="none" class="venus-input">
-                  <ion-label position="stacked">Localisation</ion-label>
-                  <ion-select label="Localisation" label-placement="stacked" interface="popover"
-                              [(ngModel)]="profileForm.geographicZoneId"
-                              (ionChange)="updateProfileField('geographicZoneId', $event.detail.value)"
-                              placeholder="Choisir une ville...">
-                    <ion-select-option *ngFor="let region of allLocations" [value]="region.id">
-                      {{ region.name }}
-                    </ion-select-option>
-                  </ion-select>
-                </ion-item>
+              <ion-col size="12">
+                <app-zone-selector
+                  [zones]="allLocations"
+                  [selectedChildId]="profileForm.geographicZoneId"
+                  (onZoneSelected)="updateProfileField('geographicZoneId', $event.childZoneId)">
+                </app-zone-selector>
               </ion-col>
 
               <ion-col size="12" size-md="6">

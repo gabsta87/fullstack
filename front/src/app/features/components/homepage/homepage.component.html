@@ -9,34 +9,15 @@
     <ion-grid class="ion-no-padding">
       <ion-row class="ion-align-items-center">
 
-        <ion-col size="12" size-sm="3" size-md="3" class="filter-col">
-          <ion-item lines="none" class="filter-input-item">
-            <ion-icon name="location-outline" slot="start" class="filter-icon"></ion-icon>
-            <ion-select aria-label="Zone Supérieure" interface="popover"
-                        [(ngModel)]="parentZoneId"
-                        (ionChange)="onParentZoneChange()"
-                        placeholder="Toutes les régions">
-              <ion-select-option [value]="undefined">Toutes les régions</ion-select-option>
-              <ion-select-option *ngFor="let zone of parentZones" [value]="zone.id">
-                {{ zone.name }}
-              </ion-select-option>
-            </ion-select>
-          </ion-item>
-        </ion-col>
-
-        <ion-col size="12" size-sm="3" size-md="3" class="filter-col">
-          <ion-item lines="none" class="filter-input-item" [disabled]="!parentZoneId">
-            <ion-icon name="business-outline" slot="start" class="filter-icon"></ion-icon>
-            <ion-select aria-label="Zone Inférieure" interface="popover"
-                        [(ngModel)]="childZoneId"
-                        (ionChange)="applyFilters()"
-                        placeholder="Toutes les localisations">
-              <ion-select-option [value]="undefined">Toutes les localisations</ion-select-option>
-              <ion-select-option *ngFor="let subZone of availableChildZones" [value]="subZone.id">
-                {{ subZone.name }}
-              </ion-select-option>
-            </ion-select>
-          </ion-item>
+        <ion-col size="12" size-sm="6" size-md="6" class="filter-col">
+          <app-zone-selector
+            [zones]="parentZones"
+            [selectedChildId]="childZoneId"
+            [allowAllOption]="true"
+            [showIcons]="true"
+            [isFilterBanner]="true"
+            (onZoneSelected)="parentZoneId = $event.parentZoneId; childZoneId = $event.childZoneId; applyFilters()">
+          </app-zone-selector>
         </ion-col>
 
         <ion-col size="12" size-sm="3" size-md="3" class="filter-col">
