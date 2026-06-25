@@ -2,6 +2,8 @@ Manage Users with Spring security
 Manage payments
 
 
+bouton retour depuis profil doit conserver les critères de filtrage
+
 The Password Reset Flow
     From the login page, the user clicks on the ‘Forgot Password’ link.
     The request hits the /forgotPassword route in the SecurityController

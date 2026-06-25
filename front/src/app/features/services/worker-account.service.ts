@@ -35,8 +35,10 @@ export class WorkerAccountService {
         observer.next(this.accountSubject.value);
       }
 
+      const token = localStorage.getItem('auth_token');
+
       // 2 — On ouvre la connexion temps réel pour les futures modifications
-      const eventSource = new EventSource(`${this.base}/stream`, { withCredentials: true });
+      const eventSource = new EventSource(`http://localhost:8080/account/stream?token=${token}`);
 
       eventSource.addEventListener('account-update', (event: MessageEvent) => {
         this.zone.run(() => {

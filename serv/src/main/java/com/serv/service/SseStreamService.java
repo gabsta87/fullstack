@@ -19,6 +19,17 @@ public class SseStreamService {
         // Timeout de 30 minutes
         SseEmitter emitter = new SseEmitter(30 * 60 * 1000L);
 
+        // 🎯 BONUS RECONNEXION : On envoie un premier événement "init" vide
+        // qui configure le délai de reconnexion automatique du navigateur à 5 secondes (5000ms)
+        try {
+            emitter.send(SseEmitter.event()
+                    .name("init")
+                    .reconnectTime(5000L)
+                    .data("Connection established"));
+        } catch (IOException e) {
+            // Si le client s'est déjà déconnecté, on ne fait rien
+        }
+
         // Ajoute l'émetteur à la liste de l'utilisateur
         emitters.computeIfAbsent(userId, k -> new CopyOnWriteArrayList<>()).add(emitter);
 

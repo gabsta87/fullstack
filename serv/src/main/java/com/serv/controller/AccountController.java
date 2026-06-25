@@ -1,34 +1,39 @@
 package com.serv.controller;
 
+import com.serv.common.BodyType;
 import com.serv.common.EyeColor;
 import com.serv.common.HairColor;
 import com.serv.common.Language;
+import com.serv.configuration.JwtProvider;
 import com.serv.database.entities.*;
-import com.serv.common.BodyType;
 import com.serv.database.repositories.*;
 import com.serv.dto.ClientDTO;
 import com.serv.dto.VenusUserDTO;
 import com.serv.dto.WorkerFullProfileDTO;
+import com.serv.service.MediaStorageService;
 import com.serv.service.SseStreamService;
 import com.serv.service.WorkerService;
-import com.serv.service.MediaStorageService;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/account")
-@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost:4200")
 @RequiredArgsConstructor
 public class AccountController {
 
@@ -41,20 +46,29 @@ public class AccountController {
     private final ServiceRepository    serviceRepository;
     private final SseStreamService     sseStreamService;
     private final GeographicZoneRepository geographicZoneRepository;
+    private final JwtProvider          jwtProvider;
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
-    private VenusUser sessionUser(HttpSession session) {
-        return (VenusUser) session.getAttribute("user");
+    private VenusUser jwtUser(Jwt jwt) {
+        if (jwt == null) return null;
+        // 🎯 jwt.getSubject() contient désormais l'email
+        return userRepository.findByEmail(jwt.getSubject()).orElse(null);
     }
 
-    private Worker sessionWorker(HttpSession session) {
-        VenusUser u = sessionUser(session);
+    private Worker jwtWorkerWithPhotos(Jwt jwt) {
+        if (jwt == null) return null;
+        // 🎯 Appel de ta nouvelle méthode optimisée par email
+        return workerRepository.findByEmailWithPhotos(jwt.getSubject()).orElse(null);
+    }
+
+    private Worker jwtWorker(Jwt jwt) {
+        VenusUser u = jwtUser(jwt);
         return (u instanceof Worker w) ? w : null;
     }
 
-    private Client sessionClient(HttpSession session) {
-        VenusUser u = sessionUser(session);
+    private Client jwtClient(Jwt jwt) {
+        VenusUser u = jwtUser(jwt);
         return (u instanceof Client c) ? c : null;
     }
 
@@ -62,8 +76,8 @@ public class AccountController {
 
     @GetMapping("/me")
     @Transactional(readOnly = true)
-    public ResponseEntity<?> getMe(HttpSession session) {
-        VenusUser user = sessionUser(session);
+    public ResponseEntity<?> getMe(@AuthenticationPrincipal Jwt jwt) {
+        VenusUser user = jwtUser(jwt);
         if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         // Utilisez l'id de l'utilisateur pour recharger une instance "fraîche" depuis la base
@@ -91,37 +105,42 @@ public class AccountController {
     }
 
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public ResponseEntity<SseEmitter> stream(HttpSession session) {
-        VenusUser user = (VenusUser) session.getAttribute("user");
+    public SseEmitter stream(@RequestParam("token") String token) {
+        try {
+            // 1. Extraction de l'email contenu dans le sujet du JWT
+            String email = jwtProvider.extractEmail(token);
 
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            // 2. Recherche de l'utilisateur en BDD grâce à cet email
+            VenusUser user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Utilisateur introuvable."));
+
+            // 3. On passe l'UUID technique au SseStreamService pour l'enregistrement du flux
+            return sseStreamService.createStream(user.getId());
+
+        } catch (Exception e) {
+            // 🔥 TRÈS IMPORTANT : Si le token est expiré ou invalide, on renvoie un 401.
+            // Cela va déclencher le bloc "EventSource.CLOSED" côté Angular pour déconnecter proprement l'utilisateur.
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token invalide ou expiré.", e);
         }
-
-        SseEmitter emitter = new SseEmitter();
-
-        return ResponseEntity.ok(emitter);
     }
 
     @PatchMapping("/language")
     @Transactional
-    public ResponseEntity<?> setLanguage(@RequestBody String language, HttpSession session) {
-        VenusUser user = sessionUser(session);
+    public ResponseEntity<?> setLanguage(@RequestBody String language, @AuthenticationPrincipal Jwt jwt) {
+        VenusUser user = jwtUser(jwt);
         if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
-        Language newLanguage;
 
-        try{
-            newLanguage = Language.valueOf(language);
-        }catch (IllegalArgumentException e){
+        Optional<Language> languageOpt = Language.fromRepositoryOrString(language);
+
+        if (languageOpt.isEmpty()) {
             return ResponseEntity.badRequest().body("Invalid language code.");
         }
+        Language newLanguage = languageOpt.get();
 
         user.setLanguage(newLanguage);
         userRepository.save(user);
 
         VenusUser patchedUser = userRepository.save(user);
-
-        session.setAttribute("user", patchedUser);
 
         sseStreamService.emitEvent(patchedUser.getId(), "account-update", VenusUserDTO.from(patchedUser));
 
@@ -135,8 +154,8 @@ public class AccountController {
     @PatchMapping("/data")
     @Transactional
     public ResponseEntity<?> updateSettings(@RequestBody AccountDataRequest req,
-                                            HttpSession session) {
-        VenusUser user = sessionUser(session);
+                                            @AuthenticationPrincipal Jwt jwt) {
+        VenusUser user = jwtUser(jwt);
         if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         if(req.username() != null) user.setUsername(req.username());
@@ -144,8 +163,6 @@ public class AccountController {
         if(req.password() != null) user.setPassword(req.password());
 
         VenusUser patchedUser = userRepository.save(user);
-
-        session.setAttribute("user", patchedUser);
 
         sseStreamService.emitEvent(patchedUser.getId(), "account-update", VenusUserDTO.from(patchedUser));
 
@@ -160,8 +177,9 @@ public class AccountController {
      */
     @GetMapping("/favorites")
     @Transactional(readOnly = true)
-    public ResponseEntity<?> getFavorites(HttpSession session) {
-        Client client = sessionClient(session);
+    public ResponseEntity<?> getFavorites(@AuthenticationPrincipal Jwt jwt) {
+        Client client = jwtClient(jwt);
+
         if (client == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         List<UUID> ids = client.getFavorites().stream().map(Worker::getId).toList();
@@ -171,8 +189,9 @@ public class AccountController {
     /** POST /account/favorites/{workerId} */
     @PostMapping("/favorites/{workerId}")
     @Transactional
-    public ResponseEntity<?> addFavorite(@PathVariable UUID workerId, HttpSession session) {
-        Client client = sessionClient(session);
+    public ResponseEntity<?> addFavorite(@PathVariable UUID workerId, @AuthenticationPrincipal Jwt jwt) {
+        Client client = jwtClient(jwt);
+
         if (client == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         Optional<Worker> foundWorker = workerRepository.findById(workerId);
@@ -181,20 +200,18 @@ public class AccountController {
 
         client.getFavorites().add(foundWorker.get());
         userRepository.save(client);
-        session.setAttribute("user", client);
         return ResponseEntity.ok().build();
     }
 
     /** DELETE /account/favorites/{workerId} */
     @DeleteMapping("/favorites/{workerId}")
     @Transactional
-    public ResponseEntity<?> removeFavorite(@PathVariable UUID workerId, HttpSession session) {
-        Client client = sessionClient(session);
+    public ResponseEntity<?> removeFavorite(@PathVariable UUID workerId, @AuthenticationPrincipal Jwt jwt) {
+        Client client = jwtClient(jwt);
         if (client == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         client.getFavorites().removeIf(w -> w.getId().equals(workerId));
         userRepository.save(client);
-        session.setAttribute("user", client);
         return ResponseEntity.ok().build();
     }
 
@@ -204,14 +221,14 @@ public class AccountController {
     @PatchMapping("/worker/availability")
     @Transactional
     public ResponseEntity<?> setAvailability(@RequestBody Map<String, Boolean> body,
-                                             HttpSession session) {
-        System.out.println("setAvailability: " + body + "");
-        Worker worker = sessionWorker(session);
+                                             @AuthenticationPrincipal Jwt jwt) {
+        System.out.println("setAvailability: " + body);
+        Worker worker = jwtWorker(jwt);
+
         if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         worker.setAvailable(body.getOrDefault("available", false));
         Worker savedWorker = workerRepository.save(worker);
-        session.setAttribute("user", savedWorker);
         WorkerFullProfileDTO dto = WorkerFullProfileDTO.from(savedWorker);
         sseStreamService.emitEvent(worker.getId(), "account-update", dto);
         return ResponseEntity.ok().body(dto);
@@ -221,20 +238,20 @@ public class AccountController {
     @PatchMapping("/worker/profile")
     @Transactional
     public ResponseEntity<?> updateProfile(@RequestBody WorkerProfileUpdateRequest req,
-                                           HttpSession session) {
-        Worker worker = sessionWorker(session);
+                                           @AuthenticationPrincipal Jwt jwt) {
+        Worker worker = jwtWorker(jwt);
         if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         System.out.println("updateProfile: " + req);
 
         if (req.description() != null) worker.setDescription(req.description());
 
-        if (req.geographicZoneId() != null){
-            try{
-                Integer id= Integer.parseInt(req.geographicZoneId());
-                if(geographicZoneRepository.findById(id).isPresent())
-                    worker.setGeographicZone(geographicZoneRepository.findById(id).get());
-            }catch (NumberFormatException ignored){}
+        if (req.geographicZoneId() != null && geographicZoneRepository.findById(req.geographicZoneId()).isPresent()){
+            if (req.geographicZoneId == -1) {
+                worker.setGeographicZone(null);
+            }else{
+                worker.setGeographicZone(geographicZoneRepository.findById(req.geographicZoneId()).get());
+            }
         }
 
         if (req.bodyType()    != null) worker.setBodyType(BodyType.valueOf(req.bodyType()));
@@ -257,7 +274,6 @@ public class AccountController {
         }
 
         Worker savedWorker = workerRepository.save(worker);
-        session.setAttribute("user", savedWorker);
         WorkerFullProfileDTO dto = WorkerFullProfileDTO.from(savedWorker);
         sseStreamService.emitEvent(worker.getId(), "account-update", dto);
         return ResponseEntity.ok().body(dto);
@@ -265,21 +281,22 @@ public class AccountController {
 
     @Transactional
     @PatchMapping("/worker/updateservices")
-    public ResponseEntity<?> updateServices(@RequestBody List<String> services, HttpSession session) {
-        Worker worker = workerRepository.findByIdWithPhotos(sessionWorker(session).getId()).orElse(null);
+    public ResponseEntity<?> updateServices(@RequestBody List<String> services, @AuthenticationPrincipal Jwt jwt) {
+
+        Worker worker = jwtWorkerWithPhotos(jwt);
 
         if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
-        List<Service> serviceList = services.stream().map(serviceRepository::findByName).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+        List<Service> serviceList = services.stream()
+                .map(serviceRepository::findByName)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
 
         worker.setServices(serviceList);
-
         Worker savedWorker = workerRepository.save(worker);
 
-        session.setAttribute("user", savedWorker);
-
         WorkerFullProfileDTO dto = WorkerFullProfileDTO.from(savedWorker);
-
         sseStreamService.emitEvent(worker.getId(), "account-update", dto);
 
         return ResponseEntity.ok(dto);
@@ -293,16 +310,11 @@ public class AccountController {
     @Transactional
     public ResponseEntity<?> uploadPhoto(@RequestParam("file") MultipartFile file,
                                          @RequestParam(value = "title", required = false) String title,
-                                         HttpSession session) {
+                                         @AuthenticationPrincipal Jwt jwt) {
 
-        Worker sessionWorker = sessionWorker(session);
-        if (sessionWorker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
-
-        Optional<Worker> workerOpt = workerRepository.findByIdWithPhotos(sessionWorker.getId());
-        if (workerOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Worker not found.");
-        }
-        Worker worker = workerOpt.get();
+        // 🚀 Optimisé & Correction des bugs de variable :
+        Worker worker = jwtWorkerWithPhotos(jwt);
+        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         System.out.println("Saving photo for worker " + worker.getId() + " with title:" + file.getOriginalFilename());
 
@@ -320,20 +332,16 @@ public class AccountController {
 
             if (worker.getMainPhoto() == null) {
                 worker.setMainPhoto(photo);
-                session.setAttribute("user", worker);
             }
-
 
             worker.addPhoto(photo);
             photoRepository.save(photo);
-            workerRepository.save(worker);
 
-            session.setAttribute("user", worker);
+            // On sauvegarde l'état du worker mis à jour
+            Worker savedWorker = workerRepository.save(worker);
 
-            Worker savedWorker = workerRepository.findByIdWithPhotos(worker.getId())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker introuvable"));
-
-            sseStreamService.emitEvent(worker.getId(), "account-update", WorkerFullProfileDTO.from(savedWorker));
+            // Plus besoin de refaire un findByIdWithPhotos ici, l'entité est déjà à jour dans la session Hibernate
+            sseStreamService.emitEvent(savedWorker.getId(), "account-update", WorkerFullProfileDTO.from(savedWorker));
 
             return ResponseEntity.ok(Map.of(
                     "id",              photo.getId().toString(),
@@ -351,23 +359,19 @@ public class AccountController {
      */
     @DeleteMapping("/worker/photos/{photoId}")
     @Transactional
-    public ResponseEntity<?> deletePhoto(@PathVariable UUID photoId, HttpSession session) {
-        Worker sessionWorker = sessionWorker(session);
-        if (sessionWorker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
+    public ResponseEntity<?> deletePhoto(@PathVariable UUID photoId, @AuthenticationPrincipal Jwt jwt) {
+        // 🚀 Optimisé & Correction du bug sessionWorker :
+        Worker worker = jwtWorkerWithPhotos(jwt);
+        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
         if (photoId == null) return ResponseEntity.badRequest().body("No file provided.");
 
-        Optional<Worker> workerOpt = workerRepository.findByIdWithPhotos(sessionWorker.getId());
-        if (workerOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Worker not found.");
-        }
-        Worker worker = workerOpt.get();
         System.out.println("Deleting photo " + photoId + " for worker " + worker.getId());
 
         Photo photo = photoRepository.findById(photoId).orElse(null);
         if (photo == null || !photo.getWorker().getId().equals(worker.getId()))
             return ResponseEntity.notFound().build();
 
-        // 1 — Suppression des fichiers physiques sur le disque (Original + Thumbs)
+        // 1 — Suppression des fichiers physiques sur le disque
         mediaStorageService.deletePhotoFiles(
                 worker.getId(),
                 photo.getOriginalUrl(),
@@ -388,14 +392,10 @@ public class AccountController {
 
         // 3 — Suppression en base de données (déclenché par l'orphanRemoval = true)
         worker.removePhoto(photo);
-        workerRepository.save(worker);
+        Worker savedWorker = workerRepository.save(worker);
 
-        session.setAttribute("user", worker);
-
-        Worker savedWorker = workerRepository.findByIdWithPhotos(worker.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker introuvable"));
-
-        sseStreamService.emitEvent(worker.getId(), "account-update", WorkerFullProfileDTO.from(savedWorker));
+        // Émission du profil mis à jour
+        sseStreamService.emitEvent(savedWorker.getId(), "account-update", WorkerFullProfileDTO.from(savedWorker));
 
         return ResponseEntity.ok().build();
     }
@@ -406,8 +406,8 @@ public class AccountController {
      */
     @PatchMapping("/worker/photos/{photoId}/main")
     @Transactional
-    public ResponseEntity<?> setMainPhoto(@PathVariable UUID photoId, HttpSession session) {
-        Worker worker = sessionWorker(session);
+    public ResponseEntity<?> setMainPhoto(@PathVariable UUID photoId, @AuthenticationPrincipal Jwt jwt) {
+        Worker worker = jwtWorker(jwt);
         if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         Photo photo = photoRepository.findById(photoId).orElse(null);
@@ -416,7 +416,6 @@ public class AccountController {
 
         worker.setMainPhoto(photo);
         Worker savedWorker = workerRepository.save(worker);
-        session.setAttribute("user", savedWorker);
 
         sseStreamService.emitEvent(worker.getId(), "account-update", WorkerFullProfileDTO.from(savedWorker));
 
@@ -430,8 +429,8 @@ public class AccountController {
     @PatchMapping("/worker/photos/reorder")
     @Transactional
     public ResponseEntity<?> reorderPhotos(@RequestBody List<String> orderedIds,
-                                           HttpSession session) {
-        Worker worker = sessionWorker(session);
+                                           @AuthenticationPrincipal Jwt jwt) {
+        Worker worker = jwtWorker(jwt);
         if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         for (int i = 0; i < orderedIds.size(); i++) {
@@ -448,7 +447,7 @@ public class AccountController {
 
     public record WorkerProfileUpdateRequest(
             String description,
-            String geographicZoneId,
+            Integer geographicZoneId,
             String eyeColor,
             String hairColor,
             String phone,

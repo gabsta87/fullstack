@@ -21,5 +21,8 @@ public interface WorkerRepository extends JpaRepository<Worker, UUID>, JpaSpecif
     @Query("SELECT w FROM Worker w LEFT JOIN FETCH w.photos WHERE w.id = :id")
     Optional<Worker> findByIdWithPhotos(@Param("id") UUID id);
 
+    @Query("SELECT w FROM Worker w LEFT JOIN FETCH w.photos WHERE w.email = :email")
+    Optional<Worker> findByEmailWithPhotos(@Param("email") String email);
+
     List<Worker> findByServicesId(Integer serviceId);
 }

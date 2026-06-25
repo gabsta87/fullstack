@@ -47,10 +47,10 @@
             <ion-list lines="none">
               <ion-item class="venus-item">
                 <ion-label position="stacked">Région favorite</ion-label>
-                <ion-select [(ngModel)]="user.geographicZone.id" (ionChange)="updateLocation()"
+                <ion-select [(ngModel)]="selectedZoneId" (ionChange)="onZoneChange($event, user)"
                             interface="popover" placeholder="Toutes les régions">
                   <ion-select-option [value]="-1">Toutes les régions</ion-select-option>
-                  <ion-select-option *ngFor="let r of regions" [value]="r.id">{{r.name}}</ion-select-option>
+                  <ion-select-option *ngFor="let r of locations" [value]="r.id">{{r.name}}</ion-select-option>
                 </ion-select>
               </ion-item>
 

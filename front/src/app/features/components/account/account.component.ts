@@ -11,6 +11,8 @@ import {firstValueFrom, Observable} from "rxjs";
 import {ClientPrivateAccount} from "../../models/user.model";
 import {AccountSettingsComponent} from "../account-settings/account-settings.component";
 import {GeographicZone} from "../../models/filter.model";
+import {ActivatedRoute} from "@angular/router";
+import {tap} from "rxjs/operators";
 
 @Component({
   selector: 'app-account',
@@ -23,10 +25,11 @@ export class AccountComponent implements OnInit {
   currentUser$: Observable<ClientPrivateAccount>;
   activeTab: 'favorites' | 'settings' | 'account' = 'favorites';
 
-  regions!:GeographicZone[] ;
+  locations!:GeographicZone[] ;
   readonly bodyTypesList = BODY_TYPES_LIST;
   readonly bodyTypeLabels = BODY_TYPE_LABELS;
   availableServices: string[] | undefined;
+  selectedZoneId: number = -1;
 
   selectionStates = {
     bodyType: {} as Record<string, boolean>,
@@ -36,13 +39,22 @@ export class AccountComponent implements OnInit {
   constructor(
     private accountService: ClientAccountService,
     private workerService: WorkerService,
+    private route : ActivatedRoute,
   ) {
-    this.currentUser$ = this.accountService.getCurrentAccount();
+    this.currentUser$ = this.accountService.getCurrentAccount().pipe(
+      tap(user => {
+        if (user) {
+          this.selectedZoneId = user.geographicZone ? user.geographicZone.id : -1;
+        }
+      })
+    );
   }
 
   async ngOnInit(): Promise<void> {
-    this.availableServices = await firstValueFrom(this.workerService.getWorkersServices());
-    this.regions = await this.workerService.getGeographicZones();
+    this.route.data.subscribe((data) => {
+      this.availableServices = data['services'] || [];
+      this.locations = data['locations'] || [];
+    });
   }
 
   setTab(tab: 'account' | 'favorites' | 'settings') {
@@ -52,6 +64,21 @@ export class AccountComponent implements OnInit {
   updateLocation() {
     // this.accountService.updateSettings();
     console.log("TODO: update location");
+  }
+
+  onZoneChange(event: any, user: ClientPrivateAccount) {
+    const value = event.detail.value;
+    this.selectedZoneId = value;
+
+    if (value === -1) {
+      user.geographicZone = null;
+    } else {
+      const selectedRegion = this.locations.find(r => r.id === value);
+      user.geographicZone = selectedRegion || null;
+    }
+
+    // Lance ton traitement existant (ex: sauvegarde API)
+    this.updateLocation();
   }
 
   async handleSettingsSave(event: any) {

@@ -1,17 +1,23 @@
-import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, map, Observable, of, throwError} from 'rxjs';
-import {Injectable, NgZone} from '@angular/core';
-import {catchError, tap} from 'rxjs/operators';
-import {environment} from "../../../environments/environment";
-import {BaseUser} from "../models/user.model";
-import {Router} from "@angular/router";
-import {ClientAccountService} from "./client-account.service";
-import {WorkerAccountService} from "./worker-account.service";
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, map, Observable, of, throwError } from 'rxjs';
+import { Injectable, NgZone } from '@angular/core';
+import { catchError, tap } from 'rxjs/operators';
+import { environment } from "../../../environments/environment";
+import { BaseUser } from "../models/user.model";
+import { Router } from "@angular/router";
+import { ClientAccountService } from "./client-account.service";
+import { WorkerAccountService } from "./worker-account.service";
+
+// Interface locale pour correspondre au format du backend Spring Boot
+interface LoginResponse {
+  token: string;
+  user: BaseUser;
+}
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private baseUrl = `${environment.apiBase}/auth`;
-  private accountUrl = `${environment.apiBase}/account`; // Url vers les streams
+  private accountUrl = `${environment.apiBase}/account`;
   private sessionCache: { value: boolean; expires: number } | null = null;
   private redirectUrl = '';
   private currentAccount : BaseUser | null = null;
@@ -19,7 +25,6 @@ export class AuthService {
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
-  // Instance unique du flux SSE pour l'authentification
   private eventSource: EventSource | null = null;
 
   constructor(
@@ -30,17 +35,23 @@ export class AuthService {
     private zone: NgZone
   ) {}
 
-  login(pseudo: string, password: string): Observable<BaseUser> {
+  login(email: string, password: string): Observable<BaseUser> {
     this.setRedirectUrl("");
-    return this.http.post<BaseUser>(`${this.baseUrl}/login`, { pseudo, password }, { withCredentials: true }).pipe(
-      tap((user) => {
-        this.currentAccount = user;
+
+    return this.http.post<LoginResponse>(`${this.baseUrl}/login`, { email, password }).pipe(
+      tap((response) => {
+        localStorage.setItem('auth_token', response.token);
+
+        this.currentAccount = response.user;
         this.isAuthenticatedSubject.next(true);
+
         setTimeout(() => {
-          console.log("Démarrage du flux SSE après enregistrement du cookie...");
+          console.log("Démarrage du flux SSE avec le Token JWT...");
           this.establishRealTimeStream();
         }, 200);
-      })
+      }),
+      // On extrait uniquement le 'user' pour que la méthode continue de renvoyer un Observable<BaseUser>
+      map(response => response.user)
     );
   }
 
@@ -49,28 +60,27 @@ export class AuthService {
       return of(this.sessionCache.value);
     }
 
-    // On attend un retour vide <void>
-    return this.http.get<void>(`${this.baseUrl}/session-check`, { withCredentials: true }).pipe(
-      map(() => true),
-      tap(() => {
-        console.log("Session active");
-        this.isAuthenticatedSubject.next(true);
-        this.sessionCache = { value: true, expires: Date.now() + 60_000 };
+    return this.http.get<BaseUser>(`${this.baseUrl}/session-check`).pipe(
+      tap((user) => {
+        console.log("Token JWT valide. Session et profil restaurés !");
 
+        this.currentAccount = user;
+        this.isAuthenticatedSubject.next(true);
+
+        this.sessionCache = { value: true, expires: Date.now() + 60_000 };
         this.establishRealTimeStream();
       }),
+      map(() => true),
       catchError((error) => {
+        console.warn("Session expirée ou Token invalide.");
         this.handleLocalLogout();
-        if (error.status === 401) {
-          return of(false); // 🎯 Si le serveur répond 401, on renvoie 'false' proprement
-        }
-        return throwError(() => error);
+        return of(false);
       })
     );
   }
 
   logout(): Observable<any> {
-    return this.http.post(`${this.baseUrl}/logout`, {}, { withCredentials: true }).pipe(
+    return this.http.post(`${this.baseUrl}/logout`, {}).pipe(
       tap(() => {
         this.handleLocalLogout();
       }),
@@ -81,16 +91,16 @@ export class AuthService {
     );
   }
 
-  /**
-   * Initialise la connexion SSE pour suivre l'état de la session
-   */
   private establishRealTimeStream() {
     if (this.eventSource) return;
+    console.log(`Establishing connection to ${this.accountUrl}/stream`);
 
-    console.log(`establishing connexion to ${this.accountUrl}/stream`)
-    this.eventSource = new EventSource(`${this.accountUrl}/stream`, { withCredentials: true });
+    const token = localStorage.getItem('auth_token');
 
-    // ✅ CAS 1 : Le serveur valide explicitement que la session est morte
+    // 1. Création du flux
+    this.eventSource = new EventSource(`${this.accountUrl}/stream?token=${token}`);
+
+    // 2. Écoute de l'événement custom de déconnexion forcée par le serveur
     this.eventSource.addEventListener('session-expired', (event: MessageEvent) => {
       this.zone.run(() => {
         console.warn("Session invalidée à distance par le serveur :", event.data);
@@ -99,24 +109,55 @@ export class AuthService {
       });
     });
 
-    // ✅ CAS 2 : Simple coupure réseau (ex: tunnel, mise en arrière-plan)
+    // 🎯 3. GESTION DES INTERRUPTIONS ET ERREURS
     this.eventSource.onerror = (error) => {
-      // On laisse le navigateur tenter de se reconnecter tout seul en tâche de fond.
-      console.warn("Flux SSE interrompu temporairement. Reconnexion automatique en cours...");
+      this.zone.run(() => {
+        console.error("Le flux SSE a rencontré une erreur ou a été interrompu.");
+
+        // Cas A : Le navigateur a abandonné (readyState = CLOSED)
+        // Souvent parce que le serveur a renvoyé un 401 (Token expiré)
+        if (this.eventSource?.readyState === EventSource.CLOSED) {
+          console.warn("Flux définitivement fermé par le serveur. Tentative de ré-authentification...");
+
+          this.closeStream(); // On nettoie l'ancien flux défectueux
+
+          // On appelle notre checkSession() solidifié :
+          // Si le token est encore bon, il va recréer un flux tout propre.
+          // Si le token est expiré, il va déconnecter proprement l'utilisateur.
+          this.checkSession().subscribe();
+        }
+
+          // Cas B : Le readyState est CONNECTING.
+          // C'est une simple coupure réseau (Wi-Fi, 4G).
+        // On ne fait RIEN : le navigateur est déjà en train de tenter de se reconnecter tout seul.
+        else if (this.eventSource?.readyState === EventSource.CONNECTING) {
+          console.log("Tentative de reconnexion automatique par le navigateur (problème réseau)...");
+        }
+      });
     };
   }
 
-  /**
-   * Centralise le nettoyage local lors d'une déconnexion (manuelle ou forcée)
-   */
+// 🎯 Petite méthode utilitaire indispensable pour nettoyer proprement
+  public closeStream() {
+    if (this.eventSource) {
+      this.eventSource.close();
+      this.eventSource = null;
+      console.log("Flux SSE fermé proprement.");
+    }
+  }
+
   private handleLocalLogout() {
     if (this.eventSource) {
       this.eventSource.close();
       this.eventSource = null;
     }
+
+    localStorage.removeItem('auth_token');
+
     this.isAuthenticatedSubject.next(false);
     this.sessionCache = null;
     this.currentAccount = null;
+    this.closeStream()
 
     this.workerService.clearCache();
     this.clientService.clearCache();

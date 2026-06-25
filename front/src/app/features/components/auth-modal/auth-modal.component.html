@@ -10,20 +10,14 @@
 <ion-content class="ion-padding">
   <form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="auth-form">
 
-    <!-- Role Selector (uniquement pour Register) -->
     <div class="role-toggle" *ngIf="mode === 'register'">
       <button type="button" [class.active]="authForm.get('role')?.value === 'client'" (click)="authForm.patchValue({role:'client'})">Client</button>
       <button type="button" [class.active]="authForm.get('role')?.value === 'worker'" (click)="authForm.patchValue({role:'worker'})">Annonceur</button>
     </div>
 
     <div class="field-group">
-      <label>Nom d'utilisateur</label>
-      <input type="text" #input formControlName="username" placeholder="Votre pseudo" />
-    </div>
-
-    <div class="field-group" *ngIf="mode === 'register'">
       <label>Email</label>
-      <input type="email" formControlName="email" placeholder="email@exemple.com" />
+      <input type="email" #input formControlName="email" placeholder="email@exemple.com" />
     </div>
 
     <div class="field-group">

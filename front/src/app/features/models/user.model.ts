@@ -5,7 +5,7 @@ export interface BaseUser {
   id: string;
   username: string;
   role: 'WORKER' | 'CLIENT' | 'ADMIN';
-  geographicZone: GeographicZone;
+  geographicZone: GeographicZone | null;
 }
 
 // PRIVATE DATA

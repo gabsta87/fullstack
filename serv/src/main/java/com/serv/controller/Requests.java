@@ -1,25 +1,13 @@
 package com.serv.controller;
 
-import lombok.Data;
+import com.serv.dto.VenusUserDTO;
 
 public class Requests {
 
-    @Data
-    public static class RegisterRequest {
-        private String username;
-        private String email;
-        private String password;
-    }
+    public record RegisterRequest(String email, String password) { }
 
-    @Data
-    public static class LoginRequest {
-        private String pseudo;
-        private String password;
-        private String redirectTo;
-    }
+    public record ForgotPasswordRequest (String email) { }
 
-    @Data
-    public static class ForgotPasswordRequest {
-        private String email;
-    }
+    public record LoginRequest(String email, String password) { }
+    public record LoginResponse(String token, VenusUserDTO user) { }
 }

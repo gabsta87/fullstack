@@ -38,15 +38,14 @@ export class AuthModalComponent implements OnInit {
   initForm() {
     if (this.mode === 'register') {
       this.authForm = this.fb.group({
-        username: ['', [Validators.required, Validators.minLength(3)]],
         email: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required, Validators.minLength(6)]],
         confirmPassword: ['', [Validators.required]],
-        role: ['worker']
+        role: ['client']
       }, { validators: this.passwordMatchValidator });
     } else {
       this.authForm = this.fb.group({
-        username: ['', Validators.required],
+        email: ['', Validators.required, Validators.email],
         password: ['', Validators.required]
       });
     }
@@ -69,10 +68,10 @@ export class AuthModalComponent implements OnInit {
     this.isLoading = true;
     this.errorMsg = '';
 
-    const { username, password, email, role } = this.authForm.value;
+    const { password, email, role } = this.authForm.value;
 
     if (this.mode === 'login') {
-      this.authService.login(username, password).subscribe({
+      this.authService.login(email, password).subscribe({
         next: (user) => {
           console.log("Connexion réussie !", user);
           this.isLoading = false;
@@ -94,11 +93,11 @@ export class AuthModalComponent implements OnInit {
       });
     } else {
       const call = role === 'worker'
-        ? this.registerService.registerWorker(username, email, password)
-        : this.registerService.registerClient(username, email, password);
+        ? this.registerService.registerWorker(email, password)
+        : this.registerService.registerClient(email, password);
 
       call.subscribe({
-        next: () => this.authService.login(username, password).subscribe(() => this.handleSuccess()),
+        next: () => this.authService.login(email, password).subscribe(() => this.handleSuccess()),
         error: (err) => this.handleError(err)
       });
     }

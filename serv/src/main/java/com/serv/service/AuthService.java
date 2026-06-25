@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class AuthService implements UserDetailsService {
+public class AuthService implements UserDetailsService{
 
     @Autowired
     private UserRepository userRepository;
@@ -26,21 +26,25 @@ public class AuthService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-    public UserDetails loadUserByUsername(String username) {
-        Optional<VenusUser> user = userRepository.findByUsername(username);
-        if(user.isPresent()) {
-            var venusUser = user.get();
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<VenusUser> userOpt = userRepository.findByEmail(email);
+
+        if (userOpt.isPresent()) {
+            VenusUser venusUser = userOpt.get();
+
             return User.builder()
-                    .username(venusUser.getUsername())
+                    .username(venusUser.getEmail().getValue())
                     .password(venusUser.getPasswordHash())
+                    .authorities("ROLE_" + venusUser.getRole().name())
                     .build();
-        }else{
-            throw new UsernameNotFoundException(username +" not found");
+        } else {
+            throw new UsernameNotFoundException("User with email " + email + " not found");
         }
     }
 
-    public VenusUser verifyCredentials(String username, String password){
-        Optional<VenusUser> user = userRepository.findByUsername(username);
+    public VenusUser verifyCredentials(String email, String password){
+        Optional<VenusUser> user = userRepository.findByEmail(email);
 
         if(user.isPresent() && user.get().checkPassword(password)){
             if(user.get().getRole() == UserRole.WORKER)
