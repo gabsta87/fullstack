@@ -34,6 +34,11 @@ public class WorkerService {
 
         System.out.println("Applying " + filters.size() + " filters : " + filters);
 
+        if(page < 0){
+            page = 0;
+            System.out.println("Page " + page+" corrected to 0");
+        }
+
         // 1. On prépare la base : Uniquement les profils non désactivés + les filtres dynamiques
         Specification<Worker> spec = Specification
                 .where(WorkerSpecifications.isNotDisabled())
@@ -164,13 +169,7 @@ public class WorkerService {
         };
     }
 
-    public static int calculateAge(java.util.Date birthday) {
-        if (birthday == null) return 0;
-        java.time.LocalDate birthDate = (birthday instanceof java.sql.Date sqlDate)
-                ? sqlDate.toLocalDate()
-                : birthday.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-        return java.time.Period.between(birthDate, java.time.LocalDate.now()).getYears();
-    }
+
 
     /**
      * Returns gallery DTOs for a specific list of worker IDs.

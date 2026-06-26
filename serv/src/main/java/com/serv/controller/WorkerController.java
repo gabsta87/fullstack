@@ -1,20 +1,21 @@
 package com.serv.controller;
 
+import com.serv.common.Requests;
 import com.serv.database.entities.Service;
-import com.serv.database.entities.VenusUser;
 import com.serv.database.repositories.GeographicZoneRepository;
 import com.serv.database.repositories.ServiceRepository;
-import com.serv.dto.GeographicZoneDTO;
-import com.serv.dto.WorkerMinimalProfileDTO;
-import com.serv.dto.WorkerFullProfileDTO;
 import com.serv.database.repositories.WorkerRepository;
+import com.serv.dto.GeographicZoneDTO;
+import com.serv.dto.WorkerFullProfileDTO;
+import com.serv.dto.WorkerMinimalProfileDTO;
 import com.serv.service.WorkerService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,24 +39,24 @@ public class WorkerController {
     @Autowired private GeographicZoneRepository zoneRepository;
 
     @GetMapping
-    public ResponseEntity<List<WorkerMinimalProfileDTO>> getGallery(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(required = false) Integer zoneId,
-            @RequestParam(required = false) String username,
-            @RequestParam(required = false) String bodyType,
-            @RequestParam(required = false) List<String> services,
-            @RequestParam(required = false) String eyeColor,
-            @RequestParam(required = false) String hairColor) {
-
+    public ResponseEntity<List<WorkerMinimalProfileDTO>> getGallery(Requests.WorkerSearchRequest req) {
         Map<String, Object> allFilters = new HashMap<>();
-        if (zoneId != null) allFilters.put("zoneId", zoneId);
-        if (username != null) allFilters.put("username", username);
-        if (bodyType != null) allFilters.put("bodyType", bodyType);
-        if (services != null) allFilters.put("services", services);
-        if (eyeColor != null) allFilters.put("eyeColor", eyeColor);
-        if (hairColor != null) allFilters.put("hairColor", hairColor);
 
-        return ResponseEntity.ok(galleryService.getGalleryPage(page, allFilters));
+        if (req.zoneId() != null && !req.zoneId().isBlank() && !req.zoneId().equalsIgnoreCase("undefined")) {
+            try {
+                Integer parsedZoneId = Integer.parseInt(req.zoneId());
+                allFilters.put("zoneId", parsedZoneId);
+            } catch (NumberFormatException ignored) {}
+        }
+
+        // Liaison des autres filtres s'ils sont fournis
+        if (req.username() != null && !req.username().isBlank()) allFilters.put("username", req.username());
+        if (req.bodyType() != null && !req.bodyType().isBlank()) allFilters.put("bodyType", req.bodyType());
+        if (req.services() != null && !req.services().isEmpty()) allFilters.put("services", req.services());
+        if (req.eyeColor() != null && !req.eyeColor().isBlank()) allFilters.put("eyeColor", req.eyeColor());
+        if (req.hairColor() != null && !req.hairColor().isBlank()) allFilters.put("hairColor", req.hairColor());
+
+        return ResponseEntity.ok(galleryService.getGalleryPage(req.getPageOrZero(), allFilters));
     }
 
     @GetMapping("/{id}")

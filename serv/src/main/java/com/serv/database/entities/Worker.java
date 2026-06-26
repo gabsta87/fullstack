@@ -7,6 +7,8 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.hibernate.annotations.BatchSize;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -77,8 +79,8 @@ public class Worker extends VenusUser {
 
     // Date stored as DATE only (no time component)
     @Temporal(TemporalType.DATE)
-    @Column(name = "birthday")
-    private Date birthday;
+    @Column(name = "birthdate")
+    private Date birthdate;
 
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -119,6 +121,10 @@ public class Worker extends VenusUser {
                 : Instant.now();
         this.subscriptionExpiresAt = base.plus(days, java.time.temporal.ChronoUnit.DAYS);
         this.expired = getSubscriptionDaysLeft() <= 0;
+    }
+
+    public void parseBirthdate(String birthdate) throws ParseException {
+        this.birthdate = DateFormat.getDateInstance().parse(birthdate);
     }
 
     public void addPhoto(Photo photo) {

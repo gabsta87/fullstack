@@ -59,4 +59,5 @@ export interface WorkerProfileUpdate {
   hairColor?: string;
   phone?: string;
   mainPhotoId?: string;
+  birthdate?: string;
 }

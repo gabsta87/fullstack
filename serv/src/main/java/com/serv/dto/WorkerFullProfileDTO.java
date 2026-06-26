@@ -12,12 +12,12 @@ import java.util.UUID;
 public record WorkerFullProfileDTO(
         UUID         id,
         String       username,
-        int          age,
+        String       birthdate,
         GeographicZoneDTO geographicZone,
         String       bodyType,
         String       role,
         List<String> services,
-        boolean      available,
+        Boolean      available,
         String       phone,
         String       description,
         String       mainThumbUrl,
@@ -31,7 +31,7 @@ public record WorkerFullProfileDTO(
         return new WorkerFullProfileDTO(
                 w.getId(),
                 w.getUsername(),
-                calculateAge(w.getBirthday()),
+                w.getBirthdate().toString(),
                 GeographicZoneDTO.from(w.getGeographicZone()),
                 w.getBodyType() != null ? w.getBodyType().name() : null,
                 w.getRole().name(),
@@ -45,24 +45,6 @@ public record WorkerFullProfileDTO(
                         .toList(),
                 List.of()     // TODO: videos when Video entity is enabled
         );
-    }
-
-    private static int calculateAge(java.util.Date birthday) {
-        if (birthday == null) return 0;
-
-        LocalDate birthDate;
-
-        // java.sql.Date has toLocalDate() which works correctly.
-        // java.util.Date must go through Calendar instead.
-        if (birthday instanceof java.sql.Date sqlDate) {
-            birthDate = sqlDate.toLocalDate();
-        } else {
-            birthDate = birthday.toInstant()
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDate();
-        }
-
-        return Period.between(birthDate, LocalDate.now()).getYears();
     }
 
     public record VideoDTO(String id, String url, String duration) {}

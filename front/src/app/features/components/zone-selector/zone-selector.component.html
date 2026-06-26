@@ -9,7 +9,7 @@
                   [(ngModel)]="parentZoneId"
                   (ionChange)="onParentChange()"
                   [placeholder]="parentPlaceholder">
-        <ion-select-option *ngIf="allowAllOption" [value]="undefined">{{ allParentsLabel }}</ion-select-option>
+        <ion-select-option *ngIf="allowAllOption" [value]="null">{{ allParentsLabel }}</ion-select-option>
         <ion-select-option *ngFor="let zone of zones" [value]="zone.id">
           {{ zone.name }}
         </ion-select-option>
@@ -26,7 +26,7 @@
                   [(ngModel)]="childZoneId"
                   (ionChange)="onChildChange()"
                   [placeholder]="childPlaceholder">
-        <ion-select-option *ngIf="allowAllOption" [value]="undefined">{{ allChildrenLabel }}</ion-select-option>
+        <ion-select-option *ngIf="allowAllOption" [value]="null">{{ allChildrenLabel }}</ion-select-option>
         <ion-select-option *ngFor="let subZone of availableChildZones" [value]="subZone.id">
           {{ subZone.name }}
         </ion-select-option>
