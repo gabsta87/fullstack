@@ -31,7 +31,7 @@ public record WorkerFullProfileDTO(
         return new WorkerFullProfileDTO(
                 w.getId(),
                 w.getUsername(),
-                w.getBirthdate().toString(),
+                w.getBirthdate() != null ? w.getBirthdate().toString() : null,
                 GeographicZoneDTO.from(w.getGeographicZone()),
                 w.getBodyType() != null ? w.getBodyType().name() : null,
                 w.getRole().name(),
