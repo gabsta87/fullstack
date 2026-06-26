@@ -4,13 +4,13 @@ import {IonicModule, ItemReorderEventDetail} from "@ionic/angular";
 import {FormsModule} from "@angular/forms";
 import {HeaderComponent} from "../header/header.component";
 import {firstValueFrom, map, Observable} from "rxjs";
-import {BODY_TYPE_LABELS, PhotoItem, EYE_COLOR_LABELS, HAIR_COLOR_LABELS, REGIONS} from "../../models/items.model";
+import {BODY_TYPE_LABELS, EYE_COLOR_LABELS, HAIR_COLOR_LABELS, PhotoItem} from "../../models/items.model";
 import {ActivatedRoute} from "@angular/router";
 import {WorkerFullProfile, WorkerPrivateAccount, WorkerProfileUpdate} from "../../models/user.model";
 import {WorkerAccountService} from "../../services/worker-account.service";
 import {tap} from "rxjs/operators";
 import {addIcons} from "ionicons";
-import {addCircleOutline, camera, move, trashOutline} from "ionicons/icons";
+import { warningOutline, addCircleOutline, trashOutline, move, camera } from 'ionicons/icons';
 import {AccountSettingsComponent} from "../account-settings/account-settings.component";
 import {GeographicZone} from "../../models/filter.model";
 import {ZoneSelectorComponent} from "../zone-selector/zone-selector.component";
@@ -46,35 +46,70 @@ export class ProfileManagementComponent implements OnInit {
 
   constructor(private accountService: WorkerAccountService, private route : ActivatedRoute) {
     addIcons({
-      addCircleOutline,trashOutline,move, camera
+      addCircleOutline,trashOutline,move, camera, warningOutline
     });
   }
 
   async ngOnInit(): Promise<void> {
-
     this.route.data.subscribe((data) => {
       this.allServices = data['services'] || [];
       this.allLocations = data['locations'] || [];
-      console.log("locations :",this.allLocations);
     });
-    const initialProfile = await firstValueFrom(this.route.data.pipe(map(data => data['profile'])));
-
-    if (initialProfile) {
-      this.profileForm = {
-        bodyType: initialProfile.bodyType,
-        geographicZoneId: initialProfile.geographicZoneId,
-        description: initialProfile.description
-      };
-    }
-
-    // Écouter le flux SSE temps réel pour les futures mises à jour (ex: photos)
+    // if (initialProfile) {
+    //   this.profileForm = {
+    //     bodyType: initialProfile.bodyType,
+    //     geographicZoneId: initialProfile.geographicZoneId,
+    //     description: initialProfile.description
+    //   };
+    // }
+    // 🎯 On synchronise localement le formulaire à chaque mise à jour SSE
     this.currentUser$ = this.accountService.listenToMyAccount().pipe(
       tap(user => {
-        if (user && user.photos) {
-          this.photos = user.photos;
+        if (user) {
+          this.photos = user.photos || [];
+
+          // Permet de garder les inputs à jour même si modifiés depuis un autre appareil/onglet
+          this.profileForm = {
+            bodyType: user.bodyType,
+            geographicZoneId: user.geographicZone?.id,
+            description: user.description,
+            phone: user.phone,
+            birthdate: user.birthdate
+          };
         }
       })
     );
+  }
+
+  isFieldMissing(field: string, me: any): boolean {
+    if (!me) return false;
+    switch (field) {
+      case 'username': return !me.username || me.username.trim() === '';
+      case 'email': return !me.email || me.email.trim() === '';
+      case 'description': return !me.description || me.description.trim() === '';
+      case 'geographicZoneId': return !me.geographicZoneId;
+      case 'phone': return !me.phone || me.phone.trim() === '';
+      case 'services': return !me.services || me.services.length === 0;
+      case 'photos': return !this.photos || this.photos.length === 0;
+      case 'birthday': return !me.birthday;
+      default: return false;
+    }
+  }
+
+  getMissingFieldsList(me: any): string[] {
+    const missing: string[] = [];
+    if (!me) return missing;
+
+    if (this.isFieldMissing('username', me)) missing.push("Nom d'utilisateur");
+    if (this.isFieldMissing('email', me)) missing.push('Email');
+    if (this.isFieldMissing('description', me)) missing.push('Description');
+    if (this.isFieldMissing('geographicZoneId', me)) missing.push('Localisation');
+    if (this.isFieldMissing('phone', me)) missing.push('Téléphone');
+    if (this.isFieldMissing('birthday', me)) missing.push('Date de naissance');
+    if (this.isFieldMissing('services', me)) missing.push('Au moins 1 service');
+    if (this.isFieldMissing('photos', me)) missing.push('Au moins 1 photo');
+
+    return missing;
   }
 
   setTab(tab: 'profile' | 'photos' | 'settings' | 'subscription') {
@@ -289,5 +324,4 @@ export class ProfileManagementComponent implements OnInit {
   protected readonly BODY_TYPE_LABELS = BODY_TYPE_LABELS;
   protected readonly EYE_COLOR_LABELS = EYE_COLOR_LABELS;
   protected readonly HAIR_COLOR_LABELS = HAIR_COLOR_LABELS;
-  protected readonly REGIONS = REGIONS;
 }

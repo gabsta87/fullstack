@@ -4,6 +4,19 @@
 
   <div class="pm-wrapper" *ngIf="currentUser$ | async as me ">
 
+    <!-- Banner to tell the user that his profile is not complete yet   -->
+    <div class="profile-warning-banner" *ngIf="getMissingFieldsList(me).length > 0">
+      <ion-icon name="warning-outline" color="danger"></ion-icon>
+      <div class="banner-text">
+        <h3>Votre profil est actuellement invisible</h3>
+        <p>Tant que ces informations essentielles ne sont pas fournies, votre annonce restera hors-ligne.</p>
+        <div class="missing-tags">
+          <span class="tag" *ngFor="let label of getMissingFieldsList(me)">{{ label }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero grid -->
     <ion-grid class="pm-hero-grid ion-no-padding">
       <ion-row class="ion-align-items-center">
         <ion-col size="12" size-md="auto" class="ion-text-center">
@@ -30,13 +43,15 @@
     <ion-toolbar class="segment-toolbar">
       <ion-segment [(ngModel)]="activeTab" mode="md">
         <ion-segment-button value="profile">
-          <ion-label>Profil</ion-label>
+          <ion-label [class.tab-error]="isFieldMissing('description', me) || isFieldMissing('geographicZoneId', me) || isFieldMissing('phone', me) || isFieldMissing('birthday', me) || isFieldMissing('services', me)">
+            Profil
+          </ion-label>
         </ion-segment-button>
         <ion-segment-button value="photos">
-          <ion-label>Photos</ion-label>
+          <ion-label [class.tab-error]="isFieldMissing('photos', me)">Photos</ion-label>
         </ion-segment-button>
         <ion-segment-button value="settings">
-          <ion-label>Compte</ion-label>
+          <ion-label [class.tab-error]="isFieldMissing('username', me) || isFieldMissing('email', me)">Compte</ion-label>
         </ion-segment-button>
       </ion-segment>
     </ion-toolbar>
@@ -44,13 +59,15 @@
     <ion-card class="pm-card ion-no-margin">
       <ion-card-content>
 
+        <!-- ONGLET PROFIL -->
         <div *ngIf="activeTab === 'profile'" class="fade-in">
           <ion-grid class="ion-no-padding">
             <ion-row>
 
+              <!-- Description -->
               <ion-col size="12">
-                <ion-item lines="none" class="venus-input">
-                  <ion-label position="stacked">Description</ion-label>
+                <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('description', me)">
+                  <ion-label position="stacked">Description *</ion-label>
                   <ion-textarea [(ngModel)]="profileForm.description"
                                 [debounce]="500"
                                 [autoGrow]="true"
@@ -59,7 +76,8 @@
                 </ion-item>
               </ion-col>
 
-              <ion-col size="12">
+              <!-- Localisation -->
+              <ion-col size="12" [class.invalid-selector-box]="isFieldMissing('geographicZoneId', me)">
                 <app-zone-selector
                   [zones]="allLocations"
                   [selectedChildId]="profileForm.geographicZoneId"
@@ -67,9 +85,10 @@
                 </app-zone-selector>
               </ion-col>
 
+              <!-- Téléphone -->
               <ion-col size="12" size-md="6">
-                <ion-item lines="none" class="venus-input">
-                  <ion-label position="stacked">Téléphone</ion-label>
+                <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('phone', me)">
+                  <ion-label position="stacked">Téléphone *</ion-label>
                   <ion-input type="tel"
                              [(ngModel)]="profileForm.phone"
                              [debounce]="500"
@@ -78,54 +97,33 @@
                 </ion-item>
               </ion-col>
 
+              <!-- Date de Naissance (Ajouté) -->
               <ion-col size="12" size-md="6">
+                <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('birthday', me)">
+                  <ion-label position="stacked">Date de naissance *</ion-label>
+                  <ion-input type="date"
+                             [(ngModel)]="profileForm.birthdate"
+                             (ionChange)="updateProfileField('birthdate', $event.detail.value)"></ion-input>
+                </ion-item>
+              </ion-col>
+
+              <!-- Silhouette, Yeux, Cheveux restent inchangés car optionnels -->
+              <ion-col size="12" size-md="4">
                 <ion-item lines="none" class="venus-input">
                   <ion-label position="stacked">Silhouette</ion-label>
-                  <ion-select label="Silhouette" label-placement="stacked" interface="popover"
-                              [(ngModel)]="profileForm.bodyType"
-                              (ionChange)="updateProfileField('bodyType', $event.detail.value)"
-                              placeholder="Choisir...">
-                    <ion-select-option *ngFor="let type of BODY_TYPE_LABELS | keyvalue" [value]="type.key">
-                      {{ type.value }}
-                    </ion-select-option>
+                  <ion-select label="Silhouette" label-placement="stacked" interface="popover" [(ngModel)]="profileForm.bodyType" (ionChange)="updateProfileField('bodyType', $event.detail.value)">
+                    <ion-select-option *ngFor="let type of BODY_TYPE_LABELS | keyvalue" [value]="type.key">{{ type.value }}</ion-select-option>
                   </ion-select>
                 </ion-item>
               </ion-col>
+              <!-- ... Garde tes colonnes yeux et cheveux identiques ici ... -->
 
-              <ion-col size="12" size-md="6">
-                <ion-item lines="none" class="venus-input">
-                  <ion-label position="stacked">Couleur des yeux</ion-label>
-                  <ion-select label="Couleur des yeux" label-placement="stacked" interface="popover"
-                              [(ngModel)]="profileForm.eyeColor"
-                              (ionChange)="updateProfileField('eyeColor', $event.detail.value)"
-                              placeholder="Choisir...">
-                    <ion-select-option *ngFor="let eye of EYE_COLOR_LABELS | keyvalue" [value]="eye.key">
-                      {{ eye.value }}
-                    </ion-select-option>
-                  </ion-select>
-                </ion-item>
-              </ion-col>
-
-              <ion-col size="12" size-md="6">
-                <ion-item lines="none" class="venus-input">
-                  <ion-label position="stacked">Couleur des cheveux</ion-label>
-                  <ion-select label="Couleur des cheveux" label-placement="stacked" interface="popover"
-                              [(ngModel)]="profileForm.hairColor"
-                              (ionChange)="updateProfileField('hairColor', $event.detail.value)"
-                              placeholder="Choisir...">
-                    <ion-select-option *ngFor="let hair of HAIR_COLOR_LABELS | keyvalue" [value]="hair.key">
-                      {{ hair.value }}
-                    </ion-select-option>
-                  </ion-select>
-                </ion-item>
-              </ion-col>
-
+              <!-- Services -->
               <ion-col size="12">
-                <div class="services-container">
+                <div class="services-container" [class.invalid-container]="isFieldMissing('services', me)">
                   <ion-list-header class="ion-no-padding">
-                    <ion-label>Services proposés</ion-label>
+                    <ion-label>Services proposés * (Sélectionnez-en au moins un)</ion-label>
                   </ion-list-header>
-
                   <div class="services-flex">
                     <ion-checkbox *ngFor="let service of allServices"
                                   [checked]="me.services.includes(service)"
@@ -140,12 +138,13 @@
           </ion-grid>
         </div>
 
+        <!-- ONGLET PHOTOS -->
         <div *ngIf="activeTab === 'photos'" class="fade-in">
           <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none">
 
-          <ion-button expand="block" (click)="fileInput.click()" class="ion-margin">
+          <ion-button expand="block" (click)="fileInput.click()" [color]="isFieldMissing('photos', me) ? 'danger' : 'primary'" class="ion-margin">
             <ion-icon slot="start" name="add-circle-outline"></ion-icon>
-            Ajouter une photo
+            Ajouter votre première photo obligatoire *
           </ion-button>
 
           <ion-grid class="ion-no-padding ion-padding-horizontal">

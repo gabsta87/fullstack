@@ -80,3 +80,100 @@
     }
   }
 }
+
+/* ── BANNIÈRE DESIGN ─────────────────────────────────────── */
+.profile-warning-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: rgba(235, 68, 90, 0.08);
+  border: 1px solid var(--ion-color-danger, #eb445a);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px 0;
+
+  ion-icon {
+    font-size: 28px;
+    margin-top: 2px;
+  }
+
+  .banner-text {
+    h3 {
+      margin: 0 0 4px 0;
+      color: var(--ion-color-danger, #eb445a);
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+    p {
+      margin: 0 0 12px 0;
+      color: var(--ion-color-step-700, #424242);
+      font-size: 0.9rem;
+    }
+  }
+
+  .missing-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+
+    .tag {
+      background: var(--ion-color-danger, #eb445a);
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+  }
+}
+
+/* ── REHAUSSEMENTS ERREUR SUR LES INPUTS ────────────────── */
+.invalid-item {
+  --border-color: var(--ion-color-danger, #eb445a) !important;
+  border: 1px solid var(--ion-color-danger, #eb445a) !important;
+  border-radius: 8px;
+  background: rgba(235, 68, 90, 0.02) !important;
+
+  ion-label {
+    color: var(--ion-color-danger, #eb445a) !important;
+  }
+}
+
+.invalid-selector-box {
+  border: 1px solid var(--ion-color-danger, #eb445a) !important;
+  border-radius: 8px;
+  padding: 4px;
+  background: rgba(235, 68, 90, 0.02);
+}
+
+.invalid-container {
+  border: 1px solid var(--ion-color-danger, #eb445a);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(235, 68, 90, 0.02);
+
+  ion-label {
+    color: var(--ion-color-danger, #eb445a);
+  }
+}
+
+.invalid-avatar {
+  border: 3px dashed var(--ion-color-danger, #eb445a);
+  padding: 4px;
+  border-radius: 50%;
+}
+
+.invalid-text {
+  color: var(--ion-color-danger, #eb445a);
+}
+
+.tab-error {
+  color: var(--ion-color-danger, #eb445a);
+  font-weight: bold;
+  position: relative;
+
+  &::after {
+    content: ' •';
+    color: var(--ion-color-danger, #eb445a);
+  }
+}
