@@ -1,9 +1,6 @@
 package com.serv.controller;
 
-import com.serv.common.BodyType;
-import com.serv.common.EyeColor;
-import com.serv.common.HairColor;
-import com.serv.common.Language;
+import com.serv.common.*;
 import com.serv.configuration.JwtProvider;
 import com.serv.database.entities.*;
 import com.serv.database.repositories.*;
@@ -25,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -153,7 +151,7 @@ public class AccountController {
      */
     @PatchMapping("/data")
     @Transactional
-    public ResponseEntity<?> updateSettings(@RequestBody AccountDataRequest req,
+    public ResponseEntity<?> updateSettings(@RequestBody Requests.AccountDataRequest req,
                                             @AuthenticationPrincipal Jwt jwt) {
         VenusUser user = jwtUser(jwt);
         if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -228,6 +226,8 @@ public class AccountController {
         if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         worker.setAvailable(body.getOrDefault("available", false));
+
+        this.evaluateWorkerProfileCompleteness(worker);
         Worker savedWorker = workerRepository.save(worker);
         WorkerFullProfileDTO dto = WorkerFullProfileDTO.from(savedWorker);
         sseStreamService.emitEvent(worker.getId(), "account-update", dto);
@@ -237,7 +237,7 @@ public class AccountController {
     /** PATCH /account/worker/profile */
     @PatchMapping("/worker/profile")
     @Transactional
-    public ResponseEntity<?> updateProfile(@RequestBody WorkerProfileUpdateRequest req,
+    public ResponseEntity<?> updateProfile(@RequestBody Requests.WorkerProfileUpdateRequest req,
                                            @AuthenticationPrincipal Jwt jwt) {
         Worker worker = jwtWorker(jwt);
         if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
@@ -247,7 +247,7 @@ public class AccountController {
         if (req.description() != null) worker.setDescription(req.description());
 
         if (req.geographicZoneId() != null && geographicZoneRepository.findById(req.geographicZoneId()).isPresent()){
-            if (req.geographicZoneId == -1) {
+            if (req.geographicZoneId() == -1) {
                 worker.setGeographicZone(null);
             }else{
                 worker.setGeographicZone(geographicZoneRepository.findById(req.geographicZoneId()).get());
@@ -258,6 +258,14 @@ public class AccountController {
         if (req.eyeColor()    != null) worker.setEyeColor(EyeColor.valueOf(req.eyeColor()));
         if (req.hairColor()   != null) worker.setHairColor(HairColor.valueOf(req.hairColor()));
         if (req.phone()       != null) worker.setPhone(req.phone());
+        if (req.birthdate()   != null){
+            try{
+                worker.parseBirthdate(req.birthdate());
+            }catch (ParseException e){
+                return ResponseEntity.badRequest().body("Invalid birthdate format.");
+            }
+
+        }
 
         if (req.mainPhotoId() != null) {
             Optional<Photo> newPhoto = photoRepository.findById(UUID.fromString(req.mainPhotoId()));
@@ -272,6 +280,8 @@ public class AccountController {
                     .map(Optional::get)
                     .collect(Collectors.toList()));
         }
+
+        this.evaluateWorkerProfileCompleteness(worker);
 
         Worker savedWorker = workerRepository.save(worker);
         WorkerFullProfileDTO dto = WorkerFullProfileDTO.from(savedWorker);
@@ -293,7 +303,9 @@ public class AccountController {
                 .map(Optional::get)
                 .collect(Collectors.toList());
 
-        worker.setServices(serviceList);
+        worker.setServices(serviceList);this.evaluateWorkerProfileCompleteness(worker);
+
+
         Worker savedWorker = workerRepository.save(worker);
 
         WorkerFullProfileDTO dto = WorkerFullProfileDTO.from(savedWorker);
@@ -338,6 +350,7 @@ public class AccountController {
             photoRepository.save(photo);
 
             // On sauvegarde l'état du worker mis à jour
+            this.evaluateWorkerProfileCompleteness(worker);
             Worker savedWorker = workerRepository.save(worker);
 
             // Plus besoin de refaire un findByIdWithPhotos ici, l'entité est déjà à jour dans la session Hibernate
@@ -392,6 +405,7 @@ public class AccountController {
 
         // 3 — Suppression en base de données (déclenché par l'orphanRemoval = true)
         worker.removePhoto(photo);
+        this.evaluateWorkerProfileCompleteness(worker);
         Worker savedWorker = workerRepository.save(worker);
 
         // Émission du profil mis à jour
@@ -415,6 +429,7 @@ public class AccountController {
             return ResponseEntity.notFound().build();
 
         worker.setMainPhoto(photo);
+        this.evaluateWorkerProfileCompleteness(worker);
         Worker savedWorker = workerRepository.save(worker);
 
         sseStreamService.emitEvent(worker.getId(), "account-update", WorkerFullProfileDTO.from(savedWorker));
@@ -443,22 +458,19 @@ public class AccountController {
         return ResponseEntity.ok().build();
     }
 
-    // ── Request record ────────────────────────────────────────────────────────
+    // Utility method
 
-    public record WorkerProfileUpdateRequest(
-            String description,
-            Integer geographicZoneId,
-            String eyeColor,
-            String hairColor,
-            String phone,
-            String bodyType,
-            String mainPhotoId,
-            List<String> services
-    ) {}
+    private void evaluateWorkerProfileCompleteness(Worker worker) {
+        boolean isComplete = worker.getUsername() != null && !worker.getUsername().trim().isEmpty()
+                && worker.getEmail() != null && !worker.getEmail().getValue().trim().isEmpty()
+                && worker.getDescription() != null && !worker.getDescription().trim().isEmpty()
+                && worker.getGeographicZone() != null
+                && worker.getPhone() != null && !worker.getPhone().trim().isEmpty()
+                && worker.getServices() != null && !worker.getServices().isEmpty()
+                && worker.getPhotos() != null && !worker.getPhotos().isEmpty()
+                && worker.getBirthdate() != null;
 
-    public record AccountDataRequest(
-            String username,
-            String email,
-            String password
-    ) {}
+        worker.setDisabled(!isComplete);
+    }
+
 }
