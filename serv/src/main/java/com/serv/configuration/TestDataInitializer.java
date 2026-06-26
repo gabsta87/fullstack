@@ -103,7 +103,7 @@ public class TestDataInitializer implements ApplicationRunner {
         createWorker(
                 "sofia", "sofia@test.com", "Sofia",
                 date(2001, 7, 4), lyon2,
-                BodyType.SLIM, Gender.FEMALE, EyeColor.BROWN, HairColor.BROWN, // 💅 En voilà une avec les cheveux BROWN !
+                BodyType.SLIM, Gender.FEMALE, EyeColor.BROWN, HairColor.BROWN,
                 true, Instant.now().minusSeconds(3600),
                 "sofia_main.jpg", List.of("sofia_1.jpg"),
                 firstService
@@ -166,20 +166,20 @@ public class TestDataInitializer implements ApplicationRunner {
     private void createWorker(
             String username, String email, String displayName,
             Date birthday, GeographicZone zone,
-            BodyType bodyType, Gender gender, EyeColor eyeColor, HairColor hairColor, // 🎯 Mis à jour ici
+            BodyType bodyType, Gender gender, EyeColor eyeColor, HairColor hairColor,
             boolean available, Instant lastRefreshed,
             String mainPhotoFile, List<String> extraPhotoFiles, Service... services) {
 
-        Worker w = new Worker(username, new Email(email), passwordEncoder.encode("Test1234!"));
+        Worker w = new Worker(username, new Email(email), passwordEncoder.encode("asdfasdf!"));
 
         w.setAvailable(available);
         w.setLastRefreshed(lastRefreshed);
         w.setGeographicZone(zone);
         w.setBodyType(bodyType);
-        w.setGender(gender);       // 🎯 Assigné
-        w.setEyeColor(eyeColor);   // 🎯 Assigné
-        w.setHairColor(hairColor); // 🎯 Assigné
-        w.setBirthday(birthday);
+        w.setGender(gender);
+        w.setEyeColor(eyeColor);
+        w.setHairColor(hairColor);
+        w.setBirthdate(birthday);
         w.setServices(Arrays.asList(services));
         w.setGalleryPositionIndex(0);
         w.setExpired(false);
