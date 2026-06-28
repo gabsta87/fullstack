@@ -51,7 +51,7 @@
                 [allowAllOption]="true"
                 [allParentsLabel]="'Toutes les régions'"
                 [allChildrenLabel]="'Toutes les localisations'"
-                (onZoneSelected)="selectedZoneId = $event.childZoneId; onZoneChange($event, user)">
+                (onZoneSelected)="onZoneChange($event, user)">
               </app-zone-selector>
 
               <div class="field-label ion-margin-top">Silhouettes préférées</div>

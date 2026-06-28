@@ -68,15 +68,13 @@ export class AccountComponent implements OnInit {
   }
 
   onZoneChange(event: any, user: ClientPrivateAccount) {
-    const value = event.detail.value;
-    this.selectedZoneId = value;
+    this.selectedZoneId = event.childZoneId;
+    const targetId = event.childZoneId || event.parentZoneId;
 
-    if (value === -1) {
-      user.geographicZone = null;
-    } else {
-      const selectedRegion = this.locations.find(r => r.id === value);
-      user.geographicZone = selectedRegion || null;
-    }
+    // On cherche dans les parents OU dans les sous-zones aplaties en une seule ligne
+    user.geographicZone = targetId
+      ? (this.locations.find(p => p.id === targetId) || this.locations.flatMap(p => p.subZones || []).find(c => c.id === targetId) || null)
+      : null;
 
     this.updateLocation();
   }
