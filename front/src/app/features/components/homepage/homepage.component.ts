@@ -104,7 +104,7 @@ export class HomepageComponent implements OnInit {
       distinctUntilChanged()
     ).subscribe(searchTerm => {
       this.filters.username = searchTerm;
-      this.applyFilters();
+      this.loadPage(true);
     });
   }
 
@@ -131,19 +131,16 @@ export class HomepageComponent implements OnInit {
   hasActiveFilters(): boolean {
     return this.activeFilterCount > 0;
   }
-  applyFilters(): void {
-    this.loadPage(true);
-  }
 
   clearFilters(): void {
     this.filters = {};
     this.childZoneId = -1;
     this.parentZoneId = -1;
     this.availableChildZones = [];
-    this.applyFilters();
+    this.loadPage(true);
   }
 
-  private loadPage(reset: boolean = false, event?: any): void {
+  loadPage(reset: boolean = false, event?: any): void {
     if (this.isLoading) {
       if (event) event.target.complete();
       return;

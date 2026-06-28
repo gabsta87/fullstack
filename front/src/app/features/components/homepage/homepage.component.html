@@ -16,7 +16,7 @@
             [allowAllOption]="true"
             [showIcons]="true"
             [isFilterBanner]="true"
-            (onZoneSelected)="parentZoneId = $event.parentZoneId; childZoneId = $event.childZoneId; applyFilters()">
+            (onZoneSelected)="parentZoneId = $event.parentZoneId; childZoneId = $event.childZoneId; loadPage(true)">
           </app-zone-selector>
         </ion-col>
 
@@ -27,7 +27,7 @@
                 placeholder="Nom..."
                 [value]="filters.username || ''"
                 (ionInput)="onSearchInput($event)"
-                (keyup.enter)="applyFilters()">
+                (keyup.enter)="loadPage(true)">
             </ion-input>
           </ion-item>
         </ion-col>
@@ -54,7 +54,7 @@
           <ion-item lines="none" class="filter-input-item">
             <ion-select aria-label="Silhouette" interface="popover"
                         [(ngModel)]="filters.bodyType"
-                        (ionChange)="applyFilters()"
+                        (ionChange)="loadPage(true)"
                         placeholder="Toutes les silhouettes">
               <ion-select-option [value]="null">Toutes les silhouettes</ion-select-option>
               <ion-select-option *ngFor="let type of BODY_TYPE_LABELS | keyvalue" [value]="type.key">
@@ -68,7 +68,7 @@
           <ion-item lines="none" class="filter-input-item">
             <ion-select aria-label="Yeux" interface="popover"
                         [(ngModel)]="filters.eyeColor"
-                        (ionChange)="applyFilters()"
+                        (ionChange)="loadPage(true)"
                         placeholder="Toutes les couleurs d'yeux">
               <ion-select-option [value]="null">Toutes les couleurs d'yeux</ion-select-option>
               <ion-select-option *ngFor="let eye of EYE_COLOR_LABELS | keyvalue" [value]="eye.key">
@@ -82,7 +82,7 @@
           <ion-item lines="none" class="filter-input-item">
             <ion-select aria-label="Cheveux" interface="popover"
                         [(ngModel)]="filters.hairColor"
-                        (ionChange)="applyFilters()"
+                        (ionChange)="loadPage(true)"
                         placeholder="Toutes les couleurs de cheveux">
               <ion-select-option [value]="null">Toutes les couleurs de cheveux</ion-select-option>
               <ion-select-option *ngFor="let hair of HAIR_COLOR_LABELS | keyvalue" [value]="hair.key">
