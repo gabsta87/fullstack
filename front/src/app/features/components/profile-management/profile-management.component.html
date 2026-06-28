@@ -9,7 +9,7 @@
       <ion-icon name="warning-outline" color="danger"></ion-icon>
       <div class="banner-text">
         <h3>Votre profil est actuellement invisible</h3>
-        <p>Tant que ces informations essentielles ne sont pas fournies, votre annonce restera hors-ligne.</p>
+        <p>Tant que ces informations essentielles ne sont pas fournies, votre annonce restera invisible.</p>
         <div class="missing-tags">
           <span class="tag" *ngFor="let label of getMissingFieldsList(me)">{{ label }}</span>
         </div>
@@ -81,7 +81,7 @@
                 <app-zone-selector
                   [zones]="allLocations"
                   [selectedChildId]="profileForm.geographicZoneId"
-                  (onZoneSelected)="updateProfileField('geographicZoneId', $event.childZoneId)">
+                  (onZoneSelected)="updateProfileField('geographicZoneId', $event.childZoneId || $event.parentZoneId || -1)">
                 </app-zone-selector>
               </ion-col>
 

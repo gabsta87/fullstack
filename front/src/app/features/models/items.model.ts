@@ -50,6 +50,6 @@ export const HAIR_COLORS: ColorOption[] = [
   { label: 'White',   hex: '#ffffff' }, { label : "Silver", hex: '#999999'},
 ];
 
-export interface PhotoItem    { id: string; originalUrl: string; previewThumbUrl: string; }
+export interface PhotoItem    { id: string; originalUrl: string; previewThumbUrl: string; mainThumbUrl: string; }
 export interface VideoItem    { id: string; url: string; duration?: string; }
 export interface Review       { author: string; date: string; text: string; }

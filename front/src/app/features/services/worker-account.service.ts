@@ -1,27 +1,27 @@
-import {Injectable, NgZone} from '@angular/core';
-import {BehaviorSubject, firstValueFrom, Observable, of} from "rxjs";
-import {WorkerFullProfile, WorkerPrivateAccount, WorkerProfileUpdate} from "../models/user.model";
-import {HttpClient} from "@angular/common/http";
-import {environment} from "../../../environments/environment";
-import {tap} from "rxjs/operators";
+import { Injectable, NgZone } from '@angular/core';
+import { BehaviorSubject, firstValueFrom, Observable, of } from "rxjs";
+import { HttpClient } from "@angular/common/http";
+import { tap } from "rxjs/operators";
+import { environment } from "../../../environments/environment";
+import { WorkerPrivateAccount, WorkerProfileUpdate } from "../models/user.model";
 
 @Injectable({
   providedIn: 'root'
 })
 export class WorkerAccountService {
-
   private base = `${environment.apiBase}/account`;
-
   private accountSubject = new BehaviorSubject<WorkerPrivateAccount | null>(null);
 
-  constructor(private http: HttpClient,private zone: NgZone) { }
+  // 🎯 Flux public pour lire l'état actuel n'importe où sans relancer de flux SSE
+  public account$ = this.accountSubject.asObservable();
+
+  constructor(private http: HttpClient, private zone: NgZone) { }
 
   getCurrentAccount(): Observable<WorkerPrivateAccount> {
     const current = this.accountSubject.value;
     if (current) {
       return of(current);
     }
-
     return this.http.get<WorkerPrivateAccount>(`${this.base}/me`, { withCredentials: true }).pipe(
       tap(account => this.accountSubject.next(account))
     );
@@ -29,25 +29,18 @@ export class WorkerAccountService {
 
   listenToMyAccount(): Observable<WorkerPrivateAccount> {
     return new Observable<WorkerPrivateAccount>(observer => {
-
-      // 1 — On distribue IMMÉDIATEMENT les données déjà chargées par le Resolver
+      // Émission immédiate de la valeur en cache si elle existe
       if (this.accountSubject.value) {
         observer.next(this.accountSubject.value);
       }
 
       const token = localStorage.getItem('auth_token');
-
-      // 2 — On ouvre la connexion temps réel pour les futures modifications
-      const eventSource = new EventSource(`http://localhost:8080/account/stream?token=${token}`);
+      const eventSource = new EventSource(`${environment.apiBase}/account/stream?token=${token}`);
 
       eventSource.addEventListener('account-update', (event: MessageEvent) => {
         this.zone.run(() => {
           const updatedAccount = JSON.parse(event.data);
-
-          // On met à jour le BehaviorSubject central pour garder le cache synchro
           this.accountSubject.next(updatedAccount);
-
-          // On pousse la mise à jour à l'IHM
           observer.next(updatedAccount);
         });
       });
@@ -56,7 +49,7 @@ export class WorkerAccountService {
         this.zone.run(() => observer.error(error));
       };
 
-      // Nettoyage à la destruction du composant
+      // 🧼 Nettoyage automatique : ferme le flux SSE quand le composant Angular est détruit
       return () => eventSource.close();
     });
   }
@@ -65,7 +58,7 @@ export class WorkerAccountService {
     this.accountSubject.next(null);
   }
 
-  async setAvailability(available: boolean): Promise<any> {
+  async setAvailability(available: boolean): Promise<WorkerPrivateAccount> {
     const updatedAccount = await firstValueFrom(
       this.http.patch<WorkerPrivateAccount>(
         `${this.base}/worker/availability`,
@@ -73,47 +66,38 @@ export class WorkerAccountService {
         { withCredentials: true }
       )
     );
-
     this.accountSubject.next(updatedAccount);
-
     return updatedAccount;
   }
 
-  async updateProfileData(payload : any){
+  async updateProfileData(payload: any): Promise<WorkerPrivateAccount> {
     console.log("updateProfileData : ", payload);
     const updatedAccount = await firstValueFrom(
       this.http.patch<WorkerPrivateAccount>(`${this.base}/data`, payload, { withCredentials: true })
     );
+    // 🎯 Correction : On pousse la mise à jour ici aussi !
+    this.accountSubject.next(updatedAccount);
+    return updatedAccount;
   }
 
   async updateProfile(data: WorkerProfileUpdate): Promise<WorkerPrivateAccount> {
     const updatedAccount = await firstValueFrom(
       this.http.patch<WorkerPrivateAccount>(`${this.base}/worker/profile`, data, { withCredentials: true })
     );
-
-    // On pousse instantanément la mise à jour dans le BehaviorSubject local
     this.accountSubject.next(updatedAccount);
-
     return updatedAccount;
   }
 
-  // SERVICES
-
-  async updateServices(services: string[]): Promise<any> {
+  async updateServices(services: string[]): Promise<WorkerPrivateAccount> {
     const updatedAccount = await firstValueFrom(
       this.http.patch<WorkerPrivateAccount>(`${this.base}/worker/updateservices`, services, { withCredentials: true })
     );
-
     this.accountSubject.next(updatedAccount);
-
     return updatedAccount;
   }
 
-  // PHOTOS
-
   async uploadPhoto(file: File, title?: string): Promise<any> {
     const fd = new FormData();
-    console.log("uploadPhoto : ", file, " to ",this.base,"/worker/photos}");
     fd.append('file', file);
     if (title) fd.append('title', title);
     return await firstValueFrom(this.http.post(`${this.base}/worker/photos`, fd, { withCredentials: true }));
@@ -124,10 +108,10 @@ export class WorkerAccountService {
   }
 
   async setMainPhoto(photoId: string): Promise<any> {
-    await firstValueFrom(this.http.patch(`${this.base}/worker/photos/${photoId}/main`, {}, { withCredentials: true }));
+    return await firstValueFrom(this.http.patch(`${this.base}/worker/photos/${photoId}/main`, {}, { withCredentials: true }));
   }
 
   async reorderPhotos(orderedIds: string[]): Promise<any> {
-    await firstValueFrom(this.http.patch(`${this.base}/worker/photos/reorder`, orderedIds, { withCredentials: true }));
+    return await firstValueFrom(this.http.patch(`${this.base}/worker/photos/reorder`, orderedIds, { withCredentials: true }));
   }
 }

@@ -14,6 +14,7 @@ import { warningOutline, addCircleOutline, trashOutline, move, camera } from 'io
 import {AccountSettingsComponent} from "../account-settings/account-settings.component";
 import {GeographicZone} from "../../models/filter.model";
 import {ZoneSelectorComponent} from "../zone-selector/zone-selector.component";
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: 'app-profile-management',
@@ -51,30 +52,42 @@ export class ProfileManagementComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    // 1. Chargement des données statiques des listes de référence
     this.route.data.subscribe((data) => {
       this.allServices = data['services'] || [];
       this.allLocations = data['locations'] || [];
     });
-    // if (initialProfile) {
-    //   this.profileForm = {
-    //     bodyType: initialProfile.bodyType,
-    //     geographicZoneId: initialProfile.geographicZoneId,
-    //     description: initialProfile.description
-    //   };
-    // }
-    // 🎯 On synchronise localement le formulaire à chaque mise à jour SSE
+
+    // 2. Flux unique pour l'UI & Synchronisation automatique du formulaire
     this.currentUser$ = this.accountService.listenToMyAccount().pipe(
       tap(user => {
         if (user) {
-          this.photos = user.photos || [];
+          this.photos = (user.photos || []).map(photo => ({
+            ...photo,
+            previewThumbUrl: photo.previewThumbUrl?.startsWith('http')
+              ? photo.previewThumbUrl
+              : `${environment.apiBase}${photo.previewThumbUrl}`,
+            mainThumbUrl: photo.mainThumbUrl?.startsWith('http')
+              ? photo.mainThumbUrl
+              : `${environment.apiBase}${photo.mainThumbUrl}`
+          }));
 
-          // Permet de garder les inputs à jour même si modifiés depuis un autre appareil/onglet
+          // 🎯 SÉCURISATION DE LA DATE POUR LE CALENDRIER HTML5
+          let cleanBirthdate = '';
+          if (user.birthdate) {
+            const d = new Date(user.birthdate);
+            // Si la date est valide, on extrait uniquement la partie 'YYYY-MM-DD'
+            if (!isNaN(d.getTime())) {
+              cleanBirthdate = d.toISOString().split('T')[0];
+            }
+          }
+
           this.profileForm = {
             bodyType: user.bodyType,
             geographicZoneId: user.geographicZone?.id,
             description: user.description,
             phone: user.phone,
-            birthdate: user.birthdate
+            birthdate: cleanBirthdate // 🚀 Reçoit maintenant STRICTEMENT "2026-06-11"
           };
         }
       })
@@ -145,13 +158,15 @@ export class ProfileManagementComponent implements OnInit {
   }
 
   async updateProfileField(field: keyof WorkerProfileUpdate, value: any) {
-    console.log(`Mise à jour du champ [${field}] avec la valeur :`, value);
+    console.log(`Mise à jour du champ [${field}] demandé avec :`, value);
     try {
-      // On utilise la syntaxe JavaScript de propriété calculée en envoyant
-      // uniquement l'objet partiel : { bodyType: '...' } ou { location: '...' }
+      // On envoie la modification au serveur.
+      // Dès que la promesse résout, le service pousse la nouvelle valeur dans le Subject,
+      // ce qui déclenche le 'tap' du ngOnInit ci-dessus et met à jour ton UI tout seul !
       await this.accountService.updateProfile({ [field]: value });
     } catch (error) {
-      console.error(`Erreur lors de la mise à jour du champ ${field}`, error);
+      console.error(`Échec de la mise à jour réseau pour le champ ${field}`, error);
+      // L'UI ne bouge pas et reste synchronisée sur l'ancienne valeur valide en cas de coupure.
     }
   }
 
