@@ -57,7 +57,7 @@ public class AccountController {
     private Worker jwtWorkerWithPhotos(Jwt jwt) {
         if (jwt == null) return null;
         // 🎯 Appel de ta nouvelle méthode optimisée par email
-        return workerRepository.findByEmailWithPhotos(jwt.getSubject()).orElse(null);
+        return workerRepository.findByEmailWithPhotos(new Email(jwt.getSubject())).orElse(null);
     }
 
     private Worker jwtWorker(Jwt jwt) {
@@ -239,18 +239,22 @@ public class AccountController {
     @Transactional
     public ResponseEntity<?> updateProfile(@RequestBody Requests.WorkerProfileUpdateRequest req,
                                            @AuthenticationPrincipal Jwt jwt) {
-        Worker worker = jwtWorker(jwt);
+        Worker worker = jwtWorkerWithPhotos(jwt);
+
         if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         System.out.println("updateProfile: " + req);
 
         if (req.description() != null) worker.setDescription(req.description());
 
-        if (req.geographicZoneId() != null && geographicZoneRepository.findById(req.geographicZoneId()).isPresent()){
+        if (req.geographicZoneId() != null) {
             if (req.geographicZoneId() == -1) {
                 worker.setGeographicZone(null);
-            }else{
-                worker.setGeographicZone(geographicZoneRepository.findById(req.geographicZoneId()).get());
+            } else {
+                geographicZoneRepository.findById(req.geographicZoneId()).ifPresent(zone -> {
+                    worker.setGeographicZone(zone);
+                    System.out.println("updateProfile zone associée : " + zone.getName());
+                });
             }
         }
 
@@ -261,6 +265,7 @@ public class AccountController {
         if (req.birthdate()   != null){
             try{
                 worker.parseBirthdate(req.birthdate());
+                System.out.println("updateProfile :" + worker.getBirthdate());
             }catch (ParseException e){
                 return ResponseEntity.badRequest().body("Invalid birthdate format.");
             }
@@ -279,6 +284,7 @@ public class AccountController {
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .collect(Collectors.toList()));
+            System.out.println("updateProfile :" + worker.getServices());
         }
 
         this.evaluateWorkerProfileCompleteness(worker);

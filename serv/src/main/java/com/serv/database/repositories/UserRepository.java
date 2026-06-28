@@ -15,7 +15,6 @@ import java.util.UUID;
 public interface UserRepository extends JpaRepository<VenusUser, UUID> {
     @NonNull
     Optional<VenusUser> findById(@NonNull UUID id);
-    Optional<VenusUser> findByUsername(@NonNull String username);
 
     @Query("SELECT u FROM VenusUser u WHERE u.email.value = :email")
     Optional<VenusUser> findByEmail(@Param("email") String email);}
