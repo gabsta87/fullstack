@@ -1,5 +1,6 @@
 package com.serv.database.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.serv.common.*;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -9,6 +10,7 @@ import org.hibernate.annotations.BatchSize;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -80,6 +82,7 @@ public class Worker extends VenusUser {
     // Date stored as DATE only (no time component)
     @Temporal(TemporalType.DATE)
     @Column(name = "birthdate")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT+2")
     private Date birthdate;
 
     @Column(columnDefinition = "TEXT")
@@ -124,7 +127,16 @@ public class Worker extends VenusUser {
     }
 
     public void parseBirthdate(String birthdate) throws ParseException {
-        this.birthdate = DateFormat.getDateInstance().parse(birthdate);
+        if (birthdate == null || birthdate.isBlank()) {
+            this.birthdate = null;
+            return;
+        }
+
+        if (birthdate.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            this.birthdate = new SimpleDateFormat("yyyy-MM-dd").parse(birthdate);
+        } else {
+            this.birthdate = new SimpleDateFormat("dd/MM/yyyy").parse(birthdate);
+        }
     }
 
     public void addPhoto(Photo photo) {
