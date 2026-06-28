@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -65,11 +66,24 @@ public class SseStreamService {
     public void emitEvent(UUID userId, String eventName, Object data) {
         List<SseEmitter> userEmitters = emitters.get(userId);
         if (userEmitters != null) {
-            for (SseEmitter emitter : userEmitters) {
+
+            // 💡 Astuce de sécurité : on travaille sur une copie ou un itérateur
+            // pour éviter une ConcurrentModificationException si removeEmitter modifie la liste en plein milieu du for.
+            List<SseEmitter> emittersCopy = new ArrayList<>(userEmitters);
+
+            for (SseEmitter emitter : emittersCopy) {
                 try {
-                    // On utilise .name() pour qualifier l'événement côté Frontend
                     emitter.send(SseEmitter.event().name(eventName).data(data));
-                } catch (IOException e) {
+                } catch (Exception e) { // 🎯 CHANGEMENT ICI : On attrape TOUTES les exceptions (IOException, IllegalStateException, etc.)
+                    System.out.println("Nettoyage d'un emitter défaillant (" + e.getClass().getSimpleName() + ") pour l'utilisateur " + userId);
+
+                    try {
+                        emitter.complete();
+                    } catch (Exception ignored) {
+                        // 🛡️ Si Tomcat est déjà à l'agonie sur cet émetteur,
+                        // complete() peut lui-même lever une erreur. On l'ignore sagement.
+                    }
+
                     removeEmitter(userId, emitter);
                 }
             }
