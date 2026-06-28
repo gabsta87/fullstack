@@ -3,6 +3,7 @@ package com.serv.dto;
 import com.serv.database.entities.Service;
 import com.serv.database.entities.Worker;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
@@ -31,7 +32,7 @@ public record WorkerFullProfileDTO(
         return new WorkerFullProfileDTO(
                 w.getId(),
                 w.getUsername(),
-                w.getBirthdate() != null ? w.getBirthdate().toString() : null,
+                w.getBirthdate() != null ? new SimpleDateFormat("yyyy-MM-dd").format(w.getBirthdate()) : null,
                 GeographicZoneDTO.from(w.getGeographicZone()),
                 w.getBodyType() != null ? w.getBodyType().name() : null,
                 w.getRole().name(),
