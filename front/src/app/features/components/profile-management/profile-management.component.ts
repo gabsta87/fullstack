@@ -3,14 +3,14 @@ import {CommonModule} from "@angular/common";
 import {IonicModule, ItemReorderEventDetail} from "@ionic/angular";
 import {FormsModule} from "@angular/forms";
 import {HeaderComponent} from "../header/header.component";
-import {firstValueFrom, map, Observable} from "rxjs";
-import {BODY_TYPE_LABELS, EYE_COLOR_LABELS, HAIR_COLOR_LABELS, PhotoItem} from "../../models/items.model";
+import {map, Observable} from "rxjs";
+import {BODY_TYPE_LABELS, PhotoItem} from "../../models/items.model";
 import {ActivatedRoute} from "@angular/router";
 import {WorkerFullProfile, WorkerPrivateAccount, WorkerProfileUpdate} from "../../models/user.model";
 import {WorkerAccountService} from "../../services/worker-account.service";
 import {tap} from "rxjs/operators";
 import {addIcons} from "ionicons";
-import { warningOutline, addCircleOutline, trashOutline, move, camera } from 'ionicons/icons';
+import {addCircleOutline, camera, move, trashOutline, warningOutline} from 'ionicons/icons';
 import {AccountSettingsComponent} from "../account-settings/account-settings.component";
 import {GeographicZone} from "../../models/filter.model";
 import {ZoneSelectorComponent} from "../zone-selector/zone-selector.component";
@@ -52,7 +52,7 @@ export class ProfileManagementComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    // 1. Chargement des données statiques des listes de référence
+    // 1. Chargement des données statiques
     this.route.data.subscribe((data) => {
       this.allServices = data['services'] || [];
       this.allLocations = data['locations'] || [];
@@ -62,21 +62,23 @@ export class ProfileManagementComponent implements OnInit {
     this.currentUser$ = this.accountService.listenToMyAccount().pipe(
       tap(user => {
         if (user) {
-          this.photos = (user.photos || []).map(photo => ({
-            ...photo,
-            previewThumbUrl: photo.previewThumbUrl?.startsWith('http')
-              ? photo.previewThumbUrl
-              : `${environment.apiBase}${photo.previewThumbUrl}`,
-            mainThumbUrl: photo.mainThumbUrl?.startsWith('http')
-              ? photo.mainThumbUrl
-              : `${environment.apiBase}${photo.mainThumbUrl}`
-          }));
 
-          // 🎯 SÉCURISATION DE LA DATE POUR LE CALENDRIER HTML5
+          this.photos = (user.photos || []).map(photo => {
+            return {
+              ...photo,
+              previewThumbUrl: photo.previewThumbUrl?.startsWith('http')
+                ? photo.previewThumbUrl
+                : `${environment.apiBase}${photo.previewThumbUrl}`,
+              mainThumbUrl: photo.mainThumbUrl?.startsWith('http')
+                ? photo.mainThumbUrl
+                : `${environment.apiBase}${photo.mainThumbUrl}`
+            };
+          });
+
+          // SÉCURISATION DE LA DATE POUR LE CALENDRIER HTML5
           let cleanBirthdate = '';
           if (user.birthdate) {
             const d = new Date(user.birthdate);
-            // Si la date est valide, on extrait uniquement la partie 'YYYY-MM-DD'
             if (!isNaN(d.getTime())) {
               cleanBirthdate = d.toISOString().split('T')[0];
             }
@@ -87,7 +89,7 @@ export class ProfileManagementComponent implements OnInit {
             geographicZoneId: user.geographicZone?.id,
             description: user.description,
             phone: user.phone,
-            birthdate: cleanBirthdate // 🚀 Reçoit maintenant STRICTEMENT "2026-06-11"
+            birthdate: cleanBirthdate
           };
         }
       })
@@ -158,6 +160,10 @@ export class ProfileManagementComponent implements OnInit {
   }
 
   async updateProfileField(field: keyof WorkerProfileUpdate, value: any) {
+    if (this.profileForm[field] === value) {
+      return;
+    }
+
     console.log(`Mise à jour du champ [${field}] demandé avec :`, value);
     try {
       // On envoie la modification au serveur.
@@ -176,7 +182,7 @@ export class ProfileManagementComponent implements OnInit {
     const file: File = event.target.files[0];
     if (!file) return;
 
-    this.accountService.uploadPhoto(file);
+    await this.accountService.uploadPhoto(file);
   }
 
   // 2. Gérer le réordonnancement (Drag & Drop)
@@ -337,6 +343,6 @@ export class ProfileManagementComponent implements OnInit {
   }
 
   protected readonly BODY_TYPE_LABELS = BODY_TYPE_LABELS;
-  protected readonly EYE_COLOR_LABELS = EYE_COLOR_LABELS;
-  protected readonly HAIR_COLOR_LABELS = HAIR_COLOR_LABELS;
+  // protected readonly EYE_COLOR_LABELS = EYE_COLOR_LABELS;
+  // protected readonly HAIR_COLOR_LABELS = HAIR_COLOR_LABELS;
 }
