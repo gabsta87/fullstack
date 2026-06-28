@@ -53,23 +53,32 @@ export class ZoneSelectorComponent implements OnChanges {
   }
 
   private initializeSelection() {
-    if (!this.zones || this.zones.length === 0) return;
-
-    // Si on a un ID enfant (ex: 42), on cherche la région qui possède cet enfant dans ses subZones
-    if (this.selectedChildId && this.selectedChildId !== -1) {
-      const parent = this.zones.find(p =>
-        p.subZones?.some(c => c.id === this.selectedChildId)
-      );
-
-      if (parent) {
-        this.parentZoneId = parent.id;
-        this.availableChildZones = parent.subZones || [];
-        this.childZoneId = this.selectedChildId;
-        return;
-      }
+    if (!this.zones || this.zones.length === 0 || !this.selectedChildId || this.selectedChildId === -1) {
+      this.resetFields();
+      return;
     }
 
-    // Si aucun ID enfant n'est trouvé ou fourni, on reset le composant à l'état initial
+    // Cas 1 : L'ID reçu est directement une zone parente (Région sélectionnée globale)
+    const directParent = this.zones.find(p => p.id === this.selectedChildId);
+    if (directParent) {
+      this.parentZoneId = directParent.id;
+      this.availableChildZones = directParent.subZones || [];
+      this.childZoneId = undefined; // Pas de ville spécifique
+      return;
+    }
+
+    // Cas 2 : L'ID reçu est une zone enfant (Ville précise)
+    const parentOfChild = this.zones.find(p =>
+      p.subZones?.some(c => c.id === this.selectedChildId)
+    );
+    if (parentOfChild) {
+      this.parentZoneId = parentOfChild.id;
+      this.availableChildZones = parentOfChild.subZones || [];
+      this.childZoneId = this.selectedChildId;
+      return;
+    }
+
+    // Fallback si l'ID ne correspond à rien
     this.resetFields();
   }
 
