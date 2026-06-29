@@ -71,7 +71,7 @@
                   <ion-textarea [(ngModel)]="profileForm.description"
                                 [debounce]="500"
                                 [autoGrow]="true"
-                                (ionChange)="updateProfileField('description', $event.detail.value)"
+                                (ionInput)="updateProfileField('description', $event.detail.value)"
                                 placeholder="Décrivez votre profil, vos spécialités..."></ion-textarea>
                 </ion-item>
               </ion-col>
@@ -92,7 +92,7 @@
                   <ion-input type="tel"
                              [(ngModel)]="profileForm.phone"
                              [debounce]="500"
-                             (ionChange)="updateProfileField('phone', $event.detail.value)"
+                             (ionInput)="updateProfileField('phone', $event.detail.value)"
                              placeholder="Ex: +33 6 12 34 56 78"></ion-input>
                 </ion-item>
               </ion-col>
@@ -103,7 +103,8 @@
                   <ion-label position="stacked">Date de naissance *</ion-label>
                   <ion-input type="date"
                              [(ngModel)]="profileForm.birthdate"
-                             (ionChange)="updateProfileField('birthdate', $event.detail.value)"></ion-input>
+                             (ionInput)="updateProfileField('birthdate', $event.detail.value)">
+                  </ion-input>
                 </ion-item>
               </ion-col>
 

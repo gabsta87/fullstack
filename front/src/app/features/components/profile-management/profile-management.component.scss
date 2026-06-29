@@ -130,8 +130,6 @@
 /* ── REHAUSSEMENTS ERREUR SUR LES INPUTS ────────────────── */
 .invalid-item {
   --border-color: var(--ion-color-danger, #eb445a) !important;
-  border: 1px solid var(--ion-color-danger, #eb445a) !important;
-  border-radius: 8px;
   background: rgba(235, 68, 90, 0.02) !important;
 
   ion-label {

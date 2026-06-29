@@ -33,6 +33,7 @@ export class ProfileManagementComponent implements OnInit {
   allLocations! : GeographicZone[];
 
   // Profile form
+  lastServerState: WorkerProfileUpdate = {};
   profileForm: WorkerProfileUpdate = {};
 
   dragOverIndex: number | null = null;
@@ -84,30 +85,34 @@ export class ProfileManagementComponent implements OnInit {
             }
           }
 
-          this.profileForm = {
+          this.lastServerState = {
             bodyType: user.bodyType,
             geographicZoneId: user.geographicZone?.id,
             description: user.description,
             phone: user.phone,
             birthdate: cleanBirthdate
           };
+
+          this.profileForm = { ...this.lastServerState };
         }
       })
     );
   }
 
   isFieldMissing(field: string, me: any): boolean {
-    if (!me) return false;
+    if (!me) return true;
     switch (field) {
-      case 'username': return !me.username || me.username.trim() === '';
-      case 'email': return !me.email || me.email.trim() === '';
-      case 'description': return !me.description || me.description.trim() === '';
-      case 'geographicZoneId': return !me.geographicZoneId;
-      case 'phone': return !me.phone || me.phone.trim() === '';
-      case 'services': return !me.services || me.services.length === 0;
-      case 'photos': return !this.photos || this.photos.length === 0;
-      case 'birthday': return !me.birthday;
-      default: return false;
+      case 'username':return !me.username || me.username.trim() === '';
+      case 'email':
+        const emailStr = typeof me.email === 'object' ? me.email?.value : me.email;
+        return !emailStr || emailStr.trim() === '';
+      case 'description':return !me.description || me.description.trim() === '';
+      case 'geographicZoneId':return !me.geographicZone || !me.geographicZone.id;
+      case 'phone':return !me.phone || me.phone.trim() === '';
+      case 'services':return !me.services || me.services.length === 0;
+      case 'photos':return !this.photos || this.photos.length === 0;
+      case 'birthday':return !me.birthdate;
+      default:return false;
     }
   }
 
@@ -160,19 +165,18 @@ export class ProfileManagementComponent implements OnInit {
   }
 
   async updateProfileField(field: keyof WorkerProfileUpdate, value: any) {
-    if (this.profileForm[field] === value) {
+    if (this.lastServerState[field] === value) {
       return;
     }
 
-    console.log(`Mise à jour du champ [${field}] demandé avec :`, value);
+    console.log(`Envoi au serveur pour [${field}] :`, value);
     try {
-      // On envoie la modification au serveur.
-      // Dès que la promesse résout, le service pousse la nouvelle valeur dans le Subject,
-      // ce qui déclenche le 'tap' du ngOnInit ci-dessus et met à jour ton UI tout seul !
       await this.accountService.updateProfile({ [field]: value });
+      this.lastServerState[field] = value;
     } catch (error) {
-      console.error(`Échec de la mise à jour réseau pour le champ ${field}`, error);
-      // L'UI ne bouge pas et reste synchronisée sur l'ancienne valeur valide en cas de coupure.
+      console.error(`Échec de la mise à jour pour ${field}`, error);
+      // En cas d'erreur réseau, on remet l'ancienne valeur du serveur dans l'input
+      (this.profileForm as any)[field] = this.lastServerState[field];
     }
   }
 
@@ -194,18 +198,6 @@ export class ProfileManagementComponent implements OnInit {
     const orderedIds = this.photos.map(p => p.id);
     await this.accountService.reorderPhotos(orderedIds);
   }
-
-  // async addImageToGallery(event: any) {
-  //
-  //   let data = {} as any;
-  //   data.file = event.target.files[0];
-  //   data.name = data.file.name;
-  //   data.collectionId = this.imagesCollections[this.selectedGallery].id;
-  //
-  //   this.isLoadingGallery.next(true);
-  //   await this.storage.addImageToGallery(data);
-  //   this.isLoadingGallery.next(false);
-  // }
 
   setMain(photo: PhotoItem) {
     this.accountService.setMainPhoto(photo.id);
