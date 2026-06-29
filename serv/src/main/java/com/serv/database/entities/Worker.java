@@ -100,6 +100,11 @@ public class Worker extends VenusUser {
         this.role = UserRole.WORKER;
     }
 
+    public Worker(String username, Email email, String password) {
+        this(email,password);
+        this.username = username;
+    }
+
     public Worker() {
         this.role = UserRole.WORKER;
     }
