@@ -84,7 +84,7 @@ public class AuthController {
 
         // TODO check password
 
-        Client client = new Client(req.email(), new Email(req.email()), req.password());
+        Client client = new Client(new Email(req.email()), req.password());
         client.setLocked(true);
         clientRepository.save(client);
         return ResponseEntity.ok().build();
@@ -102,7 +102,7 @@ public class AuthController {
 
         // TODO check password
 
-        Worker worker = new Worker(req.email(), new Email(req.email()), req.password());
+        Worker worker = new Worker(new Email(req.email()), req.password());
         worker.setDisabled(true);
         worker.setLocked(true);
         worker.setExpired(true);

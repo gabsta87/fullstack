@@ -20,8 +20,8 @@ public class Client extends VenusUser {
     @OneToMany(fetch = FetchType.EAGER)
     Collection<Worker> favorites;
 
-    public Client(String name, Email email, String password) {
-        super(name,email,password);
+    public Client(Email email, String password) {
+        super(email,password);
         this.role = UserRole.CLIENT;
     }
 

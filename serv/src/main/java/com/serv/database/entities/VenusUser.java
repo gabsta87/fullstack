@@ -47,8 +47,7 @@ public abstract class VenusUser {
 
     private static final BCryptPasswordEncoder ENCODER = new BCryptPasswordEncoder();
 
-    public VenusUser(String username, Email email, String password) {
-        this.username = username;
+    public VenusUser(Email email, String password) {
         this.email = email;
         this.passwordHash = ENCODER.encode(password);
     }

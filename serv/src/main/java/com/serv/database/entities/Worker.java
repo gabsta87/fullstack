@@ -95,8 +95,8 @@ public class Worker extends VenusUser {
     @Column(name = "subscription_expires_at")
     private Instant subscriptionExpiresAt;
 
-    public Worker(String username, Email email, String password) {
-        super(username, email, password);
+    public Worker(Email email, String password) {
+        super(email, password);
         this.role = UserRole.WORKER;
     }
 
