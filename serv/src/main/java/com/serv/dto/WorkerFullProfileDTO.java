@@ -4,9 +4,6 @@ import com.serv.database.entities.Service;
 import com.serv.database.entities.Worker;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,7 +43,7 @@ public record WorkerFullProfileDTO(
                 w.getPhotos().stream()
                         .map(PhotoDTO::from)
                         .toList(),
-                List.of()     // TODO: videos when Video entity is enabled
+                List.of() // TODO: videos when Video entity is enabled
         );
     }
 

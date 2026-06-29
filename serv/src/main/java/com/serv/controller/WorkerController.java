@@ -6,8 +6,8 @@ import com.serv.database.repositories.GeographicZoneRepository;
 import com.serv.database.repositories.ServiceRepository;
 import com.serv.database.repositories.WorkerRepository;
 import com.serv.dto.GeographicZoneDTO;
-import com.serv.dto.WorkerFullProfileDTO;
 import com.serv.dto.WorkerMinimalProfileDTO;
+import com.serv.dto.WorkerPublicFullProfileDTO;
 import com.serv.service.WorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -60,9 +60,10 @@ public class WorkerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<WorkerFullProfileDTO> getProfile(@PathVariable UUID id) {
-        return workerRepository.findById(id)
-                .map(w -> ResponseEntity.ok(WorkerFullProfileDTO.from(w)))
+    @Transactional(readOnly = true)
+    public ResponseEntity<WorkerPublicFullProfileDTO> getProfile(@PathVariable UUID id) {
+        return workerRepository.findByIdWithPhotos(id)
+                .map(w -> ResponseEntity.ok(WorkerPublicFullProfileDTO.from(w)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
