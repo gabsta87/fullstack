@@ -1,3 +1,4 @@
+favorite profiles should be shown as favorites on the homepage
 image selection for workers : only jpg and supported formats
 homepage/gallery : apply filters by making the right request to the server
 profile : favorite button : add favorite worker to the user's profile if logged, else show a popup to log in

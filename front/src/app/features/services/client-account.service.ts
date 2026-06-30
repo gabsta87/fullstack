@@ -4,6 +4,7 @@ import {BehaviorSubject, firstValueFrom, Observable, of} from 'rxjs';
 import {environment} from "../../../environments/environment";
 import {tap} from "rxjs/operators";
 import {ClientPrivateAccount} from "../models/user.model";
+import {GalleryFilters} from "../models/filter.model";
 
 @Injectable({ providedIn: 'root' })
 export class ClientAccountService {
@@ -46,7 +47,6 @@ export class ClientAccountService {
   }
 
   async setCurrentUserLanguage(lang: string): Promise<any> {
-    // 🎯 Correction du chemin : pointe vers le hub commun /account/language
     return await firstValueFrom(this.http.patch(`${environment.apiBase}/account/language`, { lang }));
   }
 
@@ -56,5 +56,9 @@ export class ClientAccountService {
 
   async removeFavorite(workerId: string): Promise<any> {
     return await firstValueFrom(this.http.delete(`${this.base}/favorites/${workerId}`));
+  }
+
+  async getSavedPreferences(): Promise<GalleryFilters>{
+    return await firstValueFrom(this.http.get(`${this.base}/filters`));
   }
 }

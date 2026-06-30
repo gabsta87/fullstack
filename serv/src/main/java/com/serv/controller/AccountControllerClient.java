@@ -3,12 +3,11 @@ package com.serv.controller;
 import com.serv.common.Requests;
 import com.serv.database.entities.Client;
 import com.serv.database.entities.Email;
-import com.serv.database.entities.VenusUser;
 import com.serv.database.entities.Worker;
 import com.serv.database.repositories.ClientRepository;
-import com.serv.database.repositories.UserRepository;
 import com.serv.database.repositories.WorkerRepository;
 import com.serv.dto.ClientDTO;
+import com.serv.dto.GalleryFiltersDTO;
 import com.serv.service.SseStreamService;
 import com.serv.service.WorkerService;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AccountControllerClient {
 
-    private final UserRepository userRepository;
     private final WorkerRepository workerRepository;
     private final WorkerService galleryService;
     private final ClientRepository clientRepository;
@@ -108,15 +106,23 @@ public class AccountControllerClient {
 
         client.getFavorites().removeIf(w -> w.getId().equals(workerId));
 
-        // 🎯 FIX : Utilisation de clientRepository
         Client patchedUser = clientRepository.save(client);
 
         ClientDTO dto = ClientDTO.from(patchedUser);
         sseStreamService.emitEvent(patchedUser.getId(), "account-update", dto);
 
-        // 🎯 FIX : Renvoi du DTO au lieu de l'entité brute pour éviter la panne Jackson
         return ResponseEntity.ok(dto);
     }
+
+    @GetMapping("/filters")
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> getFilters(@AuthenticationPrincipal Jwt jwt) {
+        Client client = jwtClient(jwt);
+        if (client == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
+
+        return ResponseEntity.ok(GalleryFiltersDTO.from(client));
+    }
+
 
     private Client jwtClient(Jwt jwt) {
         if (jwt == null) return null;

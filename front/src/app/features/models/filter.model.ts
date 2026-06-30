@@ -5,6 +5,9 @@ export interface GalleryFilters {
   eyeColor?: string;
   hairColor?: string;
   username?: string;
+  languages?: string[];
+  minAge?: string;
+  maxAge?: string;
 }
 
 export interface GeographicZone {
