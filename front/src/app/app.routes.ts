@@ -1,6 +1,5 @@
 import {Routes} from '@angular/router';
 import {HomepageComponent} from './features/components/homepage/homepage.component';
-import {NgxPayComponent} from "./features/components/ngx-pay/ngx-pay.component";
 import {ProfileComponent} from "./features/components/profile/profile.component";
 import {AccountComponent} from "./features/components/account/account.component";
 import {authGuard} from "./features/guards/auth.guard";
@@ -32,7 +31,6 @@ export const routes: Routes = [
       profile: profileVisitingResolver,
       locations:    geographicZonesResolver,
   } },
-  { path: 'ngx-pay', component: NgxPayComponent, canActivate: [authGuard] },
   { path: 'account', component: AccountComponent, canActivate: [authGuard],
     resolve: {
       profile: accountResolver,

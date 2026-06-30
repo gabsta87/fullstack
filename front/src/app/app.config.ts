@@ -5,7 +5,6 @@ import {HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi} from '@ang
 import { provideAnimations } from '@angular/platform-browser/animations';
 
 import { routes } from './app.routes';
-import {provideNgxStripe} from "ngx-stripe";
 import { provideIonicAngular } from '@ionic/angular/standalone';
 import {JwtInterceptor} from "./features/interceptors/jwt.interceptor";
 
@@ -14,7 +13,6 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(),
-    provideNgxStripe(),
     provideAnimations(),
     provideIonicAngular(),
     provideHttpClient(
