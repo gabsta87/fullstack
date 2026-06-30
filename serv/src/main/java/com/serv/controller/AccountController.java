@@ -193,12 +193,25 @@ public class AccountController {
         if (client == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         Optional<Worker> foundWorker = workerRepository.findById(workerId);
-
         if (foundWorker.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Worker not found.");
 
-        client.getFavorites().add(foundWorker.get());
-        userRepository.save(client);
-        return ResponseEntity.ok().build();
+        Worker worker = foundWorker.get();
+
+        // 🎯 FIX 1 : Protection contre le double-clic (Idempotence)
+        // On vérifie si ce worker n'est pas déjà dans les favoris du client
+        boolean alreadyFavorite = client.getFavorites().stream()
+                .anyMatch(w -> w.getId().equals(workerId));
+
+        if (!alreadyFavorite) {
+            client.getFavorites().add(worker);
+            client = userRepository.save(client);
+
+            // On n'émet l'événement SSE que s'il y a eu un réel changement
+            sseStreamService.emitEvent(client.getId(), "account-update", ClientDTO.from(client));
+        }
+
+        // 🎯 FIX 2 : On renvoie le ClientDTO.from() au lieu de l'entité pour éviter le crash Jackson
+        return ResponseEntity.ok(ClientDTO.from(client));
     }
 
     /** DELETE /account/favorites/{workerId} */
@@ -209,8 +222,10 @@ public class AccountController {
         if (client == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
         client.getFavorites().removeIf(w -> w.getId().equals(workerId));
-        userRepository.save(client);
-        return ResponseEntity.ok().build();
+        Client patchedUser = userRepository.save(client);
+        sseStreamService.emitEvent(patchedUser.getId(), "account-update", ClientDTO.from(patchedUser));
+
+        return ResponseEntity.ok(patchedUser);
     }
 
     // ── WORKER ────────────────────────────────────────────────────────────────
