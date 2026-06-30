@@ -22,12 +22,12 @@
         <div class="profile-card actions-card">
           <ion-button expand="block" color="primary">Contacter</ion-button>
 
-          <ion-button expand="block" fill="outline" color="medium" (click)="toggleFavorite()">
-            <ion-icon slot="start" [name]="isFavorite ? 'heart' : 'heart-outline'"></ion-icon>
+          <ion-button *ngIf="isClient" expand="block" fill="outline" color="medium" (click)="toggleFavorite()">
+            <ion-icon slot="start" [name]="isFavorite ? 'heart' : 'heart-outline'" [color]="isFavorite ? 'danger' : ''"></ion-icon>
             Favoris
           </ion-button>
 
-          <ion-button expand="block" fill="outline" color="medium" (click)="toggleNotify()">
+          <ion-button *ngIf="isClient" expand="block" fill="outline" color="medium" (click)="toggleNotify()">
             <ion-icon slot="start" [name]="notifyEnabled ? 'notifications' : 'notifications-outline'"></ion-icon>
             Me notifier son retour
           </ion-button>

@@ -38,6 +38,9 @@ import {
 import {PhotoItem, Review, VideoItem} from '../../models/items.model';
 import {WorkerFullProfile} from "../../models/user.model";
 import {HeaderComponent} from "../header/header.component";
+import {ClientAccountService} from "../../services/client-account.service";
+import {AuthService} from "../../services/auth.service";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-profile',
@@ -54,6 +57,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
   worker: WorkerFullProfile | null = null;
   isFavorite     = false;
   notifyEnabled  = false;
+  isClient       = false;
+  private clientAccountSub?: Subscription;
 
   lightbox: {
     open: boolean; type: 'photo' | 'video';
@@ -64,7 +69,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
   newReview = { rating: 0, text: '' };
   starRange = [1, 2, 3, 4, 5];
 
-  constructor(private route: ActivatedRoute) {
+  constructor(private route: ActivatedRoute,
+              private clientAccountService: ClientAccountService,
+              private authService : AuthService
+  ) {
     addIcons({
       callOutline, logoWhatsapp, heartOutline, heart,
       notificationsOutline, notifications, warningOutline,
@@ -78,6 +86,20 @@ export class ProfileComponent implements OnInit, OnDestroy {
     // The resolver already fetched (or cache-hit) the profile —
     // it's available synchronously here, no subscribe needed.
     this.worker = this.route.snapshot.data['profile'] ?? null;
+
+    const currentUser = this.authService.getUser();
+    this.isClient = currentUser?.role === 'CLIENT';
+
+    if (this.isClient && this.worker) {
+      this.clientAccountSub = this.clientAccountService.listenToMyAccount().subscribe({
+        next: (clientAccount) => {
+          // On vérifie en temps réel si l'ID du worker est dans la liste des favoris du client
+          this.isFavorite = clientAccount.favorites?.some(f => f.id === this.worker?.id) ?? false;
+          console.log(`[SSE] Statut favori mis à jour pour ${this.worker?.username} :`, this.isFavorite);
+        },
+        error: (err) => console.error("Erreur du flux de favoris client", err)
+      });
+    }
     console.log("Worker : ", this.worker);
   }
 
@@ -128,14 +150,29 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   // ── User actions ──────────────────────────────────────────────────────────
 
-  toggleFavorite(): void {
-    this.isFavorite = !this.isFavorite;
-    // TODO: FavoritesService.toggle(this.worker!.id)
+  async toggleFavorite(): Promise<void> {
+    if (!this.worker || !this.isClient) return;
+
+    try {
+      if (this.isFavorite) {
+        console.log("Retrait des favoris...");
+        await this.clientAccountService.removeFavorite(this.worker.id);
+      } else {
+        console.log("Ajout aux favoris...");
+        await this.clientAccountService.addFavorite(this.worker.id);
+      }
+      // Note : Pas besoin d'écrire "this.isFavorite = !this.isFavorite" manuellement ici !
+      // Dès que le serveur répond, le flux SSE (Etape 2) va intercepter l'événement
+      // et faire basculer l'icône automatiquement à l'écran.
+    } catch (error) {
+      console.error("Impossible de modifier le favori :", error);
+    }
   }
 
   toggleNotify(): void {
+    if (!this.isClient) return;
     this.notifyEnabled = !this.notifyEnabled;
-    // TODO: NotificationService.toggle(this.worker!.id)
+    // TODO: Appel à ton futur NotificationService.toggle(this.worker!.id)
   }
 
   report(): void {
@@ -163,5 +200,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     document.body.style.overflow = '';
+  }
+
+  addFavorite() : void{
+    if(this.worker == null) return;
+    this.clientAccountService.addFavorite(this.worker?.id);
   }
 }
