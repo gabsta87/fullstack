@@ -5,15 +5,13 @@ import com.serv.database.entities.VenusUser;
 public record VenusUserDTO(
     String id,
     String username,
-    String role,
-    String language
+    String role
 ) {
     public static VenusUserDTO from(VenusUser u) {
         return new VenusUserDTO(
                 u.getId().toString(),
                 u.getUsername(),
-                u.getRole().toString(),
-                u.getLanguage() != null ? u.getLanguage().toString() : ""
+                u.getRole().toString()
         );
     }
 

@@ -1,7 +1,9 @@
 package com.serv.dto;
 
+import com.serv.common.Language;
 import com.serv.database.entities.Service;
 import com.serv.database.entities.Worker;
+import com.serv.database.entities.WorkerLanguage;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,7 +21,8 @@ public record WorkerPublicFullProfileDTO(
         String            mainThumbUrl,
         Integer           age,
         List<PhotoDTO>    photos,
-        List<VideoDTO>    videos
+        List<VideoDTO>    videos,
+        List<String>      languages
 ) {
     public static WorkerPublicFullProfileDTO from(Worker w) {
         String mainThumb = w.getMainPhoto() != null
@@ -38,7 +41,8 @@ public record WorkerPublicFullProfileDTO(
                 mainThumb,
                 WorkerMinimalProfileDTO.calculateAge(w.getBirthdate()),
                 w.getPhotos() != null ? w.getPhotos().stream().map(PhotoDTO::from).toList() : List.of(),
-                List.of() // TODO: videos quand l'entité sera prête
+                List.of(), // TODO: videos quand l'entité sera prête
+                w.getSpokenLanguages().stream().map(WorkerLanguage::toString).toList()
         );
     }
 

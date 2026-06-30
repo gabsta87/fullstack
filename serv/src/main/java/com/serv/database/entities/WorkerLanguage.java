@@ -22,4 +22,8 @@ public class WorkerLanguage {
     // Niveau de maîtrise (1 à 3)
     @Column(name = "mastery_level", nullable = false)
     private int masteryLevel;
+
+    public String toString() {
+        return language.toString() + " - " + masteryLevel;
+    }
 }

@@ -55,29 +55,6 @@ public class AccountController {
         }
     }
 
-    @PatchMapping("/language")
-    @Transactional
-    public ResponseEntity<?> setLanguage(@RequestBody String language, @AuthenticationPrincipal Jwt jwt) {
-        VenusUser user = jwtUser(jwt);
-        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
-
-        Optional<Language> languageOpt = Language.fromRepositoryOrString(language);
-
-        if (languageOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body("Invalid language code.");
-        }
-        Language newLanguage = languageOpt.get();
-
-        user.setLanguage(newLanguage);
-        userRepository.save(user);
-
-        VenusUser patchedUser = userRepository.save(user);
-
-        sseStreamService.emitEvent(patchedUser.getId(), "account-update", VenusUserDTO.from(patchedUser));
-
-        return ResponseEntity.ok(patchedUser);
-    }
-
     /**
      * PATCH /account/data
      * Update username, email, or password — works for both roles.

@@ -8,7 +8,6 @@ public record ClientDTO(
         String username,
         String role,
         String email,
-        String language,
         List<WorkerMinimalProfileDTO> favorites,
         GeographicZoneDTO geographicZone
 ) {
@@ -18,7 +17,6 @@ public record ClientDTO(
                 c.getUsername(),
                 c.getRole().toString(),
                 c.getEmail().toString(),
-                c.getLanguage().toString(),
                 c.getFavorites() != null ? c.getFavorites().stream()
                                                             .map(WorkerMinimalProfileDTO::from)
                                                             .toList() : new ArrayList<>(),

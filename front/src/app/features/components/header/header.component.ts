@@ -43,7 +43,7 @@ export class HeaderComponent {
 
   ngOnInit() {
     // Au démarrage, on récupère la langue stockée ou on met 'FR' par défaut
-    const savedLang = localStorage.getItem('site_lang') || 'EN';
+    const savedLang = localStorage.getItem('site_lang') || 'FR';
     this.applyLanguage(savedLang);
   }
 

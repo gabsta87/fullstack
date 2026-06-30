@@ -45,6 +45,8 @@ public class WorkerController {
     public ResponseEntity<List<WorkerMinimalProfileDTO>> getGallery(Requests.WorkerSearchRequest req) {
         Map<String, Object> allFilters = new HashMap<>();
 
+        System.out.println("Request received with filters : " + req);
+
         // 1. Cas particulier de la ZoneId (qui nécessite ton parsing String -> Integer de sécurité)
         if (req.zoneId() != null && !req.zoneId().isBlank() && !req.zoneId().equalsIgnoreCase("undefined")) {
             try {
