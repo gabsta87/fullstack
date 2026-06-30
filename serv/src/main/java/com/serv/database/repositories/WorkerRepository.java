@@ -1,6 +1,5 @@
 package com.serv.database.repositories;
 
-import com.serv.database.entities.Email;
 import com.serv.database.entities.Worker;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -21,9 +20,6 @@ public interface WorkerRepository extends JpaRepository<Worker, UUID>, JpaSpecif
 
     @Query("SELECT w FROM Worker w LEFT JOIN FETCH w.photos WHERE w.id = :id")
     Optional<Worker> findByIdWithPhotos(@Param("id") UUID id);
-
-    @Query("SELECT w FROM Worker w LEFT JOIN FETCH w.photos WHERE w.email = :email")
-    Optional<Worker> findByEmailWithPhotos(@Param("email") Email email);
 
     List<Worker> findByServicesId(Integer serviceId);
 }

@@ -28,6 +28,7 @@ public class JwtProvider {
                 .issuedAt(now)
                 .expiresAt(now.plus(30, ChronoUnit.DAYS))
                 .subject(user.getEmail().toString())
+                .claim("userId", user.getId().toString())
                 .claim("role", "ROLE_" + user.getRole().toString())
                 .build();
 

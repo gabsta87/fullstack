@@ -1,16 +1,16 @@
 import {Component, OnInit} from '@angular/core';
 import {CommonModule} from "@angular/common";
-import {IonicModule, ItemReorderEventDetail} from "@ionic/angular";
+import {IonicModule} from "@ionic/angular";
 import {FormsModule} from "@angular/forms";
 import {HeaderComponent} from "../header/header.component";
-import {map, Observable} from "rxjs";
+import {filter, map, Observable} from "rxjs";
 import {BODY_TYPE_LABELS, PhotoItem} from "../../models/items.model";
 import {ActivatedRoute} from "@angular/router";
 import {WorkerFullProfile, WorkerPrivateAccount, WorkerProfileUpdate} from "../../models/user.model";
 import {WorkerAccountService} from "../../services/worker-account.service";
 import {tap} from "rxjs/operators";
 import {addIcons} from "ionicons";
-import {addCircleOutline, camera, move, trashOutline, warningOutline} from 'ionicons/icons';
+import {addCircleOutline, camera, move, trashOutline, warningOutline, star, starOutline} from 'ionicons/icons';
 import {AccountSettingsComponent} from "../account-settings/account-settings.component";
 import {GeographicZone} from "../../models/filter.model";
 import {ZoneSelectorComponent} from "../zone-selector/zone-selector.component";
@@ -29,7 +29,7 @@ export class ProfileManagementComponent implements OnInit {
 
   currentUser$! : Observable<WorkerPrivateAccount>;
   allServices!  : string[];
-  photos!       : PhotoItem[];
+  photos!: (PhotoItem & { isMain: boolean })[];
   allLocations! : GeographicZone[];
 
   // Profile form
@@ -39,16 +39,9 @@ export class ProfileManagementComponent implements OnInit {
   dragOverIndex: number | null = null;
   draggedIndex: number | null = null;
 
-  // Settings
-  settingsForm = { username: '', email: '', password: '' };
-  settingsPassword2 = '';
-  settingsSaved = false;
-  settingsError = '';
-  savingSettings = false;
-
   constructor(private accountService: WorkerAccountService, private route : ActivatedRoute) {
     addIcons({
-      addCircleOutline,trashOutline,move, camera, warningOutline
+      addCircleOutline, trashOutline, move, camera, warningOutline, star, starOutline
     });
   }
 
@@ -61,40 +54,43 @@ export class ProfileManagementComponent implements OnInit {
 
     // 2. Flux unique pour l'UI & Synchronisation automatique du formulaire
     this.currentUser$ = this.accountService.listenToMyAccount().pipe(
+      filter((user): user is WorkerPrivateAccount => user !== null),
       tap(user => {
-        if (user) {
 
-          this.photos = (user.photos || []).map(photo => {
-            return {
-              ...photo,
-              previewThumbUrl: photo.previewThumbUrl?.startsWith('http')
-                ? photo.previewThumbUrl
-                : `${environment.apiBase}${photo.previewThumbUrl}`,
-              mainThumbUrl: photo.mainThumbUrl?.startsWith('http')
-                ? photo.mainThumbUrl
-                : `${environment.apiBase}${photo.mainThumbUrl}`
-            };
-          });
+        // 🎯 On mappe en calculant le booléen 'isMain'
+        this.photos = (user.photos || []).map(photo => {
+          // Une photo est la principale si son URL brute correspond à celle du profil
+          const isCurrentMain = photo.mainThumbUrl === user.mainThumbUrl;
 
-          // SÉCURISATION DE LA DATE POUR LE CALENDRIER HTML5
-          let cleanBirthdate = '';
-          if (user.birthdate) {
-            const d = new Date(user.birthdate);
-            if (!isNaN(d.getTime())) {
-              cleanBirthdate = d.toISOString().split('T')[0];
-            }
-          }
-
-          this.lastServerState = {
-            bodyType: user.bodyType,
-            geographicZoneId: user.geographicZone?.id,
-            description: user.description,
-            phone: user.phone,
-            birthdate: cleanBirthdate
+          return {
+            ...photo,
+            isMain: isCurrentMain, // On injecte la propriété manquante ici !
+            previewThumbUrl: photo.previewThumbUrl?.startsWith('http')
+              ? photo.previewThumbUrl
+              : `${environment.apiBase}${photo.previewThumbUrl}`,
+            mainThumbUrl: photo.mainThumbUrl?.startsWith('http')
+              ? photo.mainThumbUrl
+              : `${environment.apiBase}${photo.mainThumbUrl}`
           };
+        });
 
-          this.profileForm = { ...this.lastServerState };
+        let cleanBirthdate = '';
+        if (user.birthdate) {
+          const d = new Date(user.birthdate);
+          if (!isNaN(d.getTime())) {
+            cleanBirthdate = d.toISOString().split('T')[0];
+          }
         }
+
+        this.lastServerState = {
+          bodyType: user.bodyType,
+          geographicZoneId: user.geographicZone?.id,
+          description: user.description,
+          phone: user.phone,
+          birthdate: cleanBirthdate
+        };
+
+        this.profileForm = { ...this.lastServerState };
       })
     );
   }
@@ -132,12 +128,6 @@ export class ProfileManagementComponent implements OnInit {
     return missing;
   }
 
-  setTab(tab: 'profile' | 'photos' | 'settings' | 'subscription') {
-    this.activeTab = tab;
-    this.settingsSaved = false;
-    this.settingsError = '';
-  }
-
   // ── Value modification ─────────────────────────────────────────────────────────
 
   toggleService(me: WorkerFullProfile, service: string) {
@@ -150,8 +140,6 @@ export class ProfileManagementComponent implements OnInit {
     }
     console.log("Services à envoyer au serveur:", updatedServices);
 
-    // 2. Envoyer au serveur
-    // this.accountService.updateServices(updatedServices);
     this.accountService.updateServices(updatedServices);
   }
 
@@ -187,16 +175,6 @@ export class ProfileManagementComponent implements OnInit {
     if (!file) return;
 
     await this.accountService.uploadPhoto(file);
-  }
-
-  // 2. Gérer le réordonnancement (Drag & Drop)
-  async doReorder(event: CustomEvent<ItemReorderEventDetail>) {
-    // Le tableau local est mis à jour automatiquement par Ionic
-    this.photos = event.detail.complete(this.photos);
-
-    // Envoyer le nouvel ordre au backend
-    const orderedIds = this.photos.map(p => p.id);
-    await this.accountService.reorderPhotos(orderedIds);
   }
 
   setMain(photo: PhotoItem) {
@@ -245,24 +223,6 @@ export class ProfileManagementComponent implements OnInit {
   }
 
   // ── Settings ──────────────────────────────────────────────────────────────
-
-  saveSettings() {
-    this.settingsError = '';
-    this.settingsSaved = false;
-
-    if (this.settingsForm.password && this.settingsForm.password !== this.settingsPassword2) {
-      this.settingsError = 'Les mots de passe ne correspondent pas.';
-      return;
-    }
-
-    const payload: any = {};
-    if (this.settingsForm.username) payload.username = this.settingsForm.username;
-    if (this.settingsForm.email)    payload.email    = this.settingsForm.email;
-    if (this.settingsForm.password) payload.password = this.settingsForm.password;
-
-    this.savingSettings = true;
-    // this.accountService.updateSettings(payload);
-  }
 
   async handleSettingsSave(event: any) {
     const { payload, setLoading, setSuccess, setError } = event;
@@ -335,6 +295,5 @@ export class ProfileManagementComponent implements OnInit {
   }
 
   protected readonly BODY_TYPE_LABELS = BODY_TYPE_LABELS;
-  // protected readonly EYE_COLOR_LABELS = EYE_COLOR_LABELS;
-  // protected readonly HAIR_COLOR_LABELS = HAIR_COLOR_LABELS;
+  protected readonly environment = environment;
 }

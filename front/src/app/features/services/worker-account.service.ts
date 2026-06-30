@@ -5,76 +5,55 @@ import { tap } from "rxjs/operators";
 import { environment } from "../../../environments/environment";
 import { WorkerPrivateAccount, WorkerProfileUpdate } from "../models/user.model";
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class WorkerAccountService {
-  private base = `${environment.apiBase}/account`;
+  // 🎯 Changement de chemin vers le contrôleur spécifique Worker
+  private base = `${environment.apiBase}/account/worker`;
   private accountSubject = new BehaviorSubject<WorkerPrivateAccount | null>(null);
 
-  constructor(private http: HttpClient, private zone: NgZone) { }
+  constructor(private http: HttpClient) { }
 
   getCurrentAccount(): Observable<WorkerPrivateAccount> {
     const current = this.accountSubject.value;
-    if (current) {
-      return of(current);
-    }
+    if (current) return of(current);
+
     return this.http.get<WorkerPrivateAccount>(`${this.base}/me`).pipe(
       tap(account => this.accountSubject.next(account))
     );
   }
 
-  listenToMyAccount(): Observable<WorkerPrivateAccount> {
-    return new Observable<WorkerPrivateAccount>(observer => {
-      // Émission immédiate de la valeur en cache si elle existe
-      if (this.accountSubject.value) {
-        observer.next(this.accountSubject.value);
-      }
-
-      const token = localStorage.getItem('auth_token');
-      const eventSource = new EventSource(`${environment.apiBase}/account/stream?token=${token}`);
-
-      eventSource.addEventListener('account-update', (event: MessageEvent) => {
-        this.zone.run(() => {
-          const updatedAccount = JSON.parse(event.data);
-          this.accountSubject.next(updatedAccount);
-          observer.next(updatedAccount);
-        });
-      });
-
-      eventSource.onerror = (error) => {
-        this.zone.run(() => observer.error(error));
-      };
-
-      // 🧼 Nettoyage automatique : ferme le flux SSE quand le composant Angular est détruit
-      return () => eventSource.close();
-    });
+  updateCache(account: WorkerPrivateAccount) {
+    this.accountSubject.next(account);
   }
 
   clearCache() {
     this.accountSubject.next(null);
   }
 
+  // 🎯 Plus de fuite réseau ici non plus !
+  listenToMyAccount(): Observable<WorkerPrivateAccount | null> {
+    return this.accountSubject.asObservable();
+  }
+
+  // 🎯 Correction des chemins ci-dessous pour éviter le bug "/worker/worker/..."
   async setAvailability(available: boolean): Promise<WorkerPrivateAccount> {
     const updatedAccount = await firstValueFrom(
-      this.http.patch<WorkerPrivateAccount>(`${this.base}/worker/availability`, { available }));
+      this.http.patch<WorkerPrivateAccount>(`${this.base}/availability`, { available }));
     this.accountSubject.next(updatedAccount);
     return updatedAccount;
   }
 
   async updateProfileData(payload: any): Promise<WorkerPrivateAccount> {
-    console.log("updateProfileData : ", payload);
     const updatedAccount = await firstValueFrom(
       this.http.patch<WorkerPrivateAccount>(`${this.base}/data`, payload)
     );
-    // 🎯 Correction : On pousse la mise à jour ici aussi !
     this.accountSubject.next(updatedAccount);
     return updatedAccount;
   }
 
   async updateProfile(data: WorkerProfileUpdate): Promise<WorkerPrivateAccount> {
     const updatedAccount = await firstValueFrom(
-      this.http.patch<WorkerPrivateAccount>(`${this.base}/worker/profile`, data)
+      this.http.patch<WorkerPrivateAccount>(`${this.base}/profile`, data)
     );
     this.accountSubject.next(updatedAccount);
     return updatedAccount;
@@ -82,7 +61,7 @@ export class WorkerAccountService {
 
   async updateServices(services: string[]): Promise<WorkerPrivateAccount> {
     const updatedAccount = await firstValueFrom(
-      this.http.patch<WorkerPrivateAccount>(`${this.base}/worker/updateservices`, services)
+      this.http.patch<WorkerPrivateAccount>(`${this.base}/updateservices`, services)
     );
     this.accountSubject.next(updatedAccount);
     return updatedAccount;
@@ -92,18 +71,18 @@ export class WorkerAccountService {
     const fd = new FormData();
     fd.append('file', file);
     if (title) fd.append('title', title);
-    return await firstValueFrom(this.http.post(`${this.base}/worker/photos`, fd));
+    return await firstValueFrom(this.http.post(`${this.base}/photos`, fd));
   }
 
   async deletePhoto(photoId: string): Promise<void> {
-    await firstValueFrom(this.http.delete(`${this.base}/worker/photos/${photoId}`));
+    await firstValueFrom(this.http.delete(`${this.base}/photos/${photoId}`));
   }
 
   async setMainPhoto(photoId: string): Promise<any> {
-    return await firstValueFrom(this.http.patch(`${this.base}/worker/photos/${photoId}/main`, {}));
+    return await firstValueFrom(this.http.patch(`${this.base}/photos/${photoId}/main`, {}));
   }
 
   async reorderPhotos(orderedIds: string[]): Promise<any> {
-    return await firstValueFrom(this.http.patch(`${this.base}/worker/photos/reorder`, orderedIds));
+    return await firstValueFrom(this.http.patch(`${this.base}/photos/reorder`, orderedIds));
   }
 }

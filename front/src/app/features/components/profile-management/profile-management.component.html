@@ -22,7 +22,9 @@
         <ion-col size="12" size-md="auto" class="ion-text-center">
           <div class="avatar-wrapper">
             <ion-avatar>
-              <img [src]="me.mainThumbUrl || 'assets/default-avatar.png'" />
+              <img [src]="me.mainThumbUrl
+              ? (me.mainThumbUrl.startsWith('http') ? me.mainThumbUrl : environment.apiBase + me.mainThumbUrl)
+              : 'assets/default-avatar.png'" />
             </ion-avatar>
             <ion-fab-button size="small" class="edit-photo-btn">
               <ion-icon name="camera"></ion-icon>
@@ -163,6 +165,10 @@
                   <img [src]="photo.previewThumbUrl" class="gallery-img" />
 
                   <div class="gallery-actions-overlay">
+                    <ion-button [color]="photo.isMain ? 'warning' : 'light'" fill="clear" size="small" (click)="setMain(photo); $event.stopPropagation();">
+                      <ion-icon [name]="photo.isMain ? 'star' : 'star-outline'" slot="icon-only"></ion-icon>
+                    </ion-button>
+
                     <ion-button color="danger" fill="clear" size="small" (click)="deletePhoto(photo); $event.stopPropagation();">
                       <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
                     </ion-button>

@@ -94,7 +94,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.clientAccountSub = this.clientAccountService.listenToMyAccount().subscribe({
         next: (clientAccount) => {
           // On vérifie en temps réel si l'ID du worker est dans la liste des favoris du client
-          this.isFavorite = clientAccount.favorites?.some(f => f.id === this.worker?.id) ?? false;
+          this.isFavorite = clientAccount?.favorites?.some(f => f.id === this.worker?.id) ?? false;
           console.log(`[SSE] Statut favori mis à jour pour ${this.worker?.username} :`, this.isFavorite);
         },
         error: (err) => console.error("Erreur du flux de favoris client", err)
