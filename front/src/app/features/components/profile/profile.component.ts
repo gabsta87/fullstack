@@ -32,7 +32,8 @@ import {
   playCircleOutline,
   timeOutline,
   warningOutline,
-  womanOutline
+  womanOutline,
+  personOutline
 } from 'ionicons/icons';
 
 import {PhotoItem, Review, VideoItem} from '../../models/items.model';
@@ -78,7 +79,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       notificationsOutline, notifications, warningOutline,
       chevronBackOutline, chevronForwardOutline, closeOutline,
       playCircleOutline, locationOutline, calendarOutline,
-      bodyOutline, timeOutline, womanOutline
+      bodyOutline, timeOutline, womanOutline, personOutline
     });
   }
 
