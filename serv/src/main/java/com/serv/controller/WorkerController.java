@@ -47,37 +47,25 @@ public class WorkerController {
 
         System.out.println("Request received with filters : " + req);
 
-        // 1. Cas particulier de la ZoneId (qui nécessite ton parsing String -> Integer de sécurité)
+        // 1. Zone ID
         if (req.zoneId() != null && !req.zoneId().isBlank() && !req.zoneId().equalsIgnoreCase("undefined")) {
-            try {
-                allFilters.put("zoneId", Integer.parseInt(req.zoneId()));
-            } catch (NumberFormatException ignored) {}
+            try { allFilters.put("zoneId", Integer.parseInt(req.zoneId())); } catch (NumberFormatException ignored) {}
         }
 
-        // 2. 🎯 AUTOMATISATION DU RESTE DES FILTRES PAR RÉFLEXION
-        // Parcourt toutes les méthodes/champs du record "WorkerSearchRequest"
-        for (java.lang.reflect.Method method : req.getClass().getDeclaredMethods()) {
-            try {
-                String name = method.getName();
+        // 2. Assignations explicites et robustes
+        if (req.username() != null && !req.username().isBlank()) allFilters.put("username", req.username().trim());
+        if (req.bodyType() != null && !req.bodyType().isBlank()) allFilters.put("bodyType", req.bodyType().trim());
+        if (req.eyeColor() != null && !req.eyeColor().isBlank()) allFilters.put("eyeColor", req.eyeColor().trim());
+        if (req.hairColor() != null && !req.hairColor().isBlank()) allFilters.put("hairColor", req.hairColor().trim());
+        if (req.gender() != null && !req.gender().isBlank()) allFilters.put("gender", req.gender().trim());
 
-                // On ignore les méthodes techniques et la zoneId déjà gérée
-                if (name.equals("page") || name.equals("getPageOrZero") || name.equals("zoneId") || name.equals("equals") || name.equals("hashCode") || name.equals("toString")) {
-                    continue;
-                }
+        // Pour l'âge (on accepte le fait que ça vienne sous n'importe quelle forme textuelle ou numérique)
+        if (req.minAge() != null && !req.minAge().toString().isBlank()) allFilters.put("minAge", req.minAge().toString().trim());
+        if (req.maxAge() != null && !req.maxAge().toString().isBlank()) allFilters.put("maxAge", req.maxAge().toString().trim());
 
-                Object value = method.invoke(req);
-
-                if (value != null) {
-                    if (value instanceof String str && !str.isBlank()) {
-                        allFilters.put(name, str.trim());
-                    } else if (value instanceof List<?> list && !list.isEmpty()) {
-                        allFilters.put(name, list);
-                    }
-                }
-            } catch (Exception ignored) {
-                // Sécurité en cas de problème d'accès aux méthodes du record
-            }
-        }
+        // Collections
+        if (req.services() != null && !req.services().isEmpty()) allFilters.put("services", req.services());
+        if (req.languages() != null && !req.languages().isEmpty()) allFilters.put("languages", req.languages());
 
         return ResponseEntity.ok(galleryService.getGalleryPage(req.getPageOrZero(), allFilters));
     }

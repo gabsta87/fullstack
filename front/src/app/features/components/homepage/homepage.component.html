@@ -110,8 +110,8 @@
             <age-range-selector
               [(minAge)]="filters.minAge"
               [(maxAge)]="filters.maxAge"
-              (ionChange)="loadPage(true)">
-              </age-range-selector>
+              (ageRangeChange)="filters.minAge = $event.minAge; filters.maxAge = $event.maxAge; loadPage(true)">
+            </age-range-selector>
           </ion-col>
 
         </ion-row>

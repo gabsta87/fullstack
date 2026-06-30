@@ -4,13 +4,15 @@
       Âge : {{ currentLower }} - {{ currentUpper === 60 ? '60+' : currentUpper + ' ans' }}
     </ion-label>
   </div>
+
   <ion-range
     aria-label="Tranche d'âge"
     [dualKnobs]="true"
     [min]="18"
     [max]="60"
     [pin]="true"
-    [value]="rangeValue"
-    (ionChange)="onRangeChange($event)">
+    [value]="{ lower: currentLower, upper: currentUpper }"
+    (ionInput)="onRangeInput($event)"
+    (ionKnobMoveEnd)="onRangeChangeEnd($event)">
   </ion-range>
 </ion-item>

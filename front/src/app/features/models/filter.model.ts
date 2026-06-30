@@ -8,6 +8,7 @@ export interface GalleryFilters {
   languages?: string[];
   minAge?: string;
   maxAge?: string;
+  gender?: string;
 }
 
 export interface GeographicZone {

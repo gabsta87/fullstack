@@ -35,6 +35,7 @@ public class Requests {
             Integer page,
             String zoneId,
             String username,
+            String gender,
             String bodyType,
             String eyeColor,
             String hairColor,
