@@ -12,9 +12,6 @@ export class WorkerAccountService {
   private base = `${environment.apiBase}/account`;
   private accountSubject = new BehaviorSubject<WorkerPrivateAccount | null>(null);
 
-  // 🎯 Flux public pour lire l'état actuel n'importe où sans relancer de flux SSE
-  public account$ = this.accountSubject.asObservable();
-
   constructor(private http: HttpClient, private zone: NgZone) { }
 
   getCurrentAccount(): Observable<WorkerPrivateAccount> {
@@ -22,7 +19,7 @@ export class WorkerAccountService {
     if (current) {
       return of(current);
     }
-    return this.http.get<WorkerPrivateAccount>(`${this.base}/me`, { withCredentials: true }).pipe(
+    return this.http.get<WorkerPrivateAccount>(`${this.base}/me`).pipe(
       tap(account => this.accountSubject.next(account))
     );
   }
@@ -60,12 +57,7 @@ export class WorkerAccountService {
 
   async setAvailability(available: boolean): Promise<WorkerPrivateAccount> {
     const updatedAccount = await firstValueFrom(
-      this.http.patch<WorkerPrivateAccount>(
-        `${this.base}/worker/availability`,
-        { available },
-        { withCredentials: true }
-      )
-    );
+      this.http.patch<WorkerPrivateAccount>(`${this.base}/worker/availability`, { available }));
     this.accountSubject.next(updatedAccount);
     return updatedAccount;
   }
@@ -73,7 +65,7 @@ export class WorkerAccountService {
   async updateProfileData(payload: any): Promise<WorkerPrivateAccount> {
     console.log("updateProfileData : ", payload);
     const updatedAccount = await firstValueFrom(
-      this.http.patch<WorkerPrivateAccount>(`${this.base}/data`, payload, { withCredentials: true })
+      this.http.patch<WorkerPrivateAccount>(`${this.base}/data`, payload)
     );
     // 🎯 Correction : On pousse la mise à jour ici aussi !
     this.accountSubject.next(updatedAccount);
@@ -82,7 +74,7 @@ export class WorkerAccountService {
 
   async updateProfile(data: WorkerProfileUpdate): Promise<WorkerPrivateAccount> {
     const updatedAccount = await firstValueFrom(
-      this.http.patch<WorkerPrivateAccount>(`${this.base}/worker/profile`, data, { withCredentials: true })
+      this.http.patch<WorkerPrivateAccount>(`${this.base}/worker/profile`, data)
     );
     this.accountSubject.next(updatedAccount);
     return updatedAccount;
@@ -90,7 +82,7 @@ export class WorkerAccountService {
 
   async updateServices(services: string[]): Promise<WorkerPrivateAccount> {
     const updatedAccount = await firstValueFrom(
-      this.http.patch<WorkerPrivateAccount>(`${this.base}/worker/updateservices`, services, { withCredentials: true })
+      this.http.patch<WorkerPrivateAccount>(`${this.base}/worker/updateservices`, services)
     );
     this.accountSubject.next(updatedAccount);
     return updatedAccount;
@@ -100,18 +92,18 @@ export class WorkerAccountService {
     const fd = new FormData();
     fd.append('file', file);
     if (title) fd.append('title', title);
-    return await firstValueFrom(this.http.post(`${this.base}/worker/photos`, fd, { withCredentials: true }));
+    return await firstValueFrom(this.http.post(`${this.base}/worker/photos`, fd));
   }
 
   async deletePhoto(photoId: string): Promise<void> {
-    await firstValueFrom(this.http.delete(`${this.base}/worker/photos/${photoId}`, { withCredentials: true }));
+    await firstValueFrom(this.http.delete(`${this.base}/worker/photos/${photoId}`));
   }
 
   async setMainPhoto(photoId: string): Promise<any> {
-    return await firstValueFrom(this.http.patch(`${this.base}/worker/photos/${photoId}/main`, {}, { withCredentials: true }));
+    return await firstValueFrom(this.http.patch(`${this.base}/worker/photos/${photoId}/main`, {}));
   }
 
   async reorderPhotos(orderedIds: string[]): Promise<any> {
-    return await firstValueFrom(this.http.patch(`${this.base}/worker/photos/reorder`, orderedIds, { withCredentials: true }));
+    return await firstValueFrom(this.http.patch(`${this.base}/worker/photos/reorder`, orderedIds));
   }
 }
