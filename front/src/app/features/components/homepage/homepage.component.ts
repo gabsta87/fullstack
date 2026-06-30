@@ -19,7 +19,7 @@ import {
   IonSelectOption
 } from '@ionic/angular/standalone';
 import {addIcons} from 'ionicons';
-import {closeOutline, locationOutline, optionsOutline} from 'ionicons/icons';
+import {closeOutline, locationOutline, optionsOutline, personOutline} from 'ionicons/icons';
 import {HeaderComponent} from "../header/header.component";
 import {WorkerCardComponent} from "../worker-card/worker-card.component";
 import {
@@ -77,7 +77,7 @@ export class HomepageComponent implements OnInit {
     private authService: AuthService,
     private stateService: GalleryStateService
   ) {
-    addIcons({ optionsOutline, closeOutline, locationOutline });
+    addIcons({ optionsOutline, closeOutline, locationOutline, personOutline });
   }
 
   ngOnInit() {
