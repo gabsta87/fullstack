@@ -77,10 +77,6 @@ public class AccountControllerClient {
     @PostMapping("/favorites/{workerId}")
     @Transactional
     public ResponseEntity<?> addFavorite(@PathVariable UUID workerId, @AuthenticationPrincipal Jwt jwt) {
-        System.out.println("--- INSPECTION JWT ---");
-        System.out.println("Subject du Token : " + jwt.getSubject());
-        System.out.println("Toutes les Claims : " + jwt.getClaims());
-
         Client client = jwtClient(jwt);
 
         if (client == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
