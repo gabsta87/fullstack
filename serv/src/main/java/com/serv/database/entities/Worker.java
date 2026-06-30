@@ -95,6 +95,13 @@ public class Worker extends VenusUser {
     @Column(name = "subscription_expires_at")
     private Instant subscriptionExpiresAt;
 
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(
+            name = "workers_languages", // Nom de ta nouvelle table de jointure
+            joinColumns = @JoinColumn(name = "worker_id")
+    )
+    private Collection<WorkerLanguage> spokenLanguages = new ArrayList<>();
+
     public Worker(Email email, String password) {
         super(email, password);
         this.role = UserRole.WORKER;
@@ -152,4 +159,7 @@ public class Worker extends VenusUser {
         this.photos.remove(photo);
     }
 
+    public void addSpokenLanguage(WorkerLanguage language) {this.spokenLanguages.add(language);}
+
+    public void removeSpokenLanguage(WorkerLanguage language) {this.spokenLanguages.remove(language);}
 }

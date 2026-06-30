@@ -45,19 +45,37 @@ public class WorkerController {
     public ResponseEntity<List<WorkerMinimalProfileDTO>> getGallery(Requests.WorkerSearchRequest req) {
         Map<String, Object> allFilters = new HashMap<>();
 
+        // 1. Cas particulier de la ZoneId (qui nécessite ton parsing String -> Integer de sécurité)
         if (req.zoneId() != null && !req.zoneId().isBlank() && !req.zoneId().equalsIgnoreCase("undefined")) {
             try {
-                Integer parsedZoneId = Integer.parseInt(req.zoneId());
-                allFilters.put("zoneId", parsedZoneId);
+                allFilters.put("zoneId", Integer.parseInt(req.zoneId()));
             } catch (NumberFormatException ignored) {}
         }
 
-        // Liaison des autres filtres s'ils sont fournis
-        if (req.username() != null && !req.username().isBlank()) allFilters.put("username", req.username());
-        if (req.bodyType() != null && !req.bodyType().isBlank()) allFilters.put("bodyType", req.bodyType());
-        if (req.services() != null && !req.services().isEmpty()) allFilters.put("services", req.services());
-        if (req.eyeColor() != null && !req.eyeColor().isBlank()) allFilters.put("eyeColor", req.eyeColor());
-        if (req.hairColor() != null && !req.hairColor().isBlank()) allFilters.put("hairColor", req.hairColor());
+        // 2. 🎯 AUTOMATISATION DU RESTE DES FILTRES PAR RÉFLEXION
+        // Parcourt toutes les méthodes/champs du record "WorkerSearchRequest"
+        for (java.lang.reflect.Method method : req.getClass().getDeclaredMethods()) {
+            try {
+                String name = method.getName();
+
+                // On ignore les méthodes techniques et la zoneId déjà gérée
+                if (name.equals("page") || name.equals("getPageOrZero") || name.equals("zoneId") || name.equals("equals") || name.equals("hashCode") || name.equals("toString")) {
+                    continue;
+                }
+
+                Object value = method.invoke(req);
+
+                if (value != null) {
+                    if (value instanceof String str && !str.isBlank()) {
+                        allFilters.put(name, str.trim());
+                    } else if (value instanceof List<?> list && !list.isEmpty()) {
+                        allFilters.put(name, list);
+                    }
+                }
+            } catch (Exception ignored) {
+                // Sécurité en cas de problème d'accès aux méthodes du record
+            }
+        }
 
         return ResponseEntity.ok(galleryService.getGalleryPage(req.getPageOrZero(), allFilters));
     }

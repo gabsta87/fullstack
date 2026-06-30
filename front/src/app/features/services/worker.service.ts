@@ -18,13 +18,22 @@ export class WorkerService {
   // ── Gallery ────────────────────────────────────────────────────────────────
 
   getGalleryPage(page: number, filters: GalleryFilters): Observable<WorkerSimpleProfile[]> {
-    let params = new HttpParams().set('page', page);
-    if (filters.username)          params = params.set('username',  filters.username);
-    if (filters.zoneId)            params = params.set('zoneId',    filters.zoneId);
-    if (filters.eyeColor)          params = params.set('eyeColor',  filters.eyeColor);
-    if (filters.hairColor)         params = params.set('hairColor', filters.hairColor);
-    if (filters.bodyType)          params = params.set('bodyType',  filters.bodyType);
-    if (filters.services?.length)  params = params.set('services',  filters.services.join(','));
+    let params = new HttpParams().set('page', page.toString());
+
+    // 🎯 Boucle dynamique sur toutes les clés de l'objet de filtres
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '' && value !== -1) {
+        if (Array.isArray(value)) {
+          // Pour les tableaux (services, languages) : on ajoute chaque élément au même paramètre
+          value.forEach(val => {
+            params = params.append(key, val.toString());
+          });
+        } else {
+          params = params.set(key, value.toString());
+        }
+      }
+    });
+
     return this.http.get<WorkerSimpleProfile[]>(`${this.baseUrl}`, { params })
       .pipe(catchError(() => of([])));
   }

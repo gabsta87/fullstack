@@ -102,7 +102,6 @@ export class HomepageComponent implements OnInit {
     private stateService: GalleryStateService,
     private clientAccountService: ClientAccountService
   ) {
-    // Ajout de sparklesOutline pour le bouton de préférences
     addIcons({ optionsOutline, closeOutline, locationOutline, personOutline, sparklesOutline });
   }
 
@@ -241,6 +240,7 @@ export class HomepageComponent implements OnInit {
         return true;
       })
     );
+    console.log("filters sent ",cleanFilters)
 
     this.workerService.getGalleryPage(this.currentPage, cleanFilters).subscribe({
       next: workers => {

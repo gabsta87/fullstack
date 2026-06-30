@@ -41,8 +41,6 @@ public abstract class VenusUser {
     private GeographicZone geographicZone;
 
     @Enumerated(EnumType.STRING)
-    private Language language = Language.EN;
-    @Enumerated(EnumType.STRING)
     protected UserRole role = UserRole.CLIENT;
 
     private static final BCryptPasswordEncoder ENCODER = new BCryptPasswordEncoder();

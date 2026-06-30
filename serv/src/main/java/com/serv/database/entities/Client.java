@@ -57,4 +57,28 @@ public class Client extends VenusUser {
     public Client(){
         this.role = UserRole.CLIENT;
     }
+
+    public void addPreferredService(Service service) {
+        this.preferredServices.add(service);
+    }
+
+    public void removePreferredService(Service service) {
+        this.preferredServices.remove(service);
+    }
+
+    public void addFavorite(Worker worker) {
+        this.favorites.add(worker);
+    }
+
+    public void removeFavorite(Worker worker) {
+        this.favorites.remove(worker);
+    }
+
+    public void addPreferredLanguage(Language language) {
+        this.preferredLanguages.add(language);
+    }
+
+    public void removePreferredLanguage(Language language) {
+        this.preferredLanguages.remove(language);
+    }
 }

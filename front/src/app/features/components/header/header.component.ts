@@ -41,6 +41,12 @@ export class HeaderComponent {
     });
   }
 
+  ngOnInit() {
+    // Au démarrage, on récupère la langue stockée ou on met 'FR' par défaut
+    const savedLang = localStorage.getItem('site_lang') || 'EN';
+    this.applyLanguage(savedLang);
+  }
+
   // Fonction centrale pour ouvrir la modale
   async openAuth(mode: 'login' | 'register') {
     const modal = await this.modalCtrl.create({
@@ -83,5 +89,15 @@ export class HeaderComponent {
         })
       });
     }
+  }
+
+  changeLanguage(lang: string) {
+    localStorage.setItem('site_lang', lang);
+    this.applyLanguage(lang);
+  }
+
+  private applyLanguage(lang: string) {
+    console.log("Application de la langue d'interface :", lang);
+    // Lier ici le système de traduction (ex: translateService.use(lang.toLowerCase()))
   }
 }

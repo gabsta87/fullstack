@@ -36,9 +36,12 @@ public class Requests {
             String zoneId,
             String username,
             String bodyType,
-            List<String> services,
             String eyeColor,
-            String hairColor
+            String hairColor,
+            Integer minAge,
+            Integer maxAge,
+            List<String> languages,
+            List<String> services
     ) {
         public int getPageOrZero() {
             return page != null ? page : 0;

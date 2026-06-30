@@ -1,9 +1,6 @@
 package com.serv.configuration;
 
-import com.serv.common.BodyType;
-import com.serv.common.EyeColor;
-import com.serv.common.Gender;
-import com.serv.common.HairColor;
+import com.serv.common.*;
 import com.serv.database.entities.*;
 import com.serv.database.repositories.GeographicZoneRepository;
 import com.serv.database.repositories.PhotoRepository;
@@ -60,6 +57,8 @@ public class TestDataInitializer implements ApplicationRunner {
             createZone("Paris 11e", paris);
             createZone("Lyon 2e", lyon);
             createZone("Vieux Lyon", lyon);
+        }else{
+            System.out.println("[TestDataInitializer] Data (GeographicZones) already present — skipping.");
         }
 
         // 2. 🛠️ INITIALISATION DES SERVICES
@@ -69,6 +68,8 @@ public class TestDataInitializer implements ApplicationRunner {
             serviceRepository.save(new Service("No_Sex"));
             serviceRepository.save(new Service("Fetish"));
             serviceRepository.save(new Service("BDSM"));
+        }else{
+            System.out.println("[TestDataInitializer] Data (Services) already present — skipping.");
         }
 
         // 3. 👩‍💼 INITIALISATION DES WORKERS
@@ -182,6 +183,7 @@ public class TestDataInitializer implements ApplicationRunner {
         w.setBirthdate(birthday);
         w.setServices(Arrays.asList(services));
         w.setGalleryPositionIndex(0);
+        w.addSpokenLanguage(new WorkerLanguage(Language.EN,3));
         w.setExpired(false);
 
         workerRepository.save(w);
