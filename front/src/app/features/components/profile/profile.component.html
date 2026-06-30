@@ -3,7 +3,10 @@
 <ion-header class="ion-no-border profile-header-bar">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/" text="Retour"></ion-back-button>
+      <ion-button (click)="goBack()" color="dark">
+        <ion-icon slot="start" name="chevron-back-outline"></ion-icon>
+        Retour
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>

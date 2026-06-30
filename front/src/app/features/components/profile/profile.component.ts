@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {
@@ -72,7 +72,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   constructor(private route: ActivatedRoute,
               private clientAccountService: ClientAccountService,
-              private authService : AuthService
+              private authService : AuthService,
+              private router: Router
   ) {
     addIcons({
       callOutline, logoWhatsapp, heartOutline, heart,
@@ -181,6 +182,15 @@ export class ProfileComponent implements OnInit, OnDestroy {
     // TODO: ReportService.report(this.worker!.id)
   }
 
+  goBack(): void {
+    const state = window.history.state;
+    if (state && state.from) {
+      this.router.navigateByUrl(state.from); // Retourne aux favoris
+    } else {
+      this.router.navigateByUrl('/'); // Fallback sur la galerie si accès direct
+    }
+  }
+
   // ── Reviews ───────────────────────────────────────────────────────────────
 
   submitReview(): void {
@@ -201,10 +211,5 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     document.body.style.overflow = '';
-  }
-
-  addFavorite() : void{
-    if(this.worker == null) return;
-    this.clientAccountService.addFavorite(this.worker?.id);
   }
 }

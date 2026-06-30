@@ -95,13 +95,11 @@ export class WorkerCardComponent implements OnDestroy {
 
   // ── Navigation ─────────────────────────────────────────────────────────────
 
-  /**
-   * Navigates to /profile?id={uuid}.
-   * The detailedProfileResolver will return immediately from cache
-   * if prefetchProfile() already ran during the hover.
-   */
   navigateToProfile(): void {
-    this.router.navigate(['/profile'], { queryParams: { id: this.worker.id } });
+    this.router.navigate(['/profile'], {
+      queryParams: { id: this.worker.id },
+      state: { from: this.router.url }
+    });
   }
 
   // ── Display URL ────────────────────────────────────────────────────────────
