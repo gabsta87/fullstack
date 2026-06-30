@@ -24,7 +24,6 @@ import {HeaderComponent} from "../header/header.component";
 import {WorkerCardComponent} from "../worker-card/worker-card.component";
 import {
   BODY_TYPE_LABELS,
-  BODY_TYPES_LIST,
   EYE_COLOR_LABELS,
   HAIR_COLOR_LABELS,
 } from "../../models/items.model";
@@ -34,6 +33,7 @@ import {WorkerService} from "../../services/worker.service";
 import {AuthService} from "../../services/auth.service";
 import {debounceTime, distinctUntilChanged, Subject} from "rxjs";
 import {ZoneSelectorComponent} from "../zone-selector/zone-selector.component";
+import { GalleryStateService } from '../../services/gallery-state.service';
 
 @Component({
   selector: 'app-homepage',
@@ -75,6 +75,7 @@ export class HomepageComponent implements OnInit {
     private route: ActivatedRoute,
     private workerService: WorkerService,
     private authService: AuthService,
+    private stateService: GalleryStateService
   ) {
     addIcons({ optionsOutline, closeOutline, locationOutline });
   }
@@ -82,22 +83,45 @@ export class HomepageComponent implements OnInit {
   ngOnInit() {
     this.authService.checkSession().subscribe();
 
-    this.route.data.subscribe((data) => {
-      this.allWorkers = data['workers'] || [];
-      this.allServices = data['allServices'] || [];
-      this.parentZones = data['locations'] || [];
+    if (this.stateService.allWorkers.length > 0) {
+      this.allWorkers = this.stateService.allWorkers;
+      this.filters = this.stateService.filters;
+      this.currentPage = this.stateService.currentPage;
+      this.noMoreData = this.stateService.noMoreData;
+      this.childZoneId = this.stateService.childZoneId;
+      this.parentZoneId = this.stateService.parentZoneId;
+      this.showMoreFilters = this.stateService.showMoreFilters;
 
-      if (this.allWorkers.length > 0) {
-        if (this.allWorkers.length < 24) {
-          this.noMoreData = true;
-          setTimeout(() => {
-            if (this.infiniteScroll) this.infiniteScroll.disabled = true;
-          }, 100);
-        } else {
-          this.currentPage = 1;
+      // On récupère uniquement les données structurelles du resolver (zones, services) sans toucher aux workers
+      this.route.data.subscribe((data) => {
+        this.allServices = data['allServices'] || [];
+        this.parentZones = data['locations'] || [];
+
+        // On réajuste l'état visuel de l'infinite scroll
+        setTimeout(() => {
+          if (this.infiniteScroll) this.infiniteScroll.disabled = this.noMoreData;
+        }, 100);
+      });
+
+    } else {
+      this.route.data.subscribe((data) => {
+        this.allWorkers = data['workers'] || [];
+        this.allServices = data['allServices'] || [];
+        this.parentZones = data['locations'] || [];
+
+        if (this.allWorkers.length > 0) {
+          if (this.allWorkers.length < 24) {
+            this.noMoreData = true;
+            setTimeout(() => {
+              if (this.infiniteScroll) this.infiniteScroll.disabled = true;
+            }, 100);
+          } else {
+            this.currentPage = 1;
+          }
         }
-      }
-    });
+        this.saveState(); // On initialise le cache
+      });
+    }
 
     this.searchSubject.pipe(
       debounceTime(400),
@@ -106,6 +130,16 @@ export class HomepageComponent implements OnInit {
       this.filters.username = searchTerm;
       this.loadPage(true);
     });
+  }
+
+  private saveState(): void {
+    this.stateService.allWorkers = this.allWorkers;
+    this.stateService.filters = this.filters;
+    this.stateService.currentPage = this.currentPage;
+    this.stateService.noMoreData = this.noMoreData;
+    this.stateService.childZoneId = this.childZoneId;
+    this.stateService.parentZoneId = this.parentZoneId;
+    this.stateService.showMoreFilters = this.showMoreFilters;
   }
 
   onSearchInput(event: any) {
@@ -137,6 +171,7 @@ export class HomepageComponent implements OnInit {
     this.childZoneId = -1;
     this.parentZoneId = -1;
     this.availableChildZones = [];
+    this.stateService.clear();
     this.loadPage(true);
   }
 
@@ -177,6 +212,7 @@ export class HomepageComponent implements OnInit {
           this.currentPage++;
         }
 
+        this.saveState();
         if (event) event.target.complete();
         this.isLoading = false;
       },
