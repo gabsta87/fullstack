@@ -14,6 +14,8 @@ import {GeographicZone} from "../../models/filter.model";
 import {ActivatedRoute} from "@angular/router";
 import {tap} from "rxjs/operators";
 import {ZoneSelectorComponent} from "../zone-selector/zone-selector.component";
+import { addIcons } from 'ionicons';
+import { heartDislikeOutline, checkmarkCircle } from 'ionicons/icons';
 
 @Component({
   selector: 'app-account',
@@ -42,6 +44,7 @@ export class AccountComponent implements OnInit {
     private workerService: WorkerService,
     private route : ActivatedRoute,
   ) {
+    addIcons({ heartDislikeOutline, checkmarkCircle });
     this.currentUser$ = this.accountService.getCurrentAccount().pipe(
       tap(user => {
         if (user) {
