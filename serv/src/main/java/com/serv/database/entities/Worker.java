@@ -88,12 +88,8 @@ public class Worker extends VenusUser {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    /**
-     * Subscription expiry date — null means never subscribed.
-     * Set this when a payment is confirmed.
-     */
-    @Column(name = "subscription_expires_at")
-    private Instant subscriptionExpiresAt;
+    @Column(name = "remaining_days_credit")
+    private Integer remainingDaysCredit;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
@@ -114,28 +110,6 @@ public class Worker extends VenusUser {
 
     public Worker() {
         this.role = UserRole.WORKER;
-    }
-
-    /**
-     * Returns remaining subscription days (0 if expired or never subscribed).
-     * Used by the profile management page to show the subscription badge.
-     */
-    public long getSubscriptionDaysLeft() {
-        if (subscriptionExpiresAt == null) return 0;
-        long days = java.time.temporal.ChronoUnit.DAYS.between(Instant.now(), subscriptionExpiresAt);
-        return Math.max(0, days);
-    }
-
-    /**
-     * Called when a payment is confirmed — adds `days` to the current expiry
-     * (or from now if already expired).
-     */
-    public void extendSubscription(long days) {
-        Instant base = (subscriptionExpiresAt != null && subscriptionExpiresAt.isAfter(Instant.now()))
-                ? subscriptionExpiresAt
-                : Instant.now();
-        this.subscriptionExpiresAt = base.plus(days, java.time.temporal.ChronoUnit.DAYS);
-        this.expired = getSubscriptionDaysLeft() <= 0;
     }
 
     public void parseBirthdate(String birthdate) throws ParseException {

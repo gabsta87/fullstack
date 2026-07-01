@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,5 +20,6 @@ public interface WorkerRepository extends JpaRepository<Worker, UUID>, JpaSpecif
     @Query("SELECT w FROM Worker w LEFT JOIN FETCH w.photos WHERE w.id = :id")
     Optional<Worker> findByIdWithPhotos(@Param("id") UUID id);
 
-    List<Worker> findByServicesId(Integer serviceId);
+    @Query("SELECT MAX(w.galleryPositionIndex) FROM Worker w ")
+    Integer findMaxGalleryPositionIndex();
 }

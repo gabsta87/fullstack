@@ -1,8 +1,11 @@
 package com.serv.controller;
 
+import com.serv.common.PaymentType;
 import com.serv.database.entities.Payment;
+import com.serv.database.entities.Worker;
 import com.serv.database.repositories.PaymentRepository;
 
+import com.serv.database.repositories.WorkerRepository;
 import com.stripe.Stripe;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,102 +20,133 @@ import com.stripe.model.Event;
 import com.stripe.net.Webhook;
 import com.stripe.exception.*;
 
+import javax.swing.text.html.Option;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/payment")
 public class PaymentController {
 
-    private final PaymentRepository paymentRepository;
-
-    @Value("${stripe.secret.key}")
-    private String endpointSecret;
-
-    @Value("${stripe.public.key}")
-    private String endpointPublic;
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     @Autowired
-    public PaymentController(PaymentRepository paymentRepository) {
-        this.paymentRepository = paymentRepository;
-    }
+    private WorkerRepository workerRepository; // Pour appliquer les changements de statut/boost
+
+    @Value("${stripe.secret.key}")
+    private String stripeSecretKey;
+
+    @Value("${stripe.public.key}")
+    private String stripePublicKey;
+
+    @Value("${stripe.webhook.secret}")
+    private String webhookSecret; // 🎯 Clé whsec_ générée par Stripe CLI ou ton dashboard
 
     @PostConstruct
-    public void initializeStripeApiKey() {
-        Stripe.apiKey = endpointSecret;
+    public void init() {
+        Stripe.apiKey = stripeSecretKey;
     }
 
     @GetMapping("/config")
-    public ResponseEntity<String> config() {
-        return ResponseEntity.ok(endpointPublic);
+    public ResponseEntity<Map<String, String>> config() {
+        return ResponseEntity.ok(Map.of("publicKey", stripePublicKey));
+    }
+
+    @PostMapping("/create-payment-intent")
+    public ResponseEntity<Map<String, String>> createPaymentIntent(@RequestBody Map<String, Object> requestData) {
+        try {
+            Long workerId = Long.valueOf(requestData.get("workerId").toString());
+            int amount = Integer.parseInt(requestData.get("amount").toString());
+            String currency = requestData.get("currency").toString();
+            PaymentType type = PaymentType.valueOf(requestData.get("paymentType").toString());
+
+            // 1. Configuration de l'intention chez Stripe avec Métadonnées sécurisées
+            PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
+                    .setAmount((long) amount)
+                    .setCurrency(currency.toLowerCase())
+                    .putMetadata("workerId", workerId.toString())
+                    .putMetadata("paymentType", type.toString())
+                    .setAutomaticPaymentMethods(
+                            PaymentIntentCreateParams.AutomaticPaymentMethods.builder().setEnabled(true).build()
+                    )
+                    .build();
+
+            PaymentIntent intent = PaymentIntent.create(params);
+
+            // 2. Enregistrement d'une trace locale en attente (PENDING)
+            Payment payment = new Payment();
+            payment.setWorkerId(workerId);
+            payment.setBillValue(amount);
+            payment.setCurrency(currency);
+            payment.setPaymentType(type);
+            payment.setStripePaymentIntentId(intent.getId());
+            payment.setStatus("PENDING");
+            paymentRepository.save(payment);
+
+            return ResponseEntity.ok(Map.of("clientSecret", intent.getClientSecret()));
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PostMapping("/webhook")
-    public ResponseEntity<String> handleWebhook(@RequestBody String request,
-            @RequestHeader HttpHeaders headers) {
-        System.out.println("webhook : payload: " + request);
-        System.out.println("webhook : headers: " + headers);
-
-//        String payload = request.body();
-//        String sigHeader = request.headers("Stripe-Signature");
-
-        System.out.println("Sig header : "+headers.get("Stripe-Signature").getFirst());
-
-        Event event = null;
-
+    public ResponseEntity<String> handleWebhook(@RequestBody String payload, @RequestHeader("Stripe-Signature") String sigHeader) {
+        Event event;
         try {
-            event = Webhook.constructEvent(request, headers.get("Stripe-Signature").getFirst(), endpointSecret);
+            event = Webhook.constructEvent(payload, sigHeader, webhookSecret);
         } catch (SignatureVerificationException e) {
-            return ResponseEntity.status(400).body("Could not verify signature");
+            return ResponseEntity.status(400).body("Invalid signature");
         }
 
-        switch (event.getType()) {
-            case "payment_intent.succeeded":
-                // Fulfill any orders, e-mail receipts, etc
-                // To cancel the payment you will need to issue a Refund
-                // (https://stripe.com/docs/api/refunds)
-                System.out.println("💰Payment received!");
-                break;
-            case "payment_intent.payment_failed":
-                System.out.println("❌ Payment failed.");
-                break;
-            default:
-                // Unexpected event type
-                return ResponseEntity.status(400).body("Unexpected event type: " + event.getType());
-
+        if ("payment_intent.succeeded".equals(event.getType())) {
+            PaymentIntent paymentIntent = (PaymentIntent) event.getDataObjectDeserializer().getObject().orElse(null);
+            if (paymentIntent != null) {
+                fulfillOrder(paymentIntent);
+            }
         }
-
-        return ResponseEntity.ok().body("OK");
+        return ResponseEntity.ok("OK");
     }
 
-    @PostMapping(path="/create-payment-intent")
-    public @ResponseBody ResponseEntity<Map<String, String>> createPayment (@RequestBody Payment payment) {
-        System.out.println("Create Payment Intent : " + payment);
+    // 🎯 C'est ici qu'on applique tes deux règles métier !
+    private void fulfillOrder(PaymentIntent intent) {
 
-        PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
-                .setAutomaticPaymentMethods(
-                        PaymentIntentCreateParams.AutomaticPaymentMethods.builder()
-                                .setEnabled(true)
-                                .build()
-                )
-                .setCurrency(payment.getCurrency().toString())
-                .setAmount((long) payment.getBillValue())
-                .build();
+        // 1. Recherche du paiement local pour le passer à SUCCEEDED
+        Optional<Payment> paymentOpt = paymentRepository.findByStripePaymentIntentId(intent.getId());
+        Payment payment = paymentOpt.orElse(null);
 
-        try {
-            System.out.println("Stripe api key : " + Stripe.apiKey);
-            PaymentIntent intent = PaymentIntent.create(params);
-
+        if (payment != null) {
+            payment.setStatus("SUCCEEDED");
             paymentRepository.save(payment);
-
-            // Wrapping clientSecret in a map to send as JSON response
-            Map<String, String> response = new HashMap<>();
-            response.put("clientSecret", intent.getClientSecret());
-
-            return ResponseEntity.ok(response);
-        } catch (StripeException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(400).body(Map.of("error", "Error while creating payment intent: " + e.getMessage()));
         }
+
+        // 2. Extraction des métadonnées
+        UUID workerId;
+        try{
+            workerId = UUID.fromString(intent.getMetadata().get("workerId"));
+        }catch(IllegalArgumentException e){
+            System.err.println("Invalid workerId in PaymentIntent metadata: " + intent.getMetadata().get("workerId"));
+            return;
+        }
+
+        PaymentType type = PaymentType.valueOf(intent.getMetadata().get("paymentType"));
+
+        Worker worker = workerRepository.findById(workerId).orElse(null);
+        if (worker == null) return;
+
+        if (type == PaymentType.BOOST) {
+            // 🚀 RÈGLE 2 : Boost en haut de la liste (galleryPositionIndex au maximum actuel + 1)
+            Integer currentMaxIndex = workerRepository.findMaxGalleryPositionIndex();
+            int newMax = (currentMaxIndex != null) ? currentMaxIndex + 1 : 1;
+            worker.setGalleryPositionIndex(newMax);
+        } else if (type == PaymentType.DAYS) {
+            // 📅 RÈGLE 1 : Ajout de jours au crédit (ex: calculé selon le montant payé)
+            int daysPurchased = intent.getAmount().intValue() / 500; // exemple: 5€ par jour
+            worker.setRemainingDaysCredit(worker.getRemainingDaysCredit() + daysPurchased);
+        }
+
+        workerRepository.save(worker);
     }
 }

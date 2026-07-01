@@ -185,6 +185,7 @@
           </ion-grid>
         </div>
 
+        <!-- ONGLET COMPTE-->
         <div *ngIf="activeTab === 'settings'" class="fade-in">
           <app-account-settings
             [initialUsername]="me.username"
@@ -195,6 +196,18 @@
             (onSaveSettings)="handleSettingsSave($event)"
             (onManageSubscription)="handleSubscriptionClick()">
           </app-account-settings>
+
+          <div class="pack-selector">
+            <button (click)="chosenAmount = 2500; chosenType = 'DAYS'">Acheter du crédit de visibilité (25€)</button>
+            <button (click)="chosenAmount = 500; chosenType = 'BOOST'">Remonter en tête de liste (5€)</button>
+          </div>
+
+          <app-stripe-payment
+            *ngIf="chosenAmount > 0"
+            [workerId]="me.id"
+            [amount]="chosenAmount"
+            [paymentType]="chosenType">
+          </app-stripe-payment>
         </div>
 
       </ion-card-content>

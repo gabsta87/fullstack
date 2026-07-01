@@ -1,0 +1,9 @@
+<div class="payment-container">
+  <h3>Détails du règlement</h3>
+  <div id="payment-element"></div>
+
+  <ion-button expand="block" class="ion-margin-top" [disabled]="isProcessing" (click)="handleSubmit()">
+    <ion-spinner *ngIf="isProcessing" name="crescent"></ion-spinner>
+    <span *ngIf="!isProcessing">Payer {{ (amount / 100).toFixed(2) }} €</span>
+  </ion-button>
+</div>

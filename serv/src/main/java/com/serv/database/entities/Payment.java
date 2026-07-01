@@ -1,9 +1,12 @@
 package com.serv.database.entities;
 
 import com.serv.common.Currency;
+import com.serv.common.PaymentType;
 import com.serv.common.TablesNames;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = TablesNames.PAYMENTS)
@@ -11,44 +14,29 @@ import lombok.Data;
 public class Payment {
 
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "name")
-    private String name;
-
-    @Column(name = "number")
-    private String number;
-
-    @Column(name = "email")
-    private String email;
-
-    @Column(name = "address")
-    private String address;
+    // L'identifiant du compte de l'annonceur qui paie
+    @Column(name = "worker_id", nullable = false)
+    private Long workerId;
 
     @Column(name = "bill_value")
-    private int billValue;
+    private int billValue; // En centimes (ex: 2500 pour 25.00€)
+
+    @Column(name = "currency")
+    private String currency;
 
     @Enumerated(EnumType.STRING)
-    @Column(name="currency")
-    private Currency currency;
+    @Column(name = "payment_type")
+    private PaymentType paymentType;
 
-//    @Column(userName = "card_number")
-    @Transient
-    private String cardNumber;
+    @Column(name = "stripe_payment_intent_id")
+    private String stripePaymentIntentId;
 
-    @Column(name = "card_holder")
-    private String cardHolder;
+    @Column(name = "status")
+    private String status; // PENDING, SUCCEEDED, FAILED
 
-    @Column(name = "date_value")
-    private String dateValue;
-
-    @Column(name = "token")
-    private String token;
-
-    //    @Column(userName = "cvc")
-    @Transient
-    private String cvc;
-
+    @Column(name = "created_at")
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

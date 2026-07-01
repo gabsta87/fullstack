@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/workers")
-@Transactional(readOnly = true)   // ← add this
+@Transactional(readOnly = true)
 public class WorkerController {
     @Autowired private WorkerRepository workerRepository;
     @Autowired private WorkerService    galleryService;

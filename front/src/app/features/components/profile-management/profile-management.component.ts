@@ -15,10 +15,11 @@ import {AccountSettingsComponent} from "../account-settings/account-settings.com
 import {GeographicZone} from "../../models/filter.model";
 import {ZoneSelectorComponent} from "../zone-selector/zone-selector.component";
 import {environment} from "../../../../environments/environment";
+import {StripePaymentComponent} from "../stripe-payment/stripe-payment.component";
 
 @Component({
   selector: 'app-profile-management',
-  imports: [CommonModule, FormsModule, IonicModule, HeaderComponent, AccountSettingsComponent, ZoneSelectorComponent],
+  imports: [CommonModule, FormsModule, IonicModule, HeaderComponent, AccountSettingsComponent, ZoneSelectorComponent, StripePaymentComponent],
   templateUrl: './profile-management.component.html',
   styleUrls: ['./profile-management.component.scss'],
   standalone: true
@@ -38,6 +39,9 @@ export class ProfileManagementComponent implements OnInit {
 
   dragOverIndex: number | null = null;
   draggedIndex: number | null = null;
+
+  chosenAmount! : number;
+  chosenType! : "DAYS" | "BOOST";
 
   constructor(private accountService: WorkerAccountService, private route : ActivatedRoute) {
     addIcons({
