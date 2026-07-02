@@ -1,6 +1,6 @@
 <app-header></app-header>
 
-<ion-content class="main-content">
+<ion-content class="main-content" [scrollEvents]="true" (ionScroll)="onScroll($event)">
   <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>

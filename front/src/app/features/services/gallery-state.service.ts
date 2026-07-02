@@ -14,6 +14,7 @@ export class GalleryStateService {
   childZoneId: number | undefined = undefined;
   parentZoneId: number | undefined = undefined;
   showMoreFilters = false;
+  scrollTop?: number;
 
   // Permet de vider le cache proprement (ex: clic sur "Effacer")
   clear(): void {
@@ -24,5 +25,6 @@ export class GalleryStateService {
     this.childZoneId = undefined;
     this.parentZoneId = undefined;
     this.showMoreFilters = false;
+    this.scrollTop = undefined;
   }
 }
