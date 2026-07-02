@@ -1,24 +1,15 @@
 favorite profiles should be shown as favorites on the homepage
 image selection for workers : only jpg and supported formats
-homepage/gallery : apply filters by making the right request to the server
-profile : favorite button : add favorite worker to the user's profile if logged, else show a popup to log in
 login : redirect to account/profile-management once logged
 profile management : workers can choose spoken languages and level for each language
 header : add flags for each language (popup menu)
 
+profiles
+  see images as gallery
+  videos management for workers
 
-videos management for workers
 payment system for workers (pay for a year subscription, monthly...)
 workers can refresh(to be in the top of the list) their profile by paying a small fee
-
-certification about worker's photos (ask for a photo with phrase, object, pose and check if the other pictures are similar. might use a neural network if possible. Otherwise, create admin accounts to check the photos)
-
-create admin accounts for collaborators
-  check photos/videos
-  manage requests from users and workers
-  check payments
-
-When the homepage is loaded, the workers' profiles are loaded by priority. When a profile updates his priority, show a small notification to the user if he wants to reload the page.
 
 Advertising
   clients can pay small fee to remove ads (2 chf per month)

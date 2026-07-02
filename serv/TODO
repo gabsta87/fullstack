@@ -1,9 +1,44 @@
-payments
+Test Data init
+    create a great list of announcers by creating 50 first names, 50 last names and making each combination with random attributes
+
 Multi-lang
+    in the banner, a small flag is displayed to indicate the language. when clicked, the language is changed by loading the corresponding translation file without reloading the page.
+    Generate a translation file for each language (DE, FR, EN, ES, IT, RU, UA, Arabian)
+
+payments
+    How to test stripe payments before going live ?
+
 Admin pages
+    certifications with generated phrase asked the announcer to write on a paper and show in a photo
+    can create admins -> provide an email, the system will send an email to the user with a link to activate the account
+    can deactivate a certification
+    can deactivate a user
+    can see messages sent by users
+    can see messages sent by admins
+    Notifications sent when a user requires a certification
+    Notifications sent when a user registers with a date birth that makes this person under 18 years old -> send a message to the local authorities
 
+Super Admin
+    all admin rights
+    can see all the payments
+    can modify tarifications
+    can see all the events in the AdminAuditLog page
+    can add/remove users and admins
 
-bouton retour depuis profil doit conserver les critères de filtrage
+Workers
+    can see their payments
+    can see their tarifications
+    can report a client phone number that behaved badly -> send a message to the local authorities / admins
+        create a application for announcers that prevents them when a reported client is calling them
+
+speak about
+    tarifications
+    admin work
+
+Automated certifications expiration
+    possibly inside an expiration table sorted by date. Re-activate the script when reaching the expiration date.
+
+Historique des textes légaux modifiables par les admins
 
 The Password Reset Flow
     From the login page, the user clicks on the ‘Forgot Password’ link.
