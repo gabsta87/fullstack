@@ -9,7 +9,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -28,7 +27,7 @@ public class SubscriptionScheduler {
     @Transactional
     public void processDailySubscriptionDeduction() {
         // 1. On cherche tous ceux qui ont été actifs aujourd'hui OU qui le sont encore à minuit
-        List<Worker> workersToCharge = workerRepository.findByHasBeenActiveTodayTrueOrIsActiveTrue();
+        List<Worker> workersToCharge = workerRepository.findByHasBeenActiveTodayTrueOrIsAvailableTrue();
 
         for (Worker worker : workersToCharge) {
             if (worker.getRemainingDaysCredit() > 0) {
@@ -44,7 +43,7 @@ public class SubscriptionScheduler {
 
             // 🎯 RÈGLE CLÉ : Si le profil finit la journée EN LIGNE, il reste valide d'office pour demain
             // Sinon s'il était hors-ligne à minuit, il devra re-déclencher la bascule demain.
-            worker.setHasBeenActiveToday(worker.isActive());
+            worker.setHasBeenActiveToday(worker.isAvailable());
         }
 
         workerRepository.saveAll(workersToCharge);
