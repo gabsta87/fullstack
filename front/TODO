@@ -1,17 +1,18 @@
 favorite profiles should be shown as favorites on the homepage
 image selection for workers : only jpg and supported formats
 login : redirect to account/profile-management once logged
-profile management : workers can choose spoken languages and level for each language
+profile management : workers can choose level of each spoken languages
 header : add flags for each language (popup menu)
 
-scroll to top button
-
-profiles
-  see images as gallery
+profile
+  see images as gallery in full screen with navigation arrows
   videos management for workers
 
 payment system for workers (pay for a year subscription, monthly...)
 workers can refresh(to be in the top of the list) their profile by paying a small fee
+
+harmonization of account and profile-management pages (scss)
+heart button for favorites to brown instead of red
 
 Advertising
   clients can pay small fee to remove ads (2 chf per month)

@@ -1,6 +1,3 @@
-Test Data init
-    create a great list of announcers by creating 50 first names, 50 last names and making each combination with random attributes
-
 Multi-lang
     in the banner, a small flag is displayed to indicate the language. when clicked, the language is changed by loading the corresponding translation file without reloading the page.
     Generate a translation file for each language (DE, FR, EN, ES, IT, RU, UA, Arabian)
@@ -13,6 +10,7 @@ Admin pages
     can create admins -> provide an email, the system will send an email to the user with a link to activate the account
     can deactivate a certification
     can create/modify regions (can't delete regions if there is someone in it)
+    can create/modify services
     can deactivate a user
     can see messages sent by users
     can see messages sent by admins
@@ -26,6 +24,7 @@ Super Admin
     can see all the payments
     can modify tarifications
     can see all the events in the AdminAuditLog page
+        can filter by admin, date, type of event, reason (if looking for empty reasons or specific reasons)
     can add/remove users and admins
 
 Workers
