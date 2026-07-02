@@ -29,8 +29,6 @@ public class WorkerService {
 
     public List<WorkerMinimalProfileDTO> getGalleryPage(int page, Map<String, Object> filters) {
 
-        System.out.println("Applying " + filters.size() + " filters : " + filters);
-
         if(page < 0){
             page = 0;
             System.out.println("Page " + page+" corrected to 0");
@@ -53,7 +51,7 @@ public class WorkerService {
                 PageRequest.of(page, PAGE_SIZE, doubleSort)
         ).getContent();
 
-        System.out.println("found workers : "+workers.size());
+        System.out.println("Applying " + filters.size() + " filters : " + filters+ " to fetch " + workers.size() + " workers.");
 
         if (workers.isEmpty()) return List.of();
 
