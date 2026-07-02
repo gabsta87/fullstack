@@ -10,7 +10,6 @@ import com.stripe.Stripe;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,8 +19,6 @@ import com.stripe.model.Event;
 import com.stripe.net.Webhook;
 import com.stripe.exception.*;
 
-import javax.swing.text.html.Option;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -140,7 +137,7 @@ public class PaymentController {
             // 🚀 RÈGLE 2 : Boost en haut de la liste (galleryPositionIndex au maximum actuel + 1)
             Integer currentMaxIndex = workerRepository.findMaxGalleryPositionIndex();
             int newMax = (currentMaxIndex != null) ? currentMaxIndex + 1 : 1;
-            worker.setGalleryPositionIndex(newMax);
+            worker.setGalleryPositionPriority(newMax);
         } else if (type == PaymentType.DAYS) {
             // 📅 RÈGLE 1 : Ajout de jours au crédit (ex: calculé selon le montant payé)
             int daysPurchased = intent.getAmount().intValue() / 500; // exemple: 5€ par jour

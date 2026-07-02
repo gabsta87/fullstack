@@ -1,8 +1,8 @@
-import { Component, Input, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { NgIf } from '@angular/common';
-import { IonButton, IonSpinner } from '@ionic/angular/standalone';
-import { environment } from '../../../../environments/environment';
+import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {NgIf} from '@angular/common';
+import {IonButton, IonSpinner} from '@ionic/angular/standalone';
+import {environment} from '../../../../environments/environment';
 
 declare var Stripe: any;
 
