@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
@@ -10,7 +11,7 @@ import {RegisterService} from '../../services/register.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule, IonicModule],
   templateUrl: './auth-modal.component.html',
-  styleUrls: ['./auth-modal.component.scss'] // SCSS partagé
+  styleUrls: ['./auth-modal.component.scss']
 })
 export class AuthModalComponent implements OnInit {
   @Input() mode: 'login' | 'register' = 'login';
@@ -25,6 +26,7 @@ export class AuthModalComponent implements OnInit {
     private authService: AuthService,
     private registerService: RegisterService,
     private modalCtrl: ModalController,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -32,7 +34,7 @@ export class AuthModalComponent implements OnInit {
   }
 
   ngAfterViewInit(){
-    setTimeout(() => this.myInput.nativeElement.focus(),150);
+    setTimeout(() => this.myInput.nativeElement.focus(), 150);
   }
 
   initForm() {
@@ -55,7 +57,6 @@ export class AuthModalComponent implements OnInit {
     return g.get('password')?.value === g.get('confirmPassword')?.value ? null : { mismatch: true };
   }
 
-  // Permet de switcher entre login et register à l'intérieur de la même modale
   switchMode(newMode: 'login' | 'register') {
     this.mode = newMode;
     this.errorMsg = '';
@@ -74,19 +75,17 @@ export class AuthModalComponent implements OnInit {
       this.authService.login(email, password).subscribe({
         next: (user) => {
           console.log("Connexion réussie !", user);
-          this.isLoading = false;
-          this.modalCtrl.dismiss(true);
+          this.handleSuccess(user); // 🎯 3. On passe l'utilisateur pour gérer la redirection
         },
         error: (err) => {
           console.error("Erreur reçue du serveur :", err);
-
           this.isLoading = false;
 
           if (err.status === 401) {
             this.errorMsg = "Identifiants ou mot de passe incorrects.";
           } else if(err.status == 403){
             this.errorMsg = "Requête interdite.";
-          }else{
+          } else {
             this.errorMsg = "Une erreur est survenue lors de la connexion.";
           }
         }
@@ -97,15 +96,42 @@ export class AuthModalComponent implements OnInit {
         : this.registerService.registerClient(email, password);
 
       call.subscribe({
-        next: () => this.authService.login(email, password).subscribe(() => this.handleSuccess()),
+        next: () => {
+          // 🎯 Dès que l'inscription réussit, on se connecte immédiatement en tâche de fond
+          this.authService.login(email, password).subscribe({
+            next: (loggedInUser) => {
+              console.log("Inscription + Connexion automatique réussie !", loggedInUser);
+              // On passe le user connecté pour que handleSuccess() fasse la redirection vers le bon espace !
+              this.handleSuccess(loggedInUser);
+            },
+            error: (err) => {
+              console.error("Erreur lors de la connexion automatique après inscription :", err);
+              this.errorMsg = "Compte créé avec succès, mais la connexion automatique a échoué. Veuillez vous connecter manuellement.";
+              this.isLoading = false;
+            }
+          });
+        },
         error: (err) => this.handleError(err)
       });
     }
   }
 
-  private handleSuccess() {
+  // 🎯 5. Nouvelle logique de succès centralisée avec routage intelligent
+  private handleSuccess(user: any) {
     this.isLoading = false;
     this.modalCtrl.dismiss(true);
+
+    // On récupère le rôle de l'utilisateur fraîchement connecté
+    const userRole = user?.role || this.authService.getUser()?.role;
+
+    if (userRole === 'WORKER') {
+      this.router.navigate(['/profile-management']);
+    } else if (userRole === 'CLIENT') {
+      this.router.navigate(['/account']);
+    } else {
+      // Par sécurité, si le rôle est indéterminé à cet instant précis
+      this.router.navigate(['/']);
+    }
   }
 
   private handleError(err: any) {
