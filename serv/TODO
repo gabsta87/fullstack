@@ -15,6 +15,8 @@ Admin pages
     can deactivate a user
     can see messages sent by users
     can see messages sent by admins
+    can modify legal texts
+        history of the legal texts
     Notifications sent when a user requires a certification
     Notifications sent when a user registers with a date birth that makes this person under 18 years old -> send a message to the local authorities
 
@@ -31,14 +33,8 @@ Workers
     can report a client phone number that behaved badly -> send a message to the local authorities / admins
         create a application for announcers that prevents them when a reported client is calling them
 
-speak about
-    tarifications
-    admin work
-
 Automated certifications expiration
     possibly inside an expiration table sorted by date. Re-activate the script when reaching the expiration date.
-
-Historique des textes légaux modifiables par les admins
 
 The Password Reset Flow
     From the login page, the user clicks on the ‘Forgot Password’ link.
@@ -54,3 +50,7 @@ The Password Reset Flow
     User fills the form and submits via the /passwordChange route
     The updatePassword is called with the password and token and the user data is saved
     The user is redirected to the passwordChangeSuccessful page
+
+speak about
+    tarifications
+    admin work

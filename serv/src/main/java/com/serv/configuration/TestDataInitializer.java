@@ -17,9 +17,8 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Inserts test data on startup — only in "dev" profile, only if the
@@ -44,6 +43,7 @@ public class TestDataInitializer implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
 
+        // 1. 🌍 INITIALISATION DES ZONES GEOGRAPHIQUES
         if (zoneRepository.findAll().isEmpty()) {
             System.out.println("[TestDataInitializer] Inserting test geographic zones...");
             GeographicZone paris = createZone("Paris", null);
@@ -57,7 +57,7 @@ public class TestDataInitializer implements ApplicationRunner {
             createZone("Paris 11e", paris);
             createZone("Lyon 2e", lyon);
             createZone("Vieux Lyon", lyon);
-        }else{
+        } else {
             System.out.println("[TestDataInitializer] Data (GeographicZones) already present — skipping.");
         }
 
@@ -68,7 +68,7 @@ public class TestDataInitializer implements ApplicationRunner {
             serviceRepository.save(new Service("No_Sex"));
             serviceRepository.save(new Service("Fetish"));
             serviceRepository.save(new Service("BDSM"));
-        }else{
+        } else {
             System.out.println("[TestDataInitializer] Data (Services) already present — skipping.");
         }
 
@@ -78,84 +78,86 @@ public class TestDataInitializer implements ApplicationRunner {
             return;
         }
 
-        System.out.println("[TestDataInitializer] Inserting test workers...");
+        System.out.println("[TestDataInitializer] Generating 2500 random workers...");
 
-        Service firstService = serviceRepository.findAll().getFirst();
-        Service secondService = serviceRepository.findAll().get(1);
+        List<Service> allServices = serviceRepository.findAll();
+        List<GeographicZone> allZones = zoneRepository.findAll();
 
-        GeographicZone paris8 = zoneRepository.findByName("Paris 8e").orElseThrow();
-        GeographicZone paris11 = zoneRepository.findByName("Paris 11e").orElseThrow();
-        GeographicZone lyon2 = zoneRepository.findByName("Lyon 2e").orElseThrow();
-        GeographicZone bordeaux = zoneRepository.findByName("Bordeaux").orElseThrow();
-        GeographicZone marseille = zoneRepository.findByName("Marseille").orElseThrow();
-        GeographicZone nice = zoneRepository.findByName("Nice").orElseThrow();
-        GeographicZone toulouse = zoneRepository.findByName("Toulouse").orElseThrow();
-
-        // 🎯 Ajout des Enums manquants dans la création des profils
-        createWorker(
-                "amelie", "amelie@test.com", "Amélie",
-                date(1998, 3, 12), paris8,
-                BodyType.ATHLETIC, Gender.FEMALE, EyeColor.BLUE, HairColor.BLOND,
-                true, Instant.now(),
-                "amelie_main.jpg", List.of("amelie_1.jpg", "amelie_2.jpg"),
-                firstService, secondService
+        // 📝 Banques de données de 50 prénoms et 50 noms
+        List<String> firstNames = Arrays.asList(
+                "Amélie", "Sofia", "Léa", "Camille", "Inès", "Zoé", "Manon", "Chloé", "Emma", "Jade",
+                "Sarah", "Eva", "Clara", "Anna", "Alice", "Lucie", "Mila", "Elena", "Maya", "Nina",
+                "Lina", "Mia", "Lola", "Julia", "Romane", "Louise", "Juliette", "Agathe", "Ines", "Clemence",
+                "Maxime", "Lucas", "Thomas", "Hugo", "Enzo", "Nathan", "Leo", "Louis", "Arthur", "Gabriel",
+                "Alexandre", "Antoine", "Julien", "Rayan", "Florian", "Clement", "Mathéo", "Paul", "Alexis", "Quentin"
         );
 
-        createWorker(
-                "sofia", "sofia@test.com", "Sofia",
-                date(2001, 7, 4), lyon2,
-                BodyType.SLIM, Gender.FEMALE, EyeColor.BROWN, HairColor.BROWN,
-                true, Instant.now().minusSeconds(3600),
-                "sofia_main.jpg", List.of("sofia_1.jpg"),
-                firstService
+        List<String> lastNames = Arrays.asList(
+                "Martin", "Bernard", "Thomas", "Petit", "Robert", "Richard", "Durand", "Dubois", "Moreau", "Laurent",
+                "Simon", "Michel", "Lefebvre", "Legrand", "Garcia", "Rousseau", "Fournier", "Bonner", "Dupont", "Fontaine",
+                "Lopez", "Gomez", "Muller", "Schmitt", "Masson", "Sanchez", "Clerc", "Denis", "Hubert", "Gautier",
+                "Perrin", "Roussel", "Mathieu", "Chevalier", "Francois", "Duval", "Joly", "Guerin", "Lemaire", "Roux",
+                "Roy", "Aubert", "Giraud", "Henry", "Barbier", "Brun", "Dumas", "Brunet", "Mercier", "Roger"
         );
 
-        createWorker(
-                "lea", "lea@test.com", "Léa",
-                date(1995, 11, 20), paris11,
-                BodyType.AVERAGE, Gender.FEMALE, EyeColor.GREEN, HairColor.BLACK,
-                true, Instant.now().minusSeconds(7200),
-                "lea_main.jpg", List.of("lea_1.jpg"),
-                firstService
-        );
+        // Récupération des valeurs d'Enums sous forme de tableaux pour le tirage aléatoire
+        BodyType[] bodyTypes = BodyType.values();
+        Gender[] genders = Gender.values();
+        EyeColor[] eyeColors = EyeColor.values();
+        HairColor[] hairColors = HairColor.values();
 
-        createWorker(
-                "camille", "camille@test.com", "Camille",
-                date(1999, 5, 8), bordeaux,
-                BodyType.CURVY, Gender.FEMALE, EyeColor.HAZEL, HairColor.GINGER,
-                true, Instant.now().minusSeconds(10800),
-                "camille_main.jpg", List.of(),
-                firstService
-        );
+        Random random = new Random();
+        String encodedPassword = passwordEncoder.encode("asdfasdf!");
 
-        createWorker(
-                "ines", "ines@test.com", "Inès",
-                date(1993, 9, 15), marseille,
-                BodyType.SLIM, Gender.OTHER, EyeColor.GREY, HairColor.COLORED,
-                true, Instant.now().minusSeconds(14400),
-                null, List.of(),
-                secondService
-        );
+        int totalGenerated = 0;
 
-        createWorker(
-                "zoe", "zoe@test.com", "Zoé",
-                date(2000, 2, 28), nice,
-                BodyType.ATHLETIC, Gender.FEMALE, EyeColor.BLUE, HairColor.FAIR,
-                false, Instant.now().minusSeconds(86400),
-                "zoe_main.jpg", List.of(),
-                firstService
-        );
+        // Boucles imbriquées pour faire chaque combinaison unique
+        for (String firstName : firstNames) {
+            for (String lastName : lastNames) {
 
-        createWorker(
-                "manon", "manon@test.com", "Manon",
-                date(1997, 6, 3), toulouse,
-                BodyType.AVERAGE, Gender.MALE, EyeColor.BROWN, HairColor.GREY,
-                false, Instant.now().minusSeconds(172800),
-                null, List.of(),
-                firstService
-        );
+                // Génération de l'identité et de l'adresse email uniques
+                String displayName = firstName + " " + lastName;
+                String username = (firstName + "." + lastName).toLowerCase()
+                        .replaceAll("[éèêëàâäîïôöûüç]", "e"); // Normalisation basique
+                String email = username + "@test.com";
 
-        System.out.println("[TestDataInitializer] Done — " + workerRepository.findAll().size() + " workers inserted.");
+                // Calcul d'une date de naissance aléatoire entre 1960 et 2009 (entre 18 et 66 ans)
+                int birthYear = ThreadLocalRandom.current().nextInt(1960, 2009);
+                int birthMonth = ThreadLocalRandom.current().nextInt(1, 13);
+                int birthDay = ThreadLocalRandom.current().nextInt(1, 29);
+                Date birthday = date(birthYear, birthMonth, birthDay);
+
+                // Tirage aléatoire des critères physiques et de la localisation
+                GeographicZone randomZone = allZones.get(random.nextInt(allZones.size()));
+                BodyType randomBody = bodyTypes[random.nextInt(bodyTypes.length)];
+                Gender randomGender = Gender.FEMALE;
+                EyeColor randomEye = eyeColors[random.nextInt(eyeColors.length)];
+                HairColor randomHair = hairColors[random.nextInt(hairColors.length)];
+
+                // Configuration de l'état du profil (70% de chances d'être disponible)
+                boolean available = random.nextDouble() < 0.70;
+                Instant lastRefreshed = Instant.now().minusSeconds(random.nextInt(259200)); // refresh dans les 3 derniers jours
+
+                // Détermination des services (1 à 3 services aléatoires)
+                Collections.shuffle(allServices);
+                int servicesCount = random.nextInt(3) + 1;
+                List<Service> selectedServices = new ArrayList<>(allServices.subList(0, servicesCount));
+
+                // Attribution de crédit de jours aléatoire (de 0 à 30 jours) pour simuler l'état de la plateforme
+                int remainingDays = random.nextInt(31);
+
+                // Création et sauvegarde de l'entité de test
+                createGeneratedWorker(
+                        username, email, encodedPassword, displayName, birthday, randomZone,
+                        randomBody, randomGender, randomEye, randomHair, available,
+                        lastRefreshed, remainingDays, selectedServices
+                );
+
+                totalGenerated++;
+            }
+        }
+
+        System.out.println("[TestDataInitializer] Done — " + totalGenerated + " massive workers successfully inserted.");
     }
 
     // ── Helpers ────────────────────────────────────────────────────────────────
@@ -164,15 +166,16 @@ public class TestDataInitializer implements ApplicationRunner {
         return zoneRepository.save(new GeographicZone(name, parent));
     }
 
-    private void createWorker(
-            String username, String email, String displayName,
+    private void createGeneratedWorker(
+            String username, String email, String encodedPassword, String displayName,
             Date birthday, GeographicZone zone,
             BodyType bodyType, Gender gender, EyeColor eyeColor, HairColor hairColor,
-            boolean available, Instant lastRefreshed,
-            String mainPhotoFile, List<String> extraPhotoFiles, Service... services) {
+            boolean available, Instant lastRefreshed, int remainingDays, List<Service> services) {
 
-        Worker w = new Worker(username, new Email(email), passwordEncoder.encode("asdfasdf!"));
+        Worker w = new Worker(username, new Email(email), encodedPassword);
 
+        // Paramètres standards
+        w.setUsername(displayName); // Utilise le set de nom approprié selon ton modèle
         w.setAvailable(available);
         w.setLastRefreshed(lastRefreshed);
         w.setGeographicZone(zone);
@@ -181,36 +184,38 @@ public class TestDataInitializer implements ApplicationRunner {
         w.setEyeColor(eyeColor);
         w.setHairColor(hairColor);
         w.setBirthdate(birthday);
-        w.setServices(Arrays.asList(services));
+        w.setServices(services);
         w.setGalleryPositionPriority(0);
-        w.addSpokenLanguage(new WorkerLanguage(Language.EN,3));
+        w.addSpokenLanguage(new WorkerLanguage(Language.EN, 3));
         w.setExpired(false);
+
+        // 🎯 Intégration de tes nouvelles propriétés d'abonnement
+        w.setRemainingDaysCredit(remainingDays);
+
+        // Si le crédit attribué est supérieur à 0 et qu'il est disponible, active-le
+        // (La méthode setActive déclenchera automatiquement le hasBeenActiveToday interne !)
+        if (remainingDays > 0 && available) {
+            w.setActive(true);
+        } else {
+            w.setActive(false);
+        }
 
         workerRepository.save(w);
 
-        if (mainPhotoFile != null) {
-            Photo main = buildPhoto(w, mainPhotoFile, 0);
-            photoRepository.save(main);
-            w.setMainPhoto(main);
-            workerRepository.save(w);
-        }
+        // Simulation d'une photo par défaut pour ne pas ralentir l'initialisation de masse
+        // en créant trop d'entités photos secondaires pour chaque combinaison.
+        String placeholderPhoto = "test_profile_placeholder.jpg";
+        Photo main = new Photo();
+        main.setWorker(w);
+        main.setFileName(placeholderPhoto);
+        main.setSortOrder(0);
+        main.setOriginalUrl(mediaBase + "/originals/test/" + placeholderPhoto);
+        main.setMainThumbUrl(mediaBase + "/thumbs/main/test/" + placeholderPhoto);
+        main.setPreviewThumbUrl(mediaBase + "/thumbs/preview/test/" + placeholderPhoto);
 
-        int order = 1;
-        for (String file : extraPhotoFiles) {
-            Photo p = buildPhoto(w, file, order++);
-            photoRepository.save(p);
-        }
-    }
-
-    private Photo buildPhoto(Worker w, String filename, int order) {
-        Photo p = new Photo();
-        p.setWorker(w);
-        p.setFileName(filename);
-        p.setSortOrder(order);
-        p.setOriginalUrl(mediaBase + "/originals/test/" + filename);
-        p.setMainThumbUrl(mediaBase + "/thumbs/main/test/" + filename);
-        p.setPreviewThumbUrl(mediaBase + "/thumbs/preview/test/" + filename);
-        return p;
+        photoRepository.save(main);
+        w.setMainPhoto(main);
+        workerRepository.save(w);
     }
 
     private Date date(int year, int month, int day) {
