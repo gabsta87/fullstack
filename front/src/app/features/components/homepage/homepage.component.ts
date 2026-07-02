@@ -4,7 +4,7 @@ import {ActivatedRoute} from '@angular/router';
 import {
   IonButton,
   IonCol,
-  IonContent,
+  IonContent, IonFab, IonFabButton,
   IonGrid,
   IonIcon,
   IonInfiniteScroll,
@@ -18,7 +18,7 @@ import {
   IonSelectOption
 } from '@ionic/angular/standalone';
 import {addIcons} from 'ionicons';
-import {closeOutline, locationOutline, optionsOutline, personOutline} from 'ionicons/icons';
+import {closeOutline, locationOutline, optionsOutline, personOutline, arrowUpOutline} from 'ionicons/icons';
 import {HeaderComponent} from "../header/header.component";
 import {WorkerCardComponent} from "../worker-card/worker-card.component";
 import {AgeRangeSelectorComponent} from "../age-range-selector/age-range-selector.component";
@@ -65,11 +65,13 @@ import {KeyValuePipe, NgForOf, NgIf} from "@angular/common";
     AgeRangeSelectorComponent,
     NgForOf,
     KeyValuePipe,
-    NgIf
+    NgIf,
+    IonFab,
+    IonFabButton
   ],
 })
 export class HomepageComponent implements OnInit {
-  @ViewChild(IonContent) content!: IonContent;
+  @ViewChild(IonContent, { static: false }) content!: IonContent;
   @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
 
   readonly BODY_TYPE_LABELS = BODY_TYPE_LABELS;
@@ -82,6 +84,7 @@ export class HomepageComponent implements OnInit {
   noMoreData = false;
   currentPage = 0;
   isLoggedIn = false;
+  showScrollTopButton = false;
 
   childZoneId: number | undefined = undefined;
   parentZoneId: number | undefined = undefined;
@@ -100,7 +103,7 @@ export class HomepageComponent implements OnInit {
     private stateService: GalleryStateService,
     private clientAccountService: ClientAccountService
   ) {
-    addIcons({ optionsOutline, closeOutline, locationOutline, personOutline, sparklesOutline });
+    addIcons({ optionsOutline, closeOutline, locationOutline, personOutline, sparklesOutline, arrowUpOutline });
   }
 
   ngOnInit() {
@@ -287,9 +290,18 @@ export class HomepageComponent implements OnInit {
   }
 
   onScroll(event: CustomEvent<any>) {
+    const scrollTop = event.detail.scrollTop;
+
+    this.showScrollTopButton = scrollTop > 400;
+
+    // sauvegarde de l'état pour le bouton retour
     if (event.detail && event.detail.scrollTop) {
       this.stateService.scrollTop = event.detail.scrollTop;
     }
+  }
+
+  scrollToTop() {
+    this.content.scrollToTop(500);
   }
 
   toggleMoreFilters() { this.showMoreFilters = !this.showMoreFilters; }

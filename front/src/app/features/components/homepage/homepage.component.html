@@ -134,4 +134,10 @@
   <ion-infinite-scroll threshold="50px" (ionInfinite)="onIonInfinite($event)" [disabled]="noMoreData">
     <ion-infinite-scroll-content loadingSpinner="crescent" loadingText="Chargement..."></ion-infinite-scroll-content>
   </ion-infinite-scroll>
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="center" *ngIf="showScrollTopButton" class="fade-in">
+    <ion-fab-button color="primary" (click)="scrollToTop()">
+      <ion-icon name="arrow-up-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

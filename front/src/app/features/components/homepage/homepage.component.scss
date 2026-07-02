@@ -109,3 +109,23 @@ ion-grid {
   from { opacity: 0; transform: translateY(-4px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+ion-fab {
+  /* 🎯 Remonte le bouton de 30px (ajuste à 60px ou 80px si tu as une barre d'onglets / tabs en bas) */
+  bottom: 60px !important;
+}
+
+.fade-in {
+  animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
