@@ -12,6 +12,7 @@
         <ion-col size="12" size-sm="6" size-md="6" class="filter-col">
           <app-zone-selector
             [zones]="parentZones"
+            [selectedParentId]="parentZoneId"
             [selectedChildId]="childZoneId"
             [allowAllOption]="true"
             [showIcons]="true"
@@ -25,7 +26,7 @@
             <ion-icon name="person-outline" slot="start" class="filter-icon"></ion-icon>
             <ion-input aria-label="Nom"
                        placeholder="Nom..."
-                       [value]="filters.username || ''"
+                       [(ngModel)]="filters.username"
                        (ionInput)="onSearchInput($event)"
                        (keyup.enter)="loadPage(true)">
             </ion-input>

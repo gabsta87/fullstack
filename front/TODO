@@ -4,6 +4,8 @@ login : redirect to account/profile-management once logged
 profile management : workers can choose spoken languages and level for each language
 header : add flags for each language (popup menu)
 
+scroll to top button
+
 profiles
   see images as gallery
   videos management for workers

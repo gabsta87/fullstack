@@ -20,25 +20,26 @@ export interface GeographicZone {
 })
 export class ZoneSelectorComponent implements OnChanges {
   // ── INPUTS CONFIGURATION ──────────────────────────────────────────────────
-  @Input() zones: GeographicZone[] = [];           // La liste complète issue du Resolver
-  @Input() selectedChildId?: number;                // L'ID de la ville actuellement sauvegardé
+  @Input() zones: GeographicZone[] = [];
+  @Input() selectedParentId: number | undefined = undefined;
+  @Input() selectedChildId: number | undefined = undefined;
 
   @Input() parentPlaceholder = "Choisir une région...";
   @Input() childPlaceholder = "Choisir une localisation...";
 
-  @Input() allowAllOption = false;                  // True pour la Homepage (filtres globaux)
+  @Input() allowAllOption = false;
   @Input() allParentsLabel = "Toutes les régions";
   @Input() allChildrenLabel = "Toutes les localisations";
 
-  @Input() showIcons = false;                       // True pour le look "Banner" de la Homepage
-  @Input() isFilterBanner = false;                  // Gère la disposition CSS (Grille de filtres vs Formulaire)
+  @Input() showIcons = false;
+  @Input() isFilterBanner = false;
 
   // ── OUTPUTS ───────────────────────────────────────────────────────────────
   @Output() onZoneSelected = new EventEmitter<{ parentZoneId: number | undefined, childZoneId: number | undefined }>();
 
   // ── VARIABLES INTERNES ────────────────────────────────────────────────────
-  parentZoneId: number | undefined;
-  childZoneId: number | undefined;
+  parentZoneId: number | undefined = undefined;
+  childZoneId: number | undefined = undefined;
   availableChildZones: GeographicZone[] = [];
 
   constructor() {
@@ -46,56 +47,48 @@ export class ZoneSelectorComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // Dès que les zones ou l'ID sélectionné changent (chargement asynchrone), on initialise l'arborescence
-    if (changes['zones'] || changes['selectedChildId']) {
+    // Si l'état transmis par le parent change (ex: via le State ou l'initialisation du Resolver)
+    if (changes['zones'] || changes['selectedParentId'] || changes['selectedChildId']) {
       this.initializeSelection();
     }
   }
 
   private initializeSelection() {
-    if (!this.zones || this.zones.length === 0 || !this.selectedChildId || this.selectedChildId === -1) {
+    if (!this.zones || this.zones.length === 0) {
       this.resetFields();
       return;
     }
 
-    // Cas 1 : L'ID reçu est directement une zone parente (Région sélectionnée globale)
-    const directParent = this.zones.find(p => p.id === this.selectedChildId);
-    if (directParent) {
-      this.parentZoneId = directParent.id;
-      this.availableChildZones = directParent.subZones || [];
-      this.childZoneId = undefined; // Pas de ville spécifique
-      return;
-    }
+    // Restauration des IDs du parent (Homepage) vers l'état local du select
+    this.parentZoneId = this.selectedParentId;
+    this.childZoneId = this.selectedChildId;
 
-    // Cas 2 : L'ID reçu est une zone enfant (Ville précise)
-    const parentOfChild = this.zones.find(p =>
-      p.subZones?.some(c => c.id === this.selectedChildId)
-    );
-    if (parentOfChild) {
-      this.parentZoneId = parentOfChild.id;
-      this.availableChildZones = parentOfChild.subZones || [];
-      this.childZoneId = this.selectedChildId;
-      return;
-    }
-
-    // Fallback si l'ID ne correspond à rien
-    this.resetFields();
-  }
-
-  onParentChange() {
-    this.childZoneId = undefined; // Reset de la ville enfant en cas de changement de région
-
+    // Mise à jour de la liste des enfants disponibles selon le parent sélectionné
     if (this.parentZoneId) {
       const parent = this.zones.find(p => p.id === this.parentZoneId);
       this.availableChildZones = parent?.subZones || [];
     } else {
       this.availableChildZones = [];
     }
+  }
 
+  onParentChange() {
+    // Si l'utilisateur choisit "Toutes les régions" (valeur nulle ou indéfinie)
+    if (!this.parentZoneId) {
+      this.resetFields();
+    } else {
+      // Si l'utilisateur change de parent (ex: Paris -> Lyon), on réinitialise l'enfant
+      this.childZoneId = undefined;
+      const parent = this.zones.find(p => p.id === this.parentZoneId);
+      this.availableChildZones = parent?.subZones || [];
+    }
     this.emitSelection();
   }
 
   onChildChange() {
+    if (this.childZoneId === -1) {
+      this.childZoneId = undefined;
+    }
     this.emitSelection();
   }
 

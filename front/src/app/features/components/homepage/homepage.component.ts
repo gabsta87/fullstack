@@ -232,11 +232,12 @@ export class HomepageComponent implements OnInit {
     this.isLoading = true;
     const requestFilters = { ...this.filters };
 
-    // Injection propre du filtre géographique
     if (this.childZoneId !== undefined && this.childZoneId !== null && String(this.childZoneId) !== '-1') {
       requestFilters.zoneId = this.childZoneId;
     } else if (this.parentZoneId !== undefined && this.parentZoneId !== null && String(this.parentZoneId) !== '-1') {
       requestFilters.zoneId = this.parentZoneId;
+    } else {
+      delete requestFilters.zoneId;
     }
 
     // Nettoyage final des filtres
