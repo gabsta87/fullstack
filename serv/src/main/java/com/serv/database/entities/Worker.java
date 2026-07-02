@@ -22,7 +22,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @DiscriminatorValue("WORKER")
 @Table(name = TablesNames.WORKERS, indexes = {
-        @Index(name = "idx_worker_available_position", columnList = "available, galleryPositionIndex")
+        @Index(name = "idx_worker_available_position", columnList = "available, galleryPositionPriority")
 })
 public class Worker extends VenusUser {
 
@@ -82,6 +82,7 @@ public class Worker extends VenusUser {
     private boolean available;
     // Certified by admins when the requested photo has been confirmed
     private boolean certified;
+    // Has the worker been active today? set by system
     private boolean hasBeenActiveToday;
 
     // Instant stored as UTC timestamp

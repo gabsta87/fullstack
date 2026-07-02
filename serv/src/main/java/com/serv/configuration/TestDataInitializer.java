@@ -85,19 +85,19 @@ public class TestDataInitializer implements ApplicationRunner {
 
         // 📝 Banques de données de 50 prénoms et 50 noms
         List<String> firstNames = Arrays.asList(
-                "Amélie", "Sofia", "Léa", "Camille", "Inès", "Zoé", "Manon", "Chloé", "Emma", "Jade",
+                "Amelie", "Sofia", "Lea", "Camille", "Ines", "Zoe", "Manon", "Chloe", "Emma", "Jade",
                 "Sarah", "Eva", "Clara", "Anna", "Alice", "Lucie", "Mila", "Elena", "Maya", "Nina",
-                "Lina", "Mia", "Lola", "Julia", "Romane", "Louise", "Juliette", "Agathe", "Ines", "Clemence",
+                "Lina", "Mia", "Lola", "Julia", "Romane", "Louise", "Juliette", "Agathe", "Clemence", "Elodie",
                 "Maxime", "Lucas", "Thomas", "Hugo", "Enzo", "Nathan", "Leo", "Louis", "Arthur", "Gabriel",
-                "Alexandre", "Antoine", "Julien", "Rayan", "Florian", "Clement", "Mathéo", "Paul", "Alexis", "Quentin"
+                "Alexandre", "Antoine", "Julien", "Rayan", "Florian", "Clement", "Matheo", "Paul", "Alexis", "Quentin"
         );
 
         List<String> lastNames = Arrays.asList(
-                "Martin", "Bernard", "Thomas", "Petit", "Robert", "Richard", "Durand", "Dubois", "Moreau", "Laurent",
-                "Simon", "Michel", "Lefebvre", "Legrand", "Garcia", "Rousseau", "Fournier", "Bonner", "Dupont", "Fontaine",
-                "Lopez", "Gomez", "Muller", "Schmitt", "Masson", "Sanchez", "Clerc", "Denis", "Hubert", "Gautier",
-                "Perrin", "Roussel", "Mathieu", "Chevalier", "Francois", "Duval", "Joly", "Guerin", "Lemaire", "Roux",
-                "Roy", "Aubert", "Giraud", "Henry", "Barbier", "Brun", "Dumas", "Brunet", "Mercier", "Roger"
+                "Martin", "Bernard", "Petit", "Robert", "Richard", "Durand", "Dubois", "Moreau", "Laurent", "Simon",
+                "Michel", "Lefebvre", "Legrand", "Garcia", "Rousseau", "Fournier", "Bonner", "Dupont", "Fontaine", "Lopez",
+                "Gomez", "Muller", "Schmitt", "Masson", "Sanchez", "Clerc", "Denis", "Hubert", "Gautier", "Perrin",
+                "Roussel", "Mathieu", "Chevalier", "Francois", "Duval", "Joly", "Guerin", "Lemaire", "Roux", "Roy",
+                "Aubert", "Giraud", "Henry", "Barbier", "Brun", "Dumas", "Brunet", "Mercier", "Roger", "Vidal"
         );
 
         // Récupération des valeurs d'Enums sous forme de tableaux pour le tirage aléatoire
@@ -110,6 +110,7 @@ public class TestDataInitializer implements ApplicationRunner {
         String encodedPassword = passwordEncoder.encode("asdfasdf!");
 
         int totalGenerated = 0;
+        Set<String> generatedEmails = new HashSet<>();
 
         // Boucles imbriquées pour faire chaque combinaison unique
         for (String firstName : firstNames) {
@@ -120,6 +121,11 @@ public class TestDataInitializer implements ApplicationRunner {
                 String username = (firstName + "." + lastName).toLowerCase()
                         .replaceAll("[éèêëàâäîïôöûüç]", "e"); // Normalisation basique
                 String email = username + "@test.com";
+
+                if (generatedEmails.contains(email)) {
+                    continue;
+                }
+                generatedEmails.add(email);
 
                 // Calcul d'une date de naissance aléatoire entre 1960 et 2009 (entre 18 et 66 ans)
                 int birthYear = ThreadLocalRandom.current().nextInt(1960, 2009);

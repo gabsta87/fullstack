@@ -24,5 +24,5 @@ public interface WorkerRepository extends JpaRepository<Worker, UUID>, JpaSpecif
     @Query("SELECT MAX(w.galleryPositionPriority) FROM Worker w ")
     Integer findMaxGalleryPositionIndex();
 
-    List<Worker> findByHasBeenActiveTodayTrueOrIsAvailableTrue();
+    List<Worker> findByHasBeenActiveTodayTrueOrAvailableTrue();
 }

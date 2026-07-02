@@ -11,6 +11,7 @@ import com.serv.dto.GalleryFiltersDTO;
 import com.serv.service.SseStreamService;
 import com.serv.service.WorkerService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,9 +28,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AccountControllerClient {
 
+    @Autowired
     private final WorkerRepository workerRepository;
+    @Autowired
     private final WorkerService galleryService;
+    @Autowired
     private final ClientRepository clientRepository;
+    @Autowired
     private final SseStreamService sseStreamService;
 
     @GetMapping("/me")

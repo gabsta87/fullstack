@@ -27,7 +27,7 @@ public class SubscriptionScheduler {
     @Transactional
     public void processDailySubscriptionDeduction() {
         // 1. On cherche tous ceux qui ont été actifs aujourd'hui OU qui le sont encore à minuit
-        List<Worker> workersToCharge = workerRepository.findByHasBeenActiveTodayTrueOrIsAvailableTrue();
+        List<Worker> workersToCharge = workerRepository.findByHasBeenActiveTodayTrueOrAvailableTrue();
 
         for (Worker worker : workersToCharge) {
             if (worker.getRemainingDaysCredit() > 0) {
