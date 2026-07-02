@@ -135,7 +135,7 @@ public class PaymentController {
 
         if (type == PaymentType.BOOST) {
             // 🚀 RÈGLE 2 : Boost en haut de la liste (galleryPositionIndex au maximum actuel + 1)
-            Integer currentMaxIndex = workerRepository.findMaxGalleryPositionIndex();
+            Integer currentMaxIndex = workerRepository.findMaxGalleryPositionPriority();
             int newMax = (currentMaxIndex != null) ? currentMaxIndex + 1 : 1;
             worker.setGalleryPositionPriority(newMax);
         } else if (type == PaymentType.DAYS) {

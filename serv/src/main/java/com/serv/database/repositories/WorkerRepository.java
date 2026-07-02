@@ -22,7 +22,7 @@ public interface WorkerRepository extends JpaRepository<Worker, UUID>, JpaSpecif
     Optional<Worker> findByIdWithPhotos(@Param("id") UUID id);
 
     @Query("SELECT MAX(w.galleryPositionPriority) FROM Worker w ")
-    Integer findMaxGalleryPositionIndex();
+    Integer findMaxGalleryPositionPriority();
 
     List<Worker> findByHasBeenActiveTodayTrueOrAvailableTrue();
 }

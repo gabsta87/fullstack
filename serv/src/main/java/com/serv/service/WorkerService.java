@@ -42,9 +42,9 @@ public class WorkerService {
                 .and(buildDynamicFilters(filters));
 
         // 2. LA MAGIE DU MULTI-TRI :
-        // D'abord 'available' (true avant false), puis 'galleryPositionIndex' par ordre décroissant
+        // D'abord 'available' (true avant false), puis 'galleryPositionPriority' par ordre décroissant
         Sort doubleSort = Sort.by(Sort.Direction.DESC, "available")
-                .and(Sort.by(Sort.Direction.DESC, "galleryPositionIndex"));
+                .and(Sort.by(Sort.Direction.DESC, "galleryPositionPriority"));
 //                .and(Sort.by(Sort.Direction.ASC, "id"));
 
         // 3. Une seule et unique requête propre, paginée au niveau SQL
