@@ -182,7 +182,7 @@ public class TestDataInitializer implements ApplicationRunner {
         w.setHairColor(hairColor);
         w.setBirthdate(birthday);
         w.setServices(Arrays.asList(services));
-        w.setGalleryPositionIndex(0);
+        w.setGalleryPositionPriority(0);
         w.addSpokenLanguage(new WorkerLanguage(Language.EN,3));
         w.setExpired(false);
 

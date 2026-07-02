@@ -28,7 +28,7 @@ public record WorkerMinimalProfileDTO (
                 calculateAge(w.getBirthdate()),
                 w.getGeographicZone() != null ? new ZoneLightDTO(w.getGeographicZone().getId(), w.getGeographicZone().getName()) : null,
                 w.getBodyType() != null ? w.getBodyType().toString() : null,
-                w.getGalleryPositionIndex(),
+                w.getGalleryPositionPriority(),
                 w.getServices().stream().map(Service::getName).toList(),
                 w.isAvailable(),
                 w.getMainPhoto() != null ? w.getMainPhoto().getMainThumbUrl() : null,

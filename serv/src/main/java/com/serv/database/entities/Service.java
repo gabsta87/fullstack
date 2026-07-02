@@ -19,6 +19,8 @@ public class Service {
     @Column(nullable = false)
     private String name;
 
+    private String description;
+
     public Service(String name) {
         this.name = name;
     }

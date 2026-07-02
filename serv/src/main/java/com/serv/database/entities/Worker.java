@@ -8,10 +8,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.hibernate.annotations.BatchSize;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -67,13 +67,22 @@ public class Worker extends VenusUser {
     private Gender gender;
 
     private String phone;
-    protected boolean disabled;
 
-    private int galleryPositionIndex;
+    // Use to sort the photos in the gallery. Higher comes first.
+    private int galleryPositionPriority;
 
+    // disabled by admins
+    private boolean disabled;
+    // hidden by the worker himself
+    private boolean hidden;
+    private boolean banned;
+    // No more days available for the worker
     private boolean expired;
+    // Available for work by the worker himself.
     private boolean available;
-    private boolean verified;
+    // Certified by admins when the requested photo has been confirmed
+    private boolean certified;
+    private boolean hasBeenActiveToday;
 
     // Instant stored as UTC timestamp
     @Column(name = "last_refreshed")
@@ -90,6 +99,18 @@ public class Worker extends VenusUser {
 
     @Column(name = "remaining_days_credit")
     private Integer remainingDaysCredit;
+
+    @Column(name = "verification_code")
+    private String verificationCode; // Le mot/nombre secret généré par le site pour sa photo
+
+    @Column(name = "certification_status")
+    private String certificationStatus; // NOT_REQUESTED, PENDING_APPROVAL, CERTIFIED, REJECTED
+
+    @Column(name = "certified_at")
+    private LocalDateTime certifiedAt;
+
+    @Column(name = "certification_expires_at")
+    private LocalDateTime certificationExpiresAt;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
@@ -136,4 +157,9 @@ public class Worker extends VenusUser {
     public void addSpokenLanguage(WorkerLanguage language) {this.spokenLanguages.add(language);}
 
     public void removeSpokenLanguage(WorkerLanguage language) {this.spokenLanguages.remove(language);}
+
+    public void setActive(boolean active) {
+        this.available = active;
+        this.hasBeenActiveToday = active;
+    }
 }

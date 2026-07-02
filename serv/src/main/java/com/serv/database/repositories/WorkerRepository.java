@@ -20,6 +20,6 @@ public interface WorkerRepository extends JpaRepository<Worker, UUID>, JpaSpecif
     @Query("SELECT w FROM Worker w LEFT JOIN FETCH w.photos WHERE w.id = :id")
     Optional<Worker> findByIdWithPhotos(@Param("id") UUID id);
 
-    @Query("SELECT MAX(w.galleryPositionIndex) FROM Worker w ")
+    @Query("SELECT MAX(w.galleryPositionPriority) FROM Worker w ")
     Integer findMaxGalleryPositionIndex();
 }
