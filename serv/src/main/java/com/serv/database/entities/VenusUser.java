@@ -24,8 +24,6 @@ public abstract class VenusUser {
     @Id
     @GeneratedValue(strategy=GenerationType.UUID)
     protected UUID id;
-    @Basic(optional = false)
-    @Column(nullable = false)
     protected String username;
     @Embedded
     @Basic(optional = false)
