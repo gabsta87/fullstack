@@ -1,5 +1,5 @@
 package com.serv.common;
 
 public enum UserRole {
-    ADMIN, WORKER, CLIENT
+    ADMIN, WORKER, CLIENT, SUPER_ADMIN
 }

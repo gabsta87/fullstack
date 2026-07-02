@@ -48,4 +48,16 @@ public class Requests {
             return page != null ? page : 0;
         }
     }
+
+    public record UpdateDaysRequest(String workerId, int newDaysValue, String reason) {}
+
+    public record CertificationApprovalRequest(String workerId, boolean approved, String rejectionReason) {}
+
+    public record AdminUpdateProfileRequest(
+            String workerId,
+            Boolean active,               // true = forcer en ligne, false = forcer hors-ligne
+            Integer remainingDaysCredit,  // Nouvelle valeur de jours si modifiée
+            String certificationStatus,   // "CERTIFIED", "REJECTED", etc.
+            String reason                 // Justification obligatoire pour l'audit
+    ) {}
 }
