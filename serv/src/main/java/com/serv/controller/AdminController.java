@@ -58,10 +58,10 @@ public class AdminController {
         StringBuilder auditDetails = new StringBuilder("Mise à jour du profil. Changements : ");
 
         // 1. Contrôle Idempotent du Statut En ligne / Hors ligne
-        if (request.active() != null) {
-            if (worker.isActive() != request.active()) {
-                worker.setActive(request.active());
-                auditDetails.append(String.format("[Statut: %s] ", request.active() ? "ACTIVE" : "INACTIVE"));
+        if (request.disabled() != null) {
+            if (worker.isDisabled() != request.disabled()) {
+                worker.setDisabled(request.disabled());
+                auditDetails.append(String.format("[Statut: %s] ", request.disabled() ? "DISABLED" : "ENABLED"));
             }
         }
 

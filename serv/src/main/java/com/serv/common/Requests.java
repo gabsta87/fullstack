@@ -55,7 +55,7 @@ public class Requests {
 
     public record AdminUpdateProfileRequest(
             String workerId,
-            Boolean active,               // true = forcer en ligne, false = forcer hors-ligne
+            Boolean disabled,               // true = forcer en ligne, false = forcer hors-ligne
             Integer remainingDaysCredit,  // Nouvelle valeur de jours si modifiée
             String certificationStatus,   // "CERTIFIED", "REJECTED", etc.
             String reason                 // Justification obligatoire pour l'audit
