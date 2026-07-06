@@ -11,6 +11,7 @@ import {accountResolver} from "./features/resolver/account.resolver";
 import {workerOnlyGuard} from "./features/guards/worker-only.guard";
 import {profileVisitingResolver} from "./features/resolver/profile-visiting.resolver";
 import {geographicZonesResolver} from "./features/resolver/geographic-zones.resolver";
+import {ResetPasswordComponent} from "./features/components/reset-password/reset-password.component";
 
 export const routes: Routes = [
   {
@@ -42,6 +43,7 @@ export const routes: Routes = [
       services : servicesResolver,
       locations: geographicZonesResolver,
     }, canActivate: [authGuard, workerOnlyGuard] },
+  { path: 'reset-password',  component : ResetPasswordComponent },
 
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];

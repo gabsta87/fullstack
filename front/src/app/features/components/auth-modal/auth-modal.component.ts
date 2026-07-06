@@ -2,9 +2,11 @@ import { Router } from '@angular/router';
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {IonicModule, ModalController} from '@ionic/angular';
+import {AlertController, IonicModule, ModalController} from '@ionic/angular';
 import {AuthService} from '../../services/auth.service';
 import {RegisterService} from '../../services/register.service';
+import {LoadingController} from "@ionic/angular/standalone";
+import {ForgotPasswordComponent} from "../forgot-password/forgot-password.component";
 
 @Component({
   selector: 'app-auth-modal',
@@ -23,6 +25,8 @@ export class AuthModalComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
+    private alertCtrl: AlertController,
+    private loadingCtrl: LoadingController,
     private authService: AuthService,
     private registerService: RegisterService,
     private modalCtrl: ModalController,
@@ -82,7 +86,7 @@ export class AuthModalComponent implements OnInit {
           this.isLoading = false;
 
           if (err.status === 401) {
-            this.errorMsg = "Identifiants ou mot de passe incorrects.";
+            this.errorMsg = "Identifiant ou mot de passe incorrects.";
           } else if(err.status == 403){
             this.errorMsg = "Requête interdite.";
           } else {
@@ -140,4 +144,12 @@ export class AuthModalComponent implements OnInit {
   }
 
   dismiss() { this.modalCtrl.dismiss(); }
+
+  async goToForgotPassword() {
+    const alert = await this.modalCtrl.create(
+      {component : ForgotPasswordComponent},
+    );
+
+    await alert.present();
+  }
 }

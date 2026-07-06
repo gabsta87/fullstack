@@ -48,7 +48,7 @@
       Déjà un compte ? <a (click)="switchMode('login')">Se connecter</a>
     </p>
     <p class="auth-switch" *ngIf="mode === 'login'">
-      <a (click)="errorMsg = 'Fonctionnalité bientôt disponible'">Mot de passe oublié ?</a>
+      <a (click)="goToForgotPassword()">Mot de passe oublié ?</a>
     </p>
   </form>
 </ion-content>

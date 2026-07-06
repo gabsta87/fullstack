@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -112,7 +113,8 @@ public class AuthController {
 
     // ── Password reset ────────────────────────────────────────────────────────
 
-    @PostMapping("/resetPassword")
+    @Transactional
+    @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(HttpServletRequest request,
                                                 @RequestParam("email") String email) {
         Optional<VenusUser> userOpt = userRepository.findByEmail(email);
@@ -121,12 +123,20 @@ public class AuthController {
         if (userOpt.isEmpty())
             return ResponseEntity.ok("If that address is registered, a reset link has been sent.");
 
-        VenusUser user = userOpt.get();
-        UUID token = UUID.randomUUID();
-        passwordResetTokenRepository.save(new PasswordResetToken(token, user));
+        System.out.println("sending password reset email to " + email);
 
-        String resetUrl = String.format("%s://%s:%d/resetPassword?token=%s",
-                request.getScheme(), request.getServerName(), request.getServerPort(), token);
+        VenusUser user = userOpt.get();
+
+        passwordResetTokenRepository.deleteAllByUserId(user.getId());
+        passwordResetTokenRepository.flush();
+
+        UUID token = UUID.randomUUID();
+
+        PasswordResetToken myToken = new PasswordResetToken(token, user);
+        passwordResetTokenRepository.save(myToken);
+
+        String resetUrl = String.format("%s://%s:4200/reset-password?token=%s",
+                request.getScheme(), request.getServerName(), token);
 
         mailService.sendFormattedMessage(user.getEmail(),
                 "Réinitialisation du mot de passe (lien valable 24h)", resetUrl);
@@ -134,7 +144,7 @@ public class AuthController {
         return ResponseEntity.ok("If that address is registered, a reset link has been sent.");
     }
 
-    @PostMapping("/resetPassword/confirm")
+    @PostMapping("/reset-password/confirm")
     public ResponseEntity<String> confirmReset(@RequestParam("token") UUID token,
                                                @RequestParam("newPassword") String newPassword) {
         Optional<PasswordResetToken> tokenOpt = passwordResetTokenRepository.findById(token);

@@ -90,6 +90,7 @@ public class SecurityConfig {
                         .requestMatchers("/account/stream").permitAll()
                         .requestMatchers("/error", "/auth/**", "/session-check").permitAll()
                         .requestMatchers("/public/**", "/gallery/**", "/workers/**", "/media/**").permitAll()
+                        .requestMatchers("/auth/reset-password", "/auth/reset-password/confirm").permitAll()
 
                         // 🎯 2. Les règles restrictives globales en DEUXIÈME
                         // Tout le reste de la gestion de compte et des favoris nécessite d'être loggé (Header Bearer standard)

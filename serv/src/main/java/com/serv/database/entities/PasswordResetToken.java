@@ -19,7 +19,6 @@ public class PasswordResetToken {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @OneToOne(targetEntity = VenusUser.class)

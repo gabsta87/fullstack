@@ -1,6 +1,5 @@
 package com.serv.controller;
 
-import com.serv.common.Language;
 import com.serv.common.Requests;
 import com.serv.configuration.JwtProvider;
 import com.serv.database.entities.Client;
@@ -22,8 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/account")
