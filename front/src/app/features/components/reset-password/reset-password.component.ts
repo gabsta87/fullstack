@@ -38,8 +38,7 @@ export class ResetPasswordComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // 🎯 Extraction du token UUID depuis l'URL (?token=...)
-    this.token = this.route.snapshot.queryParamMap.get('token');
+    this.token = this.route.snapshot.queryParamMap.get('resetToken');
 
     this.resetForm = this.fb.group({
       newPassword: ['', [Validators.required, Validators.minLength(6)]],

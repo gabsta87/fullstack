@@ -2,12 +2,15 @@ package com.serv.service;
 
 import com.serv.database.entities.Email;
 import com.serv.database.repositories.PasswordResetTokenRepository;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +52,21 @@ public class MailService {
         message.setSubject(subject);
         message.setText(content);
         getJavaMailSender().send(message);
+    }
+
+    public void sendHtmlMessage(Email to, String subject, String htmlBody) {
+        MimeMessage message = getJavaMailSender().createMimeMessage();
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setTo(to.toString());
+            helper.setSubject(subject);
+
+            helper.setText(htmlBody, true);
+
+            getJavaMailSender().send(message);
+        } catch (MessagingException e) {
+            // Gérer l'exception (log)
+        }
     }
 
     private JavaMailSender getJavaMailSender() {

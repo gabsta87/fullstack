@@ -156,7 +156,7 @@ export class AuthService {
 
   confirmPasswordReset(token: string, newPassword: string): Observable<string> {
     const formData = new FormData();
-    formData.append('token', token);
+    formData.append('resetToken', token);
     formData.append('newPassword', newPassword);
     return this.http.post(`${environment.apiBase}/auth/reset-password/confirm`, formData, {
       responseType: 'text'

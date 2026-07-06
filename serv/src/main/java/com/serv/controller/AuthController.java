@@ -13,6 +13,7 @@ import com.serv.service.MailService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -36,6 +37,9 @@ public class AuthController {
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final AuthService authService;
     private final JwtProvider jwtProvider;
+
+    @Value("${app.frontend-url}")
+    private String frontendUrl;
 
     // ── Login / Logout ────────────────────────────────────────────────────────
 
@@ -126,7 +130,6 @@ public class AuthController {
         System.out.println("sending password reset email to " + email);
         System.out.println("Request from : "+request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort());
         System.out.println("Request URL : "+request.getRequestURL());
-        System.out.println("Request : "+request);
 
         VenusUser user = userOpt.get();
 
@@ -138,19 +141,34 @@ public class AuthController {
         PasswordResetToken myToken = new PasswordResetToken(token, user);
         passwordResetTokenRepository.save(myToken);
 
-        String resetUrl = String.format("%s://%s:4200/reset-password?token=%s",
-                request.getScheme(), request.getServerName(), token);
+        String resetUrl = String.format("%s/reset-password?resetToken=%s", frontendUrl, token);
 
-        mailService.sendFormattedMessage(user.getEmail(),
-                "Réinitialisation du mot de passe (lien valable 24h)", resetUrl);
+        String htmlContent = "<html><body>"
+                + "<p>Bonjour,</p>"
+                + "<p>Vous avez demandé la réinitialisation de votre mot de passe. "
+                + "Veuillez cliquer sur le lien ci-dessous pour configurer un nouveau mot de passe (valable 24h) :</p>"
+                + "<p style='margin: 20px 0;'>"
+                + "  <a href='" + resetUrl + "' style='background-color: #3880ff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; display: inline-block;'>"
+                + "    Réinitialiser mon mot de passe"
+                + "  </a>"
+                + "</p>"
+                + "<p>Si le bouton ne fonctionne pas, vous pouvez copier-coller ce lien dans votre navigateur :<br>"
+                + "<a href='" + resetUrl + "'>" + resetUrl + "</a></p>"
+                + "<p>Cordialement,<br>L'équipe Venus</p>"
+                + "</body></html>";     
+
+        mailService.sendHtmlMessage(user.getEmail(),
+                "Réinitialisation du mot de passe", htmlContent);
 
         return ResponseEntity.ok("If that address is registered, a reset link has been sent.");
     }
 
     @PostMapping("/reset-password/confirm")
-    public ResponseEntity<String> confirmReset(@RequestParam("token") UUID token,
+    public ResponseEntity<String> confirmReset(@RequestParam("resetToken") UUID token,
                                                @RequestParam("newPassword") String newPassword) {
         Optional<PasswordResetToken> tokenOpt = passwordResetTokenRepository.findById(token);
+
+        System.out.println("Confirming password reset for token " + token);
 
         if (tokenOpt.isEmpty())
             return ResponseEntity.badRequest().body("Invalid token.");
