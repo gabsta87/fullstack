@@ -4,18 +4,23 @@
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-button routerLink="/" fill="clear" class="brand-button">
-        <span class="brand">
-          <span class="brand-mark">◆</span> Venus
-        </span>
+            <span class="brand">
+              <span class="brand-mark">◆</span> Venus
+            </span>
           </ion-button>
         </ion-buttons>
 
-        <ion-buttons slot="end">
-        </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
     <ion-buttons slot="end">
+      <ion-button id="lang-selector-trigger">
+        <img [src]="langService.currentLanguageFlag" class="header-flag-icon" alt="Langue active" />
+        <ion-text class="ion-hide-sm-down" style="margin-left: 5px; font-size: 14px;">
+          {{ langService.currentCode }}
+        </ion-text>
+      </ion-button>
+
       <ng-container *ngIf="!(authService.isAuthenticated$ | async)">
         <ion-button (click)="openAuth('login')" fill="clear" class="nav-link-btn">
           Se connecter
@@ -37,3 +42,18 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
+
+<ion-popover trigger="lang-selector-trigger" [dismissOnSelect]="true" side="bottom" alignment="end">
+  <ng-template>
+    <ion-content>
+      <ion-list lines="none" class="lang-popover-list">
+        <ion-item *ngFor="let lang of langService.availableLanguages"
+                  (click)="changeLanguage(lang.code)"
+                  [class.active-lang]="lang.code === langService.currentCode">
+          <img slot="start" [src]="lang.flag" class="popover-flag-icon" [alt]="lang.label" />
+          <ion-label>{{ lang.label }}</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-popover>

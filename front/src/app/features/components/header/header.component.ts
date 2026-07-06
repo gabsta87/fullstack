@@ -19,6 +19,7 @@ import {
   notificationsOutline, personCircleOutline, playCircleOutline, timeOutline,
   warningOutline
 } from "ionicons/icons";
+import LanguageManagerService from "../../services/language-manager.service";
 
 @Component({
   selector: 'app-header',
@@ -34,7 +35,8 @@ export class HeaderComponent {
     private clientAccountService: ClientAccountService,
     private workerAccountService: WorkerAccountService,
     private router: Router,
-    private modalCtrl: ModalController // Injecté ici
+    private modalCtrl: ModalController,
+    public langService: LanguageManagerService
   ) {
     addIcons({
       personCircleOutline
@@ -91,9 +93,8 @@ export class HeaderComponent {
     }
   }
 
-  changeLanguage(lang: string) {
-    localStorage.setItem('site_lang', lang);
-    this.applyLanguage(lang);
+  changeLanguage(langCode: string) {
+    this.langService.changeLanguageTo(langCode);
   }
 
   private applyLanguage(lang: string) {

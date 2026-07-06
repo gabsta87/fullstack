@@ -16,3 +16,34 @@
     margin-right: 4px;
   }
 }
+
+.header-flag-icon {
+  width: 24px;
+  height: 16px;
+  object-fit: cover;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+.lang-popover-list {
+  padding: 4px 0;
+
+  ion-item {
+    --padding-start: 12px;
+    --min-height: 44px;
+    font-size: 14px;
+
+    &.active-lang {
+      --background: var(--ion-color-light);
+      font-weight: 600;
+    }
+  }
+}
+
+.popover-flag-icon {
+  width: 20px;
+  height: 14px;
+  object-fit: cover;
+  border-radius: 2px;
+  margin-right: 12px;
+}

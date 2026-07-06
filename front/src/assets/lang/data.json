@@ -1,0 +1,16 @@
+{
+  "fr": {
+    "header": { "home": "Accueil", "login": "Connexion", "logout": "Déconnexion", "account": "Mon Compte" },
+    "filters": { "placeholder_name": "Nom...", "search": "Rechercher", "all_regions": "Toutes les régions" }
+  },
+  "en": {
+    "header": { "home": "Home", "login": "Login", "logout": "Logout", "account": "My Account" },
+    "filters": { "placeholder_name": "Name...", "search": "Search", "all_regions": "All regions" }
+  },
+  "de": { "header": { "home": "Startseite", "login": "Einloggen", "logout": "Ausloggen", "account": "Mein Konto" }, "filters": { "placeholder_name": "Name...", "search": "Suche", "all_regions": "Alle Regionen" } },
+  "es": { "header": { "home": "Inicio", "login": "Acceder", "logout": "Salir", "account": "Mi Cuenta" }, "filters": { "placeholder_name": "Nombre...", "search": "Buscar", "all_regions": "Todas las regiones" } },
+  "it": { "header": { "home": "Home", "login": "Accedi", "logout": "Esci", "account": "Il mio account" }, "filters": { "placeholder_name": "Nome...", "search": "Cerca", "all_regions": "Tutte le regioni" } },
+  "ru": { "header": { "home": "Главная", "login": "Войти", "logout": "Выйти", "account": "Мой аккаунт" }, "filters": { "placeholder_name": "Имя...", "search": "Поиск", "all_regions": "Все регионы" } },
+  "ua": { "header": { "home": "Головна", "login": "Увійти", "logout": "Вийти", "account": "Мій аккаунт" }, "filters": { "placeholder_name": "Ім'я...", "search": "Пошук", "all_regions": "Всі регіони" } },
+  "ar": { "header": { "home": "الرئيسية", "login": "تسجيل الدخول", "logout": "تسجيل الخروج", "account": "حسابي" }, "filters": { "placeholder_name": "الاسم...", "search": "بحث", "all_regions": "كل المناطق" } }
+}
