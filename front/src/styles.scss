@@ -12,3 +12,6 @@ ion-modal::part(content) {
   border-radius: 16px;
   overflow: hidden;
 }
+.content-with-bottom-spacing {
+  --padding-bottom: 120px;
+}
