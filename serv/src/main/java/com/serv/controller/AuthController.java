@@ -124,6 +124,9 @@ public class AuthController {
             return ResponseEntity.ok("If that address is registered, a reset link has been sent.");
 
         System.out.println("sending password reset email to " + email);
+        System.out.println("Request from : "+request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort());
+        System.out.println("Request URL : "+request.getRequestURL());
+        System.out.println("Request : "+request);
 
         VenusUser user = userOpt.get();
 

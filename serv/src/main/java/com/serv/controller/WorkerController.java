@@ -73,7 +73,6 @@ public class WorkerController {
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
     public ResponseEntity<WorkerPublicFullProfileDTO> getProfile(@PathVariable UUID id) {
-        System.out.println("Profile Request received for worker : " + id);
         return workerRepository.findByIdWithPhotos(id)
                 .map(w -> ResponseEntity.ok(WorkerPublicFullProfileDTO.from(w)))
                 .orElse(ResponseEntity.notFound().build());
