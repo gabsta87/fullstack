@@ -1,14 +1,17 @@
 package com.serv.controller;
 
 import com.serv.common.Requests;
-import com.serv.database.entities.AdminAuditLog;
-import com.serv.database.entities.Worker;
-import com.serv.database.repositories.AdminAuditLogRepository;
-import com.serv.database.repositories.WorkerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.serv.database.entities.*;
+import com.serv.database.repositories.*;
+import com.serv.service.PasswordResetService;
+import com.serv.service.SseStreamService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -17,83 +20,231 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/admin")
-@PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')") // Décommente si tu utilises Spring Security
+@PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
 public class AdminController {
 
-    @Autowired
-    private WorkerRepository workerRepository;
+    private final WorkerRepository workerRepository;
+    private final AdminRepository adminRepository;
+    private final AdminAuditLogRepository auditLogRepository;
+    private final GeographicZoneRepository geographicZoneRepository;
+    private final ServiceRepository serviceRepository;
+    private final LegalTextRepository legalTextRepository;
+    private final SseStreamService sseStreamService;
+    private final PasswordResetService passwordResetService;
 
-    @Autowired
-    private AdminAuditLogRepository auditLogRepository;
+    // ── PROFILES & LOGS ──────────────────────────────────────────────────────
 
-    /**
-     * 1. Récupérer tous les profils (actifs et inactifs) pour modération
-     */
     @GetMapping("/profiles")
     public ResponseEntity<List<Worker>> getAllProfiles() {
         return ResponseEntity.ok(workerRepository.findAll());
     }
 
-    @PostMapping("/profiles/update")
-    public ResponseEntity<Map<String, Object>> updateProfile(
-            @RequestBody Requests.AdminUpdateProfileRequest request,
-            @RequestHeader("X-Admin-Id") String adminId,
-            @RequestHeader("X-Admin-Username") String adminUsername) {
+    @GetMapping("/logs")
+    public ResponseEntity<List<AdminAuditLog>> getAuditLogs() {
+        return ResponseEntity.ok(auditLogRepository.findAll());
+    }
 
-        UUID workerId;
+    @PostMapping("/profiles/{id}/toggle-status")
+    @Transactional
+    public ResponseEntity<?> toggleStatus(@PathVariable UUID id, @AuthenticationPrincipal Jwt jwt) {
+        Admin admin = getAdminInfo(jwt);
+        Worker targetWorker = workerRepository.findById(id).orElse(null);
+        if (targetWorker == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Worker not found"));
+
+        targetWorker.setDisabled(!targetWorker.isDisabled());
+        workerRepository.save(targetWorker);
+
+        logAdminAction(admin, "TOGGLE_STATUS", targetWorker, "Statut modifié : " + (targetWorker.isDisabled() ? "DESACTIVE" : "ACTIVE"));
+        return ResponseEntity.ok(Map.of("success", true, "isActive", !targetWorker.isDisabled()));
+    }
+
+    @PostMapping("/profiles/update-days")
+    @Transactional
+    public ResponseEntity<?> updateDays(@RequestBody Requests.AdminUpdateDaysRequest req, @AuthenticationPrincipal Jwt jwt) {
+        Admin admin = getAdminInfo(jwt);
+        Worker targetWorker = workerRepository.findById(UUID.fromString(req.workerId())).orElse(null);
+        if (targetWorker == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Worker not found"));
+
+        int oldDays = targetWorker.getRemainingDaysCredit();
+        targetWorker.setRemainingDaysCredit(req.newDaysValue());
+        workerRepository.save(targetWorker);
+
+        logAdminAction(admin, "UPDATE_CREDIT_DAYS", targetWorker, String.format("Jours modifiés: %d -> %d | Motif: %s", oldDays, req.newDaysValue(), req.reason()));
+        return ResponseEntity.ok(Map.of("success", true, "newDaysValue", req.newDaysValue()));
+    }
+
+    @PostMapping("/profiles/verify-certification")
+    @Transactional
+    public ResponseEntity<?> verifyCertification(@RequestBody Requests.AdminVerifyCertifRequest req, @AuthenticationPrincipal Jwt jwt) {
+        Admin admin = getAdminInfo(jwt);
+        Worker targetWorker = workerRepository.findById(UUID.fromString(req.workerId())).orElse(null);
+        if (targetWorker == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Worker not found"));
+
+        if (req.approved()) {
+            targetWorker.setCertificationStatus("CERTIFIED");
+            targetWorker.setCertifiedAt(LocalDateTime.now());
+            targetWorker.setCertificationExpiresAt(LocalDateTime.now().plusMonths(12));
+        } else {
+            targetWorker.setCertificationStatus("REJECTED");
+        }
+        workerRepository.save(targetWorker);
+
+        logAdminAction(admin, "VERIFY_CERTIFICATION", targetWorker, String.format("Certification : %s | Motif : %s", req.approved() ? "APPROUVEE" : "REFUSEE", req.rejectionReason()));
+        return ResponseEntity.ok(Map.of("success", true));
+    }
+
+    // ── GESTION DES SERVICES ────────────────────────
+
+    @GetMapping("/services")
+    public ResponseEntity<List<Service>> getAllServices() {
+        return ResponseEntity.ok(serviceRepository.findAll());
+    }
+
+    /**
+     * 🔄 SAVE OR UPDATE unique pour les services
+     */
+    @PostMapping("/services")
+    @Transactional
+    public ResponseEntity<?> saveOrUpdateService(@RequestBody Service service, @AuthenticationPrincipal Jwt jwt) {
+        Admin admin = getAdminInfo(jwt);
+        boolean isUpdate = service.getId() != null && service.getId() > 0;
+
+        if (isUpdate) {
+            Service existing = serviceRepository.findById(service.getId()).orElse(null);
+            if (existing == null) return ResponseEntity.notFound().build();
+
+            String oldName = existing.getName();
+            existing.setName(service.getName().trim());
+            serviceRepository.save(existing);
+
+            logAdminAction(admin, "UPDATE_SERVICE", existing, String.format("Service renommé : %s -> %s", oldName, existing.getName()));
+            sseStreamService.emitEvent(admin.getId(), "SERVICE_UPDATED", existing);
+        } else {
+            if (serviceRepository.findByName(service.getName()).isPresent()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Service already exists");
+            }
+            serviceRepository.save(service);
+
+            logAdminAction(admin, "CREATE_SERVICE", service, "Création du service : " + service.getName());
+            sseStreamService.emitEvent(admin.getId(), "SERVICE_CREATED", service);
+        }
+
+        return ResponseEntity.ok(serviceRepository.findAll());
+    }
+
+    // ── GESTION DES RÉGIONS & TEXTES LÉGAUX ───────────────────────────────────
+
+    @DeleteMapping("/regions/{id}")
+    @Transactional
+    public ResponseEntity<?> deleteRegion(@PathVariable int id, @AuthenticationPrincipal Jwt jwt) {
+        Admin admin = getAdminInfo(jwt);
+        int count = workerRepository.countByGeographicZoneId(id);
+        if (count > 0) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", "Impossible de supprimer cette région : " + count + " annonceur(s) y sont rattaché(s)."));
+        }
+
+        geographicZoneRepository.findById(id).ifPresent(zone -> {
+            geographicZoneRepository.delete(zone);
+            // On passe une chaîne JSON descriptive dans la colonne snapshot puisqu'on supprime la clé étrangère
+            logAdminAction(admin, "DELETE_REGION", String.format("{\"id\": %d, \"name\": \"%s\"}", id, zone.getName()), "Suppression de la zone");
+        });
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/legal")
+    @Transactional
+    public ResponseEntity<?> updateLegalText(@RequestBody Requests.LegalTextUpdateRequest req, @AuthenticationPrincipal Jwt jwt) {
+        Admin admin = getAdminInfo(jwt);
+
+        LegalText legal = new LegalText();
+        legal.setName(req.key());
+        legal.setContent(req.content());
+        legal.setLastUpdate(LocalDateTime.now());
+        legal.setAuthor(admin); // Ajout de l'auteur légal pour l'historique !
+        legalTextRepository.save(legal);
+
+        logAdminAction(admin, "UPDATE_LEGAL_TEXT", legal, "Mise à jour du texte légal : " + req.key());
+        return ResponseEntity.ok(Map.of("success", true));
+    }
+
+    // ── ADMINS INVITATIONS ────────────────────────────────────
+    @PostMapping("/admins/invite")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @Transactional
+    public ResponseEntity<?> inviteAdmin(@RequestBody Requests.AdminInviteRequest req, @AuthenticationPrincipal Jwt jwt) {
+        Admin admin = getAdminInfo(jwt);
+        Email email;
+
+        if (req.email() == null || req.email().isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Email requis"));
+        } else {
+            try { email = new Email(req.email()); }
+            catch (IllegalArgumentException e) { return ResponseEntity.badRequest().body(Map.of("error", "Email invalide")); }
+        }
+
+        // 1. On vérifie les doublons
+        if (adminRepository.findByEmail(email).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", "Un utilisateur avec cet e-mail existe déjà"));
+        }
+
+        // 2. On crée l'Admin en BDD "verrouillé"
+        Admin newAdmin = new Admin();
+        newAdmin.setEmail(email);
+        newAdmin.setUsername(email.toString());
+        newAdmin.setLocked(true); // Verrouillé tant que le premier mot de passe n'est pas posé
+        newAdmin.setPassword("PENDING_ACTIVATION_" + UUID.randomUUID()); // Chaîne BCrypt non valide par sécurité
+        adminRepository.save(newAdmin);
+
+        // 3. Réutilisation immédiate avec le paramètre d'invitation à true
+        passwordResetService.createTokenAndSendEmail(newAdmin, true);
+
+        // 4. Audit Log
+        String snapshotJson = String.format("{\"invited_email\": \"%s\", \"role_assigned\": \"ADMIN\"}", email);
+        logAdminAction(admin, "INVITE_ADMIN", snapshotJson, "Compte admin pré-créé. Flux de reset password déclenché pour activation.");
+
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "Le compte administrateur a été pré-créé et le processus de configuration du mot de passe a été envoyé par e-mail."
+        ));
+    }
+
+    // ── SECURED CONTROLLER HELPERS ──────────────────────────────────────────
+
+    private Admin getAdminInfo(Jwt jwt) {
+        if (jwt == null) return null;
+        String userIdStr = jwt.getClaimAsString("userId");
+        if (userIdStr != null) {
+            try {
+                return adminRepository.findById(UUID.fromString(userIdStr)).orElse(null);
+            } catch (IllegalArgumentException ignored) {}
+        }
         try{
-            workerId = UUID.fromString(request.workerId());
-        }catch(IllegalArgumentException e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Invalid worker ID"));
+            Email email = new Email(jwt.getClaimAsString("email"));
+            return adminRepository.findByEmail(email).orElse(null);
+        }catch (IllegalArgumentException ignored){
+            System.out.println("Invalid JWT email: " + jwt.getClaimAsString("email"));
+            return null;
         }
+    }
 
-        if (request.reason() == null || request.reason().isBlank()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Un motif est requis pour toute action administrative."));
-        }
-
-        Worker worker = workerRepository.findById(workerId).orElse(null);
-        if (worker == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Worker not found"));
-
-        StringBuilder auditDetails = new StringBuilder("Mise à jour du profil. Changements : ");
-
-        // 1. Contrôle Idempotent du Statut En ligne / Hors ligne
-        if (request.disabled() != null) {
-            if (worker.isDisabled() != request.disabled()) {
-                worker.setDisabled(request.disabled());
-                auditDetails.append(String.format("[Statut: %s] ", request.disabled() ? "DISABLED" : "ENABLED"));
-            }
-        }
-
-        // 2. Modification du crédit de jours
-        if (request.remainingDaysCredit() != null) {
-            int oldDays = worker.getRemainingDaysCredit();
-            if (oldDays != request.remainingDaysCredit()) {
-                worker.setRemainingDaysCredit(request.remainingDaysCredit());
-                auditDetails.append(String.format("[Jours: %d -> %d] ", oldDays, request.remainingDaysCredit()));
-            }
-        }
-
-        // 3. Modification de la certification
-        if (request.certificationStatus() != null) {
-            worker.setCertificationStatus(request.certificationStatus());
-            if ("CERTIFIED".equals(request.certificationStatus())) {
-                worker.setCertifiedAt(LocalDateTime.now());
-                worker.setCertificationExpiresAt(LocalDateTime.now().plusMonths(12));
-            }
-            auditDetails.append(String.format("[Certification: %s] ", request.certificationStatus()));
-        }
-
-        workerRepository.save(worker);
-
+    // Encapsulation centralisée des surcharges de logs
+    private void logAdminAction(Admin admin, String actionType, Object target, String details) {
         AdminAuditLog log = new AdminAuditLog();
-        log.setAdminId(adminId);
-        log.setAdminUsername(adminUsername);
-        log.setActionType("ADMIN_PROFILE_UPDATE");
-        log.setTargetWorkerId(request.workerId());
-        log.setDetails(auditDetails.toString() + " | Motif : " + request.reason());
-        auditLogRepository.save(log);
+        log.setAdmin(admin);
+        log.setActionType(actionType);
+        log.setDetails(details);
+        log.setCreatedAt(LocalDateTime.now());
 
-        return ResponseEntity.ok(Map.of("success", true, "worker", worker));
+        if (target instanceof VenusUser) log.setTarget((VenusUser) target);
+        else if (target instanceof GeographicZone) log.setTarget((GeographicZone) target);
+        else if (target instanceof Service) log.setTarget((Service) target);
+        else if (target instanceof LegalText) log.setTarget((LegalText) target);
+        else if (target instanceof Comment) log.setTarget((Comment) target);
+        else if (target instanceof String) log.setTarget((String) target); // snapshot JSON
+
+        auditLogRepository.save(log);
     }
 }

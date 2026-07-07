@@ -42,7 +42,7 @@ public record WorkerPublicFullProfileDTO(
                 w.getPhone(),
                 w.getDescription(),
                 mainThumb,
-                WorkerMinimalProfileDTO.calculateAge(w.getBirthdate()),
+                w.getAge(),
                 w.getPhotos() != null ? w.getPhotos().stream().map(PhotoDTO::from).toList() : List.of(),
                 List.of(), // TODO: videos quand l'entité sera prête
                 w.getSpokenLanguages().stream().map(WorkerLanguage::toString).toList()

@@ -13,6 +13,11 @@ public class Requests {
     public record LoginRequest(String email, String password) { }
     public record LoginResponse(String token, VenusUserDTO user) { }
 
+    public record AdminUpdateDaysRequest(String workerId, int newDaysValue, String reason) {}
+    public record AdminVerifyCertifRequest(String workerId, boolean approved, String rejectionReason) {}
+    public record LegalTextUpdateRequest(String key, String content) {}
+    public record AdminInviteRequest(String email) {}
+
     public record WorkerProfileUpdateRequest(
             String username,
             String description,

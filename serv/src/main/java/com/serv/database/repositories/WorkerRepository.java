@@ -25,4 +25,6 @@ public interface WorkerRepository extends JpaRepository<Worker, UUID>, JpaSpecif
     Integer findMaxGalleryPositionPriority();
 
     List<Worker> findByHasBeenActiveTodayTrueOrAvailableTrue();
+
+    int countByGeographicZoneId(int id);
 }

@@ -36,7 +36,7 @@ public class WorkerService {
 
         // 1. On prépare la base : Uniquement les profils non désactivés + les filtres dynamiques
         Specification<Worker> spec = Specification
-                .where(WorkerSpecifications.isNotDisabled())
+                .where(WorkerSpecifications.isValidProfile())
                 .and(buildDynamicFilters(filters));
 
         // 2. LA MAGIE DU MULTI-TRI :
@@ -56,13 +56,7 @@ public class WorkerService {
         if (workers.isEmpty()) return List.of();
 
         // Batch fetch des miniatures de preview, groupées par workerId
-        List<UUID> workerIds = workers.stream().map(Worker::getId).toList();
-        Map<UUID, List<String>> previewThumbs = new HashMap<>();
-        photoRepository
-                .findByWorkerIdInOrderBySortOrderAsc(workerIds)
-                .forEach(p -> previewThumbs
-                        .computeIfAbsent(p.getWorker().getId(), k -> new ArrayList<>())
-                        .add(p.getPreviewThumbUrl()));
+        Map<UUID, List<String>> previewThumbs = fetchPreviewThumbsMap(workers);
 
         // 4. Assemblage des DTOs (Tri conservé fidèlement depuis la base de données)
         return workers.stream()
@@ -203,25 +197,52 @@ public class WorkerService {
         }
     }
 
-    /**
-     * Returns gallery DTOs for a specific list of worker IDs.
-     * Used by GET /account/favorites to return a client's saved workers.
-     */
     @Transactional(readOnly = true)
     public List<WorkerMinimalProfileDTO> getGalleryByIds(List<UUID> ids) {
         if (ids == null || ids.isEmpty()) return List.of();
 
-        // 1. Un seul appel SQL pour récupérer tous les workers concernés
-        List<Worker> workersFromDb = workerRepository.findAllById(ids);
+        // 1. ÉTAPE D'OPTIMISATION 1 : Filtrage direct au niveau de la BDD avec la Spécification
+        // On ne récupère que les IDs demandés ET qui passent les filtres de validité (âge, banni, masqué...)
+        Specification<Worker> spec = Specification
+                .<Worker>where((root, query, cb) -> root.get("id").in(ids))
+                .and(WorkerSpecifications.isValidProfile());
 
-        System.out.println("GetGallery all : " + Arrays.toString(workersFromDb.stream().map(Worker::getUsername).toArray()));
+        List<Worker> validWorkers = workerRepository.findAll(spec);
+        if (validWorkers.isEmpty()) return List.of();
 
-        // 2. Filtrage, mapping et tri en une seule passe propre
-        return workersFromDb.stream()
-                .filter(worker -> !worker.isDisabled()) // Exclure les désactivés
-                .map(WorkerMinimalProfileDTO::from)     // Utilise la surcharge à 1 paramètre automatiquement
-                .sorted()                               // Utilise la méthode compareTo implémentée dans le Record
+        // 2. ÉTAPE D'OPTIMISATION 2 : Éviter le N+1 Select pour les miniatures (Batch Fetching)
+        Map<UUID, List<String>> previewThumbs = fetchPreviewThumbsMap(validWorkers);
+
+        // 3. ÉTAPE D'OPTIMISATION 3 : Mapping et Tri
+        return validWorkers.stream()
+                .map(w -> {
+                    List<String> previews = previewThumbs.getOrDefault(w.getId(), List.of());
+                    if (previews.size() > MAX_PREVIEW_THUMBS) {
+                        previews = previews.subList(0, MAX_PREVIEW_THUMBS);
+                    }
+                    return WorkerMinimalProfileDTO.from(w, previews); // Utilise le constructeur complet optimisé
+                })
+                .sorted() // Conserve ton tri par défaut (compareTo) implémenté dans le Record
                 .toList();
+    }
+
+    /**
+     * Récupère en une seule requête SQL les miniatures de preview des workers fournis
+     * et les mappe par ID de Worker.
+     */
+    private Map<UUID, List<String>> fetchPreviewThumbsMap(List<Worker> workers) {
+        if (workers == null || workers.isEmpty()) return Map.of();
+
+        List<UUID> workerIds = workers.stream().map(Worker::getId).toList();
+        Map<UUID, List<String>> previewThumbs = new HashMap<>();
+
+        photoRepository
+                .findByWorkerIdInOrderBySortOrderAsc(workerIds)
+                .forEach(p -> previewThumbs
+                        .computeIfAbsent(p.getWorker().getId(), k -> new ArrayList<>())
+                        .add(p.getPreviewThumbUrl()));
+
+        return previewThumbs;
     }
 
 }

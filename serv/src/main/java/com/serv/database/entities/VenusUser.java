@@ -1,6 +1,5 @@
 package com.serv.database.entities;
 
-import com.serv.common.Language;
 import com.serv.common.TablesNames;
 import com.serv.common.UserRole;
 import jakarta.persistence.*;

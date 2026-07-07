@@ -33,8 +33,8 @@
         <ion-label>
           <h2>{{ worker.name }}</h2>
           <p>Crédit actuel : <strong>{{ worker.remainingDaysCredit }} jours</strong></p>
-          <ion-badge [color]="worker.active ? 'success' : 'danger'">
-            {{ worker.active ? 'En ligne' : 'Désactivé' }}
+          <ion-badge [color]="!worker.disabled ? 'success' : 'danger'">
+            {{ !worker.disabled ? 'En ligne' : 'Désactivé' }}
           </ion-badge>
         </ion-label>
       </ion-item>
@@ -43,8 +43,8 @@
         <ion-item-option color="warning" (click)="promptUpdateDays(worker)">
           Modifier Jours
         </ion-item-option>
-        <ion-item-option [color]="worker.active ? 'danger' : 'success'" (click)="toggleStatus(worker)">
-          {{ worker.active ? 'Désactiver' : 'Activer' }}
+        <ion-item-option [color]="!worker.disabled ? 'danger' : 'success'" (click)="toggleStatus(worker)">
+          {{ !worker.disabled ? 'Désactiver' : 'Activer' }}
         </ion-item-option>
       </ion-item-options>
     </ion-item-sliding>

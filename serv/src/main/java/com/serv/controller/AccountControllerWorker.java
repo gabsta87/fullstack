@@ -7,6 +7,7 @@ import com.serv.common.Requests;
 import com.serv.database.entities.*;
 import com.serv.database.repositories.*;
 import com.serv.dto.WorkerFullProfileDTO;
+import com.serv.service.MailService;
 import com.serv.service.MediaStorageService;
 import com.serv.service.SseStreamService;
 import lombok.RequiredArgsConstructor;
@@ -29,13 +30,13 @@ import java.util.stream.Collectors;
 @RequestMapping("/account/worker")
 @RequiredArgsConstructor
 public class AccountControllerWorker {
-    private final UserRepository userRepository;
     private final WorkerRepository workerRepository;
     private final PhotoRepository photoRepository;
     private final ServiceRepository serviceRepository;
     private final GeographicZoneRepository geographicZoneRepository;
     private final MediaStorageService mediaStorageService;
     private final SseStreamService sseStreamService;
+    private final MailService emailService;
 
     @GetMapping("/me")
     @Transactional(readOnly = true)
@@ -116,12 +117,22 @@ public class AccountControllerWorker {
         if (req.phone()       != null) worker.setPhone(req.phone());
         if (req.birthdate()   != null){
             try{
-                worker.parseBirthdate(req.birthdate());
-                System.out.println("updateProfile :" + worker.getBirthdate());
+                worker.parseAndSetBirthdate(req.birthdate());
+
+                if (worker.getAge() < 18) {
+                    // ⚠️ ALERTE CRITIQUE
+                    System.out.println("ALERT : updateProfile : " + worker.getAge() + " < 18 : profile deactivated");
+                    worker.setDisabled(true);
+                    worker.setBanned(true);
+                    this.emailService.sendAlertToLocalAuthorities(worker);
+
+//                  // This could prevent some investigation. Better to silently warn the authorities
+//                    return ResponseEntity.status(HttpStatus.FORBIDDEN)
+//                            .body(Map.of("error", "L'accès à cette plateforme est strictement réservé aux personnes majeures."));
+                }
             }catch (ParseException e){
                 return ResponseEntity.badRequest().body("Invalid birthdate format.");
             }
-
         }
 
         if (req.mainPhotoId() != null) {
@@ -326,7 +337,8 @@ public class AccountControllerWorker {
                 && worker.getPhone() != null && !worker.getPhone().trim().isEmpty()
                 && worker.getServices() != null && !worker.getServices().isEmpty()
                 && worker.getPhotos() != null && !worker.getPhotos().isEmpty()
-                && worker.getBirthdate() != null;
+                && worker.getBirthdate() != null
+                && worker.getAge() >= 18;
 
         worker.setDisabled(!isComplete);
     }

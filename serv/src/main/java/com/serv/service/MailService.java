@@ -1,6 +1,7 @@
 package com.serv.service;
 
 import com.serv.database.entities.Email;
+import com.serv.database.entities.Worker;
 import com.serv.database.repositories.PasswordResetTokenRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -39,11 +40,6 @@ public class MailService {
     private String password;
 
     private final String messageSender = "no-reply-venus@gmail.com";
-
-    public void sendFormattedMessage(Email to, String subject, String content){
-        String text = String.format(Objects.requireNonNull(templateSimpleMessage().getText()), content);
-        sendSimpleMessage(to, subject, text);
-    }
 
     public void sendSimpleMessage(Email to, String subject, String content) {
         SimpleMailMessage message = new SimpleMailMessage();
@@ -95,5 +91,16 @@ public class MailService {
     @Transactional
     public void purgeExpiredTokens() {
         passwordResetTokenRepository.deleteAllByExpiryDateBefore(LocalDateTime.now());
+    }
+
+    public void sendAlertToLocalAuthorities(Worker worker) {
+        /* TODO send to authorities
+         * localisation/address
+         * phone number
+         * email
+         * username
+         * mainPhoto (TODO check if legal problem by detaining these photos. Better to delete them, or send them to authorities)
+         */
+        System.out.println("Alert sent to local authorities for worker " + worker.getId());
     }
 }

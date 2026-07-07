@@ -80,8 +80,6 @@ public class Worker extends VenusUser {
     private boolean expired;
     // Available for work by the worker himself.
     private boolean available;
-    // Certified by admins when the requested photo has been confirmed
-    private boolean certified;
     // Has the worker been active today? set by system
     private boolean hasBeenActiveToday;
 
@@ -134,7 +132,7 @@ public class Worker extends VenusUser {
         this.role = UserRole.WORKER;
     }
 
-    public void parseBirthdate(String birthdate) throws ParseException {
+    public void parseAndSetBirthdate(String birthdate) throws ParseException {
         if (birthdate == null || birthdate.isBlank()) {
             this.birthdate = null;
             return;
@@ -145,6 +143,23 @@ public class Worker extends VenusUser {
         } else {
             this.birthdate = new SimpleDateFormat("dd/MM/yyyy").parse(birthdate);
         }
+    }
+
+
+    public int getAge() {
+        if (this.birthdate == null) return 0;
+        java.time.LocalDate birthDate = (this.birthdate instanceof java.sql.Date sqlDate)
+                ? sqlDate.toLocalDate()
+                : this.birthdate.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+        return java.time.Period.between(birthDate, java.time.LocalDate.now()).getYears();
+    }
+
+    public boolean isValid(){
+        return getAge() >= 18 && !isDisabled() && !isBanned() && !isExpired() && !isHidden() && ! isLocked();
+    }
+
+    public boolean isCertified() {
+        return this.certificationStatus.equals("CERTIFIED");
     }
 
     public void addPhoto(Photo photo) {

@@ -12,6 +12,9 @@ public record WorkerMinimalProfileDTO (
         Integer    age,
         ZoneLightDTO geographicZone,
         String bodyType,
+        String hairColor,
+        String eyeColor,
+        Boolean isCertified,
         Integer galleryIndex,
         List<String> services,
         Boolean available,
@@ -25,9 +28,12 @@ public record WorkerMinimalProfileDTO (
         return new WorkerMinimalProfileDTO(
                 w.getId().toString(),
                 w.getUsername(),
-                calculateAge(w.getBirthdate()),
+                w.getAge(),
                 w.getGeographicZone() != null ? new ZoneLightDTO(w.getGeographicZone().getId(), w.getGeographicZone().getName()) : null,
                 w.getBodyType() != null ? w.getBodyType().toString() : null,
+                w.getHairColor() != null ? w.getHairColor().toString() : null,
+                w.getEyeColor() != null ? w.getEyeColor().toString() : null,
+                w.isCertified(),
                 w.getGalleryPositionPriority(),
                 w.getServices().stream().map(Service::getName).toList(),
                 w.isAvailable(),
@@ -40,14 +46,6 @@ public record WorkerMinimalProfileDTO (
         List<String> fallbackPreviews = w.getPhotos() != null ?
                 w.getPhotos().stream().map(Photo::getPreviewThumbUrl).limit(5).toList() : List.of();
         return from(w, fallbackPreviews);
-    }
-
-    public static int calculateAge(java.util.Date birthday) {
-        if (birthday == null) return 0;
-        java.time.LocalDate birthDate = (birthday instanceof java.sql.Date sqlDate)
-                ? sqlDate.toLocalDate()
-                : birthday.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-        return java.time.Period.between(birthDate, java.time.LocalDate.now()).getYears();
     }
 
     @Override

@@ -62,3 +62,21 @@ export interface WorkerProfileUpdate {
   mainPhotoId?: string;
   birthdate?: string;
 }
+
+export interface WorkerProfileForAdmin{
+  id: string;
+  disabled: boolean;
+  username: string;
+  geographicZone: GeographicZone | null;
+  email: string;
+  language : 'EN' | 'FR' | 'IT' | 'DE' | 'ES';
+  lastRefreshed: string;
+  expirationDate: string;
+  birthdate: string;
+  available: boolean;
+  banned : boolean;
+  services: string[];
+  description: string;
+  phone: string;
+  age : number
+}

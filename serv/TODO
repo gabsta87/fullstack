@@ -24,6 +24,9 @@ Admin pages
     Notifications sent when a user requires a certification
     Notifications sent when a user registers with a date birth that makes this person under 18 years old -> send a message to the local authorities
 
+    Liste des cibles des actions admin : Users, Regions, Services, Comments, Messages, Legal texts,
+
+
 Super Admin
     all admin rights
     can see all the payments
@@ -45,3 +48,10 @@ speak about
     tarifications
     admin work
     automated regions creation ?
+    security about underage announcers according to countries
+    certification : once a certification is created, all pictures must stay the same ? modification can lead to fraud. Eventually only addition of pictures is allowed.
+
+Possibility create a application for announcers that prevents them when a reported client is calling them
+    Puisque tu ne pourras pas intercepter WhatsApp et que iOS compliquera les choses, la meilleure approche pour protéger tes annonceurs sans dépendre d'une application mobile complexe est de centraliser la vérification sur ton site / application actuelle :
+    Le "Lookup" de sécurité : Crée un petit outil dans l'espace membre de tes annonceurs (une barre de recherche "Vérifier un numéro"). Avant de donner un rendez-vous ou de répondre sur WhatsApp, l'annonceur copie-colle le numéro du client dans ton appli. Le système lui dit instantanément si ce numéro a fait l'objet de signalements par d'autres membres.
+    Le système de signalement (Report) : Permets aux annonceurs de flagger un numéro directement depuis leur espace pour alimenter cette base de données communautaire en temps réel.
