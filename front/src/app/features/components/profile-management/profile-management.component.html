@@ -69,7 +69,13 @@
               <ion-col size="12" size-md="6">
                 <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('username', me)">
                   <ion-label position="stacked">Nom d'utilisateur / Pseudo</ion-label>
-                  <ion-input type="text" name="username" [(ngModel)]="profileForm.username" [required]="true" placeholder="Votre pseudo"></ion-input>
+                  <ion-input type="text"
+                             name="username"
+                             [(ngModel)]="profileForm.username"
+                             [required]="true"
+                             [debounce]="500"
+                             (ionChange)="updateProfileField('username', $event.detail.value)"
+                             placeholder="Votre pseudo"></ion-input>
                 </ion-item>
               </ion-col>
 
@@ -84,7 +90,7 @@
                   <ion-textarea [(ngModel)]="profileForm.description"
                                 [debounce]="500"
                                 [autoGrow]="true"
-                                (ionInput)="updateProfileField('description', $event.detail.value)"
+                                (ionChange)="updateProfileField('description', $event.detail.value)"
                                 placeholder="Décrivez votre profil, vos spécialités..."></ion-textarea>
                 </ion-item>
               </ion-col>
@@ -115,7 +121,7 @@
                   <ion-input type="tel"
                              [(ngModel)]="profileForm.phone"
                              [debounce]="500"
-                             (ionInput)="updateProfileField('phone', $event.detail.value)"
+                             (ionChange)="updateProfileField('phone', $event.detail.value)"
                              placeholder="Ex: +33 6 12 34 56 78"></ion-input>
                 </ion-item>
               </ion-col>
@@ -131,10 +137,9 @@
                 </ion-item>
               </ion-col>
 
-              <!-- Silhouette, Yeux, Cheveux restent inchangés car optionnels -->
+              <!-- Silhouette, Yeux, Cheveux sont optionnels -->
               <ion-col size="12" size-md="4">
                 <ion-item lines="none" class="venus-input">
-                  <ion-label position="stacked">Silhouette</ion-label>
                   <ion-select label="Silhouette" label-placement="stacked" interface="popover" [(ngModel)]="profileForm.bodyType" (ionChange)="updateProfileField('bodyType', $event.detail.value)">
                     <ion-select-option *ngFor="let type of BODY_TYPE_LABELS | keyvalue" [value]="type.key">{{ type.value }}</ion-select-option>
                   </ion-select>
@@ -143,7 +148,6 @@
 
               <ion-col size="12" size-md="4">
                 <ion-item lines="none" class="venus-input">
-                  <ion-label position="stacked">Cheveux</ion-label>
                   <ion-select label="Cheveux" label-placement="stacked" interface="popover" [(ngModel)]="profileForm.hairColor" (ionChange)="updateProfileField('hairColor', $event.detail.value)">
                     <ion-select-option *ngFor="let type of HAIR_COLOR_LABELS | keyvalue" [value]="type.key">{{ type.value }}</ion-select-option>
                   </ion-select>
@@ -152,13 +156,11 @@
 
               <ion-col size="12" size-md="4">
                 <ion-item lines="none" class="venus-input">
-                  <ion-label position="stacked">Yeux</ion-label>
                   <ion-select label="Yeux" label-placement="stacked" interface="popover" [(ngModel)]="profileForm.eyeColor" (ionChange)="updateProfileField('eyeColor', $event.detail.value)">
                     <ion-select-option *ngFor="let type of EYE_COLOR_LABELS | keyvalue" [value]="type.key">{{ type.value }}</ion-select-option>
                   </ion-select>
                 </ion-item>
               </ion-col>
-              <!-- ... Garde tes colonnes yeux et cheveux identiques ici ... -->
 
               <!-- Services -->
               <ion-col size="12">

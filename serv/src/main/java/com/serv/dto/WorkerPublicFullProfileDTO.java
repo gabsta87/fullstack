@@ -1,6 +1,5 @@
 package com.serv.dto;
 
-import com.serv.common.Language;
 import com.serv.database.entities.Service;
 import com.serv.database.entities.Worker;
 import com.serv.database.entities.WorkerLanguage;
@@ -14,6 +13,8 @@ public record WorkerPublicFullProfileDTO(
         String            role,
         GeographicZoneDTO geographicZone,
         String            bodyType,
+        String            eyeColor,
+        String            hairColor,
         Boolean           available,
         List<String>      services,
         String            phone,
@@ -34,6 +35,8 @@ public record WorkerPublicFullProfileDTO(
                 w.getRole().name(),
                 GeographicZoneDTO.from(w.getGeographicZone()),
                 w.getBodyType() != null ? w.getBodyType().name() : null,
+                w.getHairColor() != null ? w.getHairColor().name() : null,
+                w.getEyeColor() != null ? w.getEyeColor().name() : null,
                 w.isAvailable(),
                 w.getServices().stream().map(Service::getName).toList(),
                 w.getPhone(),

@@ -106,6 +106,8 @@ export class ProfileManagementComponent implements OnInit {
         this.lastServerState = {
           username : user.username,
           bodyType: user.bodyType,
+          eyeColor : user.eyeColor,
+          hairColor : user.hairColor,
           geographicZoneId: user.geographicZone?.id,
           description: user.description,
           phone: user.phone,
