@@ -48,6 +48,7 @@ dependencies {
 
 	// Online payment
 	implementation("com.stripe:stripe-java:27.1.0")
+	runtimeOnly("com.mysql:mysql-connector-j")
 
 	// Testing
 //	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
