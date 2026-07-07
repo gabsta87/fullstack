@@ -3,20 +3,25 @@ package com.serv.database.repositories.filters;
 import com.serv.database.entities.Worker;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDate;
+import java.time.LocalDate;
+import java.sql.Date;
+
 public class WorkerSpecifications {
-    public static Specification<Worker> isAvailable() {
-        return (root, query, cb) -> cb.isTrue(root.get("available"));
-    }
 
-    public static Specification<Worker> isNotAvailable() {
-        return (root, query, cb) -> cb.isFalse(root.get("available"));
-    }
+    public static Specification<Worker> isValidProfile() {
+        return (root, query, cb) -> {
+            LocalDate maxBirthDate = LocalDate.now().minusYears(18);
+            Date targetDate = java.sql.Date.valueOf(maxBirthDate);
 
-    public static Specification<Worker> isNotDisabled() {
-        return (root, query, cb) -> cb.isFalse(root.get("disabled"));
-    }
-
-    public static Specification<Worker> hasRegion(String region) {
-        return (region == null) ? null : (root, query, cb) -> cb.equal(root.get("region"), region);
+            return cb.and(
+                    cb.lessThanOrEqualTo(root.get("birthdate"), targetDate), // Majeur (âge >= 18)
+                    cb.equal(root.get("disabled"), false),                   // !isDisabled()
+                    cb.equal(root.get("banned"), false),                     // !isBanned()
+                    cb.equal(root.get("expired"), false),                    // !isExpired()
+                    cb.equal(root.get("hidden"), false),                     // !isHidden()
+                    cb.equal(root.get("locked"), false)                      // !isLocked() hérité de VenusUser
+            );
+        };
     }
 }
