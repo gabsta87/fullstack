@@ -103,7 +103,7 @@ public class Worker extends VenusUser {
     private String verificationCode; // Le mot/nombre secret généré par le site pour sa photo
 
     @Column(name = "certification_status")
-    private String certificationStatus; // NOT_REQUESTED, PENDING_APPROVAL, CERTIFIED, REJECTED
+    private String certificationStatus = "NOT_CERTIFIED"; // NOT_REQUESTED, PENDING_APPROVAL, CERTIFIED, REJECTED
 
     @Column(name = "certified_at")
     private LocalDateTime certifiedAt;
@@ -159,7 +159,7 @@ public class Worker extends VenusUser {
     }
 
     public boolean isCertified() {
-        return this.certificationStatus.equals("CERTIFIED");
+        return "CERTIFIED".equals(this.certificationStatus);
     }
 
     public void addPhoto(Photo photo) {
