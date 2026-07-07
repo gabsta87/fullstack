@@ -4,22 +4,17 @@ import com.serv.database.entities.GeographicZone;
 import lombok.Data;
 import java.util.List;
 
-@Data
-public class GeographicZoneDTO {
-    private Integer id;
-    private String name;
-    private List<GeographicZoneDTO> subZones;
-
+public record GeographicZoneDTO (
+        Integer id,
+        String name,
+        List<GeographicZoneDTO> subZones
+) {
     public static GeographicZoneDTO from(GeographicZone zone) {
-        if(zone == null)
-            return null;
-        GeographicZoneDTO dto = new GeographicZoneDTO();
-        dto.setId(zone.getId());
-        dto.setName(zone.getName());
-        if (zone.getSubZones() != null) {
-            dto.setSubZones(zone.getSubZones().stream().map(GeographicZoneDTO::from).toList());
-        }
-
-        return dto;
+        return new GeographicZoneDTO(
+                zone.getId(),
+                zone.getName(),
+                zone.getSubZones() != null ?
+                zone.getSubZones().stream().map(GeographicZoneDTO::from).toList() : null
+        );
     }
 }
