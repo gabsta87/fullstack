@@ -1,12 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {ActivatedRoute} from '@angular/router';
-import {ToastController} from '@ionic/angular';
-import {HttpClient} from '@angular/common/http';
+import {ActivatedRoute, Router} from '@angular/router';
+import {ModalController} from '@ionic/angular/standalone';
 import {IonButton, IonContent, IonIcon, IonInput, IonItem, IonSpinner} from "@ionic/angular/standalone";
-import {environment} from "../../../../environments/environment";
 import {NgIf} from "@angular/common";
 import {AuthService} from "../../services/auth.service";
+import {ForgotPasswordComponent} from "../forgot-password/forgot-password.component";
 
 @Component({
   selector: 'app-reset-password',
@@ -35,6 +34,8 @@ export class ResetPasswordComponent implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private authService: AuthService,
+    private modalCtrl: ModalController,
+    private router : Router,
   ) {}
 
   ngOnInit() {
@@ -66,6 +67,19 @@ export class ResetPasswordComponent implements OnInit {
         this.errorMsg = err.error || "Une erreur est survenue.";
       }
     });
+  }
+
+  async goToForgotPassword() {
+    const alert = await this.modalCtrl.create(
+      {component : ForgotPasswordComponent},
+    );
+
+    await alert.present();
+  }
+
+  goToRoute(routePath: string) {
+    console.log('Navigation vers :', routePath);
+    this.router.navigateByUrl(routePath);
   }
 
 }
