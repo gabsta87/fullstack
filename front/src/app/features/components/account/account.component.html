@@ -73,7 +73,6 @@
 
     <div *ngIf="activeTab === 'account'" class="fade-in ion-padding">
       <app-account-settings
-        [initialUsername]="user.username"
         [initialEmail]="user.email"
         [isWorker]="false"
         (onSaveSettings)="handleSettingsSave($event)">

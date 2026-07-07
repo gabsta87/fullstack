@@ -66,6 +66,17 @@
           <ion-grid class="ion-no-padding">
             <ion-row>
 
+              <ion-col size="12" size-md="6">
+                <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('username', me)">
+                  <ion-label position="stacked">Nom d'utilisateur / Pseudo</ion-label>
+                  <ion-input type="text" name="username" [(ngModel)]="profileForm.username" [required]="true" placeholder="Votre pseudo"></ion-input>
+                </ion-item>
+              </ion-col>
+
+            </ion-row>
+
+            <ion-row>
+
               <!-- Description -->
               <ion-col size="12">
                 <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('description', me)">
@@ -82,9 +93,19 @@
               <ion-col size="12" [class.invalid-selector-box]="isFieldMissing('geographicZoneId', me)">
                 <app-zone-selector
                   [zones]="allLocations"
-                  [selectedChildId]="profileForm.geographicZoneId"
-                  (onZoneSelected)="updateProfileField('geographicZoneId', $event.childZoneId || $event.parentZoneId || -1)">
-                </app-zone-selector>
+                  [allowAllOption]="true"
+                  [selectedParentId]="parentZoneId"
+                  [selectedChildId]="childZoneId"
+                  (onZoneSelected)="
+                    parentZoneId = $event.parentZoneId;
+                    childZoneId = $event.childZoneId;
+                    updateProfileField('geographicZoneId', (
+                        !parentZoneId ||
+                        parentZoneId === -1 ||
+                        isNaN(parentZoneId)) ? -1 : ($event.childZoneId ||
+                        $event.parentZoneId
+                    ))"
+                ></app-zone-selector>
               </ion-col>
 
               <!-- Téléphone -->
@@ -119,6 +140,24 @@
                   </ion-select>
                 </ion-item>
               </ion-col>
+
+              <ion-col size="12" size-md="4">
+                <ion-item lines="none" class="venus-input">
+                  <ion-label position="stacked">Cheveux</ion-label>
+                  <ion-select label="Cheveux" label-placement="stacked" interface="popover" [(ngModel)]="profileForm.hairColor" (ionChange)="updateProfileField('hairColor', $event.detail.value)">
+                    <ion-select-option *ngFor="let type of HAIR_COLOR_LABELS | keyvalue" [value]="type.key">{{ type.value }}</ion-select-option>
+                  </ion-select>
+                </ion-item>
+              </ion-col>
+
+              <ion-col size="12" size-md="4">
+                <ion-item lines="none" class="venus-input">
+                  <ion-label position="stacked">Yeux</ion-label>
+                  <ion-select label="Yeux" label-placement="stacked" interface="popover" [(ngModel)]="profileForm.eyeColor" (ionChange)="updateProfileField('eyeColor', $event.detail.value)">
+                    <ion-select-option *ngFor="let type of EYE_COLOR_LABELS | keyvalue" [value]="type.key">{{ type.value }}</ion-select-option>
+                  </ion-select>
+                </ion-item>
+              </ion-col>
               <!-- ... Garde tes colonnes yeux et cheveux identiques ici ... -->
 
               <!-- Services -->
@@ -143,7 +182,24 @@
 
         <!-- ONGLET PHOTOS -->
         <div *ngIf="activeTab === 'photos'" class="fade-in">
-          <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none">
+          <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/jpeg, image/png, image/webp" multiple style="display: none">
+
+          <div class="drop-zone"
+               (dragover)="onZoneDragOver($event)"
+               (dragleave)="onZoneDragLeave()"
+               (drop)="onZoneDrop($event)"
+               [class.drop-zone-active]="isZoneActive"
+               (click)="fileInput.click()">
+
+            <ion-icon name="cloud-upload-outline" size="large" color="primary"></ion-icon>
+            <p>Glissez-déposez vos photos ici ou <strong>cliquez pour parcourir</strong></p>
+            <p class="format-hint">Formats acceptés : JPG, PNG, WEBP uniquement</p>
+          </div>
+
+<!--          <ion-button *ngIf="isFieldMissing('photos', me)" expand="block" color="danger" class="ion-margin" (click)="fileInput.click()">-->
+<!--            <ion-icon slot="start" name="alert-circle-outline"></ion-icon>-->
+<!--            Une photo principale obligatoire est manquante *-->
+<!--          </ion-button>-->
 
           <ion-button expand="block" (click)="fileInput.click()" [color]="isFieldMissing('photos', me) ? 'danger' : 'primary'" class="ion-margin">
             <ion-icon slot="start" name="add-circle-outline"></ion-icon>
@@ -188,7 +244,6 @@
         <!-- ONGLET COMPTE-->
         <div *ngIf="activeTab === 'settings'" class="fade-in">
           <app-account-settings
-            [initialUsername]="me.username"
             [initialEmail]="me.email"
             [isWorker]="true"
             [subscriptionLabel]="subscriptionLabel$ | async"

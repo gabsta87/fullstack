@@ -12,7 +12,6 @@ import { FormsModule } from '@angular/forms';
 })
 export class AccountSettingsComponent implements OnInit {
   // Données initiales fournies par le parent
-  @Input() initialUsername: string = '';
   @Input() initialEmail: string = '';
 
   // Distinguer s'il s'agit d'un prestataire (Worker) ou non
@@ -25,7 +24,6 @@ export class AccountSettingsComponent implements OnInit {
   @Output() onManageSubscription = new EventEmitter<void>();
 
   form = {
-    username: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -36,7 +34,6 @@ export class AccountSettingsComponent implements OnInit {
   isSaving: boolean = false;
 
   ngOnInit() {
-    this.form.username = this.initialUsername;
     this.form.email = this.initialEmail;
   }
 
@@ -53,7 +50,6 @@ export class AccountSettingsComponent implements OnInit {
     this.isSaving = true;
 
     const payload: any = {
-      username: this.form.username,
       email: this.form.email
     };
 

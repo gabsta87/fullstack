@@ -1,6 +1,11 @@
+username moved to profile management. check routes on server side
+    double route for username (accountController et accountControllerWorker)
+
+Secure password change by requesting the old password
+
 Multi-lang
-    in the banner, a small flag is displayed to indicate the language. when clicked, the language is changed by loading the corresponding translation file without reloading the page.
     Generate a translation file for each language (DE, FR, EN, ES, IT, RU, UA, Arabian)
+    Translate the app by charging in the pages all phrases from the translation file
 
 payments
     How to test stripe payments before going live ?

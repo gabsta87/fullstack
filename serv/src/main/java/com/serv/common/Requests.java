@@ -14,6 +14,7 @@ public class Requests {
     public record LoginResponse(String token, VenusUserDTO user) { }
 
     public record WorkerProfileUpdateRequest(
+            String username,
             String description,
             Integer geographicZoneId,
             String eyeColor,

@@ -4,7 +4,7 @@ import {IonicModule} from "@ionic/angular";
 import {FormsModule} from "@angular/forms";
 import {HeaderComponent} from "../header/header.component";
 import {filter, map, Observable} from "rxjs";
-import {BODY_TYPE_LABELS, PhotoItem} from "../../models/items.model";
+import {BODY_TYPE_LABELS, EYE_COLOR_LABELS, HAIR_COLOR_LABELS, PhotoItem} from "../../models/items.model";
 import {ActivatedRoute} from "@angular/router";
 import {WorkerFullProfile, WorkerPrivateAccount, WorkerProfileUpdate} from "../../models/user.model";
 import {WorkerAccountService} from "../../services/worker-account.service";
@@ -32,6 +32,8 @@ export class ProfileManagementComponent implements OnInit {
   allServices!  : string[];
   photos!: (PhotoItem & { isMain: boolean })[];
   allLocations! : GeographicZone[];
+  childZoneId: number | undefined = undefined;
+  parentZoneId: number | undefined = undefined;
 
   // Profile form
   lastServerState: WorkerProfileUpdate = {};
@@ -39,6 +41,7 @@ export class ProfileManagementComponent implements OnInit {
 
   dragOverIndex: number | null = null;
   draggedIndex: number | null = null;
+  isZoneActive: boolean = false;
 
   chosenAmount! : number;
   chosenType! : "DAYS" | "BOOST";
@@ -78,6 +81,20 @@ export class ProfileManagementComponent implements OnInit {
           };
         });
 
+        this.childZoneId = user.geographicZone?.id;
+
+        if (this.childZoneId) {
+          // On cherche le parent dans "allLocations" qui possède cette sous-zone
+          const parentZone = this.allLocations.find(parent =>
+            parent.subZones?.some(sub => sub.id === this.childZoneId)
+          );
+
+          // Si on a trouvé un parent, on stocke son ID, sinon ça veut dire que l'utilisateur a sélectionné une zone qui est déjà un parent
+          this.parentZoneId = parentZone ? parentZone.id : this.childZoneId;
+        } else {
+          this.parentZoneId = undefined;
+        }
+
         let cleanBirthdate = '';
         if (user.birthdate) {
           const d = new Date(user.birthdate);
@@ -87,6 +104,7 @@ export class ProfileManagementComponent implements OnInit {
         }
 
         this.lastServerState = {
+          username : user.username,
           bodyType: user.bodyType,
           geographicZoneId: user.geographicZone?.id,
           description: user.description,
@@ -107,7 +125,7 @@ export class ProfileManagementComponent implements OnInit {
         const emailStr = typeof me.email === 'object' ? me.email?.value : me.email;
         return !emailStr || emailStr.trim() === '';
       case 'description':return !me.description || me.description.trim() === '';
-      case 'geographicZoneId':return !me.geographicZone || !me.geographicZone.id;
+      case 'geographicZoneId':return !me.geographicZone || !me.geographicZone.id || me.geographicZone.id == -1;
       case 'phone':return !me.phone || me.phone.trim() === '';
       case 'services':return !me.services || me.services.length === 0;
       case 'photos':return !this.photos || this.photos.length === 0;
@@ -175,10 +193,66 @@ export class ProfileManagementComponent implements OnInit {
   // ── Photos ────────────────────────────────────────────────────────────────
 
   async onFileSelected(event: any) {
-    const file: File = event.target.files[0];
-    if (!file) return;
+    const files: FileList = event.target.files;
+    if (!files || files.length === 0) return;
 
-    await this.accountService.uploadPhoto(file);
+    await this.processAndUploadFiles(Array.from(files));
+    event.target.value = ''; // Reset l'input pour pouvoir ré-uploader les mêmes fichiers si besoin
+  }
+
+// 🎯 Gestion du survol de la zone de drop
+  onZoneDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isZoneActive = true;
+  }
+
+  onZoneDragLeave() {
+    this.isZoneActive = false;
+  }
+
+// 🎯 Déclenché quand on lâche les fichiers dans la zone de drop
+  async onZoneDrop(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isZoneActive = false;
+
+    if (event.dataTransfer && event.dataTransfer.files.length > 0) {
+      await this.processAndUploadFiles(Array.from(event.dataTransfer.files));
+    }
+  }
+
+// 🎯 Cœur de la logique : Filtrage et upload en série ou parallèle
+  private async processAndUploadFiles(fileList: File[]) {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    const validFiles: File[] = [];
+
+    for (const file of fileList) {
+      // Vérification du type MIME ou de l'extension (au cas où le type MIME est vide avec .heic)
+      const isExtensionInvalid = file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.pdf');
+
+      if (!allowedTypes.includes(file.type) || isExtensionInvalid) {
+        // Tu peux remplacer ce console.warn par une alerte Toast ou Modale Ionic pour l'utilisateur
+        console.warn(`Fichier refusé (format non supporté) : ${file.name}`);
+        continue;
+      }
+
+      validFiles.push(file);
+    }
+
+    if (validFiles.length === 0) {
+      // Afficher une alerte à l'utilisateur ici si tu veux
+      return;
+    }
+
+    // Upload des fichiers valides un par un (pour éviter de surcharger le endpoint)
+    for (const file of validFiles) {
+      try {
+        await this.accountService.uploadPhoto(file);
+      } catch (error) {
+        console.error(`Échec de l'upload pour ${file.name}`, error);
+      }
+    }
   }
 
   setMain(photo: PhotoItem) {
@@ -299,5 +373,8 @@ export class ProfileManagementComponent implements OnInit {
   }
 
   protected readonly BODY_TYPE_LABELS = BODY_TYPE_LABELS;
+  protected readonly HAIR_COLOR_LABELS = HAIR_COLOR_LABELS;
+  protected readonly EYE_COLOR_LABELS = EYE_COLOR_LABELS;
   protected readonly environment = environment;
+  protected readonly isNaN = isNaN;
 }

@@ -109,6 +109,7 @@ public class AccountControllerWorker {
             }
         }
 
+        if (req.username()    != null) worker.setUsername(req.username());
         if (req.bodyType()    != null) worker.setBodyType(BodyType.valueOf(req.bodyType()));
         if (req.eyeColor()    != null) worker.setEyeColor(EyeColor.valueOf(req.eyeColor()));
         if (req.hairColor()   != null) worker.setHairColor(HairColor.valueOf(req.hairColor()));

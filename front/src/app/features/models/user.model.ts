@@ -51,6 +51,7 @@ export interface WorkerFullProfile extends WorkerSimpleProfile {
 // UPDATES
 
 export interface WorkerProfileUpdate {
+  username?: string;
   description?: string;
   geographicZoneId?: number;
   bodyType?: string;

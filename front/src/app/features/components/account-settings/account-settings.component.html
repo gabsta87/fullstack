@@ -27,15 +27,8 @@
 
           <ion-col size="12" size-md="6">
             <ion-item lines="none" class="venus-input">
-              <ion-label position="stacked">Nom d'utilisateur / Pseudo</ion-label>
-              <ion-input type="text" name="username" [(ngModel)]="form.username" required placeholder="Votre pseudo"></ion-input>
-            </ion-item>
-          </ion-col>
-
-          <ion-col size="12" size-md="6">
-            <ion-item lines="none" class="venus-input">
               <ion-label position="stacked">Adresse Email</ion-label>
-              <ion-input type="email" name="email" [(ngModel)]="form.email" required placeholder="votre@email.com"></ion-input>
+              <ion-input type="email" name="email" [(ngModel)]="form.email" [required]="true" placeholder="votre@email.com"></ion-input>
             </ion-item>
           </ion-col>
 

@@ -175,3 +175,33 @@
     color: var(--ion-color-danger, #eb445a);
   }
 }
+
+// Photos de profil
+.drop-zone {
+  border: 2px dashed var(--ion-color-medium);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  margin: 16px;
+  background: var(--ion-color-light, #f4f5f8);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  p {
+    margin: 8px 0 0 0;
+    font-size: 14px;
+    color: var(--ion-color-dark);
+  }
+
+  .format-hint {
+    font-size: 12px;
+    color: var(--ion-color-medium);
+  }
+}
+
+// Classe activée lorsque des fichiers survolent la zone
+.drop-zone-active {
+  border-color: var(--ion-color-primary);
+  background: rgba(var(--ion-color-primary-rgb), 0.08);
+  transform: scale(1.01);
+}
