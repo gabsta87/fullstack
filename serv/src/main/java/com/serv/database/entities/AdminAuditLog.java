@@ -40,7 +40,7 @@ public class AdminAuditLog {
     @JoinColumn(name = "target_legal_text_id")
     private LegalText legalTextTarget;
 
-    @Column(columnDefinition = "jsonb", name = "target_snapshot")
+    @Column(columnDefinition = "json", name = "target_snapshot")
     private String targetSnapshot;
 
     @Column(name = "details", length = 1000)
