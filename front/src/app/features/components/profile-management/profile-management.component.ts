@@ -10,7 +10,7 @@ import {WorkerFullProfile, WorkerPrivateAccount, WorkerProfileUpdate} from "../.
 import {WorkerAccountService} from "../../services/worker-account.service";
 import {tap} from "rxjs/operators";
 import {addIcons} from "ionicons";
-import {addCircleOutline, camera, move, trashOutline, warningOutline, star, starOutline} from 'ionicons/icons';
+import {addCircleOutline, camera, move, trashOutline, warningOutline, star, starOutline, cloudUploadOutline} from 'ionicons/icons';
 import {AccountSettingsComponent} from "../account-settings/account-settings.component";
 import {GeographicZone} from "../../models/filter.model";
 import {ZoneSelectorComponent} from "../zone-selector/zone-selector.component";
@@ -48,7 +48,7 @@ export class ProfileManagementComponent implements OnInit {
 
   constructor(private accountService: WorkerAccountService, private route : ActivatedRoute) {
     addIcons({
-      addCircleOutline, trashOutline, move, camera, warningOutline, star, starOutline
+      addCircleOutline, trashOutline, move, camera, warningOutline, star, starOutline, cloudUploadOutline
     });
   }
 
