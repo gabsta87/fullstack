@@ -20,7 +20,7 @@ public record ClientDTO(
                 c.getFavorites() != null ? c.getFavorites().stream()
                                                             .map(WorkerMinimalProfileDTO::from)
                                                             .toList() : new ArrayList<>(),
-                GeographicZoneDTO.from(c.getGeographicZone())
+                c.getGeographicZone() != null ? GeographicZoneDTO.from(c.getGeographicZone()) : null
         );
     }
 }
