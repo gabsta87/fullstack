@@ -4,6 +4,8 @@ login : redirect to account/profile-management once logged
 profile management : workers can choose level of each spoken languages
 header : add flags for each language (popup menu)
 
+supprimer le chargement du compte lors du survol d'un profil. remplacer par un cache
+
 profile
   see images as gallery in full screen with navigation arrows
   videos management for workers
@@ -17,3 +19,4 @@ heart button for favorites to brown instead of red
 Advertising
   clients can pay small fee to remove ads (2 chf per month)
   workers can pay small fee to remove ads (2 chf per month)
+
