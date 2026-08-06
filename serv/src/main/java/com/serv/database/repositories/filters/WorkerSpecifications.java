@@ -16,11 +16,11 @@ public class WorkerSpecifications {
 
             return cb.and(
                     cb.lessThanOrEqualTo(root.get("birthdate"), targetDate), // Majeur (âge >= 18)
-                    cb.equal(root.get("disabled"), false),                   // !isDisabled()
-                    cb.equal(root.get("banned"), false),                     // !isBanned()
-                    cb.equal(root.get("expired"), false),                    // !isExpired()
-                    cb.equal(root.get("hidden"), false),                     // !isHidden()
-                    cb.equal(root.get("locked"), false)                      // !isLocked() hérité de VenusUser
+                    cb.equal(root.get("isLocked"), false),                     // !isLocked()
+                    cb.equal(root.get("isBanned"), false),                     // !isBanned()
+                    cb.equal(root.get("isExpired"), false),                    // !isExpired()
+                    cb.equal(root.get("isHidden"), false),                     // !isHidden()
+                    cb.equal(root.get("isInvalid"), false)                     // !isInvalid()
             );
         };
     }

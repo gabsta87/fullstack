@@ -30,7 +30,9 @@ public abstract class VenusUser {
     @Basic(optional = false)
     @Column(nullable = false)
     protected String passwordHash;
-    protected boolean locked;
+
+    // Set by admins
+    protected boolean isLocked;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "geographic_zone_id")

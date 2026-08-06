@@ -7,19 +7,19 @@ import com.serv.database.entities.Worker;
 import java.util.List;
 
 public record WorkerMinimalProfileDTO (
-        String id,
-        String username,
-        Integer    age,
-        ZoneLightDTO geographicZone,
-        String bodyType,
-        String hairColor,
-        String eyeColor,
-        Boolean isCertified,
-        Integer galleryIndex,
-        List<String> services,
-        Boolean available,
-        String mainThumbUrl,
-        List<String> previewThumbUrls
+        String        id,
+        String        username,
+        Integer       age,
+        ZoneLightDTO  geographicZone,
+        String        bodyType,
+        String        hairColor,
+        String        eyeColor,
+        Boolean       isCertified,
+        Integer       galleryIndex,
+        List<String>  services,
+        Boolean       available,
+        String        mainThumbUrl,
+        List<String>  previewThumbUrls
 ) implements Comparable<WorkerMinimalProfileDTO>{
 
     public record ZoneLightDTO(Integer id, String name) {}

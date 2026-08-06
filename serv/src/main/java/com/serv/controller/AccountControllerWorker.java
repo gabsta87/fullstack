@@ -69,7 +69,7 @@ public class AccountControllerWorker {
 
     /** PATCH /account/availability */
     @PatchMapping("/availability")
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public ResponseEntity<?> setAvailability(@RequestBody Map<String, Boolean> body,
                                              @AuthenticationPrincipal Jwt jwt) {
         System.out.println("setAvailability: " + body);
@@ -77,7 +77,7 @@ public class AccountControllerWorker {
 
         if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
-        worker.setAvailable(body.getOrDefault("available", false));
+        worker.setAvailable(body.getOrDefault("isAvailable", false));
 
         this.evaluateWorkerProfileCompleteness(worker);
         Worker savedWorker = workerRepository.save(worker);
@@ -88,7 +88,7 @@ public class AccountControllerWorker {
 
     /** PATCH /account/profile */
     @PatchMapping("/profile")
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public ResponseEntity<?> updateProfile(@RequestBody Requests.WorkerProfileUpdateRequest req,
                                            @AuthenticationPrincipal Jwt jwt) {
         Worker worker = jwtWorkerWithPhotos(jwt);
@@ -122,7 +122,8 @@ public class AccountControllerWorker {
                 if (worker.getAge() < 18) {
                     // ⚠️ ALERTE CRITIQUE
                     System.out.println("ALERT : updateProfile : " + worker.getAge() + " < 18 : profile deactivated");
-                    worker.setDisabled(true);
+                    worker.setLocked(true);
+                    worker.setInvalid(true);
                     worker.setBanned(true);
                     this.emailService.sendAlertToLocalAuthorities(worker);
 
@@ -158,7 +159,7 @@ public class AccountControllerWorker {
         return ResponseEntity.ok().body(dto);
     }
 
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     @PatchMapping("/updateservices")
     public ResponseEntity<?> updateServices(@RequestBody List<String> services, @AuthenticationPrincipal Jwt jwt) {
 
@@ -188,7 +189,7 @@ public class AccountControllerWorker {
      * Upload a new photo — generates the main thumb and preview thumb.
      */
     @PostMapping("/photos")
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public ResponseEntity<?> uploadPhoto(@RequestParam("file") MultipartFile file,
                                          @RequestParam(value = "title", required = false) String title,
                                          @AuthenticationPrincipal Jwt jwt) {
@@ -240,9 +241,8 @@ public class AccountControllerWorker {
      * DELETE /account/photos/{photoId}
      */
     @DeleteMapping("/photos/{photoId}")
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public ResponseEntity<?> deletePhoto(@PathVariable UUID photoId, @AuthenticationPrincipal Jwt jwt) {
-        // 🚀 Optimisé & Correction du bug sessionWorker :
         Worker worker = jwtWorkerWithPhotos(jwt);
         if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
         if (photoId == null) return ResponseEntity.badRequest().body("No file provided.");
@@ -288,7 +288,7 @@ public class AccountControllerWorker {
      * Set a photo as the main (gallery card) photo.
      */
     @PatchMapping("/photos/{photoId}/main")
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public ResponseEntity<?> setMainPhoto(@PathVariable UUID photoId, @AuthenticationPrincipal Jwt jwt) {
         Worker worker = jwtWorker(jwt);
         if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
@@ -311,7 +311,7 @@ public class AccountControllerWorker {
      * Accepts an ordered list of photo IDs and updates sortOrder accordingly.
      */
     @PatchMapping("/photos/reorder")
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public ResponseEntity<?> reorderPhotos(@RequestBody List<String> orderedIds,
                                            @AuthenticationPrincipal Jwt jwt) {
         Worker worker = jwtWorker(jwt);
@@ -340,7 +340,7 @@ public class AccountControllerWorker {
                 && worker.getBirthdate() != null
                 && worker.getAge() >= 18;
 
-        worker.setDisabled(!isComplete);
+        worker.setInvalid(!isComplete);
     }
 
     private Worker jwtWorker(Jwt jwt) {

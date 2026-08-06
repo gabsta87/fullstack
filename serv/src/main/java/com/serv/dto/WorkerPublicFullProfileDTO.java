@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public record WorkerPublicFullProfileDTO(
-        UUID id,
+        UUID              id,
         String            username,
         String            role,
         GeographicZoneDTO geographicZone,
@@ -35,8 +35,8 @@ public record WorkerPublicFullProfileDTO(
                 w.getRole().name(),
                 GeographicZoneDTO.from(w.getGeographicZone()),
                 w.getBodyType() != null ? w.getBodyType().name() : null,
-                w.getHairColor() != null ? w.getHairColor().name() : null,
                 w.getEyeColor() != null ? w.getEyeColor().name() : null,
+                w.getHairColor() != null ? w.getHairColor().name() : null,
                 w.isAvailable(),
                 w.getServices().stream().map(Service::getName).toList(),
                 w.getPhone(),

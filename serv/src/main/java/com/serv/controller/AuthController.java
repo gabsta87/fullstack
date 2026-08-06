@@ -104,8 +104,6 @@ public class AuthController {
         // TODO check password
 
         Worker worker = new Worker(new Email(req.email()), req.password());
-        worker.setDisabled(true);
-        worker.setLocked(true);
         worker.setExpired(true);
         workerRepository.save(worker);
         return ResponseEntity.ok().build();

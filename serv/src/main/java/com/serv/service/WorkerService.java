@@ -41,7 +41,7 @@ public class WorkerService {
 
         // 2. LA MAGIE DU MULTI-TRI :
         // D'abord 'available' (true avant false), puis 'galleryPositionPriority' par ordre décroissant
-        Sort doubleSort = Sort.by(Sort.Direction.DESC, "available")
+        Sort doubleSort = Sort.by(Sort.Direction.DESC, "isAvailable")
                 .and(Sort.by(Sort.Direction.DESC, "galleryPositionPriority"));
 //                .and(Sort.by(Sort.Direction.ASC, "id"));
 

@@ -22,7 +22,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @DiscriminatorValue("WORKER")
 @Table(name = TablesNames.WORKERS, indexes = {
-        @Index(name = "idx_worker_available_position", columnList = "available, galleryPositionPriority")
+        @Index(name = "idx_worker_available_position", columnList = "isAvailable, galleryPositionPriority")
 })
 public class Worker extends VenusUser {
 
@@ -71,17 +71,22 @@ public class Worker extends VenusUser {
     // Use to sort the photos in the gallery. Higher comes first.
     private int galleryPositionPriority;
 
-    // disabled by admins
-    private boolean disabled;
-    // hidden by the worker himself
-    private boolean hidden;
-    private boolean banned;
-    // No more days available for the worker
-    private boolean expired;
-    // Available for work by the worker himself.
-    private boolean available;
-    // Has the worker been active today? set by system
+    // by SYSTEM
+    // Has the worker been active today?
     private boolean hasBeenActiveToday;
+    // No more days available for the worker
+    private boolean isExpired;
+    // invalid status
+    private boolean isInvalid;
+
+    // by WORKERS
+    // hidden by the worker himself
+    private boolean isHidden;
+    // Available for work by the worker himself.
+    private boolean isAvailable;
+
+    // by ADMINS
+    private boolean isBanned;
 
     // Instant stored as UTC timestamp
     @Column(name = "last_refreshed")
@@ -155,7 +160,7 @@ public class Worker extends VenusUser {
     }
 
     public boolean isValid(){
-        return getAge() >= 18 && !isDisabled() && !isBanned() && !isExpired() && !isHidden() && ! isLocked();
+        return getAge() >= 18 && !isInvalid() && !isBanned() && !isExpired() && !isHidden() && ! isLocked();
     }
 
     public boolean isCertified() {
@@ -175,7 +180,7 @@ public class Worker extends VenusUser {
     public void removeSpokenLanguage(WorkerLanguage language) {this.spokenLanguages.remove(language);}
 
     public void setActive(boolean active) {
-        this.available = active;
+        this.isAvailable = active;
         this.hasBeenActiveToday = active;
     }
 }
