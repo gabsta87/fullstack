@@ -17,10 +17,14 @@ public record ClientDTO(
                 c.getUsername(),
                 c.getRole().toString(),
                 c.getEmail().toString(),
-                c.getFavorites() != null ? c.getFavorites().stream()
-                                                            .map(WorkerMinimalProfileDTO::from)
-                                                            .toList() : new ArrayList<>(),
-                c.getGeographicZone() != null ? GeographicZoneDTO.from(c.getGeographicZone()) : null
+                c.getFavorites() != null ?
+                        c.getFavorites().stream()
+                            .map(WorkerMinimalProfileDTO::from)
+                            .toList() :
+                        new ArrayList<>(),
+                c.getGeographicZone() != null ?
+                        GeographicZoneDTO.from(c.getGeographicZone()) :
+                        null
         );
     }
 }

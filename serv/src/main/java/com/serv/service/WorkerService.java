@@ -76,7 +76,7 @@ public class WorkerService {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            // 1. Cas particulier complexe : Filtrage Géographique (On garde ta logique de Jointure)
+            // 1. Particular case: Geographic filtering
             if (filters.containsKey("zoneId") && filters.get("zoneId") != null) {
                 try {
                     Integer zoneId = Integer.parseInt(filters.get("zoneId").toString().trim());
