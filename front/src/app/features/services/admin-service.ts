@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {environment} from "../../../environments/environment";
+import {WorkerFullProfile} from "../models/user.model";
 
 @Injectable({
   providedIn: 'root'
@@ -31,11 +32,16 @@ export class AdminService {
     return this.http.get<any[]>(`${this.apiUrl}/profiles`, { headers: this.getAdminHeaders() });
   }
 
-  toggleStatus(workerId: string): Observable<{ success: boolean; isActive: boolean }> {
-    return this.http.post<{ success: boolean; isActive: boolean }>(
-      `${this.apiUrl}/profiles/${workerId}/toggle-status`,
-      {},
-      { headers: this.getAdminHeaders() }
+  setLockedStatus(workerId: string, lock: boolean): Observable<WorkerFullProfile> {
+    const params = new HttpParams().set('lock', lock.toString());
+
+    return this.http.post<WorkerFullProfile>(
+      `${this.apiUrl}/profiles/${workerId}/set-locked`,
+      {}, // Body
+      {
+        headers: this.getAdminHeaders(),
+        params: params
+      }
     );
   }
 

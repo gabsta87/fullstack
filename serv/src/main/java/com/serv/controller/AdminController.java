@@ -3,6 +3,7 @@ package com.serv.controller;
 import com.serv.common.Requests;
 import com.serv.database.entities.*;
 import com.serv.database.repositories.*;
+import com.serv.dto.WorkerFullProfileDTO;
 import com.serv.service.PasswordResetService;
 import com.serv.service.SseStreamService;
 import lombok.RequiredArgsConstructor;
@@ -46,18 +47,18 @@ public class AdminController {
         return ResponseEntity.ok(auditLogRepository.findAll());
     }
 
-    @PostMapping("/profiles/{id}/toggle-status")
+    @PostMapping("/profiles/{id}/set-locked")
     @Transactional
-    public ResponseEntity<?> toggleStatus(@PathVariable UUID id, @AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<?> setStatus(@PathVariable UUID id, @AuthenticationPrincipal Jwt jwt, @RequestParam boolean lock) {
         Admin admin = getAdminInfo(jwt);
         Worker targetWorker = workerRepository.findById(id).orElse(null);
         if (targetWorker == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Worker not found"));
 
-        targetWorker.setDisabled(!targetWorker.isDisabled());
-        workerRepository.save(targetWorker);
+        targetWorker.setLocked(lock);
+        Worker savedWorker = workerRepository.save(targetWorker);
 
-        logAdminAction(admin, "TOGGLE_STATUS", targetWorker, "Statut modifié : " + (targetWorker.isDisabled() ? "DESACTIVE" : "ACTIVE"));
-        return ResponseEntity.ok(Map.of("success", true, "isActive", !targetWorker.isDisabled()));
+        logAdminAction(admin, "TOGGLE_STATUS", targetWorker, "Status modified : " + (targetWorker.isLocked() ? "LOCKED" : "UNLOCKED"));
+        return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
     }
 
     @PostMapping("/profiles/update-days")
