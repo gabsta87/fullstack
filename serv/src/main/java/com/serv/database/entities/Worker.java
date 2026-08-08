@@ -12,10 +12,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Data
 @Entity
@@ -122,6 +119,10 @@ public class Worker extends VenusUser {
             joinColumns = @JoinColumn(name = "worker_id")
     )
     private Collection<WorkerLanguage> spokenLanguages = new ArrayList<>();
+
+    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OrderBy("id.activityDate DESC")
+    private Set<WorkerDayActivity> daysHistory = new LinkedHashSet<>();
 
     public Worker(Email email, String password) {
         super(email, password);

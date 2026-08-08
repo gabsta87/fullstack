@@ -70,10 +70,11 @@ public class AdminController {
 
         int oldDays = targetWorker.getRemainingDaysCredit();
         targetWorker.setRemainingDaysCredit(req.newDaysValue());
-        workerRepository.save(targetWorker);
+
+        Worker savedWorker = workerRepository.save(targetWorker);
 
         logAdminAction(admin, "UPDATE_CREDIT_DAYS", targetWorker, String.format("Jours modifiés: %d -> %d | Motif: %s", oldDays, req.newDaysValue(), req.reason()));
-        return ResponseEntity.ok(Map.of("success", true, "newDaysValue", req.newDaysValue()));
+        return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
     }
 
     @PostMapping("/profiles/verify-certification")
@@ -90,10 +91,10 @@ public class AdminController {
         } else {
             targetWorker.setCertificationStatus("REJECTED");
         }
-        workerRepository.save(targetWorker);
+        Worker savedWorker = workerRepository.save(targetWorker);
 
         logAdminAction(admin, "VERIFY_CERTIFICATION", targetWorker, String.format("Certification : %s | Motif : %s", req.approved() ? "APPROUVEE" : "REFUSEE", req.rejectionReason()));
-        return ResponseEntity.ok(Map.of("success", true));
+        return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
     }
 
     // ── GESTION DES SERVICES ────────────────────────

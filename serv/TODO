@@ -57,7 +57,7 @@ Verify user interface for phone on the whole site
 speak about
     tarifications
     admin work
-    automated regions creation ?
+    regions generated according to country (not by users)
     security about underage announcers according to countries
     certification : once a certification is created, all pictures must stay the same ? modification can lead to fraud. Eventually only addition of pictures is allowed.
 
@@ -71,3 +71,8 @@ AZURE STRUCTURE :
     Access Control: Set container public access to Private for security, and use short-lived Shared Access Signature (SAS) tokens or backend API routing to let users securely view images without exposing your master keys.
     Database Integration: Store the image file path or public URL string inside a standard database (like Azure SQL or Cosmos DB), while the heavy binary file lives in Blob Storage.
     Performance Boost: Pair your storage account with a Content Delivery Network like Azure Front Door or Azure CDN to cache images globally and load them faster for users.
+
+admin work
+    commentaires : modérer les commentaires (signalement sur les commentaires par les annonceurs)
+    certifications / photos / age
+
