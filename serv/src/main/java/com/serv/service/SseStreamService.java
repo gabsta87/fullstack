@@ -43,13 +43,10 @@ public class SseStreamService {
     }
 
     private void removeEmitter(UUID userId, SseEmitter emitter) {
-        List<SseEmitter> userEmitters = emitters.get(userId);
-        if (userEmitters != null) {
+        emitters.computeIfPresent(userId, (key, userEmitters) -> {
             userEmitters.remove(emitter);
-            if (userEmitters.isEmpty()) {
-                emitters.remove(userId);
-            }
-        }
+            return userEmitters.isEmpty() ? null : userEmitters;
+        });
     }
 
     /**
