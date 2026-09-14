@@ -27,12 +27,9 @@
 
     <ion-item-sliding *ngFor="let worker of workers">
       <ion-item>
-        <ion-avatar slot="start">
-          <img [src]="worker.avatarUrl || 'assets/default-avatar.png'" alt="avatar" />
-        </ion-avatar>
         <ion-label>
-          <h2>{{ worker.name }}</h2>
-          <p>Crédit actuel : <strong>{{ worker.remainingDaysCredit }} jours</strong></p>
+          <h2>{{ worker.username }}</h2>
+          <p>Crédit actuel : <strong>{{ worker.expirationDate }} jours</strong></p>
           <ion-badge [color]="!worker.disabled ? 'success' : 'danger'">
             {{ !worker.disabled ? 'En ligne' : 'Désactivé' }}
           </ion-badge>
@@ -57,7 +54,7 @@
 
     <ion-card *ngFor="let worker of getPendingCertifications()">
       <ion-card-header>
-        <ion-card-title>{{ worker.name }}</ion-card-title>
+        <ion-card-title>{{ worker.username }}</ion-card-title>
         <ion-card-subtitle>Code attendu sur le panneau : <strong>{{ worker.verificationCode }}</strong></ion-card-subtitle>
       </ion-card-header>
 
