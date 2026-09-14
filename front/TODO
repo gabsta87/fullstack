@@ -4,6 +4,16 @@ image selection for workers : only jpg and supported formats
 login : redirect to account/profile-management once logged
 profile management : workers can choose level of each spoken languages
 header : add flags for each language (popup menu)
+Alerte (par email) quand un profil arrive dans la ville souhaitée
+quand un annonceur paye en liquide un employé, il peut annoncer sur le site combien il a payé
+  éventuellement envoyer une photo du montant en liquide, à coté d'un numéro envoyé à l'employé écrit sur papier (généré par le site)
+    l'employé doit lier une quittance bancaire pour garantir le nombre de jours à ajouter à l'annonceur
+    OU
+    le site calcule la totalité de liquide qu'un employé doit donner
+
+Proposer un service payant de
+  gestion auto du refresh des comptes au meilleur moment
+  gestion des RDVs sur les plages horaires
 
 supprimer le chargement du compte lors du survol d'un profil. remplacer par un cache
 

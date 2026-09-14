@@ -1,3 +1,19 @@
+worker tarification :
+    when a worker buys time, an event is stored (with his expiration date) in a date sorted queue.
+    If a worker/admin modifies the profile status, the event is removed from the queue.
+    If a worker/admin sets his profile to active, an event is inserted in the queue.
+    When an account is not consuming time, the remaining time is showed in the profile.
+    When an account is consuming time, the expiration date is showed in the profile.
+    When an account buys time, his event is modified then removed and inserted in the queue again.
+        (send worker a confirmation email about new expiration date and date of purchase)
+
+    If the system restarts, the queue is re-created from the database.
+        (see if we want to save the queue in the database to save computation time)
+
+    the queue manages the first event (blocks account), then plans his next task at the date of the next event.
+    when an item is inserted in the queue's first place, the queue waking up time is updated.
+
+
 username moved to profile management. check routes on server side
     double route for username (accountController et accountControllerWorker)
 
@@ -55,8 +71,6 @@ Create automated tests
 Verify user interface for phone on the whole site
 
 speak about
-    tarifications
-    admin work
     regions generated according to country (not by users)
     security about underage announcers according to countries
     certification : once a certification is created, all pictures must stay the same ? modification can lead to fraud. Eventually only addition of pictures is allowed.
