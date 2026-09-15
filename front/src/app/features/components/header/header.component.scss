@@ -48,3 +48,23 @@
   border-radius: 2px;
   margin-right: 12px;
 }
+
+// Style unifié et élégant pour les boutons de navigation (Connexion & Inscription)
+.nav-link-btn, .nav-cta-btn {
+  --background: transparent;
+  --background-hover: rgba(107, 91, 82, 0.08);
+  --color: #6b5b52; // Brun chaleureux du thème Venus
+  --border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.95rem; // Texte un peu plus grand et confortable
+  text-transform: none;
+  box-shadow: none;
+  height: 38px;
+  padding: 0 14px;
+  margin-left: 4px;
+
+  &:hover {
+    --color: #2c221e;
+    --background: rgba(107, 91, 82, 0.08);
+  }
+}

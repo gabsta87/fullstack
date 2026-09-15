@@ -109,6 +109,7 @@
 
           <ion-col size="12" size-sm="4">
             <age-range-selector
+              class="filter-input-item"
               [(minAge)]="filters.minAge"
               [(maxAge)]="filters.maxAge"
               (ageRangeChange)="filters.minAge = $event.minAge; filters.maxAge = $event.maxAge; loadPage(true)">

@@ -1,4 +1,4 @@
-// Mode pour s'intégrer dans les formulaires de comptes (un en dessous de l'autre ou côte à côte sur écran large)
+// Mode pour s'intégrer dans les formulaires de comptes
 .form-profile-mode {
   display: flex;
   flex-wrap: wrap;
@@ -7,7 +7,7 @@
 
   .zone-col {
     flex: 1;
-    min-width: 200px; // Aligné proprement sur les grilles mobiles
+    min-width: 200px;
   }
 }
 
@@ -24,4 +24,35 @@
 
 .disabled-col {
   opacity: 0.6;
+}
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+// Correction du centrage et de la hauteur sans couper le texte
+ion-item {
+  --background: rgba(255, 255, 255, 0.9);
+  --border-radius: 8px;
+  --padding-start: 10px;
+  --inner-padding-end: 8px;
+  border: 1px solid #e8e4df;
+  --min-height: 38px; // Utilisation de la variable Ionic au lieu d'un height brut écrasé
+  margin: 0;
+  display: flex;
+  align-items: center;
+
+  ion-select, ion-input {
+    font-size: 0.9rem;
+    font-weight: 500;
+    --padding-top: 0;
+    --padding-bottom: 0;
+  }
+
+  ion-icon {
+    color: #8c7d75;
+    font-size: 1.1rem;
+    margin-right: 6px;
+  }
 }
