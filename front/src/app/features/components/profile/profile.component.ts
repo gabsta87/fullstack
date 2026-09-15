@@ -1,9 +1,8 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {
-  IonBackButton,
   IonButton,
   IonButtons,
   IonChip,
@@ -12,7 +11,7 @@ import {
   IonIcon,
   IonItem,
   IonLabel,
-  IonList,
+  IonList, IonModal,
   IonToolbar,
 } from '@ionic/angular/standalone';
 import {addIcons} from 'ionicons';
@@ -29,13 +28,12 @@ import {
   logoWhatsapp,
   notifications,
   notificationsOutline,
+  personOutline,
   playCircleOutline,
   timeOutline,
   warningOutline,
-  womanOutline,
-  personOutline
+  womanOutline
 } from 'ionicons/icons';
-
 import {PhotoItem, Review, VideoItem} from '../../models/items.model';
 import {WorkerFullProfile} from "../../models/user.model";
 import {HeaderComponent} from "../header/header.component";
@@ -49,23 +47,23 @@ import {Subscription} from "rxjs";
   styleUrls: ['./profile.component.scss'],
   standalone: true,
   imports: [
-    CommonModule, FormsModule, IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton,
-    IonButton, IonIcon, IonList, IonItem, IonLabel, IonChip, HeaderComponent,
+    CommonModule, FormsModule, IonContent, IonHeader, IonToolbar, IonButtons,
+    IonButton, IonIcon, IonList, IonItem, IonLabel, IonChip, HeaderComponent, IonModal,
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class ProfileComponent implements OnInit, OnDestroy {
+  @ViewChild('swiperRef') swiperRef?: ElementRef;
+
+  modalMedia: { type: 'photo' | 'video'; url: string }[] = [];
 
   worker: WorkerFullProfile | null = null;
   isFavorite     = false;
   notifyEnabled  = false;
   isClient       = false;
+  isImageOpen    = false;
+  selectedPhotoIndex = 0;
   private clientAccountSub?: Subscription;
-
-  lightbox: {
-    open: boolean; type: 'photo' | 'video';
-    src: string; index: number;
-    items: (PhotoItem | VideoItem)[];
-  } = { open: false, type: 'photo', src: '', index: 0, items: [] };
 
   newReview = { rating: 0, text: '' };
   starRange = [1, 2, 3, 4, 5];
@@ -105,49 +103,71 @@ export class ProfileComponent implements OnInit, OnDestroy {
     console.log("Worker : ", this.worker);
   }
 
-  // ── Lightbox ──────────────────────────────────────────────────────────────
+  // ── Gallery navigation ──────────────────────────────────────────────────────────────
 
-  openPhoto(index: number): void {
+  openMedia(clickedItem: PhotoItem | VideoItem) {
     if (!this.worker) return;
-    this.lightbox = {
-      open: true, type: 'photo',
-      src: this.worker.photos[index].originalUrl,
-      index, items: this.worker.photos,
-    };
-    document.body.style.overflow = 'hidden';
+
+    const photoItems = (this.worker.photos || []).map(p => ({
+      type: 'photo' as const,
+      url: p.originalUrl
+    }));
+
+    const videoItems = (this.worker.videos || []).map(v => ({
+      type: 'video' as const,
+      url: v.url
+    }));
+
+    // On combine les deux listes
+    this.modalMedia = [...photoItems, ...videoItems];
+
+    // On cherche dynamiquement l'index de l'élément cliqué dans la liste globale
+    const targetUrl = 'originalUrl' in clickedItem ? clickedItem.originalUrl : clickedItem.url;
+    const globalIndex = this.modalMedia.findIndex(m => m.url === targetUrl);
+
+    this.isImageOpen = true;
+
+    setTimeout(() => {
+      const swiperEl = this.swiperRef?.nativeElement;
+      if (swiperEl && swiperEl.swiper) {
+        swiperEl.swiper.update();
+        swiperEl.swiper.slideToLoop(globalIndex >= 0 ? globalIndex : 0, 0);
+
+        swiperEl.addEventListener('swiperslidechange', () => {
+          this.onSlideChange();
+        });
+      }
+    }, 100);
   }
 
-  openVideo(index: number): void {
-    if (!this.worker) return;
-    this.lightbox = {
-      open: true, type: 'video',
-      src: this.worker.videos[index].url,
-      index, items: this.worker.videos,
-    };
-    document.body.style.overflow = 'hidden';
+  closeFullSizeImage() {
+    this.isImageOpen = false;
   }
 
-  closeLightbox(): void {
-    this.lightbox.open = false;
-    document.body.style.overflow = '';
+  slideNext() {
+    if (this.swiperRef && this.swiperRef.nativeElement.swiper) {
+      this.swiperRef.nativeElement.swiper.slideNext(300);
+    }
   }
 
-  lbPrev(e: Event): void {
-    e.stopPropagation();
-    const i = (this.lightbox.index - 1 + this.lightbox.items.length) % this.lightbox.items.length;
-    this.lightbox.index = i;
-    this.lightbox.src   = this.lightbox.type === 'photo'
-      ? (this.lightbox.items[i] as PhotoItem).originalUrl
-      : (this.lightbox.items[i] as VideoItem).url;
+  slidePrev() {
+    if (this.swiperRef && this.swiperRef.nativeElement.swiper) {
+      this.swiperRef.nativeElement.swiper.slidePrev(300);
+    }
   }
 
-  lbNext(e: Event): void {
-    e.stopPropagation();
-    const i = (this.lightbox.index + 1) % this.lightbox.items.length;
-    this.lightbox.index = i;
-    this.lightbox.src   = this.lightbox.type === 'photo'
-      ? (this.lightbox.items[i] as PhotoItem).originalUrl
-      : (this.lightbox.items[i] as VideoItem).url;
+  // Méthode appelée à chaque changement de diapositive par Swiper
+  onSlideChange() {
+    const swiperEl = this.swiperRef?.nativeElement;
+    if (swiperEl && swiperEl.shadowRoot) {
+      // Sélectionne toutes les balises vidéo à l'intérieur du Shadow DOM de Swiper
+      const videos = swiperEl.shadowRoot.querySelectorAll('video');
+      videos.forEach((video: HTMLVideoElement) => {
+        video.pause();
+        // Optionnel : remet la vidéo au début si tu veux qu'elle se relise depuis le début plus tard
+        // video.currentTime = 0;
+      });
+    }
   }
 
   // ── User actions ──────────────────────────────────────────────────────────
