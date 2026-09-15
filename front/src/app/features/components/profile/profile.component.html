@@ -23,7 +23,7 @@
         </div>
 
         <div class="profile-card actions-card">
-          <ion-button expand="block" color="primary">Contacter</ion-button>
+          <ion-button expand="block" color="primary" (click)="openContactModal()">Contacter</ion-button>
 
           <ion-button *ngIf="isClient" expand="block" fill="outline" color="medium" (click)="toggleFavorite()">
             <ion-icon slot="start" [name]="isFavorite ? 'heart' : 'heart-outline'" [color]="isFavorite ? 'danger' : ''"></ion-icon>
@@ -141,5 +141,32 @@
       </ng-template>
     </ion-modal>
 
+    <!-- Modale de contact personnalisée (Overlay maison) -->
+    <div class="custom-modal-backdrop" *ngIf="isContactOpen" (click)="closeContactModal()">
+      <div class="custom-modal-card" (click)="$event.stopPropagation()">
+
+        <!-- Bouton fermer -->
+        <button class="close-modal-btn" (click)="closeContactModal()">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+
+        <div class="contact-container">
+          <h2>Contacter {{ worker?.username }}</h2>
+
+          <div class="contact-actions" *ngIf="worker?.phone">
+            <a class="contact-btn call-btn" [href]="'tel:' + worker?.phone">
+              <ion-icon name="call-outline"></ion-icon>
+              <span>{{ worker?.phone }}</span>
+            </a>
+
+            <a class="contact-btn whatsapp-btn" [href]="'https://wa.me/' + worker?.phone" target="_blank">
+              <ion-icon name="logo-whatsapp"></ion-icon>
+              <span>WhatsApp</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
   </div>
 </ion-content>

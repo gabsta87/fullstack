@@ -62,6 +62,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
   notifyEnabled  = false;
   isClient       = false;
   isImageOpen    = false;
+  isContactOpen = false;
+
   selectedPhotoIndex = 0;
   private clientAccountSub?: Subscription;
 
@@ -171,6 +173,14 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   // ── User actions ──────────────────────────────────────────────────────────
+
+  openContactModal() {
+    this.isContactOpen = true;
+  }
+
+  closeContactModal() {
+    this.isContactOpen = false;
+  }
 
   async toggleFavorite(): Promise<void> {
     if (!this.worker || !this.isClient) return;

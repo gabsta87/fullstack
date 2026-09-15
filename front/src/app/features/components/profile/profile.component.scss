@@ -189,3 +189,129 @@
     }
   }
 }
+
+// ── Modale de contact "Overlay Maison" 100% fonctionnelle ──────────────────
+.custom-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5); // L'écran grisé
+  backdrop-filter: blur(2px);
+  z-index: 3000; // Au-dessus de tout
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeInBackdrop 0.2s ease;
+
+  .custom-modal-card {
+    background: #fbf9f7; // Fond beige/chaleureux cohérent
+    width: 100%;
+    max-width: 380px;
+    border-radius: 16px;
+    padding: 30px 20px 24px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    animation: scaleUpModal 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .close-modal-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: transparent;
+    border: none;
+    color: #6b5b52;
+    cursor: pointer;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+
+  .contact-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    h2 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #2c221e;
+      margin-bottom: 8px;
+      margin-top: 0;
+    }
+
+    .contact-subtitle {
+      font-size: 0.85rem;
+      color: #8c7d75;
+      margin-bottom: 24px;
+      line-height: 1.4;
+      padding: 0 10px;
+    }
+
+    .contact-actions {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+
+      .contact-btn {
+        width: 100%;
+        max-width: 280px;
+        border-radius: 8px;
+        font-weight: 500;
+        text-decoration: none;
+        font-size: 0.95rem;
+        height: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: background 0.2s;
+        box-sizing: border-box;
+
+        ion-icon {
+          font-size: 20px;
+        }
+
+        &.call-btn {
+          background: #6b5b52;
+          color: #ffffff;
+          &:hover { background: #554740; }
+        }
+
+        &.whatsapp-btn {
+          background: #25d366;
+          color: #ffffff;
+          &:hover { background: #20ba5a; }
+        }
+      }
+    }
+  }
+}
+
+// Petites animations fluides d'ouverture
+@keyframes fadeInBackdrop {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUpModal {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
