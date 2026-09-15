@@ -42,13 +42,14 @@
             Effacer
           </ion-button>
 
-          <ion-button *ngIf="!hasActiveFilters() && isLoggedIn"
-                      fill="solid" class="pref-filters-btn"
-                      color="primary" size="small"
-                      (click)="loadUserPreferences()">
-            <ion-icon slot="start" name="sparkles-outline"></ion-icon>
-            Mes préférences
-          </ion-button>
+<!--          No preferences for now -->
+<!--          <ion-button *ngIf="!hasActiveFilters() && isLoggedIn"-->
+<!--                      fill="solid" class="pref-filters-btn"-->
+<!--                      color="primary" size="small"-->
+<!--                      (click)="loadUserPreferences()">-->
+<!--            <ion-icon slot="start" name="sparkles-outline"></ion-icon>-->
+<!--            Mes préférences-->
+<!--          </ion-button>-->
 
           <ion-button fill="outline" class="more-filters-btn" (click)="toggleMoreFilters()">
             <ion-icon slot="start" [name]="showMoreFilters ? 'close-outline' : 'options-outline'"></ion-icon>
