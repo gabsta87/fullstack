@@ -1,47 +1,28 @@
-// Mode pour s'intégrer dans les formulaires de comptes
-.form-profile-mode {
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-  gap: 16px;
-
-  .zone-col {
-    flex: 1;
-    min-width: 200px;
-  }
-}
-
-// Mode horizontal condensé pour la bannière de la Homepage
-.filter-banner-mode {
-  display: flex;
-  width: 100%;
-  gap: 8px;
-
-  .zone-col {
-    flex: 1;
-  }
-}
-
-.disabled-col {
-  opacity: 0.6;
-}
-
 :host {
   display: block;
   width: 100%;
 }
 
-// Correction du centrage et de la hauteur sans couper le texte
 ion-item {
-  --background: rgba(255, 255, 255, 0.9);
-  --border-radius: 8px;
+  --background: rgba(255, 255, 255, 0.95);
+  --border-radius: 8px !important;
+  border-radius: 8px !important;
   --padding-start: 10px;
   --inner-padding-end: 8px;
   border: 1px solid #e8e4df;
-  --min-height: 38px; // Utilisation de la variable Ionic au lieu d'un height brut écrasé
+  min-height: 40px !important;
+  height: 40px !important;
   margin: 0;
   display: flex;
   align-items: center;
+
+  // Force l'arrondi interne d'Ionic
+  ::ng-deep {
+    .item-native, .item-inner, .native-wrapper {
+      border-radius: 8px !important;
+      background: transparent !important;
+    }
+  }
 
   ion-select, ion-input {
     font-size: 0.9rem;
@@ -55,4 +36,30 @@ ion-item {
     font-size: 1.1rem;
     margin-right: 6px;
   }
+}
+
+.form-profile-mode {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  gap: 16px;
+
+  .zone-col {
+    flex: 1;
+    min-width: 200px;
+  }
+}
+
+.filter-banner-mode {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+
+  .zone-col {
+    flex: 1;
+  }
+}
+
+.disabled-col {
+  opacity: 0.6;
 }

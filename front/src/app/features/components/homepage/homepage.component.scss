@@ -45,10 +45,16 @@ ion-grid {
     margin: 0 !important;
   }
 
-  .filter-col {
+  // 🎯 Application uniforme de l'espacement sur TOUTES les colonnes de la bannière
+  .filter-col, .advanced-filters-row ion-col {
     padding-right: 12px;
     display: flex;
     align-items: center;
+    box-sizing: border-box;
+  }
+
+  .filter-col:last-child, .advanced-filters-row ion-col:last-child {
+    padding-right: 0 !important;
   }
 
   .filter-actions {
@@ -60,31 +66,43 @@ ion-grid {
     height: 40px;
   }
 
+  // 🎯 Fix de la hauteur exacte pour la zone, les inputs et le sélecteur d'âge
   .filter-input-item, app-zone-selector, age-range-selector {
     width: 100%;
-    height: 40px;
+    height: 40px !important;
+    min-height: 40px !important;
     display: flex;
     align-items: center;
+    box-sizing: border-box;
   }
 
-  // 🎯 Solution radicale : Forcer le fond blanc et casser le border-radius natif d'Ionic
+  // Harmonisation de la zone pour qu'elle ne dépasse plus en hauteur
+  app-zone-selector {
+    ::ng-deep {
+      .select-item, ion-item {
+        min-height: 40px !important;
+        height: 40px !important;
+      }
+    }
+  }
+
+  // Uniformisation des champs de saisie et du sélecteur d'âge
   .filter-input-item, age-range-selector {
     background: rgba(255, 255, 255, 0.95) !important;
     border-radius: 8px !important;
     border: 1px solid #e8e4df !important;
     padding-right: 12px;
-    box-sizing: border-box;
-    min-height: 40px !important;
     margin: 0;
     box-shadow: none !important;
 
-    // Cible l'élément interne d'Ionic pour forcer l'arrondi uniforme sur tous les coins
     ::ng-deep {
       .item-native, .item-inner, .native-wrapper {
         background: transparent !important;
         border-radius: 8px !important;
         border: none !important;
         box-shadow: none !important;
+        min-height: 40px !important;
+        height: 40px !important;
       }
     }
 
@@ -101,6 +119,19 @@ ion-grid {
       color: #8c7d75;
       font-size: 1.1rem;
       margin-right: 6px;
+    }
+  }
+
+  // Ajustement spécifique pour le conteneur du sélecteur d'âge mis sur une ligne
+  age-range-selector {
+    padding: 0 10px;
+    ::ng-deep {
+      ion-item {
+        --background: transparent !important;
+        background: transparent !important;
+        --border-color: transparent !important;
+        box-shadow: none !important;
+      }
     }
   }
 
@@ -130,9 +161,18 @@ ion-grid {
   }
 
   .advanced-filters-wrapper {
-    margin-top: 12px;
+    margin-top: 14px;
     border-top: 1px solid rgba(107, 91, 82, 0.12);
-    padding-top: 12px;
+    padding-top: 14px;
+
+    .advanced-filters-row {
+      display: flex;
+      row-gap: 12px;
+
+      & + .advanced-filters-row {
+        margin-top: 12px;
+      }
+    }
   }
 }
 
