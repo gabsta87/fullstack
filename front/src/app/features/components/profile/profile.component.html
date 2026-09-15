@@ -57,6 +57,7 @@
           <h3>Photos</h3>
           <div class="gallery-grid">
             <img *ngFor="let p of worker.photos"
+                 class="media-item"
                  [src]="p.previewThumbUrl"
                  (click)="openMedia(p)">
           </div>
@@ -67,7 +68,7 @@
           <h3>Vidéos</h3>
           <div class="gallery-grid">
             <div *ngFor="let v of worker.videos" class="video-thumbnail-container" (click)="openMedia(v)">
-              <ion-icon name="play-circle-outline" class="play-icon-overlay"></ion-icon>
+              <ion-icon name="play-circle-outline" class="play-icon-overlay media-item"></ion-icon>
               <video [src]="v.url" preload="metadata" muted></video>
             </div>
           </div>

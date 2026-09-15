@@ -90,6 +90,11 @@
   ion-spinner { --color: var(--accent); width: 40px; height: 40px; }
 }
 
+.media-item{
+  cursor: pointer;
+  margin: 4px;
+}
+
 // ── Swiper Plein Écran ────────────────────────────────────────────────────────
 .fullscreen-photo-modal {
   --width: 100%;
