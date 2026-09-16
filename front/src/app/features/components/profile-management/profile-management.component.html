@@ -68,7 +68,7 @@
 
               <ion-col size="12" size-md="6">
                 <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('username', me)">
-                  <ion-label position="stacked">Nom d'utilisateur / Pseudo</ion-label>
+                  <ion-label position="stacked">Nom affiché</ion-label>
                   <ion-input type="text"
                              name="username"
                              [(ngModel)]="profileForm.username"
@@ -94,7 +94,9 @@
                                 placeholder="Décrivez votre profil, vos spécialités..."></ion-textarea>
                 </ion-item>
               </ion-col>
+            </ion-row>
 
+            <ion-row>
               <!-- Localisation -->
               <ion-col size="12" [class.invalid-selector-box]="isFieldMissing('geographicZoneId', me)">
                 <app-zone-selector
@@ -113,9 +115,11 @@
                     ))"
                 ></app-zone-selector>
               </ion-col>
+            </ion-row>
 
+            <ion-row>
               <!-- Téléphone -->
-              <ion-col size="12" size-md="6">
+              <ion-col size="6" size-md="6">
                 <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('phone', me)">
                   <ion-label position="stacked">Téléphone *</ion-label>
                   <ion-input type="tel"
@@ -126,8 +130,8 @@
                 </ion-item>
               </ion-col>
 
-              <!-- Date de Naissance (Ajouté) -->
-              <ion-col size="12" size-md="6">
+              <!-- Date de Naissance -->
+              <ion-col size="6" size-md="6">
                 <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('birthday', me)">
                   <ion-label position="stacked">Date de naissance *</ion-label>
                   <ion-input type="date"
@@ -136,9 +140,11 @@
                   </ion-input>
                 </ion-item>
               </ion-col>
+            </ion-row>
 
+            <ion-row>
               <!-- Silhouette, Yeux, Cheveux sont optionnels -->
-              <ion-col size="12" size-md="4">
+              <ion-col size="4" size-md="4">
                 <ion-item lines="none" class="venus-input">
                   <ion-select label="Silhouette" label-placement="stacked" interface="popover" [(ngModel)]="profileForm.bodyType" (ionChange)="updateProfileField('bodyType', $event.detail.value)">
                     <ion-select-option *ngFor="let type of BODY_TYPE_LABELS | keyvalue" [value]="type.key">{{ type.value }}</ion-select-option>
@@ -146,7 +152,7 @@
                 </ion-item>
               </ion-col>
 
-              <ion-col size="12" size-md="4">
+              <ion-col size="4" size-md="4">
                 <ion-item lines="none" class="venus-input">
                   <ion-select label="Cheveux" label-placement="stacked" interface="popover" [(ngModel)]="profileForm.hairColor" (ionChange)="updateProfileField('hairColor', $event.detail.value)">
                     <ion-select-option *ngFor="let type of HAIR_COLOR_LABELS | keyvalue" [value]="type.key">{{ type.value }}</ion-select-option>
@@ -154,14 +160,16 @@
                 </ion-item>
               </ion-col>
 
-              <ion-col size="12" size-md="4">
+              <ion-col size="4" size-md="4">
                 <ion-item lines="none" class="venus-input">
                   <ion-select label="Yeux" label-placement="stacked" interface="popover" [(ngModel)]="profileForm.eyeColor" (ionChange)="updateProfileField('eyeColor', $event.detail.value)">
                     <ion-select-option *ngFor="let type of EYE_COLOR_LABELS | keyvalue" [value]="type.key">{{ type.value }}</ion-select-option>
                   </ion-select>
                 </ion-item>
               </ion-col>
+            </ion-row>
 
+            <ion-row>
               <!-- Services -->
               <ion-col size="12">
                 <div class="services-container" [class.invalid-container]="isFieldMissing('services', me)">

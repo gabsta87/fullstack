@@ -8,89 +8,208 @@
   padding: 20px 16px;
 }
 
-.venus-input {
-  --background: #ffffff;
-  --border-color: #e8e4df;
-  --border-style: solid;
-  --border-width: 1px;
-  --border-radius: 12px;
-  margin-bottom: 15px;
-  --padding-start: 12px;
-
-  ion-label {
-    font-family: 'Outfit', sans-serif;
-    font-weight: 600;
-    color: #1a1714 !important;
-    margin-bottom: 8px;
-  }
-}
-
-.save-btn {
-  --background: #1a1714;
-  --color: #faf9f7;
-  --border-radius: 12px;
-  font-weight: 600;
-  height: 50px;
-  margin-top: 30px;
-}
-
-.pm-segment {
-  background: transparent;
-  margin-bottom: 20px;
-  --background: #f0ece7;
+// ── EN-TÊTE PROFIL (HERO) ──────────────────────────────────────────────────
+.pm-hero-grid {
+  margin-bottom: 24px;
+  background: #f0ece7;
+  padding: 20px;
   border-radius: 12px;
-  padding: 4px;
+  border: 1px solid #e8e4df;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.02);
 
-  ion-segment-button {
-    --indicator-color: #ffffff;
-    --color: #888;
-    --color-checked: #1a1714;
-    border-radius: 8px;
+  .avatar-wrapper {
+    position: relative;
+    display: inline-block;
+
+    ion-avatar {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 2px solid #e8e4df;
+    }
+
+    .edit-photo-btn {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      margin: 0;
+    }
   }
-}
 
-.services-flex {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
-}
+  .profile-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
 
-.segment-toolbar {
-  --background: var(--surface, #ffffff);
-  --border-color: var(--border, #e8e4df);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  border-bottom: 1px solid var(--border, #e8e4df);
-  margin-bottom: 20px;
+    @media (min-width: 768px) {
+      align-items: flex-start;
+      padding-left: 16px;
+    }
 
-  ion-segment {
-    max-width: 600px;
-    margin: 0 auto;
-    --background: transparent;
+    h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1a1714;
+    }
 
-    ion-segment-button {
-      --color: var(--text-muted, #888888);
-      --color-checked: var(--accent, #1a1714);
-      --indicator-color: var(--accent, #1a1714);
+    .status-badge {
+      font-size: 0.8rem;
+      height: 28px;
+      --border-radius: 14px;
+      text-transform: none;
       font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 1px;
     }
   }
 }
 
-/* ── BANNIÈRE DESIGN ─────────────────────────────────────── */
+// ── CHAMPS DE FORMULAIRE UNIFORMES ─────────────────────────
+.venus-input {
+  width: 100%;
+  display: block;
+  border-radius: 12px;
+  border: 1px solid #e8e4df;
+  box-shadow: none !important;
+}
+
+// Spécifique pour harmoniser le sélecteur de zone avec les inputs standard
+app-zone-selector {
+  ::ng-deep {
+    ion-item {
+      min-height: 52px !important;
+    }
+  }
+}
+
+// ── CARTE PRINCIPALE (.pm-card) AVEC FOND BRUN CLAIR (#f0ece7) ─────────────
+.pm-card {
+  background: #f0ece7 !important;
+  --background: #f0ece7 !important;
+  border-radius: 12px;
+  border: 1px solid #e8e4df;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.02);
+
+  ion-card-content {
+    padding: 24px;
+
+    ion-row {
+      row-gap: 16px;
+      column-gap: 16px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-wrap: nowrap;
+
+      ion-col {
+        margin-bottom: 0;
+        flex: 1;
+        min-width: 0;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+// ── SECTION SERVICES (Harmonisée sur fond blanc pour contraste) ────────────
+.services-container {
+  background: #ffffff;
+  border: 1px solid #e8e4df;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 4px;
+
+  ion-list-header {
+    min-height: auto;
+    margin-bottom: 12px;
+
+    ion-label {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #1a1714 !important;
+    }
+  }
+
+  .services-flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    ion-checkbox {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #332d29;
+      --size: 20px;
+      --checkbox-background: #ffffff;
+      --border-color: #d4c8be;
+    }
+  }
+}
+
+// ── SEGMENTS DE NAVIGATION ─────────────────────────────────────────────────
+.segment-toolbar {
+  --background: transparent;
+  --border-color: transparent;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  margin-bottom: 20px;
+  padding: 0;
+
+  ion-segment {
+    --background: #f0ece7;
+    border-radius: 12px;
+    padding: 4px;
+    max-width: 100%;
+    margin: 0 auto;
+
+    // Suppression propre du souligné d'onglet
+    --indicator-color: transparent !important;
+    --indicator-box-shadow: none !important;
+    --indicator-height: 0px !important;
+
+    ::ng-deep {
+      .segment-indicator {
+        display: none !important;
+      }
+    }
+
+    ion-segment-button {
+      --color: #8c7d75;
+      --color-checked: #8c7d75;
+      --background-checked: #ffffff;
+      --indicator-color: transparent;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-radius: 8px;
+      min-height: 40px;
+      transition: none !important; // Coupe la transition
+
+      ::ng-deep {
+        .button-inner, .native-button {
+          transition: none !important;
+        }
+      }
+    }
+  }
+}
+
+// ── BANNIÈRE D'AVERTISSEMENT PROFIL INCOMPLET ──────────────────────────────
 .profile-warning-banner {
   display: flex;
   align-items: flex-start;
   gap: 16px;
-  background: rgba(235, 68, 90, 0.08);
+  background: rgba(235, 68, 90, 0.06);
   border: 1px solid var(--ion-color-danger, #eb445a);
   border-radius: 12px;
   padding: 16px;
-  margin: 16px 0;
+  margin-bottom: 20px;
 
   ion-icon {
     font-size: 28px;
@@ -101,12 +220,12 @@
     h3 {
       margin: 0 0 4px 0;
       color: var(--ion-color-danger, #eb445a);
-      font-size: 1.1rem;
-      font-weight: bold;
+      font-size: 1.05rem;
+      font-weight: 700;
     }
     p {
       margin: 0 0 12px 0;
-      color: var(--ion-color-step-700, #424242);
+      color: #594f47;
       font-size: 0.9rem;
     }
   }
@@ -127,46 +246,31 @@
   }
 }
 
-/* ── REHAUSSEMENTS ERREUR SUR LES INPUTS ────────────────── */
+// ── ÉTATS D'ERREUR (VALIDATION) ────────────────────────────────────────────
 .invalid-item {
-  --border-color: var(--ion-color-danger, #eb445a) !important;
+  border-color: var(--ion-color-danger, #eb445a) !important;
   background: rgba(235, 68, 90, 0.02) !important;
+}
+
+.invalid-selector-box {
+  border: 1px solid var(--ion-color-danger, #eb445a) !important;
+  border-radius: 12px;
+  background: rgba(235, 68, 90, 0.02);
+}
+
+.invalid-container {
+  border: 1px solid var(--ion-color-danger, #eb445a) !important;
+  border-radius: 12px;
+  padding: 16px;
+  background: rgba(235, 68, 90, 0.02);
 
   ion-label {
     color: var(--ion-color-danger, #eb445a) !important;
   }
 }
 
-.invalid-selector-box {
-  border: 1px solid var(--ion-color-danger, #eb445a) !important;
-  border-radius: 8px;
-  padding: 4px;
-  background: rgba(235, 68, 90, 0.02);
-}
-
-.invalid-container {
-  border: 1px solid var(--ion-color-danger, #eb445a);
-  border-radius: 8px;
-  padding: 12px;
-  background: rgba(235, 68, 90, 0.02);
-
-  ion-label {
-    color: var(--ion-color-danger, #eb445a);
-  }
-}
-
-.invalid-avatar {
-  border: 3px dashed var(--ion-color-danger, #eb445a);
-  padding: 4px;
-  border-radius: 50%;
-}
-
-.invalid-text {
-  color: var(--ion-color-danger, #eb445a);
-}
-
 .tab-error {
-  color: var(--ion-color-danger, #eb445a);
+  color: var(--ion-color-danger, #eb445a) !important;
   font-weight: bold;
   position: relative;
 
@@ -176,32 +280,59 @@
   }
 }
 
-// Photos de profil
+// ── ONGLET PHOTOS (ZONE DE DROP & GALERIE) ─────────────────────────────────
 .drop-zone {
-  border: 2px dashed var(--ion-color-medium);
-  border-radius: 8px;
-  padding: 20px;
+  border: 2px dashed #d4c8be;
+  border-radius: 12px;
+  padding: 24px;
   text-align: center;
-  margin: 16px;
-  background: var(--ion-color-light, #f4f5f8);
+  margin-bottom: 20px;
+  background: #ffffff;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
 
   p {
     margin: 8px 0 0 0;
-    font-size: 14px;
-    color: var(--ion-color-dark);
+    font-size: 0.9rem;
+    color: #332d29;
   }
 
   .format-hint {
-    font-size: 12px;
-    color: var(--ion-color-medium);
+    font-size: 0.8rem;
+    color: #8c7d75;
   }
 }
 
-// Classe activée lorsque des fichiers survolent la zone
 .drop-zone-active {
-  border-color: var(--ion-color-primary);
-  background: rgba(var(--ion-color-primary-rgb), 0.08);
-  transform: scale(1.01);
+  border-color: #1a1714;
+  background: rgba(26, 23, 20, 0.04);
+  transform: scale(1.005);
+}
+
+.gallery-item {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e8e4df;
+  aspect-ratio: 1;
+  background: #f0ece7;
+
+  .gallery-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .gallery-actions-overlay {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 4px;
+    border-radius: 8px;
+    backdrop-filter: blur(4px);
+  }
 }
