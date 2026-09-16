@@ -23,6 +23,7 @@
 
       <ng-container *ngIf="!(authService.isAuthenticated$ | async)">
         <ion-button (click)="openAuth('login')" fill="clear" class="nav-link-btn">
+          <ion-icon name="log-in-outline" slot="start"></ion-icon>
           Se connecter
         </ion-button>
         <ion-button (click)="openAuth('register')" fill="solid" class="nav-cta-btn">
@@ -36,6 +37,7 @@
           Mon Compte
         </ion-button>
         <ion-button (click)="onLogout()" fill="clear" class="nav-link-btn">
+          <ion-icon name="log-out-outline" slot="start"></ion-icon>
           Se déconnecter
         </ion-button>
       </ng-container>

@@ -8,17 +8,7 @@ import {AuthModalComponent} from "../auth-modal/auth-modal.component";
 import {firstValueFrom} from "rxjs";
 import {WorkerAccountService} from "../../services/worker-account.service";
 import {addIcons} from "ionicons";
-import {
-  bodyOutline,
-  calendarOutline,
-  callOutline, chevronBackOutline, chevronForwardOutline, closeOutline,
-  heart,
-  heartOutline, locationOutline,
-  logoWhatsapp,
-  notifications,
-  notificationsOutline, personCircleOutline, playCircleOutline, timeOutline,
-  warningOutline
-} from "ionicons/icons";
+import {logInOutline, logOutOutline, personCircleOutline} from "ionicons/icons";
 import LanguageManagerService from "../../services/language-manager.service";
 
 @Component({
@@ -39,7 +29,7 @@ export class HeaderComponent {
     public langService: LanguageManagerService
   ) {
     addIcons({
-      personCircleOutline
+      personCircleOutline, logOutOutline, logInOutline
     });
   }
 
