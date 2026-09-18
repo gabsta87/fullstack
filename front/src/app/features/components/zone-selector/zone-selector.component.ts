@@ -12,7 +12,7 @@ export interface GeographicZone {
 }
 
 @Component({
-  selector: 'app-zone-selector',
+  selector: 'zone-selector',
   standalone: true,
   imports: [CommonModule, FormsModule, IonicModule],
   templateUrl: './zone-selector.component.html',

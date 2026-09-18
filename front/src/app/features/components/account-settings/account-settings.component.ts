@@ -4,7 +4,7 @@ import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-account-settings',
+  selector: 'account-settings',
   standalone: true,
   imports: [CommonModule, IonicModule, FormsModule],
   templateUrl: './account-settings.component.html',

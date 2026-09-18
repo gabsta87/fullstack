@@ -66,7 +66,7 @@
         <div *ngIf="activeTab === 'profile'" class="fade-in">
           <ion-grid class="ion-no-padding">
             <ion-row>
-
+              <!-- Username -->
               <ion-col size="12" size-md="6">
                 <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('username', me)">
                   <ion-label position="stacked">Nom affiché</ion-label>
@@ -79,11 +79,9 @@
                              placeholder="Votre pseudo"></ion-input>
                 </ion-item>
               </ion-col>
-
             </ion-row>
 
             <ion-row>
-
               <!-- Description -->
               <ion-col size="12">
                 <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('description', me)">
@@ -100,7 +98,7 @@
             <ion-row>
               <!-- Localisation -->
               <ion-col size="12" [class.invalid-selector-box]="isFieldMissing('geographicZoneId', me)">
-                <app-zone-selector
+                <zone-selector
                   [zones]="allLocations"
                   [allowAllOption]="true"
                   [selectedParentId]="parentZoneId"
@@ -114,7 +112,7 @@
                         isNaN(parentZoneId)) ? -1 : ($event.childZoneId ||
                         $event.parentZoneId
                     ))"
-                ></app-zone-selector>
+                ></zone-selector>
               </ion-col>
             </ion-row>
 
@@ -270,26 +268,26 @@
 
         <!-- ONGLET COMPTE-->
         <div *ngIf="activeTab === 'settings'" class="fade-in">
-          <app-account-settings
+          <account-settings
             [initialEmail]="me.email"
             [isWorker]="true"
             [subscriptionLabel]="subscriptionLabel$ | async"
             [subscriptionColor]="subscriptionColor$ | async"
             (onSaveSettings)="handleSettingsSave($event)"
             (onManageSubscription)="handleSubscriptionClick()">
-          </app-account-settings>
+          </account-settings>
 
           <div class="pack-selector">
             <button (click)="chosenAmount = 2500; chosenType = 'DAYS'">Acheter du crédit de visibilité (25€)</button>
             <button (click)="chosenAmount = 500; chosenType = 'BOOST'">Remonter en tête de liste (5€)</button>
           </div>
 
-          <app-stripe-payment
+          <stripe-payment
             *ngIf="chosenAmount > 0"
             [workerId]="me.id"
             [amount]="chosenAmount"
             [paymentType]="chosenType">
-          </app-stripe-payment>
+          </stripe-payment>
         </div>
 
       </ion-card-content>

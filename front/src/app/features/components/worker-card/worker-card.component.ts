@@ -19,7 +19,7 @@ import {addIcons} from "ionicons";
 import {personCircleOutline} from "ionicons/icons";
 
 @Component({
-  selector: 'app-worker-card',
+  selector: 'worker-card',
   templateUrl: './worker-card.component.html',
   styleUrls: ['./worker-card.component.scss'],
   standalone: true,

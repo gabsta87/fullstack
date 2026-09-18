@@ -7,7 +7,7 @@ import {environment} from '../../../../environments/environment';
 declare var Stripe: any;
 
 @Component({
-  selector: 'app-stripe-payment',
+  selector: 'stripe-payment',
   standalone : true,
   templateUrl: './stripe-payment.component.html',
   styleUrls: ['./stripe-payment.component.scss'],

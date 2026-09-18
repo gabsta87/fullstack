@@ -25,7 +25,7 @@
         <ion-row>
           <ion-col size="6" size-sm="4" size-md="3" size-lg="2.4" size-xl="2"
                    *ngFor="let f of user.favorites">
-            <app-worker-card [worker]="f"></app-worker-card>
+            <worker-card [worker]="f"></worker-card>
           </ion-col>
         </ion-row>
 
@@ -45,14 +45,14 @@
 
           <ion-card-content>
             <ion-list lines="none">
-              <app-zone-selector
+              <zone-selector
                 [zones]="locations"
                 [selectedChildId]="selectedZoneId"
                 [allowAllOption]="true"
                 [allParentsLabel]="'Toutes les régions'"
                 [allChildrenLabel]="'Toutes les localisations'"
                 (onZoneSelected)="onZoneChange($event, user)">
-              </app-zone-selector>
+              </zone-selector>
 
               <div class="field-label ion-margin-top">Silhouettes préférées</div>
               <div class="chips-group">
@@ -72,11 +72,11 @@
     </div>
 
     <div *ngIf="activeTab === 'account'" class="fade-in ion-padding">
-      <app-account-settings
+      <account-settings
         [initialEmail]="user.email"
         [isWorker]="false"
         (onSaveSettings)="handleSettingsSave($event)">
-      </app-account-settings>
+      </account-settings>
     </div>
 
   </ion-grid>
