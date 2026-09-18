@@ -194,6 +194,8 @@
 
         <!-- ONGLET PHOTOS -->
         <div *ngIf="activeTab === 'photos'" class="fade-in">
+
+          <div class="drop-zone-container">
           <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/jpeg, image/png, image/webp" multiple style="display: none">
 
           <div class="drop-zone"
@@ -217,10 +219,11 @@
             <ion-icon slot="start" name="add-circle-outline"></ion-icon>
             Ajouter votre première photo obligatoire *
           </ion-button>
+          </div>
 
           <ion-grid class="ion-no-padding ion-padding-horizontal">
             <ion-row>
-              <ion-col size="4" size-md="3" *ngFor="let photo of photos; let i = index" class="ion-padding-tiny">
+              <ion-col size="4" size-md="3" *ngFor="let photo of photos; let i = index" class="ion-padding-tiny photo-col">
 
                 <div class="gallery-item"
                      draggable="true"
