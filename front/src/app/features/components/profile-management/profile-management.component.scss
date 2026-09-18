@@ -62,9 +62,11 @@
 
 // ── CHAMPS DE FORMULAIRE UNIFORMES ─────────────────────────
 .venus-input, .description-container{
-  border-radius: 12px;
+  border-radius: 8px;
   border: 1px solid #e8e4df;
   box-shadow: none;
+  display: flex;
+  align-items: center;
 }
 
 .venus-input {
