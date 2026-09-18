@@ -1,28 +1,31 @@
-<ion-grid class="ion-no-padding">
-  <ion-row>
+<!--<ion-grid class="ion-no-padding">-->
+<!--  <ion-row>-->
 
-    <ion-col size="12" *ngIf="isWorker" class="ion-margin-bottom">
-      <div class="subscription-section">
-        <h3 class="section-title">Abonnement & Visibilité</h3>
-        <div class="subscription-box">
-          <div class="sub-info">
-            <span class="sub-indicator-dot" [ngClass]="subscriptionColor || 'medium'"></span>
-            <div>
-              <p class="sub-status-text">{{ subscriptionLabel || 'Aucun abonnement actif' }}</p>
-              <p class="sub-hint">L'abonnement actif vous permet d'apparaître en tête des résultats clients.</p>
-            </div>
-          </div>
-          <ion-button fill="outline" color="dark" size="small" (click)="onManageSubscription.emit()">
-            Gérer / Prolonger
-          </ion-button>
-        </div>
-      </div>
-    </ion-col>
+<!--    Section pour les payements - Désactivé pour le moment-->
+<!--    <ion-col size="12" *ngIf="isWorker" class="ion-margin-bottom">-->
+<!--      <div class="subscription-section">-->
+<!--        <h3 class="section-title">Abonnement & Visibilité</h3>-->
+<!--        <div class="subscription-box">-->
+<!--          <div class="sub-info">-->
+<!--            <span class="sub-indicator-dot" [ngClass]="subscriptionColor || 'medium'"></span>-->
+<!--            <div>-->
+<!--              <p class="sub-status-text">{{ subscriptionLabel || 'Aucun abonnement actif' }}</p>-->
+<!--              <p class="sub-hint">L'abonnement actif vous permet d'apparaître en tête des résultats clients.</p>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <ion-button fill="outline" color="dark" size="small" (click)="onManageSubscription.emit()">-->
+<!--            Gérer / Prolonger-->
+<!--          </ion-button>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </ion-col>-->
 
-    <ion-col size="12">
+<!--    <ion-col size="12">-->
       <h3 class="section-title">Sécurité & Identifiants</h3>
 
       <form (ngSubmit)="submitForm()">
+        <ion-grid class="ion-no-padding">
+
         <ion-row>
 
           <ion-col size="12" size-md="6">
@@ -32,6 +35,16 @@
             </ion-item>
           </ion-col>
 
+          <ion-col size="12" size-md="6">
+            <ion-item lines="none" class="venus-input">
+              <ion-label position="stacked">Mot de passe actuel</ion-label>
+              <ion-input type="password" name="oldPassword" [(ngModel)]="form.oldPassword" [required]="true" placeholder="Mot de passe actuel"></ion-input>
+            </ion-item>
+          </ion-col>
+
+        </ion-row>
+
+        <ion-row>
           <ion-col size="12" size-md="6">
             <ion-item lines="none" class="venus-input">
               <ion-label position="stacked">Nouveau mot de passe (Optionnel)</ion-label>
@@ -61,8 +74,10 @@
           </ion-col>
 
         </ion-row>
-      </form>
-    </ion-col>
 
-  </ion-row>
-</ion-grid>
+        </ion-grid>
+      </form>
+<!--    </ion-col>-->
+
+<!--  </ion-row>-->
+<!--</ion-grid>-->

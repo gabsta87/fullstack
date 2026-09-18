@@ -2,63 +2,33 @@
   font-family: 'Outfit', sans-serif;
   font-size: 1.1rem;
   font-weight: 600;
-  color: #1a1714;
-  margin: 15px 0;
+  color: var(--text-dark);
+  margin: 16px 0;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-// Design de l'encart d'abonnement
-.subscription-box {
+.venus-input {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  box-shadow: none;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background: #fbf9f6;
-  border: 1px solid var(--border, #e8e4df);
-  border-radius: 12px;
-  padding: 16px;
-  gap: 16px;
-  flex-wrap: wrap;
+  height: 58px;
+  margin-right: 16px;
+}
 
-  .sub-info {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-
-  .sub-indicator-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    flex-shrink: 0;
-
-    &.success { background-color: var(--ion-color-success, #2dd36f); box-shadow: 0 0 8px rgba(45,211,111,0.4); }
-    &.warning { background-color: var(--ion-color-warning, #ffc409); box-shadow: 0 0 8px rgba(255,196,9,0.4); }
-    &.danger { background-color: var(--ion-color-danger, #eb445a); box-shadow: 0 0 8px rgba(235,68,90,0.4); }
-    &.medium { background-color: var(--ion-color-medium, #92949c); }
-  }
-
-  .sub-status-text {
-    font-size: 0.95rem;
-    font-weight: 700;
-    margin: 0;
-    color: #1a1714;
-  }
-
-  .sub-hint {
-    font-size: 0.82rem;
-    color: #666;
-    margin: 4px 0 0 0;
-  }
+ion-row{
+  margin-bottom: 16px;
 }
 
 .save-settings-btn {
-  --background: #1a1714;
+  --background: var(--ion-color-primary, #3880ff);
   --color: #faf9f7;
   --border-radius: 12px;
   font-weight: 600;
   height: 46px;
-  margin: 0;
+  margin-right: 16px;
 }
 
 // Bannières de retours d'informations élégantes
@@ -80,3 +50,48 @@
     border-left: 4px solid var(--ion-color-success, #2dd36f);
   }
 }
+
+
+//// Design de l'encart d'abonnement
+//.subscription-box {
+//  display: flex;
+//  align-items: center;
+//  justify-content: space-between;
+//  background: #fbf9f6;
+//  border: 1px solid var(--border, #e8e4df);
+//  border-radius: 12px;
+//  padding: 16px;
+//  gap: 16px;
+//  flex-wrap: wrap;
+//
+//  .sub-info {
+//    display: flex;
+//    align-items: center;
+//    gap: 14px;
+//  }
+//
+//  .sub-indicator-dot {
+//    width: 12px;
+//    height: 12px;
+//    border-radius: 50%;
+//    flex-shrink: 0;
+//
+//    &.success { background-color: var(--ion-color-success, #2dd36f); box-shadow: 0 0 8px rgba(45,211,111,0.4); }
+//    &.warning { background-color: var(--ion-color-warning, #ffc409); box-shadow: 0 0 8px rgba(255,196,9,0.4); }
+//    &.danger { background-color: var(--ion-color-danger, #eb445a); box-shadow: 0 0 8px rgba(235,68,90,0.4); }
+//    &.medium { background-color: var(--ion-color-medium, #92949c); }
+//  }
+//
+//  .sub-status-text {
+//    font-size: 0.95rem;
+//    font-weight: 700;
+//    margin: 0;
+//    color: #1a1714;
+//  }
+//
+//  .sub-hint {
+//    font-size: 0.82rem;
+//    color: #666;
+//    margin: 4px 0 0 0;
+//  }
+//}

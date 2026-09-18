@@ -26,7 +26,8 @@ export class AccountSettingsComponent implements OnInit {
   form = {
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    oldPassword : ''
   };
 
   errorMessage: string = '';
