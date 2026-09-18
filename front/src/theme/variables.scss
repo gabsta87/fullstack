@@ -11,6 +11,7 @@
 @import "@ionic/angular/css/flex-utils.css";
 
 :root {
+  // Ionic Core Overrides
   --ion-color-primary: #8b6e58;
   --ion-color-primary-rgb: 139, 110, 88;
   --ion-color-primary-contrast: #ffffff;
@@ -25,22 +26,31 @@
   --ion-color-sand: #e8e4df;
   --ion-color-sand-rgb: 232, 228, 223;
 
-  /* Venus tokens */
-  --bg:          #faf9f7;
-  --surface:     #ffffff;
-  --border:      #e8e4df;
-  --border-soft: #f0ece7;
-  --text:        #1a1714;
-  --text-mid:    #6b6560;
-  --text-muted:  #a09890;
-  --accent:      #c8956c;
-  --accent-2:    #8b6f5e;
-  --accent-light:#f5ede6;
-  --green:       #3a7d5a;
-  --green-bg:    #eef6f1;
-  --radius-sm:   8px;
-  --radius-md:   14px;
-  --radius-lg:   22px;
-  --shadow-sm:   0 1px 4px rgba(0,0,0,0.06);
-  --shadow-md:   0 4px 20px rgba(0,0,0,0.08);
+  // ── Venus Design System Tokens ───────────────────────────
+  --bg:              #faf9f7;
+  --surface:         #ffffff;
+  --surface-card:    #f0ece7;        // 👈 Fond brun clair pour cartes, hero, segments
+
+  --border:          #e8e4df;        // Bordures douces générales
+  --border-soft:     #f0ece7;
+  --border-dashed:   #d4c8be;        // 👈 Pour les bordures en pointillés (ex: drop-zone)
+
+  --text:            #1a1714;        // Texte principal foncé (h1, titres)
+  --text-dark:       #332d29;        // 👈 Texte secondaire foncé (paragraphes, checkboxes)
+  --text-mid:        #6b6560;
+  --text-muted:      #8c7d75;        // Texte gris/brun clair (hints, icônes)
+
+  --accent:          #c8956c;
+  --accent-2:        #8b6f5e;
+  --accent-light:    #f5ede6;
+
+  --green:           #3a7d5a;
+  --green-bg:        #eef6f1;
+
+  --radius-sm:       8px;
+  --radius-md:       14px;
+  --radius-lg:       22px;
+
+  --shadow-sm:       0 1px 4px rgba(0,0,0,0.06);
+  --shadow-md:       0 4px 20px rgba(0,0,0,0.08);
 }

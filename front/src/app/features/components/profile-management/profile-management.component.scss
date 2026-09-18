@@ -7,11 +7,11 @@
 // ── EN-TÊTE PROFIL (HERO) ──────────────────────────────────────────────────
 .pm-hero-grid {
   margin-bottom: 24px;
-  background: #f0ece7;
+  background: var(--surface-card);
   padding: 15px;
-  border-radius: 12px;
-  border: 1px solid #e8e4df;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.02);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
 
   .avatar-wrapper {
     position: relative;
@@ -21,7 +21,7 @@
       width: 90px;
       height: 90px;
       border-radius: 50%;
-      border: 2px solid #e8e4df;
+      border: 2px solid var(--border);
     }
 
     .edit-photo-btn {
@@ -47,13 +47,13 @@
       margin: 0;
       font-size: 1.5rem;
       font-weight: 700;
-      color: #1a1714;
+      color: var(--text);
     }
 
     .status-badge {
       font-size: 0.8rem;
       height: 28px;
-      --border-radius: 14px;
+      --border-radius: var(--radius-md);
       text-transform: none;
       font-weight: 600;
     }
@@ -61,9 +61,9 @@
 }
 
 // ── CHAMPS DE FORMULAIRE UNIFORMES ─────────────────────────
-.venus-input, .description-container{
-  border-radius: 8px;
-  border: 1px solid #e8e4df;
+.venus-input, .description-container {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
   box-shadow: none;
   display: flex;
   align-items: center;
@@ -73,23 +73,22 @@
   height: 58px;
 }
 
-.description-input{
+.description-input {
   padding-bottom: 10px;
 }
 
-// ── CARTE PRINCIPALE (.pm-card) AVEC FOND BRUN CLAIR (#f0ece7) ─────────────
+// ── CARTE PRINCIPALE (.pm-card) ─────────────────────────────
 .pm-card {
-  --background: #f0ece7;
-  border-radius: 12px;
-  border: 1px solid #e8e4df;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.02);
+  --background: var(--surface-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
 
   ion-card-content {
-    padding: 24px;
+    padding: 24px 8px 24px 24px;
 
     ion-row {
       row-gap: 16px;
-      column-gap: 16px;
       margin-bottom: 16px;
       display: flex;
       flex-wrap: nowrap;
@@ -97,21 +96,22 @@
       ion-col {
         margin-bottom: 0;
         min-width: 0;
-      }
 
-      &:last-child {
-        margin-bottom: 0;
+        ion-item {
+          margin-right: 16px;
+        }
       }
     }
-}
+  }
 
-  // ── SECTION SERVICES (Harmonisée sur fond blanc pour contraste) ────────────
+  // ── SECTION SERVICES ──────────────────────────────────────
   .services-container {
-    border: 1px solid #e8e4df;
+    border: 1px solid var(--border);
     background: rgba(255, 255, 255, 0.85);
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     padding: 16px;
     margin-top: 4px;
+    margin-right: 16px;
 
     .services-grid {
       gap: 12px;
@@ -121,17 +121,17 @@
       ion-label {
         font-family: 'Outfit', sans-serif;
         font-size: 0.9rem;
-        color: #1a1714;
+        color: var(--text);
       }
 
       ion-checkbox {
         padding-top: 15px;
         font-size: 0.9rem;
         font-weight: 500;
-        color: #332d29;
+        color: var(--text-dark);
         --size: 20px;
-        --checkbox-background: #ffffff;
-        --border-color: #d4c8be;
+        --checkbox-background: var(--surface);
+        --border-color: var(--border-dashed);
       }
     }
   }
@@ -148,13 +148,12 @@
   padding: 0;
 
   ion-segment {
-    --background: #f0ece7;
-    border-radius: 12px;
+    --background: var(--surface-card);
+    border-radius: var(--radius-md);
     padding: 4px;
     max-width: 100%;
     margin: 0 auto;
 
-    // Suppression propre du souligné d'onglet
     --indicator-color: transparent !important;
     --indicator-box-shadow: none !important;
     --indicator-height: 0px !important;
@@ -166,16 +165,16 @@
     }
 
     ion-segment-button {
-      --color: #8c7d75;
-      --color-checked: #8c7d75;
-      --background-checked: #ffffff;
+      --color: var(--text-muted);
+      --color-checked: var(--text-muted);
+      --background-checked: var(--surface);
       --indicator-color: transparent;
       font-family: 'Outfit', sans-serif;
       font-weight: 600;
       font-size: 0.85rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      border-radius: 8px;
+      border-radius: var(--radius-sm);
       min-height: 40px;
       transition: none;
 
@@ -195,7 +194,7 @@
   gap: 16px;
   background: rgba(235, 68, 90, 0.06);
   border: 1px solid var(--ion-color-danger, #eb445a);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 16px;
   margin-bottom: 20px;
 
@@ -213,7 +212,7 @@
     }
     p {
       margin: 0 0 12px 0;
-      color: #594f47;
+      color: var(--text-mid);
       font-size: 0.9rem;
     }
   }
@@ -242,13 +241,13 @@
 
 .invalid-selector-box {
   border: 1px solid var(--ion-color-danger, #eb445a) !important;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: rgba(235, 68, 90, 0.02);
 }
 
 .invalid-container {
   border: 1px solid var(--ion-color-danger, #eb445a) !important;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 16px;
   background: rgba(235, 68, 90, 0.02);
 
@@ -270,40 +269,40 @@
 
 // ── ONGLET PHOTOS (ZONE DE DROP & GALERIE) ─────────────────────────────────
 .drop-zone {
-  border: 2px dashed #d4c8be;
-  border-radius: 12px;
+  border: 2px dashed var(--border-dashed);
+  border-radius: var(--radius-md);
   padding: 24px;
   text-align: center;
   margin-bottom: 20px;
-  background: #ffffff;
+  background: var(--surface);
   cursor: pointer;
   transition: all 0.2s ease-in-out;
 
   p {
     margin: 8px 0 0 0;
     font-size: 0.9rem;
-    color: #332d29;
+    color: var(--text-dark);
   }
 
   .format-hint {
     font-size: 0.8rem;
-    color: #8c7d75;
+    color: var(--text-muted);
   }
 }
 
 .drop-zone-active {
-  border-color: #1a1714;
+  border-color: var(--text);
   background: rgba(26, 23, 20, 0.04);
   transform: scale(1.005);
 }
 
 .gallery-item {
   position: relative;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   overflow: hidden;
-  border: 1px solid #e8e4df;
+  border: 1px solid var(--border);
   aspect-ratio: 1;
-  background: #f0ece7;
+  background: var(--surface-card);
 
   .gallery-img {
     width: 100%;
@@ -320,7 +319,7 @@
     gap: 4px;
     background: rgba(255, 255, 255, 0.85);
     padding: 4px;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     backdrop-filter: blur(4px);
   }
 }
