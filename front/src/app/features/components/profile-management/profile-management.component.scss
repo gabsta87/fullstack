@@ -1,9 +1,5 @@
-.pm-main-container {
-  --background: #faf9f7;
-}
-
 .pm-wrapper {
-  max-width: 900px;
+  max-width: 90%;
   margin: 0 auto;
   padding: 20px 16px;
 }
@@ -12,7 +8,7 @@
 .pm-hero-grid {
   margin-bottom: 24px;
   background: #f0ece7;
-  padding: 20px;
+  padding: 15px;
   border-radius: 12px;
   border: 1px solid #e8e4df;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.02);
@@ -66,25 +62,23 @@
 
 // ── CHAMPS DE FORMULAIRE UNIFORMES ─────────────────────────
 .venus-input {
-  width: 100%;
   border-radius: 12px;
   border: 1px solid #e8e4df;
-  box-shadow: none !important;
+  box-shadow: none;
 }
 
 // Spécifique pour harmoniser le sélecteur de zone avec les inputs standard
 app-zone-selector {
   ::ng-deep {
     ion-item {
-      min-height: 52px !important;
+      min-height: 52px;
     }
   }
 }
 
 // ── CARTE PRINCIPALE (.pm-card) AVEC FOND BRUN CLAIR (#f0ece7) ─────────────
 .pm-card {
-  background: #f0ece7 !important;
-  --background: #f0ece7 !important;
+  --background: #f0ece7;
   border-radius: 12px;
   border: 1px solid #e8e4df;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.02);
@@ -118,31 +112,26 @@ app-zone-selector {
     padding: 16px;
     margin-top: 4px;
 
-    ion-list-header {
+    .services-grid {
+      gap: 12px;
       min-height: auto;
       margin-bottom: 12px;
 
       ion-label {
         font-family: 'Outfit', sans-serif;
-        font-weight: 600;
         font-size: 0.9rem;
-        color: #1a1714 !important;
+        color: #1a1714;
       }
-    }
-  }
 
-  .services-flex {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-
-    ion-checkbox {
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: #332d29;
-      --size: 20px;
-      --checkbox-background: #ffffff;
-      --border-color: #d4c8be;
+      ion-checkbox {
+        padding-top: 15px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #332d29;
+        --size: 20px;
+        --checkbox-background: #ffffff;
+        --border-color: #d4c8be;
+      }
     }
   }
 }
@@ -187,11 +176,11 @@ app-zone-selector {
       letter-spacing: 0.5px;
       border-radius: 8px;
       min-height: 40px;
-      transition: none !important; // Coupe la transition
+      transition: none;
 
       ::ng-deep {
         .button-inner, .native-button {
-          transition: none !important;
+          transition: none;
         }
       }
     }

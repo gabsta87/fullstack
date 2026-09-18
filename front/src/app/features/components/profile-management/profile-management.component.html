@@ -19,7 +19,7 @@
     <!-- Hero grid -->
     <ion-grid class="pm-hero-grid ion-no-padding">
       <ion-row class="ion-align-items-center">
-        <ion-col size="12" size-md="auto" class="ion-text-center">
+        <ion-col size="2" size-md="auto" class="ion-text-center">
           <div class="avatar-wrapper">
             <ion-avatar>
               <img [src]="me.mainThumbUrl
@@ -31,7 +31,7 @@
             </ion-fab-button>
           </div>
         </ion-col>
-        <ion-col size="12" size-md="" class="ion-text-center ion-text-md-start">
+        <ion-col size="2" size-md="auto" class="ion-text-center ion-text-md-start">
           <div class="profile-title">
             <h1>{{ me.username }}</h1>
             <ion-button [color]="me.available ? 'success' : 'medium'" class="status-badge" (click)="toggleAvailable(!me.available)">
@@ -39,13 +39,14 @@
             </ion-button>
           </div>
         </ion-col>
+
       </ion-row>
     </ion-grid>
 
     <ion-toolbar class="segment-toolbar">
       <ion-segment [(ngModel)]="activeTab" mode="md">
         <ion-segment-button value="profile">
-          <ion-label [class.tab-error]="isFieldMissing('description', me) || isFieldMissing('geographicZoneId', me) || isFieldMissing('phone', me) || isFieldMissing('birthday', me) || isFieldMissing('services', me)">
+          <ion-label [class.tab-error]="isFieldMissing('username', me) || isFieldMissing('description', me) || isFieldMissing('geographicZoneId', me) || isFieldMissing('phone', me) || isFieldMissing('birthday', me) || isFieldMissing('services', me)">
             Profil
           </ion-label>
         </ion-segment-button>
@@ -53,7 +54,7 @@
           <ion-label [class.tab-error]="isFieldMissing('photos', me)">Photos</ion-label>
         </ion-segment-button>
         <ion-segment-button value="settings">
-          <ion-label [class.tab-error]="isFieldMissing('username', me) || isFieldMissing('email', me)">Compte</ion-label>
+          <ion-label [class.tab-error]="isFieldMissing('email', me)">Compte</ion-label>
         </ion-segment-button>
       </ion-segment>
     </ion-toolbar>
@@ -173,16 +174,32 @@
               <!-- Services -->
               <ion-col size="12">
                 <div class="services-container" [class.invalid-container]="isFieldMissing('services', me)">
-                  <ion-list-header class="ion-no-padding">
+                  <ion-grid class="services-grid">
                     <ion-label>Services proposés * (Sélectionnez-en au moins un)</ion-label>
-                  </ion-list-header>
-                  <div class="services-flex">
-                    <ion-checkbox *ngFor="let service of allServices"
-                                  [checked]="me.services.includes(service)"
-                                  (click)="toggleService(me, service)">
-                      <ion-label>{{ service }}</ion-label>
-                    </ion-checkbox>
-                  </div>
+                    <ion-row>
+                      <ion-col *ngFor="let service of allServices">
+                        <ion-checkbox
+                                      [checked]="me.services.includes(service)"
+                                      (click)="toggleService(me, service)">
+                          <ion-label>{{ service }}</ion-label>
+                        </ion-checkbox>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+
+<!--                  <ion-list-header class="ion-no-padding">-->
+<!--                    <ion-label>Services proposés * (Sélectionnez-en au moins un)</ion-label>-->
+<!--                  </ion-list-header>-->
+<!--                  <div class="services-flex">-->
+
+
+<!--                    <ion-checkbox *ngFor="let service of allServices"-->
+<!--                                  [checked]="me.services.includes(service)"-->
+<!--                                  (click)="toggleService(me, service)">-->
+<!--                      <ion-label>{{ service }}</ion-label>-->
+<!--                    </ion-checkbox>-->
+<!--                  </div>-->
+
                 </div>
               </ion-col>
 
