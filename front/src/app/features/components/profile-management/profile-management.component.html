@@ -277,17 +277,17 @@
             (onManageSubscription)="handleSubscriptionClick()">
           </account-settings>
 
-          <div class="pack-selector">
-            <button (click)="chosenAmount = 2500; chosenType = 'DAYS'">Acheter du crédit de visibilité (25€)</button>
-            <button (click)="chosenAmount = 500; chosenType = 'BOOST'">Remonter en tête de liste (5€)</button>
-          </div>
+<!--          <div class="pack-selector">-->
+<!--            <button (click)="chosenAmount = 2500; chosenType = 'DAYS'">Acheter du crédit de visibilité (25€)</button>-->
+<!--            <button (click)="chosenAmount = 500; chosenType = 'BOOST'">Remonter en tête de liste (5€)</button>-->
+<!--          </div>-->
 
-          <stripe-payment
-            *ngIf="chosenAmount > 0"
-            [workerId]="me.id"
-            [amount]="chosenAmount"
-            [paymentType]="chosenType">
-          </stripe-payment>
+<!--          <stripe-payment-->
+<!--            *ngIf="chosenAmount > 0"-->
+<!--            [workerId]="me.id"-->
+<!--            [amount]="chosenAmount"-->
+<!--            [paymentType]="chosenType">-->
+<!--          </stripe-payment>-->
         </div>
 
       </ion-card-content>
