@@ -84,12 +84,13 @@
             <ion-row>
               <!-- Description -->
               <ion-col size="12">
-                <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('description', me)">
+                <ion-item lines="none" class="description-container" [class.invalid-item]="isFieldMissing('description', me)">
                   <ion-label position="stacked">Description *</ion-label>
                   <ion-textarea [(ngModel)]="profileForm.description"
                                 [debounce]="500"
                                 [autoGrow]="true"
                                 (ionChange)="updateProfileField('description', $event.detail.value)"
+                                class = "description-input"
                                 placeholder="Décrivez votre profil, vos spécialités..."></ion-textarea>
                 </ion-item>
               </ion-col>

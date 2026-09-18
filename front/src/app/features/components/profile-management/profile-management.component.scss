@@ -61,19 +61,18 @@
 }
 
 // ── CHAMPS DE FORMULAIRE UNIFORMES ─────────────────────────
-.venus-input {
+.venus-input, .description-container{
   border-radius: 12px;
   border: 1px solid #e8e4df;
   box-shadow: none;
 }
 
-// Spécifique pour harmoniser le sélecteur de zone avec les inputs standard
-zone-selector {
-  ::ng-deep {
-    ion-item {
-      min-height: 52px;
-    }
-  }
+.venus-input {
+  height: 58px;
+}
+
+.description-input{
+  padding-bottom: 10px;
 }
 
 // ── CARTE PRINCIPALE (.pm-card) AVEC FOND BRUN CLAIR (#f0ece7) ─────────────

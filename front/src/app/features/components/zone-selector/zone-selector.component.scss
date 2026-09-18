@@ -5,13 +5,11 @@
 
 ion-item {
   --background: rgba(255, 255, 255, 0.85);
-  --border-radius: 8px !important;
-  border-radius: 8px !important;
+  --border-radius: 8px;
+  border-radius: 8px;
   --padding-start: 10px;
   --inner-padding-end: 8px;
   border: 1px solid #e8e4df;
-  min-height: 40px !important;
-  height: 40px !important;
   margin: 0;
   display: flex;
   align-items: center;
@@ -19,14 +17,14 @@ ion-item {
   // Force l'arrondi interne d'Ionic
   ::ng-deep {
     .item-native, .item-inner, .native-wrapper {
-      border-radius: 8px !important;
-      background: transparent !important;
+      border-radius: 8px;
+      background: transparent;
     }
   }
 
   ion-select, ion-input {
     font-size: 0.9rem;
-    font-weight: 500;
+    font-weight: 400;
     --padding-top: 0;
     --padding-bottom: 0;
   }
@@ -44,6 +42,11 @@ ion-item {
   width: 100%;
   gap: 16px;
 
+  ion-item{
+    min-height: 58px;
+    height: 58px;
+  }
+
   .zone-col {
     flex: 1;
     min-width: 200px;
@@ -54,6 +57,11 @@ ion-item {
   display: flex;
   width: 100%;
   gap: 8px;
+
+  ion-item{
+    min-height: 40px;
+    height: 40px;
+  }
 
   .zone-col {
     flex: 1;
