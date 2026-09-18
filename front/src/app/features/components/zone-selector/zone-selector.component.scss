@@ -39,8 +39,6 @@ ion-item {
 .form-profile-mode {
   display: flex;
   flex-wrap: wrap;
-  width: 100%;
-  gap: 16px;
 
   ion-item{
     min-height: 58px;
@@ -50,6 +48,7 @@ ion-item {
   .zone-col {
     flex: 1;
     min-width: 200px;
+    margin-right: 16px;
   }
 }
 
