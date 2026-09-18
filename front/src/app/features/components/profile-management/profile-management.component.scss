@@ -67,7 +67,6 @@
 // ── CHAMPS DE FORMULAIRE UNIFORMES ─────────────────────────
 .venus-input {
   width: 100%;
-  display: block;
   border-radius: 12px;
   border: 1px solid #e8e4df;
   box-shadow: none !important;
@@ -102,7 +101,6 @@ app-zone-selector {
 
       ion-col {
         margin-bottom: 0;
-        flex: 1;
         min-width: 0;
       }
 
@@ -110,26 +108,26 @@ app-zone-selector {
         margin-bottom: 0;
       }
     }
-  }
 }
 
-// ── SECTION SERVICES (Harmonisée sur fond blanc pour contraste) ────────────
-.services-container {
-  background: #ffffff;
-  border: 1px solid #e8e4df;
-  border-radius: 12px;
-  padding: 16px;
-  margin-top: 4px;
+  // ── SECTION SERVICES (Harmonisée sur fond blanc pour contraste) ────────────
+  .services-container {
+    border: 1px solid #e8e4df;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 4px;
 
-  ion-list-header {
-    min-height: auto;
-    margin-bottom: 12px;
+    ion-list-header {
+      min-height: auto;
+      margin-bottom: 12px;
 
-    ion-label {
-      font-family: 'Outfit', sans-serif;
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: #1a1714 !important;
+      ion-label {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #1a1714 !important;
+      }
     }
   }
 

@@ -31,3 +31,8 @@ Advertising
   clients can pay small fee to remove ads (2 chf per month)
   workers can pay small fee to remove ads (2 chf per month)
 
+Statistics
+  profile consultation count (per profile, and per hour)
+
+UI
+  add a mini-profile card while hovering on a profile, instead of starting carrousel

@@ -144,7 +144,7 @@
 
             <ion-row>
               <!-- Silhouette, Yeux, Cheveux sont optionnels -->
-              <ion-col size="4" size-md="4">
+              <ion-col size="12" size-md="4">
                 <ion-item lines="none" class="venus-input">
                   <ion-select label="Silhouette" label-placement="stacked" interface="popover" [(ngModel)]="profileForm.bodyType" (ionChange)="updateProfileField('bodyType', $event.detail.value)">
                     <ion-select-option *ngFor="let type of BODY_TYPE_LABELS | keyvalue" [value]="type.key">{{ type.value }}</ion-select-option>
@@ -152,7 +152,7 @@
                 </ion-item>
               </ion-col>
 
-              <ion-col size="4" size-md="4">
+              <ion-col size="12" size-md="4">
                 <ion-item lines="none" class="venus-input">
                   <ion-select label="Cheveux" label-placement="stacked" interface="popover" [(ngModel)]="profileForm.hairColor" (ionChange)="updateProfileField('hairColor', $event.detail.value)">
                     <ion-select-option *ngFor="let type of HAIR_COLOR_LABELS | keyvalue" [value]="type.key">{{ type.value }}</ion-select-option>
@@ -160,7 +160,7 @@
                 </ion-item>
               </ion-col>
 
-              <ion-col size="4" size-md="4">
+              <ion-col size="12" size-md="4">
                 <ion-item lines="none" class="venus-input">
                   <ion-select label="Yeux" label-placement="stacked" interface="popover" [(ngModel)]="profileForm.eyeColor" (ionChange)="updateProfileField('eyeColor', $event.detail.value)">
                     <ion-select-option *ngFor="let type of EYE_COLOR_LABELS | keyvalue" [value]="type.key">{{ type.value }}</ion-select-option>
