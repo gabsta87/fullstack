@@ -67,17 +67,16 @@ public class AccountControllerWorker {
     }
 
 
-    /** PATCH /account/availability */
     @PatchMapping("/availability")
     @Transactional
     public ResponseEntity<?> setAvailability(@RequestBody Map<String, Boolean> body,
                                              @AuthenticationPrincipal Jwt jwt) {
-        System.out.println("setAvailability: " + body);
         Worker worker = jwtWorker(jwt);
 
         if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
+        System.out.println(worker.getUsername()+ " status changed : " + body);
 
-        worker.setAvailable(body.getOrDefault("isAvailable", false));
+        worker.setAvailable(body.getOrDefault("available", false));
 
         this.evaluateWorkerProfileCompleteness(worker);
         Worker savedWorker = workerRepository.save(worker);
@@ -95,7 +94,7 @@ public class AccountControllerWorker {
 
         if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
-        System.out.println("updateProfile: " + req);
+        System.out.println(worker.getUsername() + " updateProfile : " + req);
 
         if (req.description() != null) worker.setDescription(req.description());
 
@@ -127,7 +126,7 @@ public class AccountControllerWorker {
                     worker.setBanned(true);
                     this.emailService.sendAlertToLocalAuthorities(worker);
 
-//                  // This could prevent some investigation. Better to silently warn the authorities
+//                  // Returning an error could prevent some investigation. Better to silently warn the authorities
 //                    return ResponseEntity.status(HttpStatus.FORBIDDEN)
 //                            .body(Map.of("error", "L'accès à cette plateforme est strictement réservé aux personnes majeures."));
                 }
