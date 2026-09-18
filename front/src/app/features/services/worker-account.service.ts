@@ -4,6 +4,7 @@ import { HttpClient } from "@angular/common/http";
 import { tap } from "rxjs/operators";
 import { environment } from "../../../environments/environment";
 import { WorkerPrivateAccount, WorkerProfileUpdate } from "../models/user.model";
+import {VideoItem} from "../models/items.model";
 
 @Injectable({ providedIn: 'root' })
 export class WorkerAccountService {
@@ -84,5 +85,16 @@ export class WorkerAccountService {
 
   async reorderPhotos(orderedIds: string[]): Promise<any> {
     return await firstValueFrom(this.http.patch(`${this.base}/photos/reorder`, orderedIds));
+  }
+
+  async uploadVideo(file : File, title?: string): Promise<any> {
+    const fd = new FormData();
+    fd.append('file', file);
+    if (title) fd.append('title', title);
+    return await firstValueFrom(this.http.post(`${this.base}/videos`, fd));
+  }
+
+  async deleteVideo(videoId: string): Promise<void> {
+    await firstValueFrom(this.http.delete(`${this.base}/videos/${videoId}`));
   }
 }

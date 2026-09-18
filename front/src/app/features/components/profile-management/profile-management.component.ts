@@ -4,7 +4,7 @@ import {IonicModule} from "@ionic/angular";
 import {FormsModule} from "@angular/forms";
 import {HeaderComponent} from "../header/header.component";
 import {filter, map, Observable} from "rxjs";
-import {BODY_TYPE_LABELS, EYE_COLOR_LABELS, HAIR_COLOR_LABELS, PhotoItem} from "../../models/items.model";
+import {BODY_TYPE_LABELS, EYE_COLOR_LABELS, HAIR_COLOR_LABELS, PhotoItem, VideoItem} from "../../models/items.model";
 import {ActivatedRoute} from "@angular/router";
 import {WorkerFullProfile, WorkerPrivateAccount, WorkerProfileUpdate} from "../../models/user.model";
 import {WorkerAccountService} from "../../services/worker-account.service";
@@ -19,7 +19,7 @@ import {StripePaymentComponent} from "../stripe-payment/stripe-payment.component
 
 @Component({
   selector: 'app-profile-management',
-  imports: [CommonModule, FormsModule, IonicModule, HeaderComponent, AccountSettingsComponent, ZoneSelectorComponent, StripePaymentComponent],
+  imports: [CommonModule, FormsModule, IonicModule, HeaderComponent, AccountSettingsComponent, ZoneSelectorComponent],
   templateUrl: './profile-management.component.html',
   styleUrls: ['./profile-management.component.scss'],
   standalone: true
@@ -31,6 +31,7 @@ export class ProfileManagementComponent implements OnInit {
   currentUser$! : Observable<WorkerPrivateAccount>;
   allServices!  : string[];
   photos!: (PhotoItem & { isMain: boolean })[];
+  videos!: VideoItem[];
   allLocations! : GeographicZone[];
   childZoneId: number | undefined = undefined;
   parentZoneId: number | undefined = undefined;
@@ -194,15 +195,6 @@ export class ProfileManagementComponent implements OnInit {
 
   // ── Photos ────────────────────────────────────────────────────────────────
 
-  async onFileSelected(event: any) {
-    const files: FileList = event.target.files;
-    if (!files || files.length === 0) return;
-
-    await this.processAndUploadFiles(Array.from(files));
-    event.target.value = ''; // Reset l'input pour pouvoir ré-uploader les mêmes fichiers si besoin
-  }
-
-// 🎯 Gestion du survol de la zone de drop
   onZoneDragOver(event: DragEvent) {
     event.preventDefault();
     event.stopPropagation();
@@ -213,7 +205,16 @@ export class ProfileManagementComponent implements OnInit {
     this.isZoneActive = false;
   }
 
-// 🎯 Déclenché quand on lâche les fichiers dans la zone de drop
+  // Déclenché par l'input file classique
+  async onFileSelected(event: any) {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      await this.processAndUploadFiles(Array.from(files));
+    }
+    // Réinitialise l'input pour permettre de re-sélectionner le même fichier si besoin
+    event.target.value = '';
+  }
+
   async onZoneDrop(event: DragEvent) {
     event.preventDefault();
     event.stopPropagation();
@@ -224,33 +225,28 @@ export class ProfileManagementComponent implements OnInit {
     }
   }
 
-// 🎯 Cœur de la logique : Filtrage et upload en série ou parallèle
+  // 🎯 Cœur de la logique : Filtrage et séparation Photos / Vidéos
   private async processAndUploadFiles(fileList: File[]) {
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-    const validFiles: File[] = [];
+    const allowedImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    const allowedVideoTypes = ['video/mp4', 'video/quicktime', 'video/webm'];
 
     for (const file of fileList) {
-      // Vérification du type MIME ou de l'extension (au cas où le type MIME est vide avec .heic)
-      const isExtensionInvalid = file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.pdf');
+      const isVideo = allowedVideoTypes.includes(file.type);
+      const isImage = allowedImageTypes.includes(file.type);
 
-      if (!allowedTypes.includes(file.type) || isExtensionInvalid) {
-        // Tu peux remplacer ce console.warn par une alerte Toast ou Modale Ionic pour l'utilisateur
+      if (!isImage && !isVideo) {
         console.warn(`Fichier refusé (format non supporté) : ${file.name}`);
         continue;
       }
 
-      validFiles.push(file);
-    }
-
-    if (validFiles.length === 0) {
-      // Afficher une alerte à l'utilisateur ici si tu veux
-      return;
-    }
-
-    // Upload des fichiers valides un par un (pour éviter de surcharger le endpoint)
-    for (const file of validFiles) {
       try {
-        await this.accountService.uploadPhoto(file);
+        if (isImage) {
+          // Appel de ton service dédié aux photos
+          await this.accountService.uploadPhoto(file);
+        } else if (isVideo) {
+          // Appel de ton service dédié aux vidéos (à adapter selon ton service backend)
+          await this.accountService.uploadVideo(file);
+        }
       } catch (error) {
         console.error(`Échec de l'upload pour ${file.name}`, error);
       }
@@ -263,6 +259,10 @@ export class ProfileManagementComponent implements OnInit {
 
   deletePhoto(photo: PhotoItem) {
     this.accountService.deletePhoto(photo.id);
+  }
+
+  deleteVideo(video: VideoItem){
+    this.accountService.deleteVideo(video.id);
   }
 
   // DRAG AND DROP REORDER
