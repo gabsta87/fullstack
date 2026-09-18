@@ -208,8 +208,7 @@ public class TestDataInitializer implements ApplicationRunner {
 
         workerRepository.save(w);
 
-        // Simulation d'une photo par défaut pour ne pas ralentir l'initialisation de masse
-        // en créant trop d'entités photos secondaires pour chaque combinaison.
+        // Default photo for testing purposes
         String placeholderPhoto = "test_profile_placeholder.jpg";
         Photo main = new Photo();
         main.setWorker(w);
