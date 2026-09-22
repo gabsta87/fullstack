@@ -1,3 +1,38 @@
+PRIORITY
+
+video upload
+    compress video /limit size
+    upload video to the storage
+    generate a thumbnail
+
+Multi-lang
+    Generate a translation file for each language (DE, FR, EN, ES, IT, RU, UA, Arabian)
+    Translate the app by charging in the pages all phrases from the translation file
+
+worker/user profile
+    change password/email (Secured by requesting the old password)
+
+Admin pages
+    certifications with generated phrase asked the announcer to write on a paper and show in a photo
+    can create admins -> provide an email, the system will send an email to the user with a link to activate the account
+    can create/modify regions (can't delete regions if there is someone in it)
+    can create/modify services
+    can deactivate a user
+    can see messages sent by users
+    can see messages sent by admins
+    can modify legal texts
+        history of the legal texts
+    Notifications sent when a user requires a certification
+    Notifications sent when a user registers with a date birth that makes this person under 18 years old -> send a message to the local authorities
+    Liste des cibles des actions admin : Users, Regions, Services, Comments, Messages, Legal texts,
+    can deactivate a certification
+
+admin work
+    commentaires : modérer les commentaires (signalement sur les commentaires par les annonceurs)
+    certifications / photos / age
+
+SECONDARY
+
 worker tarification :
     when a worker buys time, an event is stored (with his expiration date) in a date sorted queue.
     If a worker/admin modifies the profile status, the event is removed from the queue.
@@ -13,41 +48,14 @@ worker tarification :
     the queue manages the first event (blocks account), then plans his next task at the date of the next event.
     when an item is inserted in the queue's first place, the queue waking up time is updated.
 
-
-username moved to profile management. check routes on server side
-    double route for username (accountController et accountControllerWorker)
-
 Worker card : show when profile is
     favorite
     certified
 
 Insert a caching system to reduce gallery requests to the database
 
-Secure password change by requesting the old password
-
-Multi-lang
-    Generate a translation file for each language (DE, FR, EN, ES, IT, RU, UA, Arabian)
-    Translate the app by charging in the pages all phrases from the translation file
-
 payments
     How to test stripe payments before going live ?
-
-Admin pages
-    certifications with generated phrase asked the announcer to write on a paper and show in a photo
-    can create admins -> provide an email, the system will send an email to the user with a link to activate the account
-    can deactivate a certification
-    can create/modify regions (can't delete regions if there is someone in it)
-    can create/modify services
-    can deactivate a user
-    can see messages sent by users
-    can see messages sent by admins
-    can modify legal texts
-        history of the legal texts
-    Notifications sent when a user requires a certification
-    Notifications sent when a user registers with a date birth that makes this person under 18 years old -> send a message to the local authorities
-
-    Liste des cibles des actions admin : Users, Regions, Services, Comments, Messages, Legal texts,
-
 
 Super Admin
     all admin rights
@@ -86,7 +94,4 @@ AZURE STRUCTURE :
     Database Integration: Store the image file path or public URL string inside a standard database (like Azure SQL or Cosmos DB), while the heavy binary file lives in Blob Storage.
     Performance Boost: Pair your storage account with a Content Delivery Network like Azure Front Door or Azure CDN to cache images globally and load them faster for users.
 
-admin work
-    commentaires : modérer les commentaires (signalement sur les commentaires par les annonceurs)
-    certifications / photos / age
 

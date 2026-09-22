@@ -13,4 +13,6 @@ public interface VideoRepository extends JpaRepository<Video, Long> {
     List<Video> findByWorkerIdOrderBySortOrderAscIdAsc(UUID workerId);
 
     void deleteByWorkerId(UUID workerId);
+
+    List<Video> findByWorkerId(UUID workerId);
 }

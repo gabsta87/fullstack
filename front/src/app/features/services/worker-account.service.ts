@@ -71,7 +71,6 @@ export class WorkerAccountService {
   async uploadPhoto(file: File, title?: string): Promise<any> {
     const fd = new FormData();
     fd.append('file', file);
-    if (title) fd.append('title', title);
     return await firstValueFrom(this.http.post(`${this.base}/photos`, fd));
   }
 
@@ -90,7 +89,6 @@ export class WorkerAccountService {
   async uploadVideo(file : File, title?: string): Promise<any> {
     const fd = new FormData();
     fd.append('file', file);
-    if (title) fd.append('title', title);
     return await firstValueFrom(this.http.post(`${this.base}/videos`, fd));
   }
 

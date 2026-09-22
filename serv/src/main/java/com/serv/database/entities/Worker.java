@@ -160,6 +160,39 @@ public class Worker extends VenusUser {
         return java.time.Period.between(birthDate, java.time.LocalDate.now()).getYears();
     }
 
+
+    // Option A : Si tu optes pour un système d'abonnement (Enum ou String)
+    @Enumerated(EnumType.STRING)
+    private SubscriptionTier subscriptionTier = SubscriptionTier.BASIC; // BASIC, STANDARD, PREMIUM
+
+    // Option B : Si tu optes pour des ajouts de stockage à la carte (en octets)
+    @Column(name = "extra_storage_purchased")
+    private Long extraStoragePurchased = 0L;
+
+    /**
+     * Centralized method to calculate the maximum storage allowed.
+     */
+    public long getMaxStorageBytes() {
+        long baseLimit = 0L;
+
+        // Scénario 1 : Limite basée sur l'abonnement
+        if (subscriptionTier != null) {
+            baseLimit = switch (subscriptionTier) {
+                case BASIC -> 50L * 1024 * 1024;    // 50 Mo
+                case STANDARD -> 200L * 1024 * 1024;   // 200 Mo
+                case PREMIUM -> 1024L * 1024 * 1024;  // 1 Go
+                default -> 50L * 1024 * 1024;
+            };
+        } else {
+            baseLimit = 50L * 1024 * 1024; // Valeur par défaut
+        }
+
+        // Scénario 2 : Ajout éventuel de stockage acheté à la volée
+        long extra = (extraStoragePurchased != null) ? extraStoragePurchased : 0L;
+
+        return baseLimit + extra;
+    }
+
     public boolean isValid(){
         return getAge() >= 18 && !isInvalid() && !isBanned() && !isExpired() && !isHidden() && ! isLocked();
     }
@@ -183,5 +216,9 @@ public class Worker extends VenusUser {
     public void setActive(boolean active) {
         this.isAvailable = active;
         this.hasBeenActiveToday = active;
+    }
+
+    private enum SubscriptionTier{
+        BASIC, STANDARD, PREMIUM
     }
 }

@@ -190,7 +190,6 @@ public class AccountControllerWorker {
     @PostMapping("/photos")
     @Transactional
     public ResponseEntity<?> uploadPhoto(@RequestParam("file") MultipartFile file,
-                                         @RequestParam(value = "title", required = false) String title,
                                          @AuthenticationPrincipal Jwt jwt) {
 
         // 🚀 Optimisé & Correction des bugs de variable :
@@ -204,8 +203,7 @@ public class AccountControllerWorker {
 
             Photo photo = new Photo();
             photo.setWorker(worker);
-            photo.setTitle(title);
-            photo.setOriginalUrl(saved.originalUrl());
+            photo.setUrl(saved.originalUrl());
             photo.setMainThumbUrl(saved.mainThumbUrl());
             photo.setPreviewThumbUrl(saved.previewThumbUrl());
 
@@ -229,7 +227,7 @@ public class AccountControllerWorker {
                     "id",              photo.getId().toString(),
                     "mainThumbUrl",    photo.getMainThumbUrl(),
                     "previewThumbUrl", photo.getPreviewThumbUrl(),
-                    "originalUrl",     photo.getOriginalUrl()
+                    "originalUrl",     photo.getUrl()
             ));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
@@ -255,7 +253,7 @@ public class AccountControllerWorker {
         // 1 — Suppression des fichiers physiques sur le disque
         mediaStorageService.deletePhotoFiles(
                 worker.getId(),
-                photo.getOriginalUrl(),
+                photo.getUrl(),
                 photo.getMainThumbUrl(),
                 photo.getPreviewThumbUrl()
         );

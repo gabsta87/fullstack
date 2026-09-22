@@ -11,7 +11,7 @@ public record PhotoDTO(
     public static PhotoDTO from(com.serv.database.entities.Photo p) {
         return new PhotoDTO(
                 p.getId(),
-                p.getOriginalUrl(),
+                p.getUrl(),
                 p.getMainThumbUrl(),
                 p.getPreviewThumbUrl()
         );

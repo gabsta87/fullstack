@@ -1,5 +1,6 @@
 package com.serv.controller;
 
+import com.serv.database.entities.Media;
 import com.serv.database.entities.Photo;
 import com.serv.database.entities.Video;
 import com.serv.database.entities.Worker;
@@ -9,6 +10,7 @@ import com.serv.database.repositories.WorkerRepository;
 import com.serv.service.MediaStorageService;
 import com.serv.service.MediaStorageService.SavedMedia;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,111 +42,70 @@ public class MediaController {
     @Autowired private VideoRepository     videoRepository;
     @Autowired private WorkerRepository    workerRepository;
 
-    // ── Photos ────────────────────────────────────────────────────────────────
-
-    /**
-     * Upload one or more photos for a worker.
-     * The first file in the list becomes the main photo if the worker
-     * has no main photo yet.
-     */
-    @PostMapping("/{workerId}/photos")
-    public ResponseEntity<List<PhotoResponse>> uploadPhotos(
+    // ── Medias ────────────────────────────────────────────────────────────────
+    @PostMapping("/{workerId}/media")
+    public ResponseEntity<?> uploadMedia(
             @PathVariable UUID workerId,
             @RequestParam("files") List<MultipartFile> files) {
 
         Worker worker = workerRepository.findById(workerId)
                 .orElseThrow(() -> new RuntimeException("Worker not found"));
 
-        boolean hasMain = photoRepository.existsByWorkerId(workerId);
-        List<PhotoResponse> responses = new ArrayList<>();
+        // Calcul du stockage actuel (Vidéos + Photos)
+        long currentUsedStorage = videoRepository.findByWorkerId(workerId).stream()
+                .mapToLong(Media::getFileSize)
+                .sum()
+                +
+                photoRepository.findByWorkerId(workerId).stream()
+                        .mapToLong(Media::getFileSize)
+                        .sum();
 
-        for (int i = 0; i < files.size(); i++) {
-            try {
-                boolean makeMain = !hasMain && i == 0;
-                SavedMedia saved = storageService.savePhoto(files.get(i), workerId);
-
-                Photo photo = new Photo();
-                photo.setWorker(worker);
-                photo.setOriginalUrl(saved.originalUrl());
-                photo.setMainThumbUrl(saved.mainThumbUrl());
-                photo.setPreviewThumbUrl(saved.previewThumbUrl());
-                photoRepository.save(photo);
-
-                if (makeMain) hasMain = true;
-
-                responses.add(new PhotoResponse(
-                        photo.getId(),
-                        saved.originalUrl(),
-                        saved.mainThumbUrl(),
-                        saved.previewThumbUrl(),
-                        makeMain
-                ));
-            } catch (IOException | IllegalArgumentException e) {
-                responses.add(new PhotoResponse(null, null, null, null, false));
-            }
-        }
-
-        return ResponseEntity.ok(responses);
-    }
-
-    /**
-     * Replace the main profile photo for a worker.
-     * Demotes any existing main photo to a regular photo first.
-     */
-    @PostMapping("/{workerId}/photos/main")
-    public ResponseEntity<PhotoResponse> setMainPhoto(
-            @PathVariable UUID workerId,
-            @RequestParam("file") MultipartFile file) throws IOException {
-
-        Worker worker = workerRepository.findById(workerId)
-                .orElseThrow(() -> new RuntimeException("Worker not found"));
-
-        // Demote current main
-        photoRepository.findByWorkerId(workerId)
-                .ifPresent(p -> photoRepository.save(p));
-
-        SavedMedia saved = storageService.savePhoto(file, workerId);
-
-        Photo photo = new Photo();
-        photo.setWorker(worker);
-        photo.setOriginalUrl(saved.originalUrl());
-        photo.setMainThumbUrl(saved.mainThumbUrl());
-        photo.setPreviewThumbUrl(saved.previewThumbUrl());
-        photoRepository.save(photo);
-
-        return ResponseEntity.ok(new PhotoResponse(
-                photo.getId(),
-                saved.originalUrl(),
-                saved.mainThumbUrl(),
-                saved.previewThumbUrl(),
-                true
-        ));
-    }
-
-    // ── Videos ────────────────────────────────────────────────────────────────
-
-    @PostMapping("/{workerId}/videos")
-    public ResponseEntity<List<VideoResponse>> uploadVideos(
-            @PathVariable UUID workerId,
-            @RequestParam("files") List<MultipartFile> files) {
-
-        Worker worker = workerRepository.findById(workerId)
-                .orElseThrow(() -> new RuntimeException("Worker not found"));
-
-        List<VideoResponse> responses = new ArrayList<>();
+        List<Object> responses = new ArrayList<>();
 
         for (MultipartFile file : files) {
+            long fileSize = file.getSize();
+            String contentType = file.getContentType();
+
+            // Vérification globale du quota de stockage
+            if (currentUsedStorage + fileSize > worker.getMaxStorageBytes()) {
+                return ResponseEntity.status(HttpStatus.INSUFFICIENT_STORAGE)
+                        .body("Storage limit reached : " + (worker.getMaxStorageBytes() / (1024 * 1024)) + " Mo.");
+            }
+
             try {
-                SavedMedia saved = storageService.saveVideo(file, workerId);
+                if (contentType != null && contentType.startsWith("image")) {
+                    // --- Traitement PHOTO ---
+                    SavedMedia saved = storageService.savePhoto(file, workerId);
 
-                Video video = new Video();
-                video.setWorker(worker);
-                video.setUrl(saved.originalUrl());
-                videoRepository.save(video);
+                    Photo photo = new Photo();
+                    photo.setWorker(worker);
+                    photo.setUrl(saved.originalUrl());
+                    photo.setMainThumbUrl(saved.mainThumbUrl());
+                    photo.setPreviewThumbUrl(saved.previewThumbUrl());
+                    photo.setFileSize(fileSize);
+                    photoRepository.save(photo);
 
-                responses.add(new VideoResponse(video.getId(), saved.originalUrl()));
+                    currentUsedStorage += fileSize;
+                    responses.add(new PhotoResponse(photo.getId(), saved.originalUrl(), saved.mainThumbUrl(), saved.previewThumbUrl(), false));
+
+                } else if (contentType != null && contentType.startsWith("video")) {
+                    // --- Traitement VIDÉO ---
+                    SavedMedia saved = storageService.saveVideo(file, workerId);
+
+                    Video video = new Video();
+                    video.setWorker(worker);
+                    video.setUrl(saved.originalUrl());
+                    video.setFileSize(fileSize);
+                    videoRepository.save(video);
+
+                    currentUsedStorage += fileSize;
+                    responses.add(new VideoResponse(video.getId(), saved.originalUrl()));
+                }
+                // other formats not supported yet
+
             } catch (IOException | IllegalArgumentException e) {
-                responses.add(new VideoResponse(-1L, null));
+                e.printStackTrace();
+                // Gestion d'erreur unitaire si besoin
             }
         }
 
@@ -155,6 +116,7 @@ public class MediaController {
 
     @DeleteMapping("/{workerId}")
     public ResponseEntity<Void> deleteAll(@PathVariable UUID workerId) throws IOException {
+        if( ! workerRepository.existsById(workerId))
         storageService.deleteAllForWorker(workerId);
         photoRepository.deleteByWorkerId(workerId);
         videoRepository.deleteByWorkerId(workerId);
@@ -171,5 +133,5 @@ public class MediaController {
             boolean isMain
     ) {}
 
-    public record VideoResponse(Long id, String url) {}
+    public record VideoResponse(UUID id, String url) {}
 }

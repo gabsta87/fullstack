@@ -24,7 +24,6 @@ import java.util.concurrent.ThreadLocalRandom;
  * Inserts test data on startup — only in "dev" profile, only if the
  * workers table is empty. Safe to leave in: it will never overwrite
  * or duplicate existing data.
- *
  * Activate with: spring.profiles.active=dev
  */
 @Component
@@ -102,7 +101,6 @@ public class TestDataInitializer implements ApplicationRunner {
 
         // Récupération des valeurs d'Enums sous forme de tableaux pour le tirage aléatoire
         BodyType[] bodyTypes = BodyType.values();
-        Gender[] genders = Gender.values();
         EyeColor[] eyeColors = EyeColor.values();
         HairColor[] hairColors = HairColor.values();
 
@@ -200,11 +198,7 @@ public class TestDataInitializer implements ApplicationRunner {
 
         // Si le crédit attribué est supérieur à 0 et qu'il est disponible, active-le
         // (La méthode setActive déclenchera automatiquement le hasBeenActiveToday interne !)
-        if (remainingDays > 0 && available) {
-            w.setActive(true);
-        } else {
-            w.setActive(false);
-        }
+        w.setActive(remainingDays > 0 && available);
 
         workerRepository.save(w);
 
@@ -212,9 +206,8 @@ public class TestDataInitializer implements ApplicationRunner {
         String placeholderPhoto = "test_profile_placeholder.jpg";
         Photo main = new Photo();
         main.setWorker(w);
-        main.setFileName(placeholderPhoto);
         main.setSortOrder(0);
-        main.setOriginalUrl(mediaBase + "/originals/test/" + placeholderPhoto);
+        main.setUrl(mediaBase + "/originals/test/" + placeholderPhoto);
         main.setMainThumbUrl(mediaBase + "/thumbs/main/test/" + placeholderPhoto);
         main.setPreviewThumbUrl(mediaBase + "/thumbs/preview/test/" + placeholderPhoto);
 
