@@ -4,7 +4,7 @@ import { HttpClient } from "@angular/common/http";
 import { tap } from "rxjs/operators";
 import { environment } from "../../../environments/environment";
 import { WorkerPrivateAccount, WorkerProfileUpdate } from "../models/user.model";
-import {VideoItem} from "../models/items.model";
+import { VideoItem } from "../models/items.model";
 
 @Injectable({ providedIn: 'root' })
 export class WorkerAccountService {
@@ -68,10 +68,13 @@ export class WorkerAccountService {
     return updatedAccount;
   }
 
-  async uploadPhoto(file: File, title?: string): Promise<any> {
+  async uploadMedia(files: File[]): Promise<any> {
     const fd = new FormData();
-    fd.append('file', file);
-    return await firstValueFrom(this.http.post(`${this.base}/photos`, fd));
+    files.forEach(file => {
+      // Le nom du paramètre 'files' doit correspondre au @RequestParam("files") du serveur Java
+      fd.append('files', file, file.name);
+    });
+    return await firstValueFrom(this.http.post(`${this.base}/media`, fd));
   }
 
   async deletePhoto(photoId: string): Promise<void> {
@@ -84,12 +87,6 @@ export class WorkerAccountService {
 
   async reorderPhotos(orderedIds: string[]): Promise<any> {
     return await firstValueFrom(this.http.patch(`${this.base}/photos/reorder`, orderedIds));
-  }
-
-  async uploadVideo(file : File, title?: string): Promise<any> {
-    const fd = new FormData();
-    fd.append('file', file);
-    return await firstValueFrom(this.http.post(`${this.base}/videos`, fd));
   }
 
   async deleteVideo(videoId: string): Promise<void> {

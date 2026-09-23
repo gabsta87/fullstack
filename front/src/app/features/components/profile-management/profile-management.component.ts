@@ -10,12 +10,20 @@ import {WorkerFullProfile, WorkerPrivateAccount, WorkerProfileUpdate} from "../.
 import {WorkerAccountService} from "../../services/worker-account.service";
 import {tap} from "rxjs/operators";
 import {addIcons} from "ionicons";
-import {addCircleOutline, camera, move, trashOutline, warningOutline, star, starOutline, cloudUploadOutline} from 'ionicons/icons';
+import {
+  addCircleOutline,
+  camera,
+  cloudUploadOutline,
+  move,
+  star,
+  starOutline,
+  trashOutline,
+  warningOutline
+} from 'ionicons/icons';
 import {AccountSettingsComponent} from "../account-settings/account-settings.component";
 import {GeographicZone} from "../../models/filter.model";
 import {ZoneSelectorComponent} from "../zone-selector/zone-selector.component";
 import {environment} from "../../../../environments/environment";
-import {StripePaymentComponent} from "../stripe-payment/stripe-payment.component";
 
 @Component({
   selector: 'app-profile-management',
@@ -43,9 +51,6 @@ export class ProfileManagementComponent implements OnInit {
   dragOverIndex: number | null = null;
   draggedIndex: number | null = null;
   isZoneActive: boolean = false;
-
-  chosenAmount! : number;
-  chosenType! : "DAYS" | "BOOST";
 
   constructor(private accountService: WorkerAccountService, private route : ActivatedRoute) {
     addIcons({
@@ -155,8 +160,7 @@ export class ProfileManagementComponent implements OnInit {
 
   // ── Value modification ─────────────────────────────────────────────────────────
 
-  toggleService(me: WorkerFullProfile, service: string) {
-    // 1. Calculer la nouvelle liste localement
+  async toggleService(me: WorkerFullProfile, service: string) {
     let updatedServices = [...me.services];
     if (updatedServices.includes(service)) {
       updatedServices = updatedServices.filter(s => s !== service);
@@ -165,16 +169,11 @@ export class ProfileManagementComponent implements OnInit {
     }
     console.log("Services à envoyer au serveur:", updatedServices);
 
-    this.accountService.updateServices(updatedServices);
+    await this.accountService.updateServices(updatedServices);
   }
 
   async toggleAvailable(currentAvailability: boolean) {
-    console.log("toggling availability to", currentAvailability);
-    try {
-      await this.accountService.setAvailability(currentAvailability);
-    } catch (error) {
-      console.error("Erreur lors du changement de disponibilité", error);
-    }
+    await this.accountService.setAvailability(currentAvailability);
   }
 
   async updateProfileField(field: keyof WorkerProfileUpdate, value: any) {
@@ -236,33 +235,23 @@ export class ProfileManagementComponent implements OnInit {
 
       if (!isImage && !isVideo) {
         console.warn(`Fichier refusé (format non supporté) : ${file.name}`);
-        continue;
-      }
-
-      try {
-        if (isImage) {
-          // Appel de ton service dédié aux photos
-          await this.accountService.uploadPhoto(file);
-        } else if (isVideo) {
-          // Appel de ton service dédié aux vidéos (à adapter selon ton service backend)
-          await this.accountService.uploadVideo(file);
-        }
-      } catch (error) {
-        console.error(`Échec de l'upload pour ${file.name}`, error);
+        return;
       }
     }
+
+    await this.accountService.uploadMedia(fileList);
   }
 
-  setMain(photo: PhotoItem) {
-    this.accountService.setMainPhoto(photo.id);
+  async setMain(photo: PhotoItem) {
+    await this.accountService.setMainPhoto(photo.id);
   }
 
-  deletePhoto(photo: PhotoItem) {
-    this.accountService.deletePhoto(photo.id);
+  async deletePhoto(photo: PhotoItem) {
+    await this.accountService.deletePhoto(photo.id);
   }
 
-  deleteVideo(video: VideoItem){
-    this.accountService.deleteVideo(video.id);
+  async deleteVideo(video: VideoItem){
+    await this.accountService.deleteVideo(video.id);
   }
 
   // DRAG AND DROP REORDER
