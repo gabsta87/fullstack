@@ -11,11 +11,9 @@ import com.serv.dto.GalleryFiltersDTO;
 import com.serv.service.SseStreamService;
 import com.serv.service.WorkerService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,16 +23,13 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/account/client")
+@PreAuthorize("hasRole('CLIENT')")
 @RequiredArgsConstructor
 public class AccountControllerClient {
 
-    @Autowired
     private final WorkerRepository workerRepository;
-    @Autowired
     private final WorkerService galleryService;
-    @Autowired
     private final ClientRepository clientRepository;
-    @Autowired
     private final SseStreamService sseStreamService;
 
     @GetMapping("/me")
@@ -81,7 +76,6 @@ public class AccountControllerClient {
 
         if (!alreadyFavorite) {
             client.getFavorites().add(worker);
-            // 🎯 FIX : Utilisation de clientRepository
             client = clientRepository.save(client);
 
             sseStreamService.emitEvent(client.getId(), "account-update", ClientDTO.from(client));

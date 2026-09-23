@@ -11,7 +11,7 @@ import com.serv.dto.GeographicZoneDTO;
 import com.serv.dto.WorkerMinimalProfileDTO;
 import com.serv.dto.WorkerPublicFullProfileDTO;
 import com.serv.service.WorkerService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,19 +27,19 @@ import java.util.stream.Collectors;
 
 /**
  * Worker-facing read endpoints.
- *
  * GET /workers          — paginated gallery (lightweight DTOs, main thumb only)
  * GET /workers/{id}     — full profile (all photos, videos, reviews…)
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/workers")
 @Transactional(readOnly = true)
 public class WorkerController {
-    @Autowired private WorkerRepository workerRepository;
-    @Autowired private WorkerService    galleryService;
-    @Autowired private ServiceRepository serviceRepository;
-    @Autowired private GeographicZoneRepository zoneRepository;
-    @Autowired private PhotoRepository photoRepository;
+    private final WorkerRepository workerRepository;
+    private final WorkerService    galleryService;
+    private final ServiceRepository serviceRepository;
+    private final GeographicZoneRepository zoneRepository;
+    private final PhotoRepository photoRepository;
 
     @GetMapping
     public ResponseEntity<List<WorkerMinimalProfileDTO>> getGallery(Requests.WorkerSearchRequest req) {

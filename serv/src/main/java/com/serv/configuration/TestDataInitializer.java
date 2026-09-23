@@ -6,7 +6,7 @@ import com.serv.database.repositories.GeographicZoneRepository;
 import com.serv.database.repositories.PhotoRepository;
 import com.serv.database.repositories.ServiceRepository;
 import com.serv.database.repositories.WorkerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -27,14 +27,15 @@ import java.util.concurrent.ThreadLocalRandom;
  * Activate with: spring.profiles.active=dev
  */
 @Component
+@RequiredArgsConstructor
 @Profile("dev")
 public class TestDataInitializer implements ApplicationRunner {
 
-    @Autowired private ServiceRepository serviceRepository;
-    @Autowired private WorkerRepository  workerRepository;
-    @Autowired private PhotoRepository   photoRepository;
-    @Autowired private GeographicZoneRepository zoneRepository;
-    @Autowired private PasswordEncoder   passwordEncoder;
+    private final ServiceRepository serviceRepository;
+    private final WorkerRepository  workerRepository;
+    private final PhotoRepository   photoRepository;
+    private final GeographicZoneRepository zoneRepository;
+    private final PasswordEncoder   passwordEncoder;
 
     @Value("${media.public.base-url}")
     private String mediaBase;

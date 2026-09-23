@@ -9,7 +9,7 @@ import com.serv.database.repositories.VideoRepository;
 import com.serv.database.repositories.WorkerRepository;
 import com.serv.service.MediaStorageService;
 import com.serv.service.MediaStorageService.SavedMedia;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,13 +34,14 @@ import java.util.UUID;
  *   DELETE /media/{workerId}               — delete all media for a worker
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/media")
 public class MediaController {
 
-    @Autowired private MediaStorageService storageService;
-    @Autowired private PhotoRepository     photoRepository;
-    @Autowired private VideoRepository     videoRepository;
-    @Autowired private WorkerRepository    workerRepository;
+    private final MediaStorageService storageService;
+    private final PhotoRepository     photoRepository;
+    private final VideoRepository     videoRepository;
+    private final WorkerRepository    workerRepository;
 
     // ── Medias ────────────────────────────────────────────────────────────────
     @PostMapping("/{workerId}/media")

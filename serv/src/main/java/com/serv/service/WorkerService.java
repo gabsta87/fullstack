@@ -7,7 +7,7 @@ import com.serv.database.repositories.WorkerRepository;
 import com.serv.database.repositories.filters.WorkerSpecifications;
 import com.serv.dto.WorkerMinimalProfileDTO;
 import jakarta.persistence.criteria.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -18,11 +18,12 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class WorkerService {
 
-    @Autowired private WorkerRepository workerRepository;
-    @Autowired private PhotoRepository  photoRepository;
+    private final WorkerRepository workerRepository;
+    private final PhotoRepository  photoRepository;
 
     public static final int MAX_PREVIEW_THUMBS = 5;
     public static final int PAGE_SIZE          = 24;

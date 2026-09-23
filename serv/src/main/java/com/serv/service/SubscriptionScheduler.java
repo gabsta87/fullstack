@@ -2,22 +2,18 @@ package com.serv.service;
 
 import com.serv.database.entities.Worker;
 import com.serv.database.repositories.WorkerRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Component
 public class SubscriptionScheduler {
 
-    @Autowired
-    private WorkerRepository workerRepository;
-
-    private static final Logger logger = LoggerFactory.getLogger(SubscriptionScheduler.class);
+    private final WorkerRepository workerRepository;
 
     /**
      * S'exécute tous les jours à minuit pile (00:00:00)

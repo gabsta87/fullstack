@@ -3,21 +3,20 @@ package com.serv.controller;
 import com.serv.common.TablesNames;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/data")
 public class ItemController {
     private final EntityManager entityManager;
-
-    @Autowired
-    public ItemController(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
 
     // Fetch all rows from a table
     @GetMapping("/table/{tableName}")

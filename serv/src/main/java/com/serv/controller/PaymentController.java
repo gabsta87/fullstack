@@ -4,33 +4,29 @@ import com.serv.common.PaymentType;
 import com.serv.database.entities.Payment;
 import com.serv.database.entities.Worker;
 import com.serv.database.repositories.PaymentRepository;
-
 import com.serv.database.repositories.WorkerRepository;
 import com.stripe.Stripe;
+import com.stripe.exception.SignatureVerificationException;
+import com.stripe.model.Event;
+import com.stripe.model.PaymentIntent;
+import com.stripe.net.Webhook;
+import com.stripe.param.PaymentIntentCreateParams;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.stripe.model.PaymentIntent;
-import com.stripe.param.PaymentIntentCreateParams;
-import com.stripe.model.Event;
-import com.stripe.net.Webhook;
-import com.stripe.exception.*;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/payment")
 public class PaymentController {
 
-    @Autowired
     private PaymentRepository paymentRepository;
-
-    @Autowired
     private WorkerRepository workerRepository; // Pour appliquer les changements de statut/boost
 
     @Value("${stripe.secret.key}")

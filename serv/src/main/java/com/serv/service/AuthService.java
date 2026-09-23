@@ -4,7 +4,7 @@ import com.serv.common.UserRole;
 import com.serv.database.entities.VenusUser;
 import com.serv.database.repositories.UserRepository;
 import com.serv.database.repositories.WorkerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,18 +13,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Service
 public class AuthService implements UserDetailsService{
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private WorkerRepository workerRepository;
-
-    @Autowired
-    public AuthService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private final UserRepository userRepository;
+    private final WorkerRepository workerRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

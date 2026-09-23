@@ -2,19 +2,17 @@ package com.serv.controller;
 
 import com.serv.database.entities.Email;
 import com.serv.service.MailService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
+@RequiredArgsConstructor
 @RestController
 public class MailController {
 
     private final MailService mailManager;
-
-    @Autowired
-    public MailController(MailService mailManager) {
-        this.mailManager = mailManager;
-    }
 
     @PostMapping("/sendMail")
     public ResponseEntity<String> sendEmail(@RequestBody Email to, @RequestBody String subject, @RequestBody String content) {

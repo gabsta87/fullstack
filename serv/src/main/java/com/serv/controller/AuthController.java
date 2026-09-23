@@ -1,7 +1,6 @@
 package com.serv.controller;
 
 import com.serv.common.Requests;
-import com.serv.common.UserRole;
 import com.serv.configuration.JwtProvider;
 import com.serv.database.entities.*;
 import com.serv.database.repositories.ClientRepository;
