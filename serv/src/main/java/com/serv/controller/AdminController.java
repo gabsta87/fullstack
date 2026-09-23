@@ -27,6 +27,7 @@ import java.util.UUID;
 public class AdminController {
 
     private final WorkerRepository workerRepository;
+    private final UserRepository userRepository;
     private final AdminRepository adminRepository;
     private final AdminAuditLogRepository auditLogRepository;
     private final GeographicZoneRepository geographicZoneRepository;
@@ -41,6 +42,12 @@ public class AdminController {
     public ResponseEntity<List<Worker>> getAllProfiles() {
         return ResponseEntity.ok(workerRepository.findAll());
     }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<VenusUser>> getAllUsers() {
+        return ResponseEntity.ok(userRepository.findAll());
+    }
+
 
     @GetMapping("/logs")
     public ResponseEntity<List<AdminAuditLog>> getAuditLogs() {

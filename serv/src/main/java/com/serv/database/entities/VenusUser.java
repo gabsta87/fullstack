@@ -1,7 +1,6 @@
 package com.serv.database.entities;
 
 import com.serv.common.TablesNames;
-import com.serv.common.UserRole;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -39,8 +38,8 @@ public abstract class VenusUser {
     @ToString.Exclude
     private GeographicZone geographicZone;
 
-    @Enumerated(EnumType.STRING)
-    protected UserRole role = UserRole.CLIENT;
+    @Column(name = "user_type", insertable = false, updatable = false)
+    private String userType;
 
     private static final BCryptPasswordEncoder ENCODER = new BCryptPasswordEncoder();
 
@@ -51,5 +50,6 @@ public abstract class VenusUser {
 
     public void setPassword(String password)        { this.passwordHash = ENCODER.encode(password); }
     public boolean checkPassword(String password)   { return ENCODER.matches(password, this.passwordHash); }
-
+    public boolean isAdmin(){ return false; };
+    public boolean isSuperAdmin() { return false; }
 }

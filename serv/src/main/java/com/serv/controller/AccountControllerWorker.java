@@ -269,7 +269,7 @@ public class AccountControllerWorker {
                     );
         }
 
-        // 3 — Suppression en base de données (déclenché par l'orphanRemoval = true)
+        // 3 — Suppression en base de données (déclenché par orphanRemoval = true)
         worker.removePhoto(photo);
         this.evaluateWorkerProfileCompleteness(worker);
         Worker savedWorker = workerRepository.save(worker);

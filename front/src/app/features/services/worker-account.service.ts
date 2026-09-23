@@ -1,10 +1,9 @@
-import { Injectable, NgZone } from '@angular/core';
-import { BehaviorSubject, firstValueFrom, Observable, of } from "rxjs";
-import { HttpClient } from "@angular/common/http";
-import { tap } from "rxjs/operators";
-import { environment } from "../../../environments/environment";
-import { WorkerPrivateAccount, WorkerProfileUpdate } from "../models/user.model";
-import { VideoItem } from "../models/items.model";
+import {Injectable} from '@angular/core';
+import {BehaviorSubject, firstValueFrom, Observable, of} from "rxjs";
+import {HttpClient} from "@angular/common/http";
+import {tap} from "rxjs/operators";
+import {environment} from "../../../environments/environment";
+import {WorkerPrivateAccount, WorkerProfileUpdate} from "../models/user.model";
 
 @Injectable({ providedIn: 'root' })
 export class WorkerAccountService {

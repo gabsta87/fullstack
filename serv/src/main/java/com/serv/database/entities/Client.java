@@ -4,9 +4,12 @@ import com.serv.common.*;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
 import java.util.Collection;
 
 @Data
+@NoArgsConstructor
 @Entity
 @EqualsAndHashCode(callSuper = true)
 @DiscriminatorValue("CLIENT")
@@ -51,11 +54,6 @@ public class Client extends VenusUser {
 
     public Client(Email email, String password) {
         super(email, password);
-        this.role = UserRole.CLIENT;
-    }
-
-    public Client(){
-        this.role = UserRole.CLIENT;
     }
 
     public void addPreferredService(Service service) {

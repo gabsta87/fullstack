@@ -5,6 +5,7 @@ import com.serv.common.*;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.BatchSize;
 
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Data
+@NoArgsConstructor
 @Entity
 @EqualsAndHashCode(callSuper = true)
 @DiscriminatorValue("WORKER")
@@ -126,16 +128,11 @@ public class Worker extends VenusUser {
 
     public Worker(Email email, String password) {
         super(email, password);
-        this.role = UserRole.WORKER;
     }
 
     public Worker(String username, Email email, String password) {
         this(email,password);
         this.username = username;
-    }
-
-    public Worker() {
-        this.role = UserRole.WORKER;
     }
 
     public void parseAndSetBirthdate(String birthdate) throws ParseException {
