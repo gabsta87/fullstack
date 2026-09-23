@@ -26,8 +26,8 @@ import java.util.UUID;
 @RequestMapping("/payment")
 public class PaymentController {
 
-    private PaymentRepository paymentRepository;
-    private WorkerRepository workerRepository; // Pour appliquer les changements de statut/boost
+    private final PaymentRepository paymentRepository;
+    private final WorkerRepository workerRepository; // Pour appliquer les changements de statut/boost
 
     @Value("${stripe.secret.key}")
     private String stripeSecretKey;

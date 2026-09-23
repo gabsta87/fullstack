@@ -22,11 +22,9 @@ import java.util.UUID;
 
 /**
  * REST controller for uploading photos and videos.
- *
  * All heavy file-serving is handled by Nginx — Spring only deals with
  * saving files to disk (via MediaStorageService) and persisting the
  * resulting URLs to the database.
- *
  * Endpoints:
  *   POST /media/{workerId}/photos          — upload one or more photos
  *   POST /media/{workerId}/photos/main     — set / replace the main profile photo
@@ -117,10 +115,11 @@ public class MediaController {
 
     @DeleteMapping("/{workerId}")
     public ResponseEntity<Void> deleteAll(@PathVariable UUID workerId) throws IOException {
-        if( ! workerRepository.existsById(workerId))
-        storageService.deleteAllForWorker(workerId);
-        photoRepository.deleteByWorkerId(workerId);
-        videoRepository.deleteByWorkerId(workerId);
+        if( ! workerRepository.existsById(workerId)){
+            storageService.deleteAllForWorker(workerId);
+            photoRepository.deleteByWorkerId(workerId);
+            videoRepository.deleteByWorkerId(workerId);
+        }
         return ResponseEntity.noContent().build();
     }
 
