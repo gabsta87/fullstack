@@ -1,12 +1,17 @@
 package com.serv.database.entities;
 
 import com.serv.common.TablesNames;
+import com.serv.common.UserRole;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -52,4 +57,12 @@ public abstract class VenusUser {
     public boolean checkPassword(String password)   { return ENCODER.matches(password, this.passwordHash); }
     public boolean isAdmin(){ return false; };
     public boolean isSuperAdmin() { return false; }
+
+    public List<GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER")); // Rôle de base par exemple
+        return authorities;
+    }
+
+    public abstract UserRole getRole();
 }

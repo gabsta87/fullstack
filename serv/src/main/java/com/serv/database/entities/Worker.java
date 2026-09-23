@@ -218,4 +218,8 @@ public class Worker extends VenusUser {
     private enum SubscriptionTier{
         BASIC, STANDARD, PREMIUM
     }
+
+    public UserRole getRole(){
+        return UserRole.WORKER;
+    }
 }

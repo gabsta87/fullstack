@@ -1,9 +1,14 @@
 package com.serv.database.entities;
 
+import com.serv.common.UserRole;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -14,4 +19,15 @@ public class SuperAdmin extends Admin{
     }
 
     public boolean isSuperAdmin() {return true;}
+
+    @Override
+    public List<GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> authorities = super.getAuthorities();
+        authorities.add(new SimpleGrantedAuthority("ROLE_SUPER_ADMIN"));
+        return authorities;
+    }
+
+    public UserRole getRole(){
+        return UserRole.SUPER_ADMIN;
+    }
 }

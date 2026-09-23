@@ -79,4 +79,8 @@ public class Client extends VenusUser {
     public void removePreferredLanguage(Language language) {
         this.preferredLanguages.remove(language);
     }
+
+    public UserRole getRole(){
+        return UserRole.CLIENT;
+    }
 }
