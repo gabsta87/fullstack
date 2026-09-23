@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -115,10 +116,12 @@ public class MediaController {
 
     @DeleteMapping("/{workerId}")
     public ResponseEntity<Void> deleteAll(@PathVariable UUID workerId) throws IOException {
-        if( ! workerRepository.existsById(workerId)){
+        if(workerRepository.existsById(workerId)){
             storageService.deleteAllForWorker(workerId);
             photoRepository.deleteByWorkerId(workerId);
             videoRepository.deleteByWorkerId(workerId);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker introuvable");
         }
         return ResponseEntity.noContent().build();
     }
