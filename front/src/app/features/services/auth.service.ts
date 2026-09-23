@@ -1,7 +1,7 @@
 import { Injectable, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { tap, map, catchError } from 'rxjs/operators';
 import { environment } from "../../../environments/environment";
 import { BaseUser } from '../models/user.model';
@@ -111,7 +111,7 @@ export class AuthService {
       });
     });
 
-    this.eventSource.addEventListener('session-expired', (event: MessageEvent) => {
+    this.eventSource.addEventListener('session-expired', () => {
       this.zone.run(() => {
         this.handleLocalLogout();
         this.router.navigate(['/login']);
@@ -164,6 +164,7 @@ export class AuthService {
   }
 
   get isAuthenticated(): boolean { return this.isAuthenticatedSubject.value; }
+  get isAdmin(): boolean { return this.currentAccount?.role === 'ADMIN' || this.currentAccount?.role === 'SUPER_ADMIN'; }
   getUser(): BaseUser | null { return this.currentAccount; }
   setRedirectUrl(url: string) { this.redirectUrl = url; }
 }

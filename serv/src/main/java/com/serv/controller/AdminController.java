@@ -3,6 +3,7 @@ package com.serv.controller;
 import com.serv.common.Requests;
 import com.serv.database.entities.*;
 import com.serv.database.repositories.*;
+import com.serv.dto.AdminUserDTO;
 import com.serv.dto.WorkerFullProfileDTO;
 import com.serv.service.PasswordResetService;
 import com.serv.service.SseStreamService;
@@ -42,26 +43,44 @@ public class AdminController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<VenusUser>> getAllUsers() {
-        return ResponseEntity.ok(userRepository.findAll());
+    public ResponseEntity<List<AdminUserDTO>> getAllUsers() {
+        List<AdminUserDTO> users = userRepository.findAll().stream()
+                .map(AdminUserDTO::from)
+                .toList();
+        return ResponseEntity.ok(users);
     }
-
 
     @GetMapping("/logs")
     public ResponseEntity<List<AdminAuditLog>> getAuditLogs() {
         return ResponseEntity.ok(auditLogRepository.findAll());
     }
 
-    @PostMapping("/profiles/{id}/set-locked")
+    @PostMapping("/profiles/{id}/status")
     @Transactional
-    public ResponseEntity<?> setStatus(@PathVariable UUID id, Admin admin, @RequestParam boolean lock) {
+    public ResponseEntity<?> updateWorkerStatus(@PathVariable UUID id, @RequestBody Requests.AdminUpdateStatusRequest req, Admin admin) {
         Worker targetWorker = workerRepository.findById(id).orElse(null);
-        if (targetWorker == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Worker not found"));
+        if (targetWorker == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Worker not found"));
+        }
 
-        targetWorker.setLocked(lock);
+        StringBuilder changes = new StringBuilder();
+
+        if (req.locked() != null) {
+            targetWorker.setLocked(req.locked());
+            changes.append("Verrouillé: ").append(req.locked()).append(" ");
+        }
+        if (req.banned() != null) {
+            targetWorker.setBanned(req.banned());
+            changes.append("Banni: ").append(req.banned()).append(" ");
+        }
+        if (req.hidden() != null) {
+            targetWorker.setHidden(req.hidden());
+            changes.append("Masqué: ").append(req.hidden()).append(" ");
+        }
+
         Worker savedWorker = workerRepository.save(targetWorker);
+        logAdminAction(admin, "UPDATE_WORKER_STATUS", targetWorker, "Statuts modifiés -> " + changes.toString().trim());
 
-        logAdminAction(admin, "TOGGLE_STATUS", targetWorker, "Status modified : " + (targetWorker.isLocked() ? "LOCKED" : "UNLOCKED"));
         return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
     }
 

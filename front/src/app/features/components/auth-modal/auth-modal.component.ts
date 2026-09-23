@@ -132,6 +132,8 @@ export class AuthModalComponent implements OnInit {
       this.router.navigate(['/profile-management']);
     } else if (userRole === 'CLIENT') {
       this.router.navigate(['/account']);
+    } else if (userRole === 'ADMIN') {
+      this.router.navigate(['/admin-dashboard']);
     } else {
       // Par sécurité, si le rôle est indéterminé à cet instant précis
       this.router.navigate(['/']);

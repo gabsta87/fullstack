@@ -10,6 +10,12 @@ public class Requests {
 
     public record ForgotPasswordRequest (String email) { }
 
+    public record AdminUpdateStatusRequest(
+            Boolean locked,
+            Boolean banned,
+            Boolean hidden
+    ) {}
+
     public record LoginRequest(String email, String password) { }
     public record LoginResponse(String token, VenusUserDTO user) { }
 

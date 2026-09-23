@@ -2,14 +2,9 @@ package com.serv.controller;
 
 import com.serv.common.Requests;
 import com.serv.configuration.JwtProvider;
-import com.serv.database.entities.Client;
-import com.serv.database.entities.Email;
-import com.serv.database.entities.VenusUser;
-import com.serv.database.entities.Worker;
+import com.serv.database.entities.*;
 import com.serv.database.repositories.UserRepository;
-import com.serv.dto.ClientDTO;
-import com.serv.dto.VenusUserDTO;
-import com.serv.dto.WorkerFullProfileDTO;
+import com.serv.dto.*;
 import com.serv.service.SseStreamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -72,7 +67,9 @@ public class AccountController {
             dtoToSend = ClientDTO.from(client); // Contient les favoris !
         } else if (patchedUser instanceof Worker worker) {
             dtoToSend = WorkerFullProfileDTO.from(worker); // Contient la galerie, les services, etc.
-        } else {
+        } else if( patchedUser instanceof Admin admin) {
+            dtoToSend = AdminDTO.from(admin);
+        }else{
             dtoToSend = VenusUserDTO.from(patchedUser); // Cas de secours
         }
 

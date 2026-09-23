@@ -6,7 +6,7 @@
   <ion-toolbar color="light">
     <ion-segment [(ngModel)]="currentTab" (ionChange)="onTabChange()">
       <ion-segment-button value="users">
-        <ion-label>Annonceurs</ion-label>
+        <ion-label>Utilisateurs</ion-label>
       </ion-segment-button>
       <ion-segment-button value="certifications">
         <ion-label>Certifications ({{ pendingCertificationsCount }})</ion-label>
@@ -20,33 +20,86 @@
 
 <ion-content class="ion-padding">
 
+  <!-- ONGLET 1 : UTILISATEURS (Table PrimeNG) -->
   <div *ngIf="currentTab === 'users'">
-    <ion-list-header>
-      <ion-label>Tous les profils de la plateforme</ion-label>
-    </ion-list-header>
+    <div class="admin-toolbar ion-margin-bottom" style="display: flex; gap: 15px; flex-wrap: wrap;">
+      <span class="p-input-icon-left" style="flex: 1; min-width: 250px;">
+        <i class="pi pi-search"></i>
+        <input
+          pInputText
+          type="text"
+          (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+          placeholder="Rechercher par nom, email, description..."
+          style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;" />
+      </span>
 
-    <ion-item-sliding *ngFor="let worker of workers">
-      <ion-item>
-        <ion-label>
-          <h2>{{ worker.username }}</h2>
-          <p>Crédit actuel : <strong>{{ worker.expirationDate }} jours</strong></p>
-          <ion-badge [color]="!worker.disabled ? 'success' : 'danger'">
-            {{ !worker.disabled ? 'En ligne' : 'Désactivé' }}
-          </ion-badge>
-        </ion-label>
-      </ion-item>
+      <p-dropdown
+        [options]="roleOptions"
+        [(ngModel)]="selectedRole"
+        (onChange)="dt.filter($event.value, 'role', 'equals')"
+        placeholder="Filtrer par Rôle"
+        [showClear]="true">
+      </p-dropdown>
+    </div>
 
-      <ion-item-options side="end">
-        <ion-item-option color="warning" (click)="promptUpdateDays(worker)">
-          Modifier Jours
-        </ion-item-option>
-        <ion-item-option [color]="!worker.disabled ? 'danger' : 'success'" (click)="toggleStatus(worker)">
-          {{ !worker.disabled ? 'Désactiver' : 'Activer' }}
-        </ion-item-option>
-      </ion-item-options>
-    </ion-item-sliding>
+    <p-table
+      #dt
+      [value]="users"
+      [paginator]="true"
+      [rows]="10"
+      [rowsPerPageOptions]="[10, 25, 50]"
+      [globalFilterFields]="['username', 'email', 'description']"
+      styleClass="p-datatable-gridlines p-datatable-sm"
+      [tableStyle]="{'min-width': '60rem'}">
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="username">Utilisateur <p-sortIcon field="username"></p-sortIcon></th>
+          <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
+          <th pSortableColumn="role">Rôle <p-sortIcon field="role"></p-sortIcon></th>
+          <th>Crédit Jours</th>
+          <th>Statut</th>
+          <th style="text-align: center;">Actions</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-user>
+        <tr>
+          <td><strong>{{ user.username }}</strong></td>
+          <td>{{ user.email }}</td>
+          <td>
+            <p-tag [value]="user.role"></p-tag>
+          </td>
+          <td>
+            <span *ngIf="user.remainingDaysCredit !== null">{{ user.remainingDaysCredit }} j</span>
+            <span *ngIf="user.remainingDaysCredit === null" style="color: #999;">-</span>
+          </td>
+          <td>
+            <p-tag
+              [value]="user.banned ? 'Banni' : (user.locked ? 'Verrouillé' : 'Actif')"
+              [severity]="user.banned ? 'danger' : (user.locked ? 'warn' : 'success')">
+            </p-tag>
+          </td>
+          <td style="text-align: center;">
+            <ion-button size="small" fill="clear" color="warning" (click)="promptUpdateDays(user)" *ngIf="user.role === 'WORKER'">
+              Jours
+            </ion-button>
+            <ion-button size="small" fill="clear" [color]="user.locked ? 'success' : 'danger'" (click)="setLocked(user, !user.locked)">
+              {{ user.locked ? 'Déverrouiller' : 'Verrouiller' }}
+            </ion-button>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6" style="text-align: center; padding: 20px;">Aucun utilisateur trouvé.</td>
+        </tr>
+      </ng-template>
+    </p-table>
   </div>
 
+  <!-- ONGLET 2 : CERTIFICATIONS EN ATTENTE -->
   <div *ngIf="currentTab === 'certifications'">
     <div *ngIf="getPendingCertifications().length === 0" class="ion-text-center ion-padding">
       <p>Aucune demande de certification en attente 🎉</p>
@@ -59,10 +112,11 @@
       </ion-card-header>
 
       <ion-card-content>
-        <p>Comparez la photo récente avec le panneau et le code secret ci-dessous aux photos de sa galerie.</p>
+        <p>Comparez la photo récente avec le panneau et le code secret ci-dessous.</p>
 
         <div class="image-verification-box ion-margin-vertical">
-          <img [src]="worker.verificationPhotoUrl" style="max-height: 250px; border-radius: 8px;" alt="Preuve" />
+          <!-- Adapte l'attribut selon le champ exact de ton entité/DTO worker (ex: verificationPhotoUrl ou mainPhoto) -->
+          <img [src]="worker.verificationPhotoUrl || worker.mainPhoto?.url" style="max-height: 250px; border-radius: 8px;" alt="Preuve de certification" />
         </div>
 
         <ion-row>
@@ -81,11 +135,12 @@
     </ion-card>
   </div>
 
+  <!-- ONGLET 3 : JOURNAL D'AUDIT -->
   <div *ngIf="currentTab === 'logs'">
     <ion-list>
       <ion-item *ngFor="let log of auditLogs">
         <ion-label>
-          <h3><strong>Modérateur :</strong> {{ log.adminUsername }}</h3>
+          <h3><strong>Modérateur :</strong> {{ log.adminUsername || log.admin?.username }}</h3>
           <p><strong>Action :</strong> <ion-badge color="medium">{{ log.actionType }}</ion-badge></p>
           <p>{{ log.details }}</p>
           <p class="ion-text-right"><small>{{ log.createdAt | date:'short' }}</small></p>

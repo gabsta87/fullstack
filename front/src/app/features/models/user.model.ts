@@ -4,7 +4,7 @@ import {GeographicZone} from "./filter.model";
 export interface BaseUser {
   id: string;
   username: string;
-  role: 'WORKER' | 'CLIENT' | 'ADMIN';
+  role: 'WORKER' | 'CLIENT' | 'ADMIN' | 'SUPER_ADMIN';
   geographicZone: GeographicZone | null;
 }
 
@@ -35,6 +35,7 @@ export interface WorkerSimpleProfile extends BaseUser{
   mainThumbUrl: string;
   previewThumbUrls: string[];
   services: string[];
+  certificationStatus: string;
 }
 
 export interface WorkerFullProfile extends WorkerSimpleProfile {
@@ -79,4 +80,5 @@ export interface WorkerProfileForAdmin{
   description: string;
   phone: string;
   age : number
+  certificationStatus: string;
 }

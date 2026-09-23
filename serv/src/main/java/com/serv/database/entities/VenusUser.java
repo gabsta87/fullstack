@@ -35,7 +35,8 @@ public abstract class VenusUser {
     @Column(nullable = false)
     protected String passwordHash;
 
-    // Set by admins
+    // by ADMINS
+    protected boolean isBanned;
     protected boolean isLocked;
 
     @ManyToOne(fetch = FetchType.LAZY)

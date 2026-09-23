@@ -32,6 +32,13 @@
       </ng-container>
 
       <ng-container *ngIf="authService.isAuthenticated$ | async">
+        <ng-container *ngIf="authService.isAdmin">
+          <ion-button (click)="openAdmin()" fill="clear" class="nav-link-btn">
+            <ion-icon name="build-outline" slot="start"></ion-icon>
+            Administration
+          </ion-button>
+        </ng-container>
+
         <ion-button (click)="openAccount()" fill="clear" class="nav-link-btn">
           <ion-icon name="person-circle-outline" slot="start"></ion-icon>
           Mon Compte

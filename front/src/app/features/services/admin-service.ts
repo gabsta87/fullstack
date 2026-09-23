@@ -10,7 +10,6 @@ import {WorkerFullProfile} from "../models/user.model";
 export class AdminService {
   private apiUrl = `${environment.apiBase}/api/admin`;
 
-  // Mock temporaire pour simuler l'admin connecté (à lier idéalement à ton AuthService plus tard)
   private adminId = "ADMIN-UUID-1234";
   private adminUsername = "ChefModo_Venus";
 
@@ -26,9 +25,13 @@ export class AdminService {
     });
   }
 
+  getUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/users`, { headers: this.getAdminHeaders() });
+  }
+
   // ── ANNONCEURS / WORKERS ──────────────────────────────────────────────────
 
-  getAllProfiles(): Observable<any[]> {
+  getWorkers(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/profiles`, { headers: this.getAdminHeaders() });
   }
 
@@ -42,6 +45,14 @@ export class AdminService {
         headers: this.getAdminHeaders(),
         params: params
       }
+    );
+  }
+
+  updateWorkerStatus(workerId: string, statusPayload: { locked?: boolean; banned?: boolean; hidden?: boolean }): Observable<any> {
+    return this.http.post<any>(
+      `${this.apiUrl}/profiles/${workerId}/status`,
+      statusPayload,
+      { headers: this.getAdminHeaders() }
     );
   }
 

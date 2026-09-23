@@ -84,9 +84,6 @@ public class Worker extends VenusUser {
     // Available for work by the worker himself.
     private boolean isAvailable;
 
-    // by ADMINS
-    private boolean isBanned;
-
     // Instant stored as UTC timestamp
     @Column(name = "last_refreshed")
     private Instant lastRefreshed;

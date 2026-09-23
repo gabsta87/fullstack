@@ -12,6 +12,9 @@ import {workerOnlyGuard} from "./features/guards/worker-only.guard";
 import {profileVisitingResolver} from "./features/resolver/profile-visiting.resolver";
 import {geographicZonesResolver} from "./features/resolver/geographic-zones.resolver";
 import {ResetPasswordComponent} from "./features/components/reset-password/reset-password.component";
+import {AdminDashboardComponent} from "./features/components/admin-dashboard/admin-dashboard.component";
+import {adminOnlyGuard} from "./features/guards/admin-only.guard";
+import {accountRedirectGuard} from "./features/guards/account-redirect-guard";
 
 export const routes: Routes = [
   {
@@ -43,7 +46,9 @@ export const routes: Routes = [
       services : servicesResolver,
       locations: geographicZonesResolver,
     }, canActivate: [authGuard, workerOnlyGuard] },
-  { path: 'reset-password',  component : ResetPasswordComponent },
+  { path: 'reset-password', component: ResetPasswordComponent },
+  { path: 'admin-dashboard', component: AdminDashboardComponent, canActivate: [authGuard, adminOnlyGuard]},
+  { path: 'account-router', canActivate: [authGuard, accountRedirectGuard], children: []},
 
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];

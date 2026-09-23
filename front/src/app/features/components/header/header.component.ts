@@ -8,7 +8,7 @@ import {AuthModalComponent} from "../auth-modal/auth-modal.component";
 import {firstValueFrom} from "rxjs";
 import {WorkerAccountService} from "../../services/worker-account.service";
 import {addIcons} from "ionicons";
-import {logInOutline, logOutOutline, personCircleOutline} from "ionicons/icons";
+import {logInOutline, logOutOutline, personCircleOutline, buildOutline} from "ionicons/icons";
 import LanguageManagerService from "../../services/language-manager.service";
 
 @Component({
@@ -29,7 +29,7 @@ export class HeaderComponent {
     public langService: LanguageManagerService
   ) {
     addIcons({
-      personCircleOutline, logOutOutline, logInOutline
+      personCircleOutline, logOutOutline, logInOutline, buildOutline
     });
   }
 
@@ -54,6 +54,10 @@ export class HeaderComponent {
     });
   }
 
+  async openAdmin(){
+    await this.router.navigate(['/admin-dashboard']);
+  }
+
   async openAccount() {
     const isAuthenticated = await firstValueFrom(this.authService.isAuthenticated$);
 
@@ -62,25 +66,7 @@ export class HeaderComponent {
       return;
     }
 
-    // Si on est ici, c'est que l'utilisateur est authentifié
-    const user = this.authService.getUser();
-
-    // Navigation basée sur le rôle
-    if (user?.role === "WORKER") {
-      this.router.navigate(['/profile-management']);
-    } else if (user?.role === "CLIENT") {
-      this.router.navigate(['/account']);
-    } else {
-      // Si le rôle est nul (ex: refresh F5), on récupère le profil
-      // Note : assurez-vous que votre service met à jour authService.currentAccount
-      this.workerAccountService.getCurrentAccount().subscribe({
-        next: (profile) => this.router.navigate(['/profile-management']),
-        error: () => this.clientAccountService.getCurrentAccount().subscribe({
-          next: () => this.router.navigate(['/account']),
-          error: () => console.error("Impossible de déterminer le rôle")
-        })
-      });
-    }
+    await this.router.navigate(['/account-router']);
   }
 
   changeLanguage(langCode: string) {
