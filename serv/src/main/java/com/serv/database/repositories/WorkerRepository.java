@@ -37,4 +37,6 @@ public interface WorkerRepository extends JpaRepository<Worker, UUID>, JpaSpecif
     List<Worker> findValidActiveOrAvailableWorkers();
 
     int countByGeographicZoneId(int id);
+
+    Optional<Worker> findByEmail(String email);
 }

@@ -39,10 +39,7 @@ public class AccountControllerClient {
 
     @GetMapping("/me")
     @Transactional(readOnly = true)
-    public ResponseEntity<?> getMe(@AuthenticationPrincipal Jwt jwt) {
-        Client user = jwtClient(jwt);
-        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
-
+    public ResponseEntity<?> getMe(Client user) {
         return clientRepository.findById(user.getId())
                 .map(client -> ResponseEntity.ok(ClientDTO.from(client)))
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
@@ -51,15 +48,11 @@ public class AccountControllerClient {
     @PatchMapping("/data")
     @Transactional
     public ResponseEntity<?> updateClientSettings(@RequestBody Requests.AccountDataRequest req,
-                                                  @AuthenticationPrincipal Jwt jwt) {
-        // 🎯 FIX : Utilisation du helper pour éviter le crash de Cast sauvage si c'est un Worker
-        Client client = jwtClient(jwt);
-        if (client == null) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied.");
+                                                  Client client) {
 
         if (req.username() != null) client.setUsername(req.username());
         if (req.email() != null) client.setEmail(new Email(req.email()));
 
-        // 🎯 FIX : On utilise le clientRepository pour obtenir directement un Client après sauvegarde
         Client saved = clientRepository.save(client);
         ClientDTO dto = ClientDTO.from(saved);
 
@@ -69,20 +62,14 @@ public class AccountControllerClient {
 
     @GetMapping("/favorites")
     @Transactional(readOnly = true)
-    public ResponseEntity<?> getFavorites(@AuthenticationPrincipal Jwt jwt) {
-        Client client = jwtClient(jwt);
-        if (client == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
-
+    public ResponseEntity<?> getFavorites(Client client) {
         List<UUID> ids = client.getFavorites().stream().map(Worker::getId).toList();
         return ResponseEntity.ok(galleryService.getGalleryByIds(ids));
     }
 
     @PostMapping("/favorites/{workerId}")
     @Transactional
-    public ResponseEntity<?> addFavorite(@PathVariable UUID workerId, @AuthenticationPrincipal Jwt jwt) {
-        Client client = jwtClient(jwt);
-
-        if (client == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
+    public ResponseEntity<?> addFavorite(@PathVariable UUID workerId, Client client) {
 
         Optional<Worker> foundWorker = workerRepository.findById(workerId);
         if (foundWorker.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Worker not found.");
@@ -105,9 +92,7 @@ public class AccountControllerClient {
 
     @DeleteMapping("/favorites/{workerId}")
     @Transactional
-    public ResponseEntity<?> removeFavorite(@PathVariable UUID workerId, @AuthenticationPrincipal Jwt jwt) {
-        Client client = jwtClient(jwt);
-        if (client == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
+    public ResponseEntity<?> removeFavorite(@PathVariable UUID workerId, Client client) {
 
         client.getFavorites().removeIf(w -> w.getId().equals(workerId));
 
@@ -121,20 +106,7 @@ public class AccountControllerClient {
 
     @GetMapping("/filters")
     @Transactional(readOnly = true)
-    public ResponseEntity<?> getFilters(@AuthenticationPrincipal Jwt jwt) {
-        Client client = jwtClient(jwt);
-        if (client == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
-
+    public ResponseEntity<?> getFilters(Client client) {
         return ResponseEntity.ok(GalleryFiltersDTO.from(client));
-    }
-
-
-    private Client jwtClient(Jwt jwt) {
-        if (jwt == null) return null;
-
-        String userIdStr = jwt.getClaimAsString("userId");
-        if (userIdStr == null) return null;
-
-        return clientRepository.findById(UUID.fromString(userIdStr)).orElse(null);
     }
 }

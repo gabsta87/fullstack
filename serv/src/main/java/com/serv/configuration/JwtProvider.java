@@ -29,7 +29,7 @@ public class JwtProvider {
                 .expiresAt(now.plus(30, ChronoUnit.DAYS))
                 .subject(user.getEmail().toString())
                 .claim("userId", user.getId().toString())
-                .claim("role", "ROLE_" + user.getRole().toString())
+//                .claim("role", "ROLE_" + user.getRole().toString())
                 .build();
 
         // 🎯 3. On passe le HEADER ET les CLAIMS dans les paramètres de l'encodeur

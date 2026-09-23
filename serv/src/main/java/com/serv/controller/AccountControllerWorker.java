@@ -5,7 +5,10 @@ import com.serv.common.EyeColor;
 import com.serv.common.HairColor;
 import com.serv.common.Requests;
 import com.serv.database.entities.*;
-import com.serv.database.repositories.*;
+import com.serv.database.repositories.GeographicZoneRepository;
+import com.serv.database.repositories.PhotoRepository;
+import com.serv.database.repositories.ServiceRepository;
+import com.serv.database.repositories.WorkerRepository;
 import com.serv.dto.WorkerFullProfileDTO;
 import com.serv.service.MailService;
 import com.serv.service.MediaStorageService;
@@ -13,8 +16,6 @@ import com.serv.service.SseStreamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,10 +41,7 @@ public class AccountControllerWorker {
 
     @GetMapping("/me")
     @Transactional(readOnly = true)
-    public ResponseEntity<?> getMe(@AuthenticationPrincipal Jwt jwt) {
-        Worker user = jwtWorker(jwt);
-        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
-
+    public ResponseEntity<?> getMe(Worker user) {
         return workerRepository.findByIdWithPhotos(user.getId())
                 .map(worker -> ResponseEntity.ok(WorkerFullProfileDTO.from(worker)))
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
@@ -52,9 +50,7 @@ public class AccountControllerWorker {
     @PatchMapping("/data")
     @Transactional
     public ResponseEntity<?> updateWorkerSettings(@RequestBody Requests.AccountDataRequest req,
-                                                  @AuthenticationPrincipal Jwt jwt) {
-        Worker worker = jwtWorker(jwt);
-        if (worker == null) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied.");
+                                                  Worker worker) {
 
         if (req.username() != null) worker.setUsername(req.username());
         if (req.email() != null) worker.setEmail(new Email(req.email()));
@@ -70,12 +66,7 @@ public class AccountControllerWorker {
     @PatchMapping("/availability")
     @Transactional
     public ResponseEntity<?> setAvailability(@RequestBody Map<String, Boolean> body,
-                                             @AuthenticationPrincipal Jwt jwt) {
-        Worker worker = jwtWorker(jwt);
-
-        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
-        System.out.println(worker.getUsername()+ " status changed : " + body);
-
+                                             Worker worker) {
         worker.setAvailable(body.getOrDefault("available", false));
 
         this.evaluateWorkerProfileCompleteness(worker);
@@ -89,12 +80,8 @@ public class AccountControllerWorker {
     @PatchMapping("/profile")
     @Transactional
     public ResponseEntity<?> updateProfile(@RequestBody Requests.WorkerProfileUpdateRequest req,
-                                           @AuthenticationPrincipal Jwt jwt) {
-        Worker worker = jwtWorkerWithPhotos(jwt);
-
-        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
-
-        System.out.println(worker.getUsername() + " updateProfile : " + req);
+                                           Worker workerArg) {
+        Worker worker = getWorkerWithPhotos(workerArg);
 
         if (req.description() != null) worker.setDescription(req.description());
 
@@ -160,11 +147,7 @@ public class AccountControllerWorker {
 
     @Transactional
     @PatchMapping("/updateservices")
-    public ResponseEntity<?> updateServices(@RequestBody List<String> services, @AuthenticationPrincipal Jwt jwt) {
-
-        Worker worker = jwtWorkerWithPhotos(jwt);
-
-        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
+    public ResponseEntity<?> updateServices(@RequestBody List<String> services, Worker worker) {
 
         List<Service> serviceList = services.stream()
                 .map(serviceRepository::findByName)
@@ -173,7 +156,6 @@ public class AccountControllerWorker {
                 .collect(Collectors.toList());
 
         worker.setServices(serviceList);this.evaluateWorkerProfileCompleteness(worker);
-
 
         Worker savedWorker = workerRepository.save(worker);
 
@@ -190,13 +172,8 @@ public class AccountControllerWorker {
     @PostMapping("/photos")
     @Transactional
     public ResponseEntity<?> uploadPhoto(@RequestParam("file") MultipartFile file,
-                                         @AuthenticationPrincipal Jwt jwt) {
-
-        // 🚀 Optimisé & Correction des bugs de variable :
-        Worker worker = jwtWorkerWithPhotos(jwt);
-        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
-
-        System.out.println("Saving photo for worker " + worker.getId() + " with title:" + file.getOriginalFilename());
+                                         Worker worker) {
+        worker = getWorkerWithPhotos(worker);
 
         try {
             MediaStorageService.SavedMedia saved = mediaStorageService.savePhoto(file, worker.getId());
@@ -239,9 +216,9 @@ public class AccountControllerWorker {
      */
     @DeleteMapping("/photos/{photoId}")
     @Transactional
-    public ResponseEntity<?> deletePhoto(@PathVariable UUID photoId, @AuthenticationPrincipal Jwt jwt) {
-        Worker worker = jwtWorkerWithPhotos(jwt);
-        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
+    public ResponseEntity<?> deletePhoto(@PathVariable UUID photoId, Worker workerArg) {
+        Worker worker = getWorkerWithPhotos(workerArg);
+
         if (photoId == null) return ResponseEntity.badRequest().body("No file provided.");
 
         System.out.println("Deleting photo " + photoId + " for worker " + worker.getId());
@@ -286,9 +263,7 @@ public class AccountControllerWorker {
      */
     @PatchMapping("/photos/{photoId}/main")
     @Transactional
-    public ResponseEntity<?> setMainPhoto(@PathVariable UUID photoId, @AuthenticationPrincipal Jwt jwt) {
-        Worker worker = jwtWorker(jwt);
-        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
+    public ResponseEntity<?> setMainPhoto(@PathVariable UUID photoId, Worker worker) {
 
         Photo photo = photoRepository.findById(photoId).orElse(null);
         if (photo == null || !photo.getWorker().getId().equals(worker.getId()))
@@ -310,9 +285,7 @@ public class AccountControllerWorker {
     @PatchMapping("/photos/reorder")
     @Transactional
     public ResponseEntity<?> reorderPhotos(@RequestBody List<String> orderedIds,
-                                           @AuthenticationPrincipal Jwt jwt) {
-        Worker worker = jwtWorker(jwt);
-        if (worker == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
+                                           Worker worker) {
 
         for (int i = 0; i < orderedIds.size(); i++) {
             UUID id = UUID.fromString(orderedIds.get(i));
@@ -340,21 +313,7 @@ public class AccountControllerWorker {
         worker.setInvalid(!isComplete);
     }
 
-    private Worker jwtWorker(Jwt jwt) {
-        if (jwt == null) return null;
-
-        String userIdStr = jwt.getClaimAsString("userId");
-        if (userIdStr == null) return null;
-
-        return workerRepository.findById(UUID.fromString(userIdStr)).orElse(null);
-    }
-
-    private Worker jwtWorkerWithPhotos(Jwt jwt) {
-        if (jwt == null) return null;
-
-        String userIdStr = jwt.getClaimAsString("userId");
-        if (userIdStr == null) return null;
-
-        return workerRepository.findByIdWithPhotos(UUID.fromString(userIdStr)).orElse(null);
+    private Worker getWorkerWithPhotos(VenusUser user) {
+        return workerRepository.findByIdWithPhotos(user.getId()).orElse((Worker) user);
     }
 }

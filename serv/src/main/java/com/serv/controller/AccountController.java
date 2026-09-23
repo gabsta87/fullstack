@@ -59,9 +59,7 @@ public class AccountController {
     @PatchMapping("/data")
     @Transactional
     public ResponseEntity<?> updateSettings(@RequestBody Requests.AccountDataRequest req,
-                                            @AuthenticationPrincipal Jwt jwt) {
-        VenusUser user = jwtUser(jwt);
-        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+                                            VenusUser user) {
 
         // 1. Mise à jour des champs communs
         if (req.username() != null) user.setUsername(req.username());
@@ -84,13 +82,5 @@ public class AccountController {
         sseStreamService.emitEvent(patchedUser.getId(), "account-update", dtoToSend);
 
         return ResponseEntity.ok(dtoToSend);
-    }
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
-
-    private VenusUser jwtUser(Jwt jwt) {
-        if (jwt == null) return null;
-        // 🎯 jwt.getSubject() contient désormais l'email
-        return userRepository.findByEmail(jwt.getSubject()).orElse(null);
     }
 }

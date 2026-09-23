@@ -152,7 +152,7 @@ public class AuthController {
         user.setPassword(newPassword); // N'oublie pas d'encoder avec BCrypt ici si applicable !
 
         // 2. Déverrouillage automatique si le compte Admin était bloqué/en attente
-        if (user.isLocked() && user.getRole() == UserRole.ADMIN) {
+        if (user.isLocked() && user.isAdmin()) {
             user.setLocked(false);
         }
 

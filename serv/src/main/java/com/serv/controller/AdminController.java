@@ -10,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,8 +54,7 @@ public class AdminController {
 
     @PostMapping("/profiles/{id}/set-locked")
     @Transactional
-    public ResponseEntity<?> setStatus(@PathVariable UUID id, @AuthenticationPrincipal Jwt jwt, @RequestParam boolean lock) {
-        Admin admin = getAdminInfo(jwt);
+    public ResponseEntity<?> setStatus(@PathVariable UUID id, Admin admin, @RequestParam boolean lock) {
         Worker targetWorker = workerRepository.findById(id).orElse(null);
         if (targetWorker == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Worker not found"));
 
@@ -70,8 +67,7 @@ public class AdminController {
 
     @PostMapping("/profiles/update-days")
     @Transactional
-    public ResponseEntity<?> updateDays(@RequestBody Requests.AdminUpdateDaysRequest req, @AuthenticationPrincipal Jwt jwt) {
-        Admin admin = getAdminInfo(jwt);
+    public ResponseEntity<?> updateDays(@RequestBody Requests.AdminUpdateDaysRequest req, Admin admin) {
         Worker targetWorker = workerRepository.findById(UUID.fromString(req.workerId())).orElse(null);
         if (targetWorker == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Worker not found"));
 
@@ -86,8 +82,7 @@ public class AdminController {
 
     @PostMapping("/profiles/verify-certification")
     @Transactional
-    public ResponseEntity<?> verifyCertification(@RequestBody Requests.AdminVerifyCertifRequest req, @AuthenticationPrincipal Jwt jwt) {
-        Admin admin = getAdminInfo(jwt);
+    public ResponseEntity<?> verifyCertification(@RequestBody Requests.AdminVerifyCertifRequest req, Admin admin) {
         Worker targetWorker = workerRepository.findById(UUID.fromString(req.workerId())).orElse(null);
         if (targetWorker == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Worker not found"));
 
@@ -116,8 +111,7 @@ public class AdminController {
      */
     @PostMapping("/services")
     @Transactional
-    public ResponseEntity<?> saveOrUpdateService(@RequestBody Service service, @AuthenticationPrincipal Jwt jwt) {
-        Admin admin = getAdminInfo(jwt);
+    public ResponseEntity<?> saveOrUpdateService(@RequestBody Service service, Admin admin) {
         boolean isUpdate = service.getId() != null && service.getId() > 0;
 
         if (isUpdate) {
@@ -147,8 +141,7 @@ public class AdminController {
 
     @DeleteMapping("/regions/{id}")
     @Transactional
-    public ResponseEntity<?> deleteRegion(@PathVariable int id, @AuthenticationPrincipal Jwt jwt) {
-        Admin admin = getAdminInfo(jwt);
+    public ResponseEntity<?> deleteRegion(@PathVariable int id, Admin admin) {
         int count = workerRepository.countByGeographicZoneId(id);
         if (count > 0) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", "Impossible de supprimer cette région : " + count + " annonceur(s) y sont rattaché(s)."));
@@ -165,14 +158,12 @@ public class AdminController {
 
     @PostMapping("/legal")
     @Transactional
-    public ResponseEntity<?> updateLegalText(@RequestBody Requests.LegalTextUpdateRequest req, @AuthenticationPrincipal Jwt jwt) {
-        Admin admin = getAdminInfo(jwt);
-
+    public ResponseEntity<?> updateLegalText(@RequestBody Requests.LegalTextUpdateRequest req, Admin admin) {
         LegalText legal = new LegalText();
         legal.setName(req.key());
         legal.setContent(req.content());
         legal.setLastUpdate(LocalDateTime.now());
-        legal.setAuthor(admin); // Ajout de l'auteur légal pour l'historique !
+        legal.setAuthor(admin);
         legalTextRepository.save(legal);
 
         logAdminAction(admin, "UPDATE_LEGAL_TEXT", legal, "Mise à jour du texte légal : " + req.key());
@@ -181,10 +172,8 @@ public class AdminController {
 
     // ── ADMINS INVITATIONS ────────────────────────────────────
     @PostMapping("/admins/invite")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
     @Transactional
-    public ResponseEntity<?> inviteAdmin(@RequestBody Requests.AdminInviteRequest req, @AuthenticationPrincipal Jwt jwt) {
-        Admin admin = getAdminInfo(jwt);
+    public ResponseEntity<?> inviteAdmin(@RequestBody Requests.AdminInviteRequest req, Admin admin) {
         Email email;
 
         if (req.email() == null || req.email().isBlank()) {
@@ -218,25 +207,6 @@ public class AdminController {
                 "success", true,
                 "message", "Le compte administrateur a été pré-créé et le processus de configuration du mot de passe a été envoyé par e-mail."
         ));
-    }
-
-    // ── SECURED CONTROLLER HELPERS ──────────────────────────────────────────
-
-    private Admin getAdminInfo(Jwt jwt) {
-        if (jwt == null) return null;
-        String userIdStr = jwt.getClaimAsString("userId");
-        if (userIdStr != null) {
-            try {
-                return adminRepository.findById(UUID.fromString(userIdStr)).orElse(null);
-            } catch (IllegalArgumentException ignored) {}
-        }
-        try{
-            Email email = new Email(jwt.getClaimAsString("email"));
-            return adminRepository.findByEmail(email).orElse(null);
-        }catch (IllegalArgumentException ignored){
-            System.out.println("Invalid JWT email: " + jwt.getClaimAsString("email"));
-            return null;
-        }
     }
 
     // Encapsulation centralisée des surcharges de logs
