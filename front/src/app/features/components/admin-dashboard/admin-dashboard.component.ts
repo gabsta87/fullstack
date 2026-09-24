@@ -44,8 +44,7 @@ export class AdminDashboardComponent implements OnInit {
   private servicesRefresh$ = new BehaviorSubject<void>(undefined);
   private zonesRefresh$ = new BehaviorSubject<void>(undefined);
 
-  flatZones$!: Observable<{ id: number; name: string; level: number }[]>;
-
+  flatZones$!: Observable<{ id: number; name: string; level: number; parentId: number | null }[]>;
   selectedRole: string | null = null;
 
   roleOptions = [
@@ -88,19 +87,21 @@ export class AdminDashboardComponent implements OnInit {
       switchMap(() => this.commonService.getGeographicZones() ? this.commonService.getGeographicZones() : this.route.data.pipe(map(data => data['zones'] || [])))
     );
 
+    // Aplatissement intelligent pour restaurer l'indentation et le parentId
     this.flatZones$ = this.zones$.pipe(
       map(zones => {
+        if (!zones) return [];
         const parents = zones.filter(z => !z.parentId);
-        const result: { id: number; name: string; level: number }[] = [];
+        const result: { id: number; name: string; level: number; parentId: number | null }[] = [];
 
         parents.forEach(parent => {
-          // Ajout du parent
-          result.push({ id: parent.id, name: parent.name, level: 0 });
+          // Ajout du parent (parentId vaut null ou 0)
+          result.push({ id: parent.id, name: parent.name, level: 0, parentId: parent.parentId ?? null });
 
           // Ajout des enfants directs de ce parent
           const children = zones.filter(z => z.parentId === parent.id);
           children.forEach(child => {
-            result.push({ id: child.id, name: child.name, level: 1 });
+            result.push({ id: child.id, name: child.name, level: 1, parentId: parent.id });
           });
         });
 
@@ -111,18 +112,6 @@ export class AdminDashboardComponent implements OnInit {
 
   goBack() {
     this.location.back();
-  }
-
-  // Helper pour filtrer les certifications en attente à partir du flux workers$
-  getPendingCertifications(workers: any[] | null): any[] {
-    if (!workers) return [];
-    return workers
-      .filter(w => w.certificationStatus === 'PENDING_APPROVAL')
-      .sort((a, b) => {
-        const dateA = new Date(a.certifiedAt || 0).getTime();
-        const dateB = new Date(b.certifiedAt || 0).getTime();
-        return dateA - dateB;
-      });
   }
 
   setLocked(user: any, lockState: boolean) {
@@ -230,29 +219,50 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   // ── GESTION DES ZONES GÉOGRAPHIQUES ──────────────────────────────────────
+  async openZoneModal(parentId: number | null = null) {
+    const title = parentId ? "Nom de la nouvelle sous-zone :" : "Nom de la nouvelle zone parente :";
+    const name = prompt(title);
+    if (!name || name.trim() === '') return;
+
+    try {
+      const payload = {
+        id: 0,
+        name: name.trim(),
+        ...(parentId !== null ? { parentId } : {}) // N'ajoute parentId que s'il n'est pas null
+      };
+
+      await firstValueFrom(this.adminService.updateRegion(payload));
+      this.zonesRefresh$.next();
+    } catch (err: any) {
+      alert(err.error?.error || "Erreur lors de la création de la zone");
+    }
+  }
+
+  // Ouvre une modale pour modifier le nom d'une zone existante
+  async editZoneName(zone: any) {
+    const newName = prompt("Modifier le nom de la zone :", zone.name);
+    if (!newName || newName.trim() === '' || newName === zone.name) return;
+
+    try {
+      await firstValueFrom(this.adminService.updateRegion({
+        id: zone.id,
+        name: newName.trim(),
+        parentId: zone.parentId
+      }));
+      this.zonesRefresh$.next();
+    } catch (err: any) {
+      alert(err.error?.error || "Erreur lors de la modification de la zone");
+    }
+  }
 
   async deleteZone(id: number) {
     if (confirm('Voulez-vous vraiment supprimer cette zone ?')) {
       try {
         await firstValueFrom(this.adminService.deleteRegion(id));
-        this.zonesRefresh$.next(); // Actualise le flux zones$
+        this.zonesRefresh$.next();
       } catch (err: any) {
         alert(err.error?.error || "Impossible de supprimer cette zone.");
       }
-    }
-  }
-
-  async openZoneModal() {
-    const name = prompt("Nom de la nouvelle zone :");
-    if (!name) return;
-    const parentIdStr = prompt("ID du parent (laisser vide si c'est une racine) :");
-    const parentId = parentIdStr ? parseInt(parentIdStr, 10) : 0;
-
-    try {
-      await firstValueFrom(this.adminService.updateRegion({ id: 0, name, parentId }));
-      this.zonesRefresh$.next(); // Actualise le flux zones$
-    } catch (err) {
-      alert("Erreur lors de la création de la zone");
     }
   }
 }

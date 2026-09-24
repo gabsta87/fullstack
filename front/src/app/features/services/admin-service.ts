@@ -56,7 +56,7 @@ export class AdminService {
     return this.http.post(`${this.apiUrl}/admins/invite`, { email });
   }
 
-  updateRegion(regionData: {id:number,name:string,parentId:number}): Observable<any> {
+  updateRegion(regionData: {id:number,name:string,parentId?:number}): Observable<any> {
     return this.http.put(`${this.apiUrl}/region/`, regionData);
   }
 

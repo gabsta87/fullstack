@@ -225,8 +225,9 @@
   <div *ngIf="currentTab === 'zones'">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
       <h2>Zones Géographiques</h2>
-      <ion-button color="primary" size="small" (click)="openZoneModal()">
-        <ion-icon slot="start" name="add-outline"></ion-icon> Ajouter une zone
+      <!-- Bouton pour ajouter une zone parente racine -->
+      <ion-button color="primary" size="small" (click)="openZoneModal(null)">
+        <ion-icon slot="start" name="add-outline"></ion-icon> Ajouter une zone parente
       </ion-button>
     </div>
 
@@ -234,15 +235,14 @@
       <ng-template pTemplate="header">
         <tr>
           <th>Nom de la zone</th>
-          <th style="text-align: center; width: 120px;">Actions</th>
+          <th style="text-align: center; width: 160px;">Actions</th>
         </tr>
       </ng-template>
 
       <ng-template pTemplate="body" let-zone>
-        <!-- Application d'une classe CSS spécifique si c'est un parent (level 0) -->
         <tr [ngClass]="{'parent-zone-row': zone.level === 0}">
 
-          <!-- Nom avec indentation dynamique basée sur le niveau -->
+          <!-- Nom avec indentation dynamique -->
           <td [style.padding-left.px]="15 + (zone.level * 25)">
             <span *ngIf="zone.level > 0" style="color: #999; margin-right: 6px;">└─</span>
             <span [style.font-weight]="zone.level === 0 ? 'bold' : 'normal'">
@@ -250,8 +250,19 @@
           </span>
           </td>
 
-          <td style="text-align: center;">
-            <ion-button size="small" fill="clear" color="danger" (click)="deleteZone(zone.id)">
+          <td style="text-align: center; white-space: nowrap;">
+            <!-- Bouton Ajouter une sous-zone (visible uniquement sur les parents de niveau 0) -->
+            <ion-button size="small" fill="clear" color="primary" (click)="openZoneModal(zone.id)" *ngIf="zone.level === 0" title="Ajouter une sous-zone">
+              <ion-icon name="add-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+
+            <!-- Bouton Modifier le nom -->
+            <ion-button size="small" fill="clear" color="medium" (click)="editZoneName(zone)" title="Modifier">
+              <ion-icon name="pencil-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+
+            <!-- Bouton Supprimer -->
+            <ion-button size="small" fill="clear" color="danger" (click)="deleteZone(zone.id)" title="Supprimer">
               <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
             </ion-button>
           </td>
