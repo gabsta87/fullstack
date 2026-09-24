@@ -3,7 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {Service} from "../models/common.model";
 import {environment} from "../../../environments/environment";
 import {Observable} from "rxjs";
-import {GeographicZone} from "../models/filter.model";
+import {GeographicZone, GeographicZoneWithParent} from "../models/filter.model";
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +16,7 @@ export class CommonService {
     return this.http.get<Service[]>(`${environment.apiBase}/common/services`);
   }
 
-  getGeographicZones(): Observable<GeographicZone[]> {
-    return this.http.get<GeographicZone[]>(`${environment.apiBase}/common/locations`);
+  getGeographicZones(): Observable<GeographicZoneWithParent[]> {
+    return this.http.get<GeographicZoneWithParent[]>(`${environment.apiBase}/common/locations`);
   }
 }

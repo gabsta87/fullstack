@@ -230,20 +230,26 @@
       </ion-button>
     </div>
 
-    <p-table [value]="(zones$ | async) || []" styleClass="p-datatable-gridlines p-datatable-sm" [tableStyle]="{'min-width': '50rem'}">
+    <p-table [value]="(flatZones$ | async) || []" styleClass="p-datatable-gridlines p-datatable-sm" [tableStyle]="{'min-width': '40rem'}">
       <ng-template pTemplate="header">
         <tr>
-          <th>ID</th>
           <th>Nom de la zone</th>
-          <th>Zone Parente (ID)</th>
           <th style="text-align: center; width: 120px;">Actions</th>
         </tr>
       </ng-template>
+
       <ng-template pTemplate="body" let-zone>
-        <tr>
-          <td>{{ zone.id }}</td>
-          <td><strong>{{ zone.name }}</strong></td>
-          <td>{{ zone.parentId || 'Racine (Aucun)' }}</td>
+        <!-- Application d'une classe CSS spécifique si c'est un parent (level 0) -->
+        <tr [ngClass]="{'parent-zone-row': zone.level === 0}">
+
+          <!-- Nom avec indentation dynamique basée sur le niveau -->
+          <td [style.padding-left.px]="15 + (zone.level * 25)">
+            <span *ngIf="zone.level > 0" style="color: #999; margin-right: 6px;">└─</span>
+            <span [style.font-weight]="zone.level === 0 ? 'bold' : 'normal'">
+            {{ zone.name }}
+          </span>
+          </td>
+
           <td style="text-align: center;">
             <ion-button size="small" fill="clear" color="danger" (click)="deleteZone(zone.id)">
               <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
@@ -251,8 +257,9 @@
           </td>
         </tr>
       </ng-template>
+
       <ng-template pTemplate="emptymessage">
-        <tr><td colspan="4" style="text-align: center;">Aucune zone trouvée.</td></tr>
+        <tr><td colspan="2" style="text-align: center; padding: 20px;">Aucune zone trouvée.</td></tr>
       </ng-template>
     </p-table>
   </div>

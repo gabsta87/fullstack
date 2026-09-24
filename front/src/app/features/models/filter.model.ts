@@ -16,3 +16,9 @@ export interface GeographicZone {
   name: string;
   subZones?: GeographicZone[];
 }
+
+export interface GeographicZoneWithParent{
+  id: number;
+  name: string;
+  parentId: number | null;
+}

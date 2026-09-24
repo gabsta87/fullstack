@@ -12,7 +12,7 @@ import { addOutline, trashOutline } from "ionicons/icons";
 import { ActivatedRoute } from "@angular/router";
 import { BehaviorSubject, firstValueFrom, map, Observable, switchMap } from "rxjs";
 import { Service } from "../../models/common.model";
-import { GeographicZone } from "../../models/filter.model";
+import { GeographicZoneWithParent } from "../../models/filter.model";
 import { CommonService } from "../../services/common-service";
 
 @Component({
@@ -37,12 +37,14 @@ export class AdminDashboardComponent implements OnInit {
   users$!: Observable<any[]>;
   pendingWorkers$!: Observable<any[]>; // Flux dérivé des utilisateurs en attente de certif
   services$!: Observable<Service[]>;
-  zones$!: Observable<GeographicZone[]>;
+  zones$!: Observable<GeographicZoneWithParent[]>;
   auditLogs$!: Observable<any[]>;
 
   // Déclencheurs de rechargement automatiques pour les flux dynamiques
   private servicesRefresh$ = new BehaviorSubject<void>(undefined);
   private zonesRefresh$ = new BehaviorSubject<void>(undefined);
+
+  flatZones$!: Observable<{ id: number; name: string; level: number }[]>;
 
   selectedRole: string | null = null;
 
@@ -84,6 +86,26 @@ export class AdminDashboardComponent implements OnInit {
 
     this.zones$ = this.zonesRefresh$.pipe(
       switchMap(() => this.commonService.getGeographicZones() ? this.commonService.getGeographicZones() : this.route.data.pipe(map(data => data['zones'] || [])))
+    );
+
+    this.flatZones$ = this.zones$.pipe(
+      map(zones => {
+        const parents = zones.filter(z => !z.parentId);
+        const result: { id: number; name: string; level: number }[] = [];
+
+        parents.forEach(parent => {
+          // Ajout du parent
+          result.push({ id: parent.id, name: parent.name, level: 0 });
+
+          // Ajout des enfants directs de ce parent
+          const children = zones.filter(z => z.parentId === parent.id);
+          children.forEach(child => {
+            result.push({ id: child.id, name: child.name, level: 1 });
+          });
+        });
+
+        return result;
+      })
     );
   }
 

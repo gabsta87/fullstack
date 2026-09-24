@@ -3,6 +3,7 @@ package com.serv.controller;
 import com.serv.database.repositories.GeographicZoneRepository;
 import com.serv.database.repositories.ServiceRepository;
 import com.serv.dto.GeographicZoneDTO;
+import com.serv.dto.GeographicZoneWithParentDTO;
 import com.serv.dto.ServiceDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,12 +33,11 @@ public class CommonController {
 
     @Transactional(readOnly = true)
     @GetMapping("/locations")
-    public ResponseEntity<List<GeographicZoneDTO>> getLocationsTree() {
-        List<GeographicZoneDTO> roots = zoneRepository.findAll().stream()
-                .filter(z -> z.getParent() == null)
-                .map(GeographicZoneDTO::from)
+    public ResponseEntity<List<GeographicZoneWithParentDTO>> getLocationsTree() {
+        List<GeographicZoneWithParentDTO> zones = zoneRepository.findAll().stream()
+                .map(GeographicZoneWithParentDTO::from)
                 .toList();
-        return ResponseEntity.ok(roots);
+        return ResponseEntity.ok(zones);
     }
 
 }
