@@ -1,28 +1,29 @@
 <ion-header>
   <ion-toolbar color="primary">
     <!-- Bouton pour fermer le dashboard / revenir en arrière -->
-    <ion-buttons slot="start">
+    <ion-buttons slot="end">
       <ion-button (click)="goBack()" title="Fermer le tableau de bord">
         <ion-icon slot="icon-only" name="close-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
 
-    <ion-title>Tableau de bord de Modération</ion-title>
+    <ion-title>Tableau d'administration</ion-title>
   </ion-toolbar>
 
   <ion-toolbar color="light">
-    <ion-segment [(ngModel)]="currentTab" (ionChange)="onTabChange()">
+    <!-- On délègue l'affichage des compteurs de manière réactive via l'async pipe -->
+    <ion-segment [(ngModel)]="currentTab">
       <ion-segment-button value="users">
-        <ion-label>Utilisateurs ({{ users.length }})</ion-label>
+        <ion-label>Utilisateurs ({{ (users$ | async)?.length || 0 }})</ion-label>
       </ion-segment-button>
       <ion-segment-button value="certifications">
-        <ion-label>Certifications ({{ pendingCertificationsCount }})</ion-label>
+        <ion-label>Certifications ({{ getPendingCertifications(workers$ | async).length }})</ion-label>
       </ion-segment-button>
       <ion-segment-button value="services">
-        <ion-label>Services ({{ services.length }})</ion-label>
+        <ion-label>Services ({{ (services$ | async)?.length || 0 }})</ion-label>
       </ion-segment-button>
       <ion-segment-button value="zones">
-        <ion-label>Zones ({{ zones.length }})</ion-label>
+        <ion-label>Zones ({{ (zones$ | async)?.length || 0 }})</ion-label>
       </ion-segment-button>
       <ion-segment-button value="logs">
         <ion-label>Journal d'Audit</ion-label>
@@ -57,7 +58,7 @@
 
     <p-table
       #dt
-      [value]="users"
+      [value]="(users$ | async) || []"
       [paginator]="true"
       [rows]="20"
       [rowsPerPageOptions]="[20, 50, 100]"
@@ -71,7 +72,7 @@
           <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
           <th pSortableColumn="role">Rôle <p-sortIcon field="role"></p-sortIcon></th>
           <th>Crédit Jours</th>
-          <th pSortableColumn="locked">Statut<p-sortIcon field="locked"></p-sortIcon></th>
+          <th pSortableColumn="locked">Statut <p-sortIcon field="locked"></p-sortIcon></th>
           <th style="text-align: center;">Actions</th>
         </tr>
       </ng-template>
@@ -114,11 +115,11 @@
 
   <!-- ONGLET 2 : CERTIFICATIONS EN ATTENTE -->
   <div *ngIf="currentTab === 'certifications'">
-    <div *ngIf="getPendingCertifications().length === 0" class="ion-text-center ion-padding">
+    <div *ngIf="getPendingCertifications(workers$ | async).length === 0" class="ion-text-center ion-padding">
       <p>Aucune demande de certification en attente 🎉</p>
     </div>
 
-    <ion-card *ngFor="let worker of getPendingCertifications()">
+    <ion-card *ngFor="let worker of getPendingCertifications(workers$ | async)">
       <ion-card-header>
         <ion-card-title>{{ worker.username }}</ion-card-title>
         <ion-card-subtitle>Code attendu sur le panneau : <strong>{{ worker.verificationCode }}</strong></ion-card-subtitle>
@@ -150,7 +151,7 @@
   <!-- ONGLET 3 : JOURNAL D'AUDIT -->
   <div *ngIf="currentTab === 'logs'">
     <ion-list>
-      <ion-item *ngFor="let log of auditLogs">
+      <ion-item *ngFor="let log of (auditLogs$ | async) || []">
         <ion-label>
           <h3><strong>Modérateur :</strong> {{ log.adminUsername || log.admin?.username }}</h3>
           <p><strong>Action :</strong> <ion-badge color="medium">{{ log.actionType }}</ion-badge></p>
@@ -161,6 +162,7 @@
     </ion-list>
   </div>
 
+  <!-- ONGLET 4 : SERVICES -->
   <div *ngIf="currentTab === 'services'">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
       <h2>Liste des Services</h2>
@@ -169,34 +171,58 @@
       </ion-button>
     </div>
 
-    <p-table [value]="services" styleClass="p-datatable-gridlines p-datatable-sm">
+    <!-- On s'abonne à l'observable avec le pipe async directement sur le flux services$ -->
+    <p-table [value]="(services$ | async) || []" dataKey="id" editMode="row">
       <ng-template pTemplate="header">
         <tr>
-          <th>ID</th>
-          <th>Nom</th>
+          <th>Nom du service</th>
           <th>Description</th>
-          <th style="text-align: center; width: 120px;">Actions</th>
+          <th style="width: 10rem">Actions</th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-service>
-        <tr>
-          <td>{{ service.id }}</td>
-          <td><strong>{{ service.name }}</strong></td>
-          <td>{{ service.description || '-' }}</td>
-          <td style="text-align: center;">
-            <ion-button size="small" fill="clear" color="danger" (click)="deleteService(service.id)">
-              <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
-            </ion-button>
+
+      <ng-template pTemplate="body" let-service let-editing="editing" let-ri="rowIndex">
+        <tr [pEditableRow]="service">
+          <!-- Colonne NOM (Editable en input) -->
+          <td>
+            <p-cellEditor>
+              <ng-template pTemplate="input">
+                <input pInputText type="text" [(ngModel)]="service.name" required />
+              </ng-template>
+              <ng-template pTemplate="output">
+                {{ service.name }}
+              </ng-template>
+            </p-cellEditor>
+          </td>
+
+          <!-- Colonne DESCRIPTION (Editable en input direct dans la table) -->
+          <td>
+            <p-cellEditor>
+              <ng-template pTemplate="input">
+                <input pInputText type="text" [(ngModel)]="service.description" placeholder="Aucune description" />
+              </ng-template>
+              <ng-template pTemplate="output">
+                {{ service.description || '—' }}
+              </ng-template>
+            </p-cellEditor>
+          </td>
+
+          <!-- Boutons d'actions PrimeNG -->
+          <td>
+            <div class="flex align-items-center justify-content-center gap-2">
+              <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil" class="p-button-rounded p-button-text"></button>
+              <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check" (click)="onRowEditSave(service)" class="p-button-rounded p-button-text p-button-success mr-2"></button>
+              <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times" class="p-button-rounded p-button-text p-button-danger"></button>
+
+              <button pButton pRipple type="button" icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger" (click)="deleteService(service.id)"></button>
+            </div>
           </td>
         </tr>
-      </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr><td colspan="4" style="text-align: center;">Aucun service trouvé.</td></tr>
       </ng-template>
     </p-table>
   </div>
 
-  <!-- ONGLET : GESTION DES ZONES GÉOGRAPHIQUES -->
+  <!-- ONGLET 5 : ZONES GÉOGRAPHIQUES -->
   <div *ngIf="currentTab === 'zones'">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
       <h2>Zones Géographiques</h2>
@@ -205,7 +231,7 @@
       </ion-button>
     </div>
 
-    <p-table [value]="zones" styleClass="p-datatable-gridlines p-datatable-sm" [tableStyle]="{'min-width': '50rem'}">
+    <p-table [value]="(zones$ | async) || []" styleClass="p-datatable-gridlines p-datatable-sm" [tableStyle]="{'min-width': '50rem'}">
       <ng-template pTemplate="header">
         <tr>
           <th>ID</th>

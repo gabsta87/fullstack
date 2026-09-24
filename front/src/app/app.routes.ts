@@ -16,6 +16,8 @@ import {AdminDashboardComponent} from "./features/components/admin-dashboard/adm
 import {adminOnlyGuard} from "./features/guards/admin-only.guard";
 import {accountRedirectGuard} from "./features/guards/account-redirect-guard";
 import {usersObservableResolver} from "./features/resolver/users-observable-resolver";
+import {serviceObservableResolver} from "./features/resolver/service-observable-resolver";
+import {geographicZoneObservableResolver} from "./features/resolver/geographic-zone-observable-resolver";
 
 export const routes: Routes = [
   {
@@ -51,8 +53,8 @@ export const routes: Routes = [
   { path: 'admin-dashboard', component: AdminDashboardComponent, canActivate: [authGuard, adminOnlyGuard],
     resolve: {
       users: usersObservableResolver,
-      services : servicesResolver,
-      zones: geographicZonesResolver,
+      services : serviceObservableResolver,
+      zones: geographicZoneObservableResolver,
     },
   },
   { path: 'account-router', canActivate: [authGuard, accountRedirectGuard], children: []},

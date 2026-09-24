@@ -9,7 +9,11 @@ import { TagModule } from 'primeng/tag';
 import { AdminService } from '../../services/admin-service';
 import { addIcons } from "ionicons";
 import { addOutline, trashOutline } from "ionicons/icons";
-import {ActivatedRoute} from "@angular/router";
+import { ActivatedRoute } from "@angular/router";
+import { BehaviorSubject, firstValueFrom, map, Observable, switchMap } from "rxjs";
+import { Service } from "../../models/common.model";
+import { GeographicZone } from "../../models/filter.model";
+import { CommonService } from "../../services/common-service";
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -29,14 +33,18 @@ import {ActivatedRoute} from "@angular/router";
 export class AdminDashboardComponent implements OnInit {
   currentTab: 'users' | 'certifications' | 'services' | 'zones' | 'logs' = 'users';
 
-  users: any[] = [];
-  workers: any[] = [];
-  services: any[] = [];
-  zones: any[] = [];
-  auditLogs: any[] = [];
+  // Flux d'observables réactifs principaux
+  users$!: Observable<any[]>;
+  workers$!: Observable<any[]>;
+  services$!: Observable<Service[]>;
+  zones$!: Observable<GeographicZone[]>;
+  auditLogs$!: Observable<any[]>;
+
+  // Déclencheurs de rechargement automatiques pour les flux dynamiques
+  private servicesRefresh$ = new BehaviorSubject<void>(undefined);
+  private zonesRefresh$ = new BehaviorSubject<void>(undefined);
 
   selectedRole: string | null = null;
-  pendingCertificationsCount = 0;
 
   roleOptions = [
     { label: 'Tous les rôles', value: null },
@@ -47,77 +55,38 @@ export class AdminDashboardComponent implements OnInit {
 
   constructor(
     private adminService: AdminService,
+    private commonService: CommonService,
     private alertCtrl: AlertController,
     private location: Location,
-    private route : ActivatedRoute
+    private route: ActivatedRoute
   ) {
-    addIcons({addOutline, trashOutline});
+    addIcons({ addOutline, trashOutline });
   }
 
   ngOnInit() {
-    // Récupération synchrone des données pré-chargées par les resolvers
-    const resolvedData = this.route.snapshot.data;
+    // 1. Récupération des données statiques / initiales depuis les Resolvers de la route
+    this.users$ = this.route.data.pipe(map(data => data['users'] || []));
+    this.workers$ = this.route.data.pipe(map(data => data['workers'] || []));
+    this.auditLogs$ = this.route.data.pipe(map(data => data['logs'] || []));
 
-    this.users = resolvedData['users'] || [];
-    this.workers = resolvedData['workers'] || [];
-    this.services = resolvedData['services'] || [];
-    this.zones = resolvedData['zones'] || [];
+    // 2. Flux dynamiques gérés par réactivité (rechargement automatique via les Subjects)
+    this.services$ = this.servicesRefresh$.pipe(
+      switchMap(() => this.commonService.getWorkersServices())
+    );
 
-    // Optionnel : tu peux aussi t'abonner si les données changent dynamiquement via .data.subscribe(...)
+    this.zones$ = this.zonesRefresh$.pipe(
+      switchMap(() => this.commonService.getGeographicZones() ? this.commonService.getGeographicZones() : this.route.data.pipe(map(data => data['zones'] || [])))
+    );
   }
 
-  // Permet de fermer le dashboard ou de revenir à la page précédente
   goBack() {
     this.location.back();
   }
 
-  onTabChange() {
-    this.loadData();
-  }
-
-  loadData() {
-    // 1. Chargement de la table globale des utilisateurs
-    if (this.currentTab === 'users') {
-      this.adminService.getUsers().subscribe({
-        next: (data) => this.users = data,
-        error: (err) => console.error('Erreur chargement utilisateurs', err)
-      });
-    }
-
-    // 2. Chargement des workers pour l'onglet certifications
-    if (this.currentTab === 'certifications') {
-      this.adminService.getWorkers().subscribe({
-        next: (data) => {
-          this.workers = data;
-          this.pendingCertificationsCount = this.getPendingCertifications().length;
-        },
-        error: (err) => console.error('Erreur chargement workers', err)
-      });
-    }
-
-    // 3. Chargement des services
-    if (this.currentTab === 'services') {
-      // Si tu as un resolver ou une méthode dans l'adminService, tu peux l'appeler ici
-      // Exemple : this.adminService.getServices()... ou via le WorkerService si tu passes par un resolver
-      // Pour l'instant, on peut utiliser un appel via l'AdminService ou stocker un tableau s'il est résolu par la route.
-    }
-
-    // 4. Chargement des zones géographiques
-    if (this.currentTab === 'zones') {
-      // Idem, chargement des zones si nécessaire
-    }
-
-    // 5. Chargement des logs d'audit
-    if (this.currentTab === 'logs') {
-      this.adminService.getAuditLogs().subscribe({
-        next: (logs) => this.auditLogs = logs,
-        error: (err) => console.error('Erreur chargement logs d\'audit', err)
-      });
-    }
-  }
-
-  getPendingCertifications() {
-    return this.workers
+  // Helper pour filtrer les certifications en attente à partir du flux workers$
+  getPendingCertifications(workers: any[] | null): any[] {
+    if (!workers) return [];
+    return workers
       .filter(w => w.certificationStatus === 'PENDING_APPROVAL')
       .sort((a, b) => {
         const dateA = new Date(a.certifiedAt || 0).getTime();
@@ -181,20 +150,27 @@ export class AdminDashboardComponent implements OnInit {
     }
 
     this.adminService.verifyCertification(workerId, approved, reason).subscribe({
-      next: () => this.loadData(),
+      next: () => {
+        // Optionnel : tu pourrais émettre un rafraîchissement sur les workers si besoin
+      },
       error: (err) => console.error('Échec traitement certification', err)
     });
   }
 
-  // ── GESTION DES SERVICES (Via AdminService) ────────────────────────
-  deleteService(id: number) {
-    if (confirm('Voulez-vous vraiment supprimer ce service ?')) {
-      this.adminService.deleteService(id).subscribe({
-        next: (updatedServices) => {
-          this.services = updatedServices;
-        },
-        error: (err) => alert("Erreur lors de la suppression du service")
-      });
+  // ── GESTION DES SERVICES ──────────────────────────────────────────────────
+
+  async onRowEditSave(service: any) {
+    if (!service.name || service.name.trim() === '') return;
+
+    try {
+      await firstValueFrom(this.adminService.updateService({
+        id: service.id,
+        name: service.name.trim(),
+        description: service.description ? service.description.trim() : undefined
+      }));
+      this.servicesRefresh$.next();
+    } catch (error) {
+      console.error("Échec de la mise à jour du service", error);
     }
   }
 
@@ -202,32 +178,37 @@ export class AdminDashboardComponent implements OnInit {
     const name = prompt("Nom du nouveau service :");
     if (!name) return;
     const rawDesc = prompt("Description (optionnelle) :");
+    const description = rawDesc && rawDesc.trim() !== '' ? rawDesc.trim() : undefined;
 
-    const payload: { id: number; name: string; description?: string } = { id: 0, name };
-
-    // On ajoute la description seulement si elle existe et n'est pas vide
-    if (rawDesc && rawDesc.trim() !== '') {
-      payload.description = rawDesc.trim();
+    try {
+      await firstValueFrom(this.adminService.updateService({ id: 0, name, description }));
+      this.servicesRefresh$.next(); // Actualise le flux services$
+    } catch (err: any) {
+      alert("Erreur : " + (err.error || "Impossible de créer le service"));
     }
-
-    // Utilisation de la méthode dédiée dans l'adminService (ou création d'une méthode de sauvegarde globale)
-    this.adminService.updateService(payload).subscribe({
-      next: (res) => { this.services = res; },
-      error: (err) => alert("Erreur : " + (err.error || "Conflit potentiel"))
-    });
   }
 
-  // ── GESTION DES ZONES (Via AdminService) ───────────────────────────
-  deleteZone(id: number) {
+  async deleteService(id: number) {
+    if (confirm('Voulez-vous vraiment supprimer ce service ?')) {
+      try {
+        await firstValueFrom(this.adminService.deleteService(id));
+        this.servicesRefresh$.next(); // Actualise le flux services$
+      } catch (err) {
+        alert("Erreur lors de la suppression du service");
+      }
+    }
+  }
+
+  // ── GESTION DES ZONES GÉOGRAPHIQUES ──────────────────────────────────────
+
+  async deleteZone(id: number) {
     if (confirm('Voulez-vous vraiment supprimer cette zone ?')) {
-      this.adminService.deleteRegion(id).subscribe({
-        next: (updatedZones) => {
-          this.zones = updatedZones;
-        },
-        error: (err) => {
-          alert(err.error?.error || "Impossible de supprimer cette zone.");
-        }
-      });
+      try {
+        await firstValueFrom(this.adminService.deleteRegion(id));
+        this.zonesRefresh$.next(); // Actualise le flux zones$
+      } catch (err: any) {
+        alert(err.error?.error || "Impossible de supprimer cette zone.");
+      }
     }
   }
 
@@ -237,13 +218,11 @@ export class AdminDashboardComponent implements OnInit {
     const parentIdStr = prompt("ID du parent (laisser vide si c'est une racine) :");
     const parentId = parentIdStr ? parseInt(parentIdStr, 10) : 0;
 
-    this.adminService.updateRegion({ id: 0, name, parentId }).subscribe({
-      next: (res) => { this.zones = res; },
-      error: (err) => alert("Erreur lors de la création de la zone")
-    });
-  }
-
-  getZoneName(id:number):string{
-    return this.zones.find((zone) => zone.id === id)?.name || "Zone inconnue";
+    try {
+      await firstValueFrom(this.adminService.updateRegion({ id: 0, name, parentId }));
+      this.zonesRefresh$.next(); // Actualise le flux zones$
+    } catch (err) {
+      alert("Erreur lors de la création de la zone");
+    }
   }
 }

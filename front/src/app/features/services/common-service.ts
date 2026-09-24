@@ -13,10 +13,10 @@ export class CommonService {
   constructor(private http: HttpClient) {}
 
   getWorkersServices() : Observable<Service[]> {
-    return this.http.get<Service[]>(`${environment.apiBase}/services`);
+    return this.http.get<Service[]>(`${environment.apiBase}/common/services`);
   }
 
   getGeographicZones(): Observable<GeographicZone[]> {
-    return this.http.get<GeographicZone[]>(`${environment.apiBase}/locations`);
+    return this.http.get<GeographicZone[]>(`${environment.apiBase}/common/locations`);
   }
 }
