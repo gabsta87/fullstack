@@ -1,23 +1,22 @@
 <ion-header>
   <ion-toolbar color="primary">
-    <!-- Bouton pour fermer le dashboard / revenir en arrière -->
     <ion-buttons slot="end">
       <ion-button (click)="goBack()" title="Fermer le tableau de bord">
         <ion-icon slot="icon-only" name="close-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
 
-    <ion-title>Tableau d'administration</ion-title>
+    <ion-title>Tableau de bord de Modération</ion-title>
   </ion-toolbar>
 
   <ion-toolbar color="light">
-    <!-- On délègue l'affichage des compteurs de manière réactive via l'async pipe -->
+    <!-- Utilisation de pendingWorkers$ pour compter dynamiquement les certifications en attente -->
     <ion-segment [(ngModel)]="currentTab">
       <ion-segment-button value="users">
         <ion-label>Utilisateurs ({{ (users$ | async)?.length || 0 }})</ion-label>
       </ion-segment-button>
       <ion-segment-button value="certifications">
-        <ion-label>Certifications ({{ getPendingCertifications(workers$ | async).length }})</ion-label>
+        <ion-label>Certifications ({{ (pendingWorkers$ | async)?.length || 0 }})</ion-label>
       </ion-segment-button>
       <ion-segment-button value="services">
         <ion-label>Services ({{ (services$ | async)?.length || 0 }})</ion-label>
@@ -113,39 +112,43 @@
     </p-table>
   </div>
 
-  <!-- ONGLET 2 : CERTIFICATIONS EN ATTENTE -->
+  <!-- ONGLET 2 : CERTIFICATIONS EN ATTENTE (Basé sur pendingWorkers$) -->
   <div *ngIf="currentTab === 'certifications'">
-    <div *ngIf="getPendingCertifications(workers$ | async).length === 0" class="ion-text-center ion-padding">
-      <p>Aucune demande de certification en attente 🎉</p>
-    </div>
+    <ng-container *ngIf="pendingWorkers$ | async as pending">
 
-    <ion-card *ngFor="let worker of getPendingCertifications(workers$ | async)">
-      <ion-card-header>
-        <ion-card-title>{{ worker.username }}</ion-card-title>
-        <ion-card-subtitle>Code attendu sur le panneau : <strong>{{ worker.verificationCode }}</strong></ion-card-subtitle>
-      </ion-card-header>
+      <div *ngIf="pending.length === 0" class="ion-text-center ion-padding">
+        <p>Aucune demande de certification en attente 🎉</p>
+      </div>
 
-      <ion-card-content>
-        <p>Comparez la photo récente avec le panneau et le code secret ci-dessous.</p>
+      <ion-card *ngFor="let worker of pending">
+        <ion-card-header>
+          <ion-card-title>{{ worker.username }}</ion-card-title>
+          <ion-card-subtitle>Code attendu sur le panneau : <strong>{{ worker.verificationCode }}</strong></ion-card-subtitle>
+        </ion-card-header>
 
-        <div class="image-verification-box ion-margin-vertical">
-          <img [src]="worker.verificationPhotoUrl || worker.mainPhoto?.url" style="max-height: 250px; border-radius: 8px;" alt="Preuve de certification" />
-        </div>
+        <ion-card-content>
+          <p>Comparez la photo récente avec le panneau et le code secret ci-dessous.</p>
 
-        <ion-row>
-          <ion-col>
-            <ion-button expand="block" color="success" (click)="verifyCertif(worker.id, true)">
-              Approuver la certification
-            </ion-button>
-          </ion-col>
-          <ion-col>
-            <ion-button expand="block" color="danger" (click)="verifyCertif(worker.id, false)">
-              Refuser
-            </ion-button>
-          </ion-col>
-        </ion-row>
-      </ion-card-content>
-    </ion-card>
+          <div class="image-verification-box ion-margin-vertical">
+            <img [src]="worker.verificationPhotoUrl || worker.mainPhoto?.url" style="max-height: 250px; border-radius: 8px;" alt="Preuve de certification" />
+          </div>
+
+          <ion-row>
+            <ion-col>
+              <ion-button expand="block" color="success" (click)="verifyCertif(worker.id, true)">
+                Approuver la certification
+              </ion-button>
+            </ion-col>
+            <ion-col>
+              <ion-button expand="block" color="danger" (click)="verifyCertif(worker.id, false)">
+                Refuser
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-card-content>
+      </ion-card>
+
+    </ng-container>
   </div>
 
   <!-- ONGLET 3 : JOURNAL D'AUDIT -->
@@ -171,7 +174,6 @@
       </ion-button>
     </div>
 
-    <!-- On s'abonne à l'observable avec le pipe async directement sur le flux services$ -->
     <p-table [value]="(services$ | async) || []" dataKey="id" editMode="row">
       <ng-template pTemplate="header">
         <tr>
@@ -183,7 +185,6 @@
 
       <ng-template pTemplate="body" let-service let-editing="editing" let-ri="rowIndex">
         <tr [pEditableRow]="service">
-          <!-- Colonne NOM (Editable en input) -->
           <td>
             <p-cellEditor>
               <ng-template pTemplate="input">
@@ -195,7 +196,6 @@
             </p-cellEditor>
           </td>
 
-          <!-- Colonne DESCRIPTION (Editable en input direct dans la table) -->
           <td>
             <p-cellEditor>
               <ng-template pTemplate="input">
@@ -207,7 +207,6 @@
             </p-cellEditor>
           </td>
 
-          <!-- Boutons d'actions PrimeNG -->
           <td>
             <div class="flex align-items-center justify-content-center gap-2">
               <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil" class="p-button-rounded p-button-text"></button>

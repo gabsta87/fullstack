@@ -35,7 +35,7 @@ export class AdminDashboardComponent implements OnInit {
 
   // Flux d'observables réactifs principaux
   users$!: Observable<any[]>;
-  workers$!: Observable<any[]>;
+  pendingWorkers$!: Observable<any[]>; // Flux dérivé des utilisateurs en attente de certif
   services$!: Observable<Service[]>;
   zones$!: Observable<GeographicZone[]>;
   auditLogs$!: Observable<any[]>;
@@ -64,12 +64,20 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    // 1. Récupération des données statiques / initiales depuis les Resolvers de la route
+    // 1. Récupération des données depuis les Resolvers de la route
     this.users$ = this.route.data.pipe(map(data => data['users'] || []));
-    this.workers$ = this.route.data.pipe(map(data => data['workers'] || []));
     this.auditLogs$ = this.route.data.pipe(map(data => data['logs'] || []));
 
-    // 2. Flux dynamiques gérés par réactivité (rechargement automatique via les Subjects)
+    // 2. Dérivation directe des workers en attente à partir du flux `users$` existant
+    // (Filtre sur le rôle WORKER et le statut de certification PENDING_APPROVAL)
+    this.pendingWorkers$ = this.users$.pipe(
+      map(users => users
+        .filter(u => u.role === 'WORKER' && u.certificationStatus === 'PENDING_APPROVAL')
+        .sort((a, b) => new Date(a.certifiedAt || 0).getTime() - new Date(b.certifiedAt || 0).getTime())
+      )
+    );
+
+    // 3. Flux dynamiques gérés par réactivité
     this.services$ = this.servicesRefresh$.pipe(
       switchMap(() => this.commonService.getWorkersServices())
     );
