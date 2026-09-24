@@ -3,10 +3,7 @@ package com.serv.controller;
 import com.serv.common.Requests;
 import com.serv.database.entities.*;
 import com.serv.database.repositories.*;
-import com.serv.dto.AdminUserDTO;
-import com.serv.dto.GeographicZoneDTO;
-import com.serv.dto.ServiceDTO;
-import com.serv.dto.WorkerFullProfileDTO;
+import com.serv.dto.*;
 import com.serv.service.PasswordResetService;
 import com.serv.service.SseStreamService;
 import lombok.RequiredArgsConstructor;
@@ -166,70 +163,38 @@ public class AdminController {
         return ResponseEntity.ok(serviceRepository.findAll().stream().map(ServiceDTO::from).collect(java.util.stream.Collectors.toList()));
     }
 
-    @DeleteMapping
+    @DeleteMapping("/services/{id}")
     @Transactional
-    public ResponseEntity<List<ServiceDTO>> deleteService(@RequestParam("id") int id, Admin admin) {
-        Service oldService = serviceRepository.findById(id).orElse(null);
-        serviceRepository.deleteById(id);
-
-        logAdminAction(admin, "SERVICE_DELETED", oldService, "Suppression du service "+oldService.getName());
-        sseStreamService.emitEvent(admin.getId(), "SERVICE_DELETED", oldService.getName());
-        return ResponseEntity.ok(serviceRepository.findAll().stream().map(ServiceDTO::from).collect(Collectors.toList()));
-    }
-
-    // ── GESTION DES RÉGIONS & TEXTES LÉGAUX ───────────────────────────────────
-
-    @DeleteMapping("/regions/{id}")
-    @Transactional
-    public ResponseEntity<?> deleteRegion(@PathVariable int id, Admin admin) {
-        int count = workerRepository.countByGeographicZoneId(id);
-        if (count > 0) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", "Impossible de supprimer cette région : " + count + " annonceur(s) y sont rattaché(s)."));
+    public ResponseEntity<?> deleteService(@PathVariable int id, Admin admin) {
+        Service service = serviceRepository.findById(id).orElse(null);
+        if (service == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Service introuvable."));
         }
 
-        geographicZoneRepository.findById(id).ifPresent(zone -> {
-            geographicZoneRepository.delete(zone);
-            // On passe une chaîne JSON descriptive dans la colonne snapshot puisqu'on supprime la clé étrangère
-            logAdminAction(admin, "DELETE_REGION", String.format("{\"id\": %d, \"name\": \"%s\"}", id, zone.getName()), "Suppression de la zone");
-        });
+        // 1. Sauvegarde des infos pour l'audit
+        String serviceName = service.getName();
+        String snapshot = String.format("{\"id\": %d, \"name\": \"%s\"}", id, serviceName);
 
-        return ResponseEntity.ok().body(geographicZoneRepository.findAll().stream().map(GeographicZoneDTO::from).collect(Collectors.toList()));
+        // 2. Suppression effective
+        serviceRepository.delete(service);
+
+        // 3. Enregistrement de l'audit
+        logAdminAction(admin, "DELETE_SERVICE", snapshot, "Suppression du service : " + serviceName);
+
+        // 4. Récupération de la liste mise à jour des services
+        List<ServiceDTO> updatedServices = serviceRepository.findAll()
+                .stream()
+                .map(ServiceDTO::from)
+                .collect(Collectors.toList());
+
+        // 5. Émission de l'événement SSE
+        sseStreamService.emitEvent(admin.getId(), "SERVICES_UPDATED", updatedServices);
+
+        // 6. Retour HTTP final
+        return ResponseEntity.ok(updatedServices);
     }
 
-    @PostMapping("/region")
-    @Transactional
-    public ResponseEntity<List<GeographicZoneDTO>> updateRegion(Admin admin, @RequestBody Requests.RegionRequest region){
-        GeographicZone savedZone = null;
-        if(region.id() == null){
-            // Create new Region
-            GeographicZone newZone = new GeographicZone();
-            newZone.setName(region.name());
-            newZone.setParent(geographicZoneRepository.findById(region.parentId()).orElse(null));
-            savedZone = geographicZoneRepository.save(newZone);
-
-            sseStreamService.emitEvent(admin.getId(), "ZONE_CREATED", newZone);
-            logAdminAction(admin,"ZONE_CREATED", savedZone,"Zone "+ region.name() +" with parent "+ region.parentId() +" created");
-        }else{
-            // Modify existing Region
-            GeographicZone zone = geographicZoneRepository.findById(region.id()).orElse(null);
-            if(zone == null) return ResponseEntity.notFound().build();
-
-            GeographicZone parentZone = geographicZoneRepository.findById(region.parentId()).orElse(null);
-            if(parentZone == null) return ResponseEntity.notFound().build();
-
-            String oldName = zone.getName();
-            String oldParentName = zone.getParent().getName();
-
-            zone.setParent(parentZone);
-            zone.setName(region.name());
-
-            geographicZoneRepository.save(zone);
-
-            sseStreamService.emitEvent(admin.getId(), "ZONE_MODIFIED", zone);
-            logAdminAction(admin,"ZONE_MODIFIED", zone,"Zone "+oldName+" with parent "+ oldParentName +" modified to "+ zone.getName() +" with parent "+ zone.getParent().getName());
-        }
-        return ResponseEntity.ok().body(geographicZoneRepository.findAll().stream().map(GeographicZoneDTO::from).collect(Collectors.toList()));
-    }
+    // ── GESTION DES TEXTES LÉGAUX ───────────────────────────────────
 
     @PostMapping("/legal")
     @Transactional
@@ -244,6 +209,109 @@ public class AdminController {
         logAdminAction(admin, "UPDATE_LEGAL_TEXT", legal, "Mise à jour du texte légal : " + req.key());
         return ResponseEntity.ok(Map.of("success", true));
     }
+
+    // ── GESTION DES RÉGIONS ───────────────────────────────────
+
+    @DeleteMapping("/regions/{id}")
+    @Transactional
+    public ResponseEntity<?> deleteRegion(@PathVariable int id, Admin admin) {
+        GeographicZone zone = geographicZoneRepository.findById(id).orElse(null);
+        if (zone == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Région introuvable."));
+        }
+
+        // 1. Rassembler l'ID de la zone parente et de ses enfants directs (2 niveaux max)
+        List<Integer> zoneIdsToCheck = new java.util.ArrayList<>();
+        zoneIdsToCheck.add(zone.getId());
+
+        // Récupération des enfants (adapte la méthode selon ton repository, ex: findByParentId ou findByParent)
+        List<GeographicZone> childrenZones = geographicZoneRepository.findByParentId(id);
+        for (GeographicZone child : childrenZones) {
+            zoneIdsToCheck.add(child.getId());
+        }
+
+        // 2. Compter les annonceurs présents dans la zone OU dans ses enfants
+        long totalWorkers = workerRepository.countByGeographicZoneIdIn(zoneIdsToCheck);
+        if (totalWorkers > 0) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                    "error", "Impossible de supprimer cette région (ou ses sous-régions) : " + totalWorkers + " annonceur(s) y sont rattaché(s)."
+            ));
+        }
+
+        // 3. Sauvegarde des infos pour le log d'audit
+        String zoneName = zone.getName();
+        String snapshot = String.format("{\"id\": %d, \"name\": \"%s\"}", id, zoneName);
+
+        // 4. Suppression effective (si cascade est configuré sur les enfants, ils seront supprimés avec)
+        geographicZoneRepository.delete(zone);
+
+        // 5. Enregistrement de l'audit
+        logAdminAction(admin, "DELETE_REGION", snapshot, "Suppression de la zone géographique : " + zoneName);
+
+        // 6. Récupération de la liste mise à jour des régions
+        List<GeographicZoneDTO> updatedZones = geographicZoneRepository.findAll()
+                .stream()
+                .map(GeographicZoneDTO::from)
+                .collect(Collectors.toList());
+
+        // 7. Émission de l'événement SSE
+        sseStreamService.emitEvent(admin.getId(), "REGIONS_UPDATED", updatedZones);
+
+        // 8. Retour HTTP final
+        return ResponseEntity.ok(updatedZones);
+    }
+
+    @PostMapping("/region")
+    @Transactional
+    public ResponseEntity<List<GeographicZoneWithParentDTO>> updateRegion(Admin admin, @RequestBody Requests.RegionRequest region){
+        System.out.println("Admin : "+admin);
+        GeographicZone savedZone = null;
+        if(region.id() == null){
+            System.out.println("Region ID = null");
+            // Create new Region
+            GeographicZone newZone = new GeographicZone();
+            newZone.setName(region.name());
+
+            // CORRECTION ICI : On vérifie que le parentId n'est pas null avant de le chercher
+            if (region.parentId() != null) {
+                newZone.setParent(geographicZoneRepository.findById(region.parentId()).orElse(null));
+            } else {
+                newZone.setParent(null);
+            }
+
+            savedZone = geographicZoneRepository.save(newZone);
+
+            sseStreamService.emitEvent(admin.getId(), "ZONE_CREATED", newZone);
+            logAdminAction(admin,"ZONE_CREATED", savedZone,"Zone "+ region.name() +" with "+ (newZone.getParent() != null ? newZone.getParent().getName() : "no parent") +" created");
+        }else{
+            System.out.println("Region ID : "+" "+region.id());
+            // Modify existing Region
+            GeographicZone zone = geographicZoneRepository.findById(region.id()).orElse(null);
+            if(zone == null) return ResponseEntity.notFound().build();
+
+            String oldName = zone.getName();
+            String oldParentName = (zone.getParent() != null) ? zone.getParent().getName() : "Aucun";
+
+            // Gérer le cas où le parentId est fourni ou mis à null
+            if (region.parentId() != null) {
+                GeographicZone parentZone = geographicZoneRepository.findById(region.parentId()).orElse(null);
+                if(parentZone == null) return ResponseEntity.notFound().build();
+                zone.setParent(parentZone);
+            } else {
+                zone.setParent(null); // Devient une zone racine
+            }
+
+            zone.setName(region.name());
+            geographicZoneRepository.save(zone);
+
+            String newParentName = (zone.getParent() != null) ? zone.getParent().getName() : "Aucun";
+            sseStreamService.emitEvent(admin.getId(), "ZONE_MODIFIED", zone);
+            logAdminAction(admin, "ZONE_MODIFIED", zone, "Zone " + oldName + " with parent " + oldParentName + " modified to " + zone.getName() + " with parent " + newParentName);
+        }
+        return ResponseEntity.ok().body(geographicZoneRepository.findAll().stream().map(GeographicZoneWithParentDTO::from).collect(Collectors.toList()));
+    }
+
+    // ── GESTION DES COMMENTAIRES ───────────────────────────────────
 
     @DeleteMapping("/comments/{id}")
     @Transactional

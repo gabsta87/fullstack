@@ -56,8 +56,8 @@ export class AdminService {
     return this.http.post(`${this.apiUrl}/admins/invite`, { email });
   }
 
-  updateRegion(regionData: {id:number,name:string,parentId?:number}): Observable<any> {
-    return this.http.put(`${this.apiUrl}/region/`, regionData);
+  updateRegion(regionData: {id?:number,name:string,parentId?:number}): Observable<any> {
+    return this.http.post(`${this.apiUrl}/region`, regionData);
   }
 
   deleteRegion(regionId: number): Observable<any> {
@@ -65,7 +65,7 @@ export class AdminService {
   }
 
   updateService(serviceData:{id: number, name: string, description?:string}): Observable<any> {
-    return this.http.put(`${this.apiUrl}/service/`, serviceData);
+    return this.http.post(`${this.apiUrl}/service`, serviceData);
   }
 
   deleteService(serviceId: number): Observable<any> {

@@ -8,7 +8,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { TagModule } from 'primeng/tag';
 import { AdminService } from '../../services/admin-service';
 import { addIcons } from "ionicons";
-import { addOutline, trashOutline } from "ionicons/icons";
+import { addOutline, trashOutline, pencilOutline } from "ionicons/icons";
 import { ActivatedRoute } from "@angular/router";
 import { BehaviorSubject, firstValueFrom, map, Observable, switchMap } from "rxjs";
 import { Service } from "../../models/common.model";
@@ -61,7 +61,7 @@ export class AdminDashboardComponent implements OnInit {
     private location: Location,
     private route: ActivatedRoute
   ) {
-    addIcons({ addOutline, trashOutline });
+    addIcons({ addOutline, trashOutline, pencilOutline });
   }
 
   ngOnInit() {
@@ -226,7 +226,6 @@ export class AdminDashboardComponent implements OnInit {
 
     try {
       const payload = {
-        id: 0,
         name: name.trim(),
         ...(parentId !== null ? { parentId } : {}) // N'ajoute parentId que s'il n'est pas null
       };

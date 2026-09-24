@@ -2,6 +2,8 @@ package com.serv.database.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
@@ -26,10 +28,12 @@ public class AdminAuditLog {
 
     @ManyToOne
     @JoinColumn(name = "target_geographic_zone_id")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private GeographicZone regionTarget;
 
     @ManyToOne
     @JoinColumn(name = "target_service_id")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Service serviceTarget;
 
     @ManyToOne
