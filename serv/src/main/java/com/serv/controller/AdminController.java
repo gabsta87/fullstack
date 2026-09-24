@@ -133,9 +133,12 @@ public class AdminController {
     @PostMapping("/service")
     @Transactional
     public ResponseEntity<?> saveOrUpdateService(@RequestBody Requests.ServiceRequest service, Admin admin) {
+        System.out.println("service : "+service);
+
         boolean isUpdate = service.id() != null;
 
         if (isUpdate) {
+            System.out.println("update");
             Service existing = serviceRepository.findById(service.id()).orElse(null);
             if (existing == null) return ResponseEntity.notFound().build();
 
@@ -147,6 +150,7 @@ public class AdminController {
 
             logAdminAction(admin, "UPDATE_SERVICE", existing, String.format("Service %s renamed to %s", oldName, existing.getName()));
         } else {
+            System.out.println("create");
             if (serviceRepository.findByName(service.name()).isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Service already exists");
             }

@@ -174,49 +174,38 @@
       </ion-button>
     </div>
 
-    <p-table [value]="(services$ | async) || []" dataKey="id" editMode="row">
+    <p-table [value]="(services$ | async) || []" styleClass="p-datatable-gridlines p-datatable-sm" [tableStyle]="{'min-width': '40rem'}">
       <ng-template pTemplate="header">
         <tr>
           <th>Nom du service</th>
           <th>Description</th>
-          <th style="width: 10rem">Actions</th>
+          <th style="text-align: center; width: 140px;">Actions</th>
         </tr>
       </ng-template>
 
-      <ng-template pTemplate="body" let-service let-editing="editing" let-ri="rowIndex">
-        <tr [pEditableRow]="service">
+      <ng-template pTemplate="body" let-service>
+        <tr>
           <td>
-            <p-cellEditor>
-              <ng-template pTemplate="input">
-                <input pInputText type="text" [(ngModel)]="service.name" required />
-              </ng-template>
-              <ng-template pTemplate="output">
-                {{ service.name }}
-              </ng-template>
-            </p-cellEditor>
+            <span style="font-weight: 500;">{{ service.name }}</span>
           </td>
+          <td>{{ service.description || '—' }}</td>
 
-          <td>
-            <p-cellEditor>
-              <ng-template pTemplate="input">
-                <input pInputText type="text" [(ngModel)]="service.description" placeholder="Aucune description" />
-              </ng-template>
-              <ng-template pTemplate="output">
-                {{ service.description || '—' }}
-              </ng-template>
-            </p-cellEditor>
-          </td>
+          <td style="text-align: center; white-space: nowrap;">
+            <!-- Bouton Modifier -->
+            <ion-button size="small" fill="clear" color="medium" (click)="editServiceModal(service)" title="Modifier">
+              <ion-icon name="pencil-outline" slot="icon-only"></ion-icon>
+            </ion-button>
 
-          <td>
-            <div class="flex align-items-center justify-content-center gap-2">
-              <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil" class="p-button-rounded p-button-text"></button>
-              <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check" (click)="onRowEditSave(service)" class="p-button-rounded p-button-text p-button-success mr-2"></button>
-              <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times" class="p-button-rounded p-button-text p-button-danger"></button>
-
-              <button pButton pRipple type="button" icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger" (click)="deleteService(service.id)"></button>
-            </div>
+            <!-- Bouton Supprimer -->
+            <ion-button size="small" fill="clear" color="danger" (click)="deleteService(service.id)" title="Supprimer">
+              <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+            </ion-button>
           </td>
         </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="3" style="text-align: center; padding: 20px;">Aucun service trouvé.</td></tr>
       </ng-template>
     </p-table>
   </div>

@@ -64,7 +64,7 @@ export class AdminService {
     return this.http.delete(`${this.apiUrl}/regions/${regionId}`);
   }
 
-  updateService(serviceData:{id: number, name: string, description?:string}): Observable<any> {
+  updateService(serviceData:{id?: number, name: string, description?:string}): Observable<any> {
     return this.http.post(`${this.apiUrl}/service`, serviceData);
   }
 

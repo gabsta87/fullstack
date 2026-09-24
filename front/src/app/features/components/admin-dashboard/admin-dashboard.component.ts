@@ -178,42 +178,63 @@ export class AdminDashboardComponent implements OnInit {
 
   // ── GESTION DES SERVICES ──────────────────────────────────────────────────
 
-  async onRowEditSave(service: any) {
-    if (!service.name || service.name.trim() === '') return;
+  /**
+   * Ouvre les deux modales successives (prompt) pour CRÉER un nouveau service
+   */
+  async openServiceModal() {
+    const name = prompt("Nom du nouveau service :");
+    if (!name || name.trim() === '') return;
+
+    const description = prompt("Description (optionnelle) :") || undefined;
 
     try {
       await firstValueFrom(this.adminService.updateService({
-        id: service.id,
-        name: service.name.trim(),
-        description: service.description ? service.description.trim() : undefined
+        name: name.trim(),
+        description: description ? description.trim() : undefined
       }));
-      this.servicesRefresh$.next();
-    } catch (error) {
-      console.error("Échec de la mise à jour du service", error);
-    }
-  }
-
-  async openServiceModal() {
-    const name = prompt("Nom du nouveau service :");
-    if (!name) return;
-    const rawDesc = prompt("Description (optionnelle) :");
-    const description = rawDesc && rawDesc.trim() !== '' ? rawDesc.trim() : undefined;
-
-    try {
-      await firstValueFrom(this.adminService.updateService({ id: 0, name, description }));
       this.servicesRefresh$.next(); // Actualise le flux services$
     } catch (err: any) {
       alert("Erreur : " + (err.error || "Impossible de créer le service"));
     }
   }
 
+  /**
+   * Ouvre les deux modales successives (prompt) pré-remplies pour MODIFIER un service existant
+   */
+  async editServiceModal(service: any) {
+    const name = prompt("Modifier le nom du service :", service.name);
+    if (name === null) return; // L'utilisateur a cliqué sur Annuler
+    if (name.trim() === '') {
+      alert("Le nom du service ne peut pas être vide.");
+      return;
+    }
+
+    const description = prompt("Modifier la description :", service.description || '');
+    if (description === null) return;
+
+    try {
+      const descriptionTrimmed = description.trim();
+      await firstValueFrom(this.adminService.updateService({
+        id: service.id,
+        name: name.trim(),
+        ...(descriptionTrimmed !== '' ? {descriptionTrimmed} : {})
+      }));
+      this.servicesRefresh$.next(); // Actualise le flux services$
+    } catch (err: any) {
+      alert("Erreur : " + (err.error || "Impossible de modifier le service"));
+    }
+  }
+
+  /**
+   * Supprime un service après confirmation
+   */
   async deleteService(id: number) {
     if (confirm('Voulez-vous vraiment supprimer ce service ?')) {
       try {
         await firstValueFrom(this.adminService.deleteService(id));
         this.servicesRefresh$.next(); // Actualise le flux services$
-      } catch (err) {
-        alert("Erreur lors de la suppression du service");
+      } catch (err: any) {
+        alert("Erreur lors de la suppression du service : " + (err.error?.error || "Erreur inconnue"));
       }
     }
   }
