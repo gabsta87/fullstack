@@ -53,6 +53,8 @@ public class PasswordResetService {
                 + "<p>Cordialement,<br>L'équipe Venus</p>"
                 + "</body></html>";
 
+        System.out.println("Link for email "+user.getEmail()+" to reset password : " + resetUrl);
+
         // 4. Envoi
         mailService.sendHtmlMessage(user.getEmail(), subject, htmlContent);
     }
