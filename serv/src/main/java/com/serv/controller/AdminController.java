@@ -4,6 +4,8 @@ import com.serv.common.Requests;
 import com.serv.database.entities.*;
 import com.serv.database.repositories.*;
 import com.serv.dto.AdminUserDTO;
+import com.serv.dto.GeographicZoneDTO;
+import com.serv.dto.ServiceDTO;
 import com.serv.dto.WorkerFullProfileDTO;
 import com.serv.service.PasswordResetService;
 import com.serv.service.SseStreamService;
@@ -18,10 +20,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/admin")
+@RequestMapping("/admin")
 @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
 public class AdminController {
 
@@ -34,6 +37,7 @@ public class AdminController {
     private final LegalTextRepository legalTextRepository;
     private final SseStreamService sseStreamService;
     private final PasswordResetService passwordResetService;
+    private final CommentRepository commentRepository;
 
     // ── PROFILES & LOGS ──────────────────────────────────────────────────────
 
@@ -50,6 +54,11 @@ public class AdminController {
         return ResponseEntity.ok(users);
     }
 
+    @GetMapping("/services")
+    public ResponseEntity<List<Service>> getServices(){
+        return ResponseEntity.ok(serviceRepository.findAll());
+    }
+
     @GetMapping("/logs")
     public ResponseEntity<List<AdminAuditLog>> getAuditLogs() {
         return ResponseEntity.ok(auditLogRepository.findAll());
@@ -60,7 +69,7 @@ public class AdminController {
     public ResponseEntity<?> updateWorkerStatus(@PathVariable UUID id, @RequestBody Requests.AdminUpdateStatusRequest req, Admin admin) {
         Worker targetWorker = workerRepository.findById(id).orElse(null);
         if (targetWorker == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Worker not found"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
         StringBuilder changes = new StringBuilder();
@@ -81,6 +90,7 @@ public class AdminController {
         Worker savedWorker = workerRepository.save(targetWorker);
         logAdminAction(admin, "UPDATE_WORKER_STATUS", targetWorker, "Statuts modifiés -> " + changes.toString().trim());
 
+        sseStreamService.emitEvent(targetWorker.getId(), "WORKER_STATUS_UPDATED", savedWorker);
         return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
     }
 
@@ -120,40 +130,51 @@ public class AdminController {
 
     // ── GESTION DES SERVICES ────────────────────────
 
-    @GetMapping("/services")
-    public ResponseEntity<List<Service>> getAllServices() {
-        return ResponseEntity.ok(serviceRepository.findAll());
-    }
-
     /**
      * 🔄 SAVE OR UPDATE unique pour les services
      */
-    @PostMapping("/services")
+    @PostMapping("/service")
     @Transactional
-    public ResponseEntity<?> saveOrUpdateService(@RequestBody Service service, Admin admin) {
-        boolean isUpdate = service.getId() != null && service.getId() > 0;
+    public ResponseEntity<?> saveOrUpdateService(@RequestBody Requests.ServiceRequest service, Admin admin) {
+        boolean isUpdate = service.id() != null;
 
         if (isUpdate) {
-            Service existing = serviceRepository.findById(service.getId()).orElse(null);
+            Service existing = serviceRepository.findById(service.id()).orElse(null);
             if (existing == null) return ResponseEntity.notFound().build();
 
             String oldName = existing.getName();
-            existing.setName(service.getName().trim());
+            existing.setName(service.name().trim());
+            if(service.description() != null)
+                existing.setDescription(service.description());
             serviceRepository.save(existing);
 
-            logAdminAction(admin, "UPDATE_SERVICE", existing, String.format("Service renommé : %s -> %s", oldName, existing.getName()));
-            sseStreamService.emitEvent(admin.getId(), "SERVICE_UPDATED", existing);
+            logAdminAction(admin, "UPDATE_SERVICE", existing, String.format("Service %s renamed to %s", oldName, existing.getName()));
         } else {
-            if (serviceRepository.findByName(service.getName()).isPresent()) {
+            if (serviceRepository.findByName(service.name()).isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Service already exists");
             }
-            serviceRepository.save(service);
+            Service newService = new Service();
+            newService.setName(service.name().trim());
+            if(service.description() != null)
+                newService.setDescription(service.description());
+            serviceRepository.save(newService);
 
-            logAdminAction(admin, "CREATE_SERVICE", service, "Création du service : " + service.getName());
-            sseStreamService.emitEvent(admin.getId(), "SERVICE_CREATED", service);
+            logAdminAction(admin, "CREATE_SERVICE", service, "Création du service : " + newService.getName());
         }
 
-        return ResponseEntity.ok(serviceRepository.findAll());
+        sseStreamService.emitEvent(admin.getId(), "SERVICES_UPDATED", serviceRepository.findAll());
+        return ResponseEntity.ok(serviceRepository.findAll().stream().map(ServiceDTO::from).collect(java.util.stream.Collectors.toList()));
+    }
+
+    @DeleteMapping
+    @Transactional
+    public ResponseEntity<List<ServiceDTO>> deleteService(@RequestParam("id") int id, Admin admin) {
+        Service oldService = serviceRepository.findById(id).orElse(null);
+        serviceRepository.deleteById(id);
+
+        logAdminAction(admin, "SERVICE_DELETED", oldService, "Suppression du service "+oldService.getName());
+        sseStreamService.emitEvent(admin.getId(), "SERVICE_DELETED", oldService.getName());
+        return ResponseEntity.ok(serviceRepository.findAll().stream().map(ServiceDTO::from).collect(Collectors.toList()));
     }
 
     // ── GESTION DES RÉGIONS & TEXTES LÉGAUX ───────────────────────────────────
@@ -172,7 +193,42 @@ public class AdminController {
             logAdminAction(admin, "DELETE_REGION", String.format("{\"id\": %d, \"name\": \"%s\"}", id, zone.getName()), "Suppression de la zone");
         });
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(geographicZoneRepository.findAll().stream().map(GeographicZoneDTO::from).collect(Collectors.toList()));
+    }
+
+    @PostMapping("/region")
+    @Transactional
+    public ResponseEntity<List<GeographicZoneDTO>> updateRegion(Admin admin, @RequestBody Requests.RegionRequest region){
+        GeographicZone savedZone = null;
+        if(region.id() == null){
+            // Create new Region
+            GeographicZone newZone = new GeographicZone();
+            newZone.setName(region.name());
+            newZone.setParent(geographicZoneRepository.findById(region.parentId()).orElse(null));
+            savedZone = geographicZoneRepository.save(newZone);
+
+            sseStreamService.emitEvent(admin.getId(), "ZONE_CREATED", newZone);
+            logAdminAction(admin,"ZONE_CREATED", savedZone,"Zone "+ region.name() +" with parent "+ region.parentId() +" created");
+        }else{
+            // Modify existing Region
+            GeographicZone zone = geographicZoneRepository.findById(region.id()).orElse(null);
+            if(zone == null) return ResponseEntity.notFound().build();
+
+            GeographicZone parentZone = geographicZoneRepository.findById(region.parentId()).orElse(null);
+            if(parentZone == null) return ResponseEntity.notFound().build();
+
+            String oldName = zone.getName();
+            String oldParentName = zone.getParent().getName();
+
+            zone.setParent(parentZone);
+            zone.setName(region.name());
+
+            geographicZoneRepository.save(zone);
+
+            sseStreamService.emitEvent(admin.getId(), "ZONE_MODIFIED", zone);
+            logAdminAction(admin,"ZONE_MODIFIED", zone,"Zone "+oldName+" with parent "+ oldParentName +" modified to "+ zone.getName() +" with parent "+ zone.getParent().getName());
+        }
+        return ResponseEntity.ok().body(geographicZoneRepository.findAll().stream().map(GeographicZoneDTO::from).collect(Collectors.toList()));
     }
 
     @PostMapping("/legal")
@@ -187,6 +243,16 @@ public class AdminController {
 
         logAdminAction(admin, "UPDATE_LEGAL_TEXT", legal, "Mise à jour du texte légal : " + req.key());
         return ResponseEntity.ok(Map.of("success", true));
+    }
+
+    @DeleteMapping("/comments/{id}")
+    @Transactional
+    public ResponseEntity<?> deleteComment(@PathVariable Long id, Admin admin) {
+        if(commentRepository.findById(id).isEmpty()) return ResponseEntity.notFound().build();
+        Worker targetWorker = commentRepository.findById(id).get().getWorker();
+        commentRepository.deleteById(id);
+        logAdminAction(admin, "COMMENT_DELETED", id, "Comment deleted on worker " + targetWorker.getEmail());
+        return ResponseEntity.ok().body(targetWorker);
     }
 
     // ── ADMINS INVITATIONS ────────────────────────────────────

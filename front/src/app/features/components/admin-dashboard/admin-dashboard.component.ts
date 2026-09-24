@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AlertController, IonicModule } from '@ionic/angular';
 import { TableModule } from 'primeng/table';
@@ -7,6 +7,9 @@ import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
 import { TagModule } from 'primeng/tag';
 import { AdminService } from '../../services/admin-service';
+import { addIcons } from "ionicons";
+import { addOutline, trashOutline } from "ionicons/icons";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -24,10 +27,12 @@ import { AdminService } from '../../services/admin-service';
   styleUrls: ['./admin-dashboard.component.scss']
 })
 export class AdminDashboardComponent implements OnInit {
-  currentTab: 'users' | 'certifications' | 'logs' = 'users';
+  currentTab: 'users' | 'certifications' | 'services' | 'zones' | 'logs' = 'users';
 
   users: any[] = [];
-  workers: any[] = []; // Liste dédiée pour les certifications
+  workers: any[] = [];
+  services: any[] = [];
+  zones: any[] = [];
   auditLogs: any[] = [];
 
   selectedRole: string | null = null;
@@ -42,11 +47,28 @@ export class AdminDashboardComponent implements OnInit {
 
   constructor(
     private adminService: AdminService,
-    private alertCtrl: AlertController
-  ) {}
+    private alertCtrl: AlertController,
+    private location: Location,
+    private route : ActivatedRoute
+  ) {
+    addIcons({addOutline, trashOutline});
+  }
 
   ngOnInit() {
-    this.loadData();
+    // Récupération synchrone des données pré-chargées par les resolvers
+    const resolvedData = this.route.snapshot.data;
+
+    this.users = resolvedData['users'] || [];
+    this.workers = resolvedData['workers'] || [];
+    this.services = resolvedData['services'] || [];
+    this.zones = resolvedData['zones'] || [];
+
+    // Optionnel : tu peux aussi t'abonner si les données changent dynamiquement via .data.subscribe(...)
+  }
+
+  // Permet de fermer le dashboard ou de revenir à la page précédente
+  goBack() {
+    this.location.back();
   }
 
   onTabChange() {
@@ -73,7 +95,19 @@ export class AdminDashboardComponent implements OnInit {
       });
     }
 
-    // 3. Chargement des logs d'audit
+    // 3. Chargement des services
+    if (this.currentTab === 'services') {
+      // Si tu as un resolver ou une méthode dans l'adminService, tu peux l'appeler ici
+      // Exemple : this.adminService.getServices()... ou via le WorkerService si tu passes par un resolver
+      // Pour l'instant, on peut utiliser un appel via l'AdminService ou stocker un tableau s'il est résolu par la route.
+    }
+
+    // 4. Chargement des zones géographiques
+    if (this.currentTab === 'zones') {
+      // Idem, chargement des zones si nécessaire
+    }
+
+    // 5. Chargement des logs d'audit
     if (this.currentTab === 'logs') {
       this.adminService.getAuditLogs().subscribe({
         next: (logs) => this.auditLogs = logs,
@@ -82,18 +116,13 @@ export class AdminDashboardComponent implements OnInit {
     }
   }
 
-  /**
-   * Filtre les workers en attente de certification et les trie
-   * par date de demande (du plus ancien au plus récent, ou inversement via certifiedAt/createdAt)
-   */
   getPendingCertifications() {
     return this.workers
       .filter(w => w.certificationStatus === 'PENDING_APPROVAL')
       .sort((a, b) => {
-        // Tri par date (exemple basé sur certifiedAt ou une date de soumission)
         const dateA = new Date(a.certifiedAt || 0).getTime();
         const dateB = new Date(b.certifiedAt || 0).getTime();
-        return dateA - dateB; // Du plus ancien au plus récent
+        return dateA - dateB;
       });
   }
 
@@ -155,5 +184,66 @@ export class AdminDashboardComponent implements OnInit {
       next: () => this.loadData(),
       error: (err) => console.error('Échec traitement certification', err)
     });
+  }
+
+  // ── GESTION DES SERVICES (Via AdminService) ────────────────────────
+  deleteService(id: number) {
+    if (confirm('Voulez-vous vraiment supprimer ce service ?')) {
+      this.adminService.deleteService(id).subscribe({
+        next: (updatedServices) => {
+          this.services = updatedServices;
+        },
+        error: (err) => alert("Erreur lors de la suppression du service")
+      });
+    }
+  }
+
+  async openServiceModal() {
+    const name = prompt("Nom du nouveau service :");
+    if (!name) return;
+    const rawDesc = prompt("Description (optionnelle) :");
+
+    const payload: { id: number; name: string; description?: string } = { id: 0, name };
+
+    // On ajoute la description seulement si elle existe et n'est pas vide
+    if (rawDesc && rawDesc.trim() !== '') {
+      payload.description = rawDesc.trim();
+    }
+
+    // Utilisation de la méthode dédiée dans l'adminService (ou création d'une méthode de sauvegarde globale)
+    this.adminService.updateService(payload).subscribe({
+      next: (res) => { this.services = res; },
+      error: (err) => alert("Erreur : " + (err.error || "Conflit potentiel"))
+    });
+  }
+
+  // ── GESTION DES ZONES (Via AdminService) ───────────────────────────
+  deleteZone(id: number) {
+    if (confirm('Voulez-vous vraiment supprimer cette zone ?')) {
+      this.adminService.deleteRegion(id).subscribe({
+        next: (updatedZones) => {
+          this.zones = updatedZones;
+        },
+        error: (err) => {
+          alert(err.error?.error || "Impossible de supprimer cette zone.");
+        }
+      });
+    }
+  }
+
+  async openZoneModal() {
+    const name = prompt("Nom de la nouvelle zone :");
+    if (!name) return;
+    const parentIdStr = prompt("ID du parent (laisser vide si c'est une racine) :");
+    const parentId = parentIdStr ? parseInt(parentIdStr, 10) : 0;
+
+    this.adminService.updateRegion({ id: 0, name, parentId }).subscribe({
+      next: (res) => { this.zones = res; },
+      error: (err) => alert("Erreur lors de la création de la zone")
+    });
+  }
+
+  getZoneName(id:number):string{
+    return this.zones.find((zone) => zone.id === id)?.name || "Zone inconnue";
   }
 }

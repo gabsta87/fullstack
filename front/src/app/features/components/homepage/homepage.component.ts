@@ -37,6 +37,7 @@ import { GalleryStateService } from '../../services/gallery-state.service';
 import { sparklesOutline } from 'ionicons/icons';
 import {ClientAccountService} from "../../services/client-account.service";
 import {KeyValuePipe, NgForOf, NgIf} from "@angular/common";
+import {Service} from "../../models/common.model";
 
 @Component({
   selector: 'app-homepage',
@@ -91,7 +92,7 @@ export class HomepageComponent implements OnInit {
   private searchSubject = new Subject<string>();
 
   allWorkers: WorkerSimpleProfile[] = [];
-  allServices: string[] = [];
+  allServices: Service[] = [];
   parentZones!: GeographicZone[];
   availableChildZones: GeographicZone[] = [];
   filters: GalleryFilters = {};

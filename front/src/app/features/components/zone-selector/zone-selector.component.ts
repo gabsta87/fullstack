@@ -4,12 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { locationOutline, businessOutline } from 'ionicons/icons';
-
-export interface GeographicZone {
-  id: number;
-  name: string;
-  subZones?: GeographicZone[];
-}
+import { GeographicZone } from "../../models/filter.model";
 
 @Component({
   selector: 'zone-selector',

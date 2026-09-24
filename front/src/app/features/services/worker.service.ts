@@ -7,6 +7,7 @@ import { catchError } from 'rxjs/operators';
 import { WorkerSimpleProfile, WorkerFullProfile } from '../models/user.model';
 import {environment} from "../../../environments/environment";
 import {GalleryFilters, GeographicZone} from "../models/filter.model";
+import {Service} from "../models/common.model";
 
 @Injectable({ providedIn: 'root' })
 export class WorkerService {
@@ -61,12 +62,12 @@ export class WorkerService {
     return this.profileCache.get(workerId) ?? null;
   }
 
-  getWorkersServices() {
-    return this.http.get<string[]>(`${this.baseUrl}/services`);
+  async getWorkersServices() : Promise<Service[]> {
+    return firstValueFrom(this.http.get<Service[]>(`${environment.apiBase}/common/services`));
   }
 
   async getGeographicZones(): Promise<GeographicZone[]> {
-    return firstValueFrom(this.http.get<GeographicZone[]>(`${this.baseUrl}/locations`));
+    return firstValueFrom(this.http.get<GeographicZone[]>(`${environment.apiBase}/common/locations`));
   }
 
   private profileCache = new Map<string, WorkerFullProfile>();

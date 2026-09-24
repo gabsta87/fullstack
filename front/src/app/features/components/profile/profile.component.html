@@ -151,15 +151,15 @@
         </button>
 
         <div class="contact-container">
-          <h2>Contacter {{ worker?.username }}</h2>
+          <h2>Contacter {{ worker.username }}</h2>
 
-          <div class="contact-actions" *ngIf="worker?.phone">
-            <a class="contact-btn call-btn" [href]="'tel:' + worker?.phone">
+          <div class="contact-actions" *ngIf="worker.phone">
+            <a class="contact-btn call-btn" [href]="'tel:' + worker.phone">
               <ion-icon name="call-outline"></ion-icon>
-              <span>{{ worker?.phone }}</span>
+              <span>{{ worker.phone }}</span>
             </a>
 
-            <a class="contact-btn whatsapp-btn" [href]="'https://wa.me/' + worker?.phone" target="_blank">
+            <a class="contact-btn whatsapp-btn" [href]="'https://wa.me/' + worker.phone" target="_blank">
               <ion-icon name="logo-whatsapp"></ion-icon>
               <span>WhatsApp</span>
             </a>

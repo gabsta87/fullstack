@@ -15,6 +15,7 @@ import {ResetPasswordComponent} from "./features/components/reset-password/reset
 import {AdminDashboardComponent} from "./features/components/admin-dashboard/admin-dashboard.component";
 import {adminOnlyGuard} from "./features/guards/admin-only.guard";
 import {accountRedirectGuard} from "./features/guards/account-redirect-guard";
+import {usersObservableResolver} from "./features/resolver/users-observable-resolver";
 
 export const routes: Routes = [
   {
@@ -47,7 +48,13 @@ export const routes: Routes = [
       locations: geographicZonesResolver,
     }, canActivate: [authGuard, workerOnlyGuard] },
   { path: 'reset-password', component: ResetPasswordComponent },
-  { path: 'admin-dashboard', component: AdminDashboardComponent, canActivate: [authGuard, adminOnlyGuard]},
+  { path: 'admin-dashboard', component: AdminDashboardComponent, canActivate: [authGuard, adminOnlyGuard],
+    resolve: {
+      users: usersObservableResolver,
+      services : servicesResolver,
+      zones: geographicZonesResolver,
+    },
+  },
   { path: 'account-router', canActivate: [authGuard, accountRedirectGuard], children: []},
 
   { path: '**', redirectTo: '', pathMatch: 'full' },

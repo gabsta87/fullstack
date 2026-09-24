@@ -78,22 +78,6 @@ public class WorkerController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/services")
-    public ResponseEntity<List<String>> getWorkerServices() {
-        return ResponseEntity.ok(serviceRepository.findAll().stream()
-                .map(Service::getName)
-                .collect(Collectors.toList()));
-    }
-
-    @GetMapping("/locations")
-    public ResponseEntity<List<GeographicZoneDTO>> getLocationsTree() {
-        List<GeographicZoneDTO> roots = zoneRepository.findAll().stream()
-                .filter(z -> z.getParent() == null)
-                .map(GeographicZoneDTO::from)
-                .toList();
-        return ResponseEntity.ok(roots);
-    }
-
     /**
      * Returns up to 5 preview thumbnail URLs for the hover carousel.
      * Only previewThumbUrl strings — no other data needed by the frontend.

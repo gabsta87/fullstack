@@ -8,6 +8,10 @@ public class Requests {
 
     public record RegisterRequest(String email, String password) { }
 
+    public record RegionRequest(Integer id, String name, Integer parentId) { }
+
+    public record ServiceRequest(Integer id, String name, String description) { }
+
     public record ForgotPasswordRequest (String email) { }
 
     public record AdminUpdateStatusRequest(

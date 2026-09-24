@@ -1,15 +1,28 @@
 <ion-header>
   <ion-toolbar color="primary">
+    <!-- Bouton pour fermer le dashboard / revenir en arrière -->
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" title="Fermer le tableau de bord">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
     <ion-title>Tableau de bord de Modération</ion-title>
   </ion-toolbar>
 
   <ion-toolbar color="light">
     <ion-segment [(ngModel)]="currentTab" (ionChange)="onTabChange()">
       <ion-segment-button value="users">
-        <ion-label>Utilisateurs</ion-label>
+        <ion-label>Utilisateurs ({{ users.length }})</ion-label>
       </ion-segment-button>
       <ion-segment-button value="certifications">
         <ion-label>Certifications ({{ pendingCertificationsCount }})</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="services">
+        <ion-label>Services ({{ services.length }})</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="zones">
+        <ion-label>Zones ({{ zones.length }})</ion-label>
       </ion-segment-button>
       <ion-segment-button value="logs">
         <ion-label>Journal d'Audit</ion-label>
@@ -46,8 +59,8 @@
       #dt
       [value]="users"
       [paginator]="true"
-      [rows]="10"
-      [rowsPerPageOptions]="[10, 25, 50]"
+      [rows]="20"
+      [rowsPerPageOptions]="[20, 50, 100]"
       [globalFilterFields]="['username', 'email', 'description']"
       styleClass="p-datatable-gridlines p-datatable-sm"
       [tableStyle]="{'min-width': '60rem'}">
@@ -58,7 +71,7 @@
           <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
           <th pSortableColumn="role">Rôle <p-sortIcon field="role"></p-sortIcon></th>
           <th>Crédit Jours</th>
-          <th>Statut</th>
+          <th pSortableColumn="locked">Statut<p-sortIcon field="locked"></p-sortIcon></th>
           <th style="text-align: center;">Actions</th>
         </tr>
       </ng-template>
@@ -115,7 +128,6 @@
         <p>Comparez la photo récente avec le panneau et le code secret ci-dessous.</p>
 
         <div class="image-verification-box ion-margin-vertical">
-          <!-- Adapte l'attribut selon le champ exact de ton entité/DTO worker (ex: verificationPhotoUrl ou mainPhoto) -->
           <img [src]="worker.verificationPhotoUrl || worker.mainPhoto?.url" style="max-height: 250px; border-radius: 8px;" alt="Preuve de certification" />
         </div>
 
@@ -147,6 +159,77 @@
         </ion-label>
       </ion-item>
     </ion-list>
+  </div>
+
+  <div *ngIf="currentTab === 'services'">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+      <h2>Liste des Services</h2>
+      <ion-button color="primary" size="small" (click)="openServiceModal()">
+        <ion-icon slot="start" name="add-outline"></ion-icon> Ajouter un service
+      </ion-button>
+    </div>
+
+    <p-table [value]="services" styleClass="p-datatable-gridlines p-datatable-sm">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>ID</th>
+          <th>Nom</th>
+          <th>Description</th>
+          <th style="text-align: center; width: 120px;">Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-service>
+        <tr>
+          <td>{{ service.id }}</td>
+          <td><strong>{{ service.name }}</strong></td>
+          <td>{{ service.description || '-' }}</td>
+          <td style="text-align: center;">
+            <ion-button size="small" fill="clear" color="danger" (click)="deleteService(service.id)">
+              <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="4" style="text-align: center;">Aucun service trouvé.</td></tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- ONGLET : GESTION DES ZONES GÉOGRAPHIQUES -->
+  <div *ngIf="currentTab === 'zones'">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+      <h2>Zones Géographiques</h2>
+      <ion-button color="primary" size="small" (click)="openZoneModal()">
+        <ion-icon slot="start" name="add-outline"></ion-icon> Ajouter une zone
+      </ion-button>
+    </div>
+
+    <p-table [value]="zones" styleClass="p-datatable-gridlines p-datatable-sm" [tableStyle]="{'min-width': '50rem'}">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>ID</th>
+          <th>Nom de la zone</th>
+          <th>Zone Parente (ID)</th>
+          <th style="text-align: center; width: 120px;">Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-zone>
+        <tr>
+          <td>{{ zone.id }}</td>
+          <td><strong>{{ zone.name }}</strong></td>
+          <td>{{ zone.parentId || 'Racine (Aucun)' }}</td>
+          <td style="text-align: center;">
+            <ion-button size="small" fill="clear" color="danger" (click)="deleteZone(zone.id)">
+              <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="4" style="text-align: center;">Aucune zone trouvée.</td></tr>
+      </ng-template>
+    </p-table>
   </div>
 
 </ion-content>

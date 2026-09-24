@@ -95,7 +95,7 @@
           <ion-col size="12" size-sm="4">
             <ion-item lines="none" class="filter-input-item">
               <ion-select aria-label="Services" interface="popover" [multiple]="true" [(ngModel)]="filters.services" (ionChange)="loadPage(true)" placeholder="Tous les services">
-                <ion-select-option *ngFor="let service of allServices" [value]="service">{{ service }}</ion-select-option>
+                <ion-select-option *ngFor="let service of allServices" [value]="service.name">{{ service.name }}</ion-select-option>
               </ion-select>
             </ion-item>
           </ion-col>

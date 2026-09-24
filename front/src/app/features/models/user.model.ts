@@ -82,3 +82,12 @@ export interface WorkerProfileForAdmin{
   age : number
   certificationStatus: string;
 }
+
+export interface UserSimpleForAdmin {
+  id: string;
+  username: string;
+  email: string;
+  role: string;
+  locked: boolean;
+  certified: boolean;
+}

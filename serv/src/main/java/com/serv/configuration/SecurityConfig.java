@@ -89,7 +89,7 @@ public class SecurityConfig {
                         // On autorise l'accès public technique à l'endpoint du stream pour que notre contrôleur lise le token de l'URL
                         .requestMatchers("/account/stream").permitAll()
                         .requestMatchers("/error", "/auth/**", "/session-check").permitAll()
-                        .requestMatchers("/public/**", "/gallery/**", "/workers/**", "/media/**").permitAll()
+                        .requestMatchers("/public/**","/common/**", "/admin/**", "/gallery/**", "/workers/**", "/media/**").permitAll()
                         .requestMatchers("/auth/reset-password", "/auth/reset-password/confirm").permitAll()
 
                         // 🎯 2. Les règles restrictives globales en DEUXIÈME
