@@ -59,7 +59,7 @@ export class WorkerAccountService {
     return updatedAccount;
   }
 
-  async updateServices(services: string[]): Promise<WorkerPrivateAccount> {
+  async updateServices(services: number[]): Promise<WorkerPrivateAccount> {
     const updatedAccount = await firstValueFrom(
       this.http.patch<WorkerPrivateAccount>(`${this.base}/updateservices`, services)
     );

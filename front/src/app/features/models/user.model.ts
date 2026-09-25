@@ -1,5 +1,6 @@
 import {PhotoItem, Review, VideoItem} from "./items.model";
 import {GeographicZone} from "./filter.model";
+import {Service} from "./common.model";
 
 export interface BaseUser {
   id: string;
@@ -34,7 +35,7 @@ export interface WorkerSimpleProfile extends BaseUser{
   hairColor: string;
   mainThumbUrl: string;
   previewThumbUrls: string[];
-  services: string[];
+  servicesId: number[];
   certificationStatus: string;
 }
 
@@ -56,7 +57,7 @@ export interface WorkerProfileUpdate {
   description?: string;
   geographicZoneId?: number;
   bodyType?: string;
-  services?: string[];
+  servicesId?: number[];
   eyeColor?: string;
   hairColor?: string;
   phone?: string;
@@ -76,7 +77,7 @@ export interface WorkerProfileForAdmin{
   birthdate: string;
   available: boolean;
   banned : boolean;
-  services: string[];
+  servicesId: number[];
   description: string;
   phone: string;
   age : number

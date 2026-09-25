@@ -178,9 +178,9 @@
                     <ion-row>
                       <ion-col *ngFor="let service of allServices">
                         <ion-checkbox
-                                      [checked]="me.services.includes(service)"
-                                      (click)="toggleService(me, service)">
-                          <ion-label>{{ service }}</ion-label>
+                          [checked]="me.servicesId?.includes(service.id) ?? false"
+                          (ionChange)="toggleService(me, service.id, $event)">
+                          <ion-label>{{ service.name }}</ion-label>
                         </ion-checkbox>
                       </ion-col>
                     </ion-row>

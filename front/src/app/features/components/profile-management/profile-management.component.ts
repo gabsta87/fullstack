@@ -6,7 +6,7 @@ import {HeaderComponent} from "../header/header.component";
 import {filter, map, Observable} from "rxjs";
 import {BODY_TYPE_LABELS, EYE_COLOR_LABELS, HAIR_COLOR_LABELS, PhotoItem, VideoItem} from "../../models/items.model";
 import {ActivatedRoute} from "@angular/router";
-import {WorkerFullProfile, WorkerPrivateAccount, WorkerProfileUpdate} from "../../models/user.model";
+import {WorkerPrivateAccount, WorkerProfileUpdate} from "../../models/user.model";
 import {WorkerAccountService} from "../../services/worker-account.service";
 import {tap} from "rxjs/operators";
 import {addIcons} from "ionicons";
@@ -24,6 +24,7 @@ import {AccountSettingsComponent} from "../account-settings/account-settings.com
 import {GeographicZone} from "../../models/filter.model";
 import {ZoneSelectorComponent} from "../zone-selector/zone-selector.component";
 import {environment} from "../../../../environments/environment";
+import {Service} from "../../models/common.model";
 
 @Component({
   selector: 'app-profile-management',
@@ -37,7 +38,7 @@ export class ProfileManagementComponent implements OnInit {
   activeTab     : 'profile' | 'photos' | 'settings' | 'subscription' = 'profile';
 
   currentUser$! : Observable<WorkerPrivateAccount>;
-  allServices!  : string[];
+  allServices!  : Service[];
   photos!: (PhotoItem & { isMain: boolean })[];
   videos!: VideoItem[];
   allLocations! : GeographicZone[];
@@ -72,12 +73,11 @@ export class ProfileManagementComponent implements OnInit {
 
         // 🎯 On mappe en calculant le booléen 'isMain'
         this.photos = (user.photos || []).map(photo => {
-          // Une photo est la principale si son URL brute correspond à celle du profil
           const isCurrentMain = photo.mainThumbUrl === user.mainThumbUrl;
 
           return {
             ...photo,
-            isMain: isCurrentMain, // On injecte la propriété manquante ici !
+            isMain: isCurrentMain,
             previewThumbUrl: photo.previewThumbUrl?.startsWith('http')
               ? photo.previewThumbUrl
               : `${environment.apiBase}${photo.previewThumbUrl}`,
@@ -90,12 +90,9 @@ export class ProfileManagementComponent implements OnInit {
         this.childZoneId = user.geographicZone?.id;
 
         if (this.childZoneId) {
-          // On cherche le parent dans "allLocations" qui possède cette sous-zone
           const parentZone = this.allLocations.find(parent =>
             parent.subZones?.some(sub => sub.id === this.childZoneId)
           );
-
-          // Si on a trouvé un parent, on stocke son ID, sinon ça veut dire que l'utilisateur a sélectionné une zone qui est déjà un parent
           this.parentZoneId = parentZone ? parentZone.id : this.childZoneId;
         } else {
           this.parentZoneId = undefined;
@@ -135,7 +132,7 @@ export class ProfileManagementComponent implements OnInit {
       case 'description':return !me.description || me.description.trim() === '';
       case 'geographicZoneId':return !me.geographicZone || !me.geographicZone.id || me.geographicZone.id == -1;
       case 'phone':return !me.phone || me.phone.trim() === '';
-      case 'services':return !me.services || me.services.length === 0;
+      case 'services':return !me.servicesId || me.servicesId.length === 0;
       case 'photos':return !this.photos || this.photos.length === 0;
       case 'birthday':return !me.birthdate;
       default:return false;
@@ -160,15 +157,19 @@ export class ProfileManagementComponent implements OnInit {
 
   // ── Value modification ─────────────────────────────────────────────────────────
 
-  async toggleService(me: WorkerFullProfile, service: string) {
-    let updatedServices = [...me.services];
-    if (updatedServices.includes(service)) {
-      updatedServices = updatedServices.filter(s => s !== service);
-    } else {
-      updatedServices.push(service);
-    }
-    console.log("Services à envoyer au serveur:", updatedServices);
+  async toggleService(me: WorkerPrivateAccount, serviceId: number, event: any) {
+    const isChecked = event.detail.checked;
+    let updatedServices = [...(me.servicesId || [])];
 
+    if (isChecked) {
+      if (!updatedServices.includes(serviceId)) {
+        updatedServices.push(serviceId);
+      }
+    } else {
+      updatedServices = updatedServices.filter(s => s !== serviceId);
+    }
+
+    console.log("Services à envoyer au serveur:", updatedServices);
     await this.accountService.updateServices(updatedServices);
   }
 
@@ -187,7 +188,6 @@ export class ProfileManagementComponent implements OnInit {
       this.lastServerState[field] = value;
     } catch (error) {
       console.error(`Échec de la mise à jour pour ${field}`, error);
-      // En cas d'erreur réseau, on remet l'ancienne valeur du serveur dans l'input
       (this.profileForm as any)[field] = this.lastServerState[field];
     }
   }
@@ -204,13 +204,11 @@ export class ProfileManagementComponent implements OnInit {
     this.isZoneActive = false;
   }
 
-  // Déclenché par l'input file classique
   async onFileSelected(event: any) {
     const files = event.target.files;
     if (files && files.length > 0) {
       await this.processAndUploadFiles(Array.from(files));
     }
-    // Réinitialise l'input pour permettre de re-sélectionner le même fichier si besoin
     event.target.value = '';
   }
 
@@ -224,7 +222,6 @@ export class ProfileManagementComponent implements OnInit {
     }
   }
 
-  // 🎯 Cœur de la logique : Filtrage et séparation Photos / Vidéos
   private async processAndUploadFiles(fileList: File[]) {
     const allowedImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
     const allowedVideoTypes = ['video/mp4', 'video/quicktime', 'video/webm'];
@@ -261,23 +258,20 @@ export class ProfileManagementComponent implements OnInit {
   }
 
   onDragOver(event: DragEvent, index: number) {
-    event.preventDefault(); // Indispensable pour autoriser le "drop"
+    event.preventDefault();
     this.dragOverIndex = index;
   }
 
   async onDrop(targetIndex: number) {
     if (this.draggedIndex === null || this.draggedIndex === targetIndex) return;
 
-    // 1. On réorganise le tableau localement pour un rendu visuel instantané
     const movedPhoto = this.photos[this.draggedIndex];
-    this.photos.splice(this.draggedIndex, 1);       // Supprime de l'ancienne position
-    this.photos.splice(targetIndex, 0, movedPhoto); // Insère à la nouvelle position
+    this.photos.splice(this.draggedIndex, 1);
+    this.photos.splice(targetIndex, 0, movedPhoto);
 
-    // Reset des index de drag
     this.draggedIndex  = null;
     this.dragOverIndex = null;
 
-    // 2. On extrait les IDs ordonnés et on synchronise avec le serveur
     const orderedIds = this.photos.map(p => p.id);
     try {
       await this.accountService.reorderPhotos(orderedIds);
@@ -308,7 +302,6 @@ export class ProfileManagementComponent implements OnInit {
 
   handleSubscriptionClick() {
     console.log("Redirection vers la passerelle de paiement / Stripe / etc.");
-    // Votre logique de modal ou de redirection vers le renouvellement
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -316,7 +309,6 @@ export class ProfileManagementComponent implements OnInit {
   get subscriptionHoursLeft$(): Observable<number> {
     return this.currentUser$.pipe(
       map(profile => {
-        // Si le profil n'existe pas ou s'il n'a pas de date d'expiration
         if (!profile || !profile.expirationDate) {
           return 0;
         }
@@ -324,11 +316,8 @@ export class ProfileManagementComponent implements OnInit {
         const expiryTime = new Date(profile.expirationDate).getTime();
         const currentTime = new Date().getTime();
         const diffInMs = expiryTime - currentTime;
-
-        // Convertir les millisecondes en heures et arrondir à l'inférieur
         const hoursLeft = Math.floor(diffInMs / (1000 * 60 * 60));
 
-        // Retourner 0 si l'abonnement est déjà expiré (valeur négative)
         return hoursLeft > 0 ? hoursLeft : 0;
       })
     );
@@ -338,7 +327,7 @@ export class ProfileManagementComponent implements OnInit {
     return this.subscriptionHoursLeft$.pipe(
       map(hours => {
         if (hours <= 24) return 'danger';
-        if (hours <= 168) return 'warning'; // 168 heures = 7 jours
+        if (hours <= 168) return 'warning';
         return 'success';
       })
     );
@@ -351,13 +340,11 @@ export class ProfileManagementComponent implements OnInit {
           return 'Abonnement expiré';
         }
 
-        // S'il reste plus de 48 heures, on affiche en Jours
         if (hours > 48) {
           const days = Math.floor(hours / 24);
           return `${days} jour${days > 1 ? 's' : ''} restant${days > 1 ? 's' : ''}`;
         }
 
-        // S'il reste moins de 48 heures, on affiche précisément en Heures
         return `${hours} heure${hours > 1 ? 's' : ''} restante${hours > 1 ? 's' : ''}`;
       })
     );

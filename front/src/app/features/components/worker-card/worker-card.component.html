@@ -11,12 +11,6 @@
     <ion-badge *ngIf="!worker.available" class="online-pill" color="medium">
       Absente
     </ion-badge>
-
-    <div class="hover-tags" [class.visible]="isHovering">
-      <ion-chip *ngFor="let s of worker.services" class="service-tag">
-        <ion-label>{{ s }}</ion-label>
-      </ion-chip>
-    </div>
   </div>
 
   <ion-card-header>

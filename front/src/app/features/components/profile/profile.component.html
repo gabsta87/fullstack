@@ -79,8 +79,8 @@
           <p>{{ worker.description }}</p>
 
           <div class="chips-group ion-margin-top">
-            <ion-chip *ngFor="let s of worker.services">
-              <ion-label>{{ s }}</ion-label>
+            <ion-chip *ngFor="let service of workerServices">
+              <ion-label>{{ service.name }}</ion-label>
             </ion-chip>
           </div>
         </div>

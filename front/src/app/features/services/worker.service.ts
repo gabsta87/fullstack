@@ -2,7 +2,7 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import {firstValueFrom, Observable, of} from 'rxjs';
+import {firstValueFrom, Observable, of, shareReplay} from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { WorkerSimpleProfile, WorkerFullProfile } from '../models/user.model';
 import {environment} from "../../../environments/environment";
@@ -62,8 +62,15 @@ export class WorkerService {
     return this.profileCache.get(workerId) ?? null;
   }
 
-  async getWorkersServices() : Promise<Service[]> {
-    return firstValueFrom(this.http.get<Service[]>(`${environment.apiBase}/common/services`));
+  private servicesCache$?: Observable<Service[]>;
+
+  getWorkersServices(): Promise<Service[]> {
+    if (!this.servicesCache$) {
+      this.servicesCache$ = this.http.get<Service[]>(`${environment.apiBase}/common/services`).pipe(
+        shareReplay(1) // 👈 Conserve la réponse en cache pour tous les abonnements futurs
+      );
+    }
+    return firstValueFrom(this.servicesCache$);
   }
 
   private profileCache = new Map<string, WorkerFullProfile>();

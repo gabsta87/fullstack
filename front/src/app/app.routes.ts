@@ -23,9 +23,9 @@ export const routes: Routes = [
   {
     path: '',
     resolve: {
-      workers: galleryResolver,
-      allServices: servicesResolver,
-      locations: geographicZonesResolver
+      workers:      galleryResolver,
+      allServices:  servicesResolver,
+      locations:    geographicZonesResolver
     },
     children: [
       { path: 'home', component: HomepageComponent },
@@ -35,8 +35,9 @@ export const routes: Routes = [
   },
   { path: 'profile', component: ProfileComponent,
     resolve: {
-      profile: profileVisitingResolver,
+      profile:      profileVisitingResolver,
       locations:    geographicZonesResolver,
+      services:     servicesResolver,
   } },
   { path: 'account', component: AccountComponent, canActivate: [authGuard],
     resolve: {
@@ -45,16 +46,16 @@ export const routes: Routes = [
     } },
   { path: 'profile-management', component: ProfileManagementComponent,
     resolve: {
-      profile: profileManagementResolver,
-      services : servicesResolver,
-      locations: geographicZonesResolver,
+      profile:    profileManagementResolver,
+      services :  servicesResolver,
+      locations:  geographicZonesResolver,
     }, canActivate: [authGuard, workerOnlyGuard] },
   { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'admin-dashboard', component: AdminDashboardComponent, canActivate: [authGuard, adminOnlyGuard],
     resolve: {
-      users: usersObservableResolver,
-      services : serviceObservableResolver,
-      zones: geographicZoneObservableResolver,
+      users:      usersObservableResolver,
+      services :  serviceObservableResolver,
+      zones:      geographicZoneObservableResolver,
     },
   },
   { path: 'account-router', canActivate: [authGuard, accountRedirectGuard], children: []},

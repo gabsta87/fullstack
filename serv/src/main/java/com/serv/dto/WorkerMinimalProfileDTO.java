@@ -16,7 +16,7 @@ public record WorkerMinimalProfileDTO (
         String        eyeColor,
         Boolean       isCertified,
         Integer       galleryIndex,
-        List<String>  services,
+        List<Integer> servicesId,
         Boolean       available,
         String        mainThumbUrl,
         List<String>  previewThumbUrls
@@ -35,7 +35,7 @@ public record WorkerMinimalProfileDTO (
                 w.getEyeColor() != null ? w.getEyeColor().toString() : null,
                 w.isCertified(),
                 w.getGalleryPositionPriority(),
-                w.getServices().stream().map(Service::getName).toList(),
+                w.getServices().stream().map(Service::getId).toList(),
                 w.isAvailable(),
                 w.getMainPhoto() != null ? w.getMainPhoto().getMainThumbUrl() : null,
                 preFetchedPreviews != null ? preFetchedPreviews : List.of()

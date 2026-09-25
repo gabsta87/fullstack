@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/account/worker")
 @PreAuthorize("hasRole('WORKER')")
 @RequiredArgsConstructor
+@Transactional
 public class AccountControllerWorker {
     private final WorkerRepository workerRepository;
     private final PhotoRepository photoRepository;
@@ -42,7 +43,6 @@ public class AccountControllerWorker {
     private final MailService emailService;
 
     @GetMapping("/me")
-    @Transactional(readOnly = true)
     public ResponseEntity<?> getMe(Worker user) {
         return workerRepository.findByIdWithPhotos(user.getId())
                 .map(worker -> ResponseEntity.ok(WorkerFullProfileDTO.from(worker)))
@@ -50,7 +50,6 @@ public class AccountControllerWorker {
     }
 
     @PatchMapping("/data")
-    @Transactional
     public ResponseEntity<?> updateWorkerSettings(@RequestBody Requests.AccountDataRequest req,
                                                   Worker worker) {
 
@@ -66,7 +65,6 @@ public class AccountControllerWorker {
 
 
     @PatchMapping("/availability")
-    @Transactional
     public ResponseEntity<?> setAvailability(@RequestBody Map<String, Boolean> body,
                                              Worker worker) {
         worker.setAvailable(body.getOrDefault("available", false));
@@ -80,7 +78,6 @@ public class AccountControllerWorker {
 
     /** PATCH /account/profile */
     @PatchMapping("/profile")
-    @Transactional
     public ResponseEntity<?> updateProfile(@RequestBody Requests.WorkerProfileUpdateRequest req,
                                            Worker workerArg) {
         Worker worker = getWorkerWithPhotos(workerArg);
@@ -147,12 +144,13 @@ public class AccountControllerWorker {
         return ResponseEntity.ok().body(dto);
     }
 
-    @Transactional
     @PatchMapping("/updateservices")
-    public ResponseEntity<?> updateServices(@RequestBody List<String> services, Worker worker) {
+    public ResponseEntity<?> updateServices(@RequestBody List<Integer> services, Worker workerArg) {
+        Worker worker = getWorkerWithPhotos(workerArg);
+        System.out.println("updateServices :" + services+" for worker "+worker.getUsername());
 
         List<Service> serviceList = services.stream()
-                .map(serviceRepository::findByName)
+                .map(serviceRepository::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
@@ -172,7 +170,6 @@ public class AccountControllerWorker {
      * Upload a new photo — generates the main thumb and preview thumb.
      */
     @PostMapping("/photos")
-    @Transactional
     public ResponseEntity<?> uploadPhoto(@RequestParam("file") MultipartFile file,
                                          Worker worker) {
         worker = getWorkerWithPhotos(worker);
@@ -217,7 +214,6 @@ public class AccountControllerWorker {
      * DELETE /account/photos/{photoId}
      */
     @DeleteMapping("/photos/{photoId}")
-    @Transactional
     public ResponseEntity<?> deletePhoto(@PathVariable UUID photoId, Worker workerArg) {
         Worker worker = getWorkerWithPhotos(workerArg);
 
@@ -264,7 +260,6 @@ public class AccountControllerWorker {
      * Set a photo as the main (gallery card) photo.
      */
     @PatchMapping("/photos/{photoId}/main")
-    @Transactional
     public ResponseEntity<?> setMainPhoto(@PathVariable UUID photoId, Worker worker) {
 
         Photo photo = photoRepository.findById(photoId).orElse(null);
@@ -285,7 +280,6 @@ public class AccountControllerWorker {
      * Accepts an ordered list of photo IDs and updates sortOrder accordingly.
      */
     @PatchMapping("/photos/reorder")
-    @Transactional
     public ResponseEntity<?> reorderPhotos(@RequestBody List<String> orderedIds,
                                            Worker worker) {
 

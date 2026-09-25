@@ -40,6 +40,7 @@ import {HeaderComponent} from "../header/header.component";
 import {ClientAccountService} from "../../services/client-account.service";
 import {AuthService} from "../../services/auth.service";
 import {Subscription} from "rxjs";
+import {Service} from "../../models/common.model";
 
 @Component({
   selector: 'app-profile',
@@ -55,6 +56,10 @@ import {Subscription} from "rxjs";
 export class ProfileComponent implements OnInit, OnDestroy {
   @ViewChild('swiperRef') swiperRef?: ElementRef;
 
+  services! : Service[];
+
+  workerServices: Service[] = [];
+
   modalMedia: { type: 'photo' | 'video'; url: string }[] = [];
 
   worker: WorkerFullProfile | null = null;
@@ -62,7 +67,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   notifyEnabled  = false;
   isClient       = false;
   isImageOpen    = false;
-  isContactOpen = false;
+  isContactOpen  = false;
 
   selectedPhotoIndex = 0;
   private clientAccountSub?: Subscription;
@@ -88,6 +93,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
     // The resolver already fetched (or cache-hit) the profile —
     // it's available synchronously here, no subscribe needed.
     this.worker = this.route.snapshot.data['profile'] ?? null;
+    this.services = this.route.snapshot.data['services'] ?? [];
+
+    if (this.worker && this.worker.servicesId) {
+      this.workerServices = this.services.filter(s =>
+        this.worker!.servicesId.includes(s.id)
+      );
+    }
 
     const currentUser = this.authService.getUser();
     this.isClient = currentUser?.role === 'CLIENT';

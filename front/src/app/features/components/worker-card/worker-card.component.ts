@@ -1,19 +1,16 @@
-import {
-  Component, Input, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef
-} from '@angular/core';
-import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy} from '@angular/core';
+import {Router} from '@angular/router';
+import {CommonModule} from '@angular/common';
 import {
   IonBadge,
   IonCard,
-  IonCardHeader, IonCardSubtitle,
+  IonCardHeader,
+  IonCardSubtitle,
   IonCardTitle,
-  IonChip,
   IonIcon,
-  IonLabel,
   IonRippleEffect
 } from '@ionic/angular/standalone';
-import { WorkerService } from '../../services/worker.service';
+import {WorkerService} from '../../services/worker.service';
 import {WorkerSimpleProfile} from "../../models/user.model";
 import {addIcons} from "ionicons";
 import {personCircleOutline} from "ionicons/icons";
@@ -24,7 +21,7 @@ import {personCircleOutline} from "ionicons/icons";
   styleUrls: ['./worker-card.component.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, IonRippleEffect, IonCard, IonIcon, IonBadge, IonChip, IonLabel, IonCardHeader, IonCardTitle, IonCardSubtitle],
+  imports: [CommonModule, IonRippleEffect, IonCard, IonIcon, IonBadge, IonCardHeader, IonCardTitle, IonCardSubtitle],
 })
 export class WorkerCardComponent implements OnDestroy {
 
