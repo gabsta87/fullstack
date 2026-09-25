@@ -2,12 +2,10 @@ package com.serv.controller;
 
 import com.serv.common.Requests;
 import com.serv.database.entities.Photo;
-import com.serv.database.entities.Service;
 import com.serv.database.repositories.GeographicZoneRepository;
 import com.serv.database.repositories.PhotoRepository;
 import com.serv.database.repositories.ServiceRepository;
 import com.serv.database.repositories.WorkerRepository;
-import com.serv.dto.GeographicZoneDTO;
 import com.serv.dto.WorkerMinimalProfileDTO;
 import com.serv.dto.WorkerPublicFullProfileDTO;
 import com.serv.service.WorkerService;
@@ -23,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Worker-facing read endpoints.

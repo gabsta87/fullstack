@@ -9,7 +9,7 @@ public record ClientDTO(
         String role,
         String email,
         List<WorkerMinimalProfileDTO> favorites,
-        GeographicZoneDTO geographicZone
+        GeographicZoneWithChildrenDTO geographicZone
 ) {
     public static ClientDTO from(com.serv.database.entities.Client c) {
         return new ClientDTO(
@@ -23,7 +23,7 @@ public record ClientDTO(
                             .toList() :
                         new ArrayList<>(),
                 c.getGeographicZone() != null ?
-                        GeographicZoneDTO.from(c.getGeographicZone()) :
+                        GeographicZoneWithChildrenDTO.from(c.getGeographicZone()) :
                         null
         );
     }

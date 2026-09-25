@@ -1,8 +1,9 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {Observable} from 'rxjs';
+import {firstValueFrom, Observable} from 'rxjs';
 import {environment} from "../../../environments/environment";
 import {WorkerFullProfile} from "../models/user.model";
+import {GeographicZone, GeographicZoneWithParent} from "../models/filter.model";
 
 @Injectable({
   providedIn: 'root'
@@ -54,6 +55,10 @@ export class AdminService {
 
   inviteAdmin(email: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/admins/invite`, { email });
+  }
+
+  getGeographicZones(): Observable<GeographicZoneWithParent[]> {
+    return this.http.get<GeographicZoneWithParent[]>(`${this.apiUrl}/locations-flat`);
   }
 
   updateRegion(regionData: {id?:number,name:string,parentId?:number}): Observable<any> {

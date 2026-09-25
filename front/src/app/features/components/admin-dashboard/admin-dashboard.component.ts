@@ -84,7 +84,7 @@ export class AdminDashboardComponent implements OnInit {
     );
 
     this.zones$ = this.zonesRefresh$.pipe(
-      switchMap(() => this.commonService.getGeographicZones() ? this.commonService.getGeographicZones() : this.route.data.pipe(map(data => data['zones'] || [])))
+      switchMap(() => this.adminService.getGeographicZones() ? this.adminService.getGeographicZones() : this.route.data.pipe(map(data => data['zones'] || [])))
     );
 
     // Aplatissement intelligent pour restaurer l'indentation et le parentId

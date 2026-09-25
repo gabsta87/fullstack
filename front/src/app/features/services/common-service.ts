@@ -16,7 +16,7 @@ export class CommonService {
     return this.http.get<Service[]>(`${environment.apiBase}/common/services`);
   }
 
-  getGeographicZones(): Observable<GeographicZoneWithParent[]> {
-    return this.http.get<GeographicZoneWithParent[]>(`${environment.apiBase}/common/locations`);
+  getGeographicZones(): Observable<GeographicZone[]> {
+    return this.http.get<GeographicZone[]>(`${environment.apiBase}/common/locations`);
   }
 }

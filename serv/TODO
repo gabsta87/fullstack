@@ -15,11 +15,8 @@ worker/user profile
 Admin pages
     certifications with generated phrase asked the announcer to write on a paper and show in a photo
     can create admins -> provide an email, the system will send an email to the user with a link to activate the account
-    can create/modify regions (can't delete regions if there is someone in it)
-    can create/modify services
-    can deactivate a user
-    can see messages sent by users
-    can see messages sent by admins
+    can ban a user
+    can see messages sent by users / admins
     can modify legal texts
         history of the legal texts
     Notifications sent when a user requires a certification

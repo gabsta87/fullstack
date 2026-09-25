@@ -35,6 +35,7 @@ public class AdminController {
     private final SseStreamService sseStreamService;
     private final PasswordResetService passwordResetService;
     private final CommentRepository commentRepository;
+    private final GeographicZoneRepository zoneRepository;
 
     // ── PROFILES & LOGS ──────────────────────────────────────────────────────
 
@@ -216,6 +217,15 @@ public class AdminController {
 
     // ── GESTION DES RÉGIONS ───────────────────────────────────
 
+    @Transactional(readOnly = true)
+    @GetMapping("/locations-flat")
+    public ResponseEntity<List<GeographicZoneWithParentDTO>> getAllLocationsFlat() {
+        List<GeographicZoneWithParentDTO> zones = zoneRepository.findAll().stream()
+                .map(GeographicZoneWithParentDTO::from)
+                .toList();
+        return ResponseEntity.ok(zones);
+    }
+
     @DeleteMapping("/regions/{id}")
     @Transactional
     public ResponseEntity<?> deleteRegion(@PathVariable int id, Admin admin) {
@@ -253,9 +263,9 @@ public class AdminController {
         logAdminAction(admin, "DELETE_REGION", snapshot, "Suppression de la zone géographique : " + zoneName);
 
         // 6. Récupération de la liste mise à jour des régions
-        List<GeographicZoneDTO> updatedZones = geographicZoneRepository.findAll()
+        List<GeographicZoneWithChildrenDTO> updatedZones = geographicZoneRepository.findAll()
                 .stream()
-                .map(GeographicZoneDTO::from)
+                .map(GeographicZoneWithChildrenDTO::from)
                 .collect(Collectors.toList());
 
         // 7. Émission de l'événement SSE
@@ -269,7 +279,7 @@ public class AdminController {
     @Transactional
     public ResponseEntity<List<GeographicZoneWithParentDTO>> updateRegion(Admin admin, @RequestBody Requests.RegionRequest region){
         System.out.println("Admin : "+admin);
-        GeographicZone savedZone = null;
+        GeographicZone savedZone;
         if(region.id() == null){
             System.out.println("Region ID = null");
             // Create new Region

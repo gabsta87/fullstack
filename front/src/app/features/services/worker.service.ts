@@ -66,9 +66,5 @@ export class WorkerService {
     return firstValueFrom(this.http.get<Service[]>(`${environment.apiBase}/common/services`));
   }
 
-  async getGeographicZones(): Promise<GeographicZone[]> {
-    return firstValueFrom(this.http.get<GeographicZone[]>(`${environment.apiBase}/common/locations`));
-  }
-
   private profileCache = new Map<string, WorkerFullProfile>();
 }
