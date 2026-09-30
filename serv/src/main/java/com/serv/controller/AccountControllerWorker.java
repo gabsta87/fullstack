@@ -5,10 +5,7 @@ import com.serv.common.EyeColor;
 import com.serv.common.HairColor;
 import com.serv.common.Requests;
 import com.serv.database.entities.*;
-import com.serv.database.repositories.GeographicZoneRepository;
-import com.serv.database.repositories.PhotoRepository;
-import com.serv.database.repositories.ServiceRepository;
-import com.serv.database.repositories.WorkerRepository;
+import com.serv.database.repositories.*;
 import com.serv.dto.WorkerFullProfileDTO;
 import com.serv.service.MailService;
 import com.serv.service.MediaStorageService;
@@ -38,6 +35,7 @@ public class AccountControllerWorker {
     private final PhotoRepository photoRepository;
     private final ServiceRepository serviceRepository;
     private final GeographicZoneRepository geographicZoneRepository;
+    private final CertificationRequestRepository certificationRequestRepository;
     private final MediaStorageService mediaStorageService;
     private final SseStreamService sseStreamService;
     private final MailService emailService;
@@ -61,6 +59,38 @@ public class AccountControllerWorker {
 
         sseStreamService.emitEvent(saved.getId(), "account-update", dto);
         return ResponseEntity.ok(dto);
+    }
+
+    @Transactional
+    @GetMapping("/request-certification")
+    public ResponseEntity<?> requestCertification(Worker workerArg) {
+        Worker worker = getWorkerWithPhotos(workerArg);
+
+        // 1. Vérifier si une demande est déjà en attente (optionnel selon ta logique)
+        Optional<CertificationRequest> existingRequest = certificationRequestRepository.findByWorkerAndStatus(worker, "PENDING");
+
+        if (existingRequest.isEmpty()) {
+            // 2. Générer un code de vérification aléatoire
+            String randomCode = UUID.randomUUID().toString().substring(0, 5).toUpperCase();
+
+            // 3. Sauvegarder dans la table des requêtes
+            CertificationRequest newRequest = new CertificationRequest(worker, randomCode);
+            certificationRequestRepository.save(newRequest);
+
+            // 4. Mettre à jour l'état et le code directement sur le worker pour un accès réactif immédiat
+            worker.setCertificationStatus("PENDING_APPROVAL");
+            worker.setVerificationCode(randomCode);
+            worker = workerRepository.save(worker);
+        }
+
+        // 5. Convertir en DTO complet
+        WorkerFullProfileDTO dto = WorkerFullProfileDTO.from(worker);
+
+        // 6. Émettre l'événement en temps réel (SSE) pour rafraîchir l'UI instantanément
+        sseStreamService.emitEvent(worker.getId(), "account-update", dto);
+
+        // 7. Retourner directement le DTO (plus de Map avec message inutile)
+        return ResponseEntity.ok().body(dto);
     }
 
     @Transactional

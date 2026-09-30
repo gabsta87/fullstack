@@ -101,7 +101,7 @@ public class Worker extends VenusUser {
     private Integer remainingDaysCredit;
 
     @Column(name = "verification_code")
-    private String verificationCode; // Le mot/nombre secret généré par le site pour sa photo
+    private String verificationCode;
 
     @Column(name = "certification_status")
     private String certificationStatus = "NOT_CERTIFIED"; // NOT_REQUESTED, PENDING_APPROVAL, CERTIFIED, REJECTED
