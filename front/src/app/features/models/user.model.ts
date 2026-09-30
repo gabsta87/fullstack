@@ -20,6 +20,8 @@ export interface WorkerPrivateAccount extends PrivateAccount, WorkerFullProfile 
   lastRefreshed: string;
   expirationDate: string;
   birthdate: string;
+  verificationCode?: string;
+  adminCertificationFeedback?: string;
 }
 
 export interface ClientPrivateAccount extends PrivateAccount, BaseUser{

@@ -70,7 +70,6 @@ export class WorkerAccountService {
   async uploadMedia(files: File[]): Promise<any> {
     const fd = new FormData();
     files.forEach(file => {
-      // Le nom du paramètre 'files' doit correspondre au @RequestParam("files") du serveur Java
       fd.append('files', file, file.name);
     });
     return await firstValueFrom(this.http.post(`${this.base}/media`, fd));
@@ -90,5 +89,27 @@ export class WorkerAccountService {
 
   async deleteVideo(videoId: string): Promise<void> {
     await firstValueFrom(this.http.delete(`${this.base}/videos/${videoId}`));
+  }
+
+  async requestCertification(): Promise<WorkerPrivateAccount> {
+    const updatedAccount = await firstValueFrom(
+      this.http.get<WorkerPrivateAccount>(`${this.base}/request-certification`)
+    );
+
+    console.log(updatedAccount);
+
+    this.accountSubject.next(updatedAccount);
+    return updatedAccount;
+  }
+
+  async uploadCertificationPhoto(formData: FormData): Promise<WorkerPrivateAccount> {
+    const updatedAccount = await firstValueFrom(
+      this.http.post<WorkerPrivateAccount>(`${this.base}/certification-photo`, formData)
+    );
+
+    console.log(updatedAccount);
+
+    this.accountSubject.next(updatedAccount);
+    return updatedAccount;
   }
 }

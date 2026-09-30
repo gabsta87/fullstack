@@ -1,9 +1,11 @@
 package com.serv.controller;
 
+import com.serv.common.CertificationStatus;
 import com.serv.common.Requests;
 import com.serv.database.entities.*;
 import com.serv.database.repositories.*;
 import com.serv.dto.*;
+import com.serv.service.MediaStorageService;
 import com.serv.service.PasswordResetService;
 import com.serv.service.SseStreamService;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +38,7 @@ public class AdminController {
     private final PasswordResetService passwordResetService;
     private final CommentRepository commentRepository;
     private final GeographicZoneRepository zoneRepository;
+    private final MediaStorageService mediaStorageService;
 
     // ── PROFILES & LOGS ──────────────────────────────────────────────────────
 
@@ -114,16 +117,40 @@ public class AdminController {
         if (targetWorker == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Worker not found"));
 
         if (req.approved()) {
-            targetWorker.setCertificationStatus("CERTIFIED");
+            targetWorker.setCertificationStatus(CertificationStatus.APPROVED);
             targetWorker.setCertifiedAt(LocalDateTime.now());
             targetWorker.setCertificationExpiresAt(LocalDateTime.now().plusMonths(12));
         } else {
-            targetWorker.setCertificationStatus("REJECTED");
+            targetWorker.setCertificationStatus(CertificationStatus.REJECTED);
         }
         Worker savedWorker = workerRepository.save(targetWorker);
 
         logAdminAction(admin, "VERIFY_CERTIFICATION", targetWorker, String.format("Certification : %s | Motif : %s", req.approved() ? "APPROUVEE" : "REFUSEE", req.rejectionReason()));
         return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
+    }
+
+    @Transactional
+    public void processAdminDecision(Worker worker, boolean approved, String adminMessage) {
+        if (worker.getCertificationPhoto() != null) {
+            // Supprime le fichier physique du disque
+            mediaStorageService.deletePhotoFiles(worker.getId(), worker.getCertificationPhoto());
+
+            // Retire la référence
+            worker.setCertificationPhoto(null);
+        }
+
+        if (approved) {
+            worker.setCertificationStatus(CertificationStatus.APPROVED);
+            worker.setCertifiedAt(LocalDateTime.now());
+            // Définir la date d'expiration à +8 mois par exemple
+            worker.setCertificationExpiresAt(LocalDateTime.now().plusMonths(8));
+        } else {
+            worker.setCertificationStatus(CertificationStatus.NEEDS_REVISION);
+            // Enregistrer le message de l'admin pour l'utilisateur
+            // worker.setAdminCertificationFeedback(adminMessage);
+        }
+
+        workerRepository.save(worker);
     }
 
     // ── GESTION DES SERVICES ────────────────────────

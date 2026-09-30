@@ -39,12 +39,6 @@ export class WorkerService {
       .pipe(catchError(() => of([])));
   }
 
-  /** Lazy hover preview fetch — UUID string */
-  getPreviewThumbs(workerId: string): Observable<string[]> {
-    return this.http.get<string[]>(`${this.baseUrl}/${workerId}/previews`)
-      .pipe(catchError(() => of([])));
-  }
-
   // ── Profile ────────────────────────────────────────────────────────────────
 
   getProfile(workerId: string): Observable<WorkerFullProfile> {

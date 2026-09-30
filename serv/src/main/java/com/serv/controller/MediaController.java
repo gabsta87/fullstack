@@ -8,7 +8,6 @@ import com.serv.database.repositories.PhotoRepository;
 import com.serv.database.repositories.VideoRepository;
 import com.serv.database.repositories.WorkerRepository;
 import com.serv.service.MediaStorageService;
-import com.serv.service.MediaStorageService.SavedMedia;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -75,31 +74,21 @@ public class MediaController {
             try {
                 if (contentType != null && contentType.startsWith("image")) {
                     // --- Traitement PHOTO ---
-                    SavedMedia saved = storageService.savePhoto(file, workerId);
-
-                    Photo photo = new Photo();
-                    photo.setWorker(worker);
-                    photo.setUrl(saved.originalUrl());
-                    photo.setMainThumbUrl(saved.mainThumbUrl());
-                    photo.setPreviewThumbUrl(saved.previewThumbUrl());
-                    photo.setFileSize(fileSize);
+                    // Le service gère l'écriture disque et retourne l'entité Photo prête à sauvegarder
+                    Photo photo = storageService.savePhoto(file, worker);
                     photoRepository.save(photo);
 
                     currentUsedStorage += fileSize;
-                    responses.add(new PhotoResponse(photo.getId(), saved.originalUrl(), saved.mainThumbUrl(), saved.previewThumbUrl(), false));
+                    responses.add(new PhotoResponse(photo.getId(), photo.getUrl(), photo.getMainThumbUrl(), false));
 
                 } else if (contentType != null && contentType.startsWith("video")) {
                     // --- Traitement VIDÉO ---
-                    SavedMedia saved = storageService.saveVideo(file, workerId);
-
-                    Video video = new Video();
-                    video.setWorker(worker);
-                    video.setUrl(saved.originalUrl());
-                    video.setFileSize(fileSize);
+                    // De la même manière, si tu as créé un saveVideoAsEntity dans ton service, ou instancié ici :
+                    Video video = storageService.saveVideo(file, worker);
                     videoRepository.save(video);
 
                     currentUsedStorage += fileSize;
-                    responses.add(new VideoResponse(video.getId(), saved.originalUrl()));
+                    responses.add(new VideoResponse(video.getId(), video.getUrl()));
                 }
                 // other formats not supported yet
 
@@ -112,7 +101,7 @@ public class MediaController {
         return ResponseEntity.ok(responses);
     }
 
-    // ── Delete all media ──────────────────────────────────────────────────────
+    // ── Delete all media ────────────────────────────────________________
 
     @DeleteMapping("/{workerId}")
     public ResponseEntity<Void> deleteAll(@PathVariable UUID workerId) throws IOException {
@@ -132,7 +121,6 @@ public class MediaController {
             UUID   id,
             String originalUrl,
             String mainThumbUrl,
-            String previewThumbUrl,
             boolean isMain
     ) {}
 

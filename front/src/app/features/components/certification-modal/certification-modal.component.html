@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Certification du profil</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">Fermer</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- 🛑 Alerte si l'admin demande une révision -->
+  <div *ngIf="adminMessage" class="admin-feedback-banner">
+    <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
+    <div>
+      <h4>Message de l'administration :</h4>
+      <p>{{ adminMessage }}</p>
+    </div>
+  </div>
+
+  <!-- 📌 Affichage du Code de Vérification -->
+  <div class="code-instruction-card">
+    <h3>Étape 1 : Notez votre code secret</h3>
+    <p>Prenez une photo de vous (visage découvert) en tenant un support (papier, téléphone) sur lequel est clairement écrit ce code :</p>
+
+    <div class="big-verification-code">
+      {{ verificationCode }}
+    </div>
+  </div>
+
+  <!-- 📤 Espace d'upload de la photo -->
+  <div class="upload-section">
+    <h3>Étape 2 : Envoyez votre photo</h3>
+
+    <div class="drop-zone" (click)="fileInput.click()">
+      <ion-icon name="cloud-upload-outline" size="large"></ion-icon>
+      <p>{{ selectedFile ? selectedFile.name : 'Glissez votre photo ici ou cliquez pour parcourir' }}</p>
+      <span class="format-hint">Formats acceptés : JPG, PNG</span>
+      <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;" />
+    </div>
+
+    <!-- Bouton d'envoi final -->
+    <ion-button expand="block" color="primary" [disabled]="!selectedFile" (click)="submitCertificationPhoto()">
+      <ion-icon name="send-outline" slot="start"></ion-icon>
+      Envoyer pour validation
+    </ion-button>
+  </div>
+
+</ion-content>

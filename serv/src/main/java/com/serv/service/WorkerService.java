@@ -25,7 +25,6 @@ public class WorkerService {
     private final WorkerRepository workerRepository;
     private final PhotoRepository  photoRepository;
 
-    public static final int MAX_PREVIEW_THUMBS = 5;
     public static final int PAGE_SIZE          = 24;
 
     public List<WorkerMinimalProfileDTO> getGalleryPage(int page, Map<String, Object> filters) {
@@ -56,20 +55,9 @@ public class WorkerService {
 
         if (workers.isEmpty()) return List.of();
 
-        // Batch fetch des miniatures de preview, groupées par workerId
-        Map<UUID, List<String>> previewThumbs = fetchPreviewThumbsMap(workers);
-
         // 4. Assemblage des DTOs (Tri conservé fidèlement depuis la base de données)
         return workers.stream()
-                .map(w -> {
-                    // On récupère les previews associées à ce worker précis depuis notre Map optimisée
-                    List<String> previews = previewThumbs.getOrDefault(w.getId(), List.of());
-                    // On limite à MAX_PREVIEW_THUMBS si ce n'est pas déjà fait dans la requête
-                    if (previews.size() > MAX_PREVIEW_THUMBS) {
-                        previews = previews.subList(0, MAX_PREVIEW_THUMBS);
-                    }
-                    return WorkerMinimalProfileDTO.from(w, previews);
-                })
+                .map(WorkerMinimalProfileDTO::from)
                 .toList();
     }
 
@@ -211,39 +199,10 @@ public class WorkerService {
         List<Worker> validWorkers = workerRepository.findAll(spec);
         if (validWorkers.isEmpty()) return List.of();
 
-        // 2. ÉTAPE D'OPTIMISATION 2 : Éviter le N+1 Select pour les miniatures (Batch Fetching)
-        Map<UUID, List<String>> previewThumbs = fetchPreviewThumbsMap(validWorkers);
-
         // 3. ÉTAPE D'OPTIMISATION 3 : Mapping et Tri
         return validWorkers.stream()
-                .map(w -> {
-                    List<String> previews = previewThumbs.getOrDefault(w.getId(), List.of());
-                    if (previews.size() > MAX_PREVIEW_THUMBS) {
-                        previews = previews.subList(0, MAX_PREVIEW_THUMBS);
-                    }
-                    return WorkerMinimalProfileDTO.from(w, previews); // Utilise le constructeur complet optimisé
-                })
-                .sorted() // Conserve ton tri par défaut (compareTo) implémenté dans le Record
+                .map(WorkerMinimalProfileDTO::from)
+                .sorted()
                 .toList();
     }
-
-    /**
-     * Récupère en une seule requête SQL les miniatures de preview des workers fournis
-     * et les mappe par ID de Worker.
-     */
-    private Map<UUID, List<String>> fetchPreviewThumbsMap(List<Worker> workers) {
-        if (workers == null || workers.isEmpty()) return Map.of();
-
-        List<UUID> workerIds = workers.stream().map(Worker::getId).toList();
-        Map<UUID, List<String>> previewThumbs = new HashMap<>();
-
-        photoRepository
-                .findByWorkerIdInOrderBySortOrderAsc(workerIds)
-                .forEach(p -> previewThumbs
-                        .computeIfAbsent(p.getWorker().getId(), k -> new ArrayList<>())
-                        .add(p.getPreviewThumbUrl()));
-
-        return previewThumbs;
-    }
-
 }

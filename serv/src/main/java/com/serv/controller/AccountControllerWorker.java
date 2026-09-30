@@ -1,9 +1,6 @@
 package com.serv.controller;
 
-import com.serv.common.BodyType;
-import com.serv.common.EyeColor;
-import com.serv.common.HairColor;
-import com.serv.common.Requests;
+import com.serv.common.*;
 import com.serv.database.entities.*;
 import com.serv.database.repositories.*;
 import com.serv.dto.WorkerFullProfileDTO;
@@ -18,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
@@ -66,31 +64,71 @@ public class AccountControllerWorker {
     public ResponseEntity<?> requestCertification(Worker workerArg) {
         Worker worker = getWorkerWithPhotos(workerArg);
 
-        // 1. Vérifier si une demande est déjà en attente (optionnel selon ta logique)
-        Optional<CertificationRequest> existingRequest = certificationRequestRepository.findByWorkerAndStatus(worker, "PENDING");
-
-        if (existingRequest.isEmpty()) {
-            // 2. Générer un code de vérification aléatoire
-            String randomCode = UUID.randomUUID().toString().substring(0, 5).toUpperCase();
-
-            // 3. Sauvegarder dans la table des requêtes
-            CertificationRequest newRequest = new CertificationRequest(worker, randomCode);
-            certificationRequestRepository.save(newRequest);
-
-            // 4. Mettre à jour l'état et le code directement sur le worker pour un accès réactif immédiat
-            worker.setCertificationStatus("PENDING_APPROVAL");
-            worker.setVerificationCode(randomCode);
-            worker = workerRepository.save(worker);
+        // 1. Récupérer ou générer un code de vérification s'il n'existe pas déjà
+        String verificationCode = worker.getVerificationCode();
+        if (verificationCode == null || verificationCode.isEmpty()) {
+            verificationCode = UUID.randomUUID().toString().substring(0, 5).toUpperCase();
+            worker.setVerificationCode(verificationCode);
         }
 
-        // 5. Convertir en DTO complet
+        // On s'assure que le statut reflète qu'on attend la photo
+        if (worker.getCertificationStatus() == null || worker.getCertificationStatus() == CertificationStatus.NOT_CERTIFIED) {
+            worker.setCertificationStatus(CertificationStatus.PENDING_PHOTO);
+        }
+
+        worker = workerRepository.save(worker);
+
+        // 2. Convertir en DTO complet
         WorkerFullProfileDTO dto = WorkerFullProfileDTO.from(worker);
 
-        // 6. Émettre l'événement en temps réel (SSE) pour rafraîchir l'UI instantanément
+        // 3. SSE
         sseStreamService.emitEvent(worker.getId(), "account-update", dto);
 
-        // 7. Retourner directement le DTO (plus de Map avec message inutile)
         return ResponseEntity.ok().body(dto);
+    }
+
+    @Transactional
+    @PostMapping("/certification-photo")
+    public ResponseEntity<?> uploadCertificationPhoto(@RequestParam("file") MultipartFile file, Worker workerArg) {
+        System.out.println("Certification photo received");
+        try {
+            final Worker worker = getWorkerWithPhotos(workerArg);
+
+            // 1. Le service s'occupe de tout : stockage physique, miniatures et instanciation de la Photo
+            Photo certificationPhoto = mediaStorageService.savePhoto(file, worker);
+
+            photoRepository.save(certificationPhoto);
+            System.out.println("Certification photo saved");
+
+            // 2. Associer la photo de certification au Worker
+            worker.setCertificationPhoto(certificationPhoto);
+            worker.setCertificationStatus(CertificationStatus.PENDING_APPROVAL);
+
+            // 3. Mettre à jour ou créer la CertificationRequest pour l'admin
+            CertificationRequest request = certificationRequestRepository.findByWorker(worker)
+                    .orElseGet(() -> new CertificationRequest(worker));
+
+            request.setStatus(CertificationStatus.PENDING_APPROVAL.toString());
+            request.setPhotoUrl(certificationPhoto.getUrl());
+            certificationRequestRepository.save(request);
+
+            Worker savedWorker = workerRepository.save(worker);
+
+            // 4. Notification SSE en temps réel
+            WorkerFullProfileDTO dto = WorkerFullProfileDTO.from(savedWorker);
+            sseStreamService.emitEvent(savedWorker.getId(), "account-update", dto);
+
+            System.out.println("Certification photo uploaded and saved");
+
+            return ResponseEntity.ok().body(dto);
+
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Erreur lors de la sauvegarde : " + e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", e.getMessage()));
+        }
     }
 
     @Transactional
@@ -212,13 +250,7 @@ public class AccountControllerWorker {
         worker = getWorkerWithPhotos(worker);
 
         try {
-            MediaStorageService.SavedMedia saved = mediaStorageService.savePhoto(file, worker.getId());
-
-            Photo photo = new Photo();
-            photo.setWorker(worker);
-            photo.setUrl(saved.originalUrl());
-            photo.setMainThumbUrl(saved.mainThumbUrl());
-            photo.setPreviewThumbUrl(saved.previewThumbUrl());
+            Photo photo = mediaStorageService.savePhoto(file, worker);
 
             photo.setSortOrder(worker.getPhotos().size());
 
@@ -239,7 +271,6 @@ public class AccountControllerWorker {
             return ResponseEntity.ok(Map.of(
                     "id",              photo.getId().toString(),
                     "mainThumbUrl",    photo.getMainThumbUrl(),
-                    "previewThumbUrl", photo.getPreviewThumbUrl(),
                     "originalUrl",     photo.getUrl()
             ));
         } catch (Exception e) {
@@ -265,9 +296,7 @@ public class AccountControllerWorker {
         // 1 — Suppression des fichiers physiques sur le disque
         mediaStorageService.deletePhotoFiles(
                 worker.getId(),
-                photo.getUrl(),
-                photo.getMainThumbUrl(),
-                photo.getPreviewThumbUrl()
+                photo
         );
 
         // 2 — Si on supprime la photo principale, on choisit la suivante disponible

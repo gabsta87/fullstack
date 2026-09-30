@@ -1,10 +1,6 @@
 package com.serv.controller;
 
 import com.serv.common.Requests;
-import com.serv.database.entities.Photo;
-import com.serv.database.repositories.GeographicZoneRepository;
-import com.serv.database.repositories.PhotoRepository;
-import com.serv.database.repositories.ServiceRepository;
 import com.serv.database.repositories.WorkerRepository;
 import com.serv.dto.WorkerMinimalProfileDTO;
 import com.serv.dto.WorkerPublicFullProfileDTO;
@@ -34,9 +30,6 @@ import java.util.UUID;
 public class WorkerController {
     private final WorkerRepository workerRepository;
     private final WorkerService    galleryService;
-    private final ServiceRepository serviceRepository;
-    private final GeographicZoneRepository zoneRepository;
-    private final PhotoRepository photoRepository;
 
     @GetMapping
     public ResponseEntity<List<WorkerMinimalProfileDTO>> getGallery(Requests.WorkerSearchRequest req) {
@@ -75,20 +68,4 @@ public class WorkerController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    /**
-     * Returns up to 5 preview thumbnail URLs for the hover carousel.
-     * Only previewThumbUrl strings — no other data needed by the frontend.
-     */
-    @GetMapping("/{id}/previews")
-    public ResponseEntity<List<String>> getPreviews(@PathVariable UUID id) {
-        List<String> urls = photoRepository
-                .findByWorkerIdOrderBySortOrderAscIdAsc(id)
-                .stream()
-                .map(Photo::getPreviewThumbUrl)
-                .filter(url -> url != null && !url.isBlank())
-                .limit(5)
-                .toList();
-
-        return ResponseEntity.ok(urls);
-    }
 }

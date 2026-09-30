@@ -1,6 +1,5 @@
 // src/app/features/models/items.model.ts
 
-export const REGIONS = ['Paris','Lyon','Marseille','Bordeaux','Toulouse','Nice','Nantes','Strasbourg'] as const;
 // Reflet exact de tes Enums Java
 export type BodyType = 'SLIM' | 'ATHLETIC' | 'AVERAGE' | 'CURVY' | 'ROUND';
 export type EyeColor = 'BROWN' | 'HAZEL' | 'GREEN' | 'BLUE' | 'GREY';

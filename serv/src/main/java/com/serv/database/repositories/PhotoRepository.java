@@ -25,18 +25,4 @@ public interface PhotoRepository extends JpaRepository<Photo, Long> {
 
     Optional<Photo> findById(UUID photoId);
 
-    /**
-     * Returns only the preview thumbnails for a list of worker IDs.
-     * Used by the gallery: loads card data without fetching original URLs.
-     *
-     * Returns rows as Object[] : [workerId, previewThumbUrl, sortOrder]
-     */
-    @Query("""
-        SELECT p.worker.id, p.previewThumbUrl, p.sortOrder
-        FROM Photo p
-        WHERE p.worker.id IN :workerIds
-        ORDER BY p.worker.id, p.sortOrder
-        """)
-    List<Object[]> findPreviewThumbsByWorkerIds(@Param("workerIds") List<UUID> workerIds);
-
 }

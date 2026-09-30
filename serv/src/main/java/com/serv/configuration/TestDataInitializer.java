@@ -210,7 +210,6 @@ public class TestDataInitializer implements ApplicationRunner {
         main.setSortOrder(0);
         main.setUrl(mediaBase + "/originals/test/" + placeholderPhoto);
         main.setMainThumbUrl(mediaBase + "/thumbs/main/test/" + placeholderPhoto);
-        main.setPreviewThumbUrl(mediaBase + "/thumbs/preview/test/" + placeholderPhoto);
 
         photoRepository.save(main);
         w.setMainPhoto(main);

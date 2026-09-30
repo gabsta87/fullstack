@@ -27,13 +27,7 @@ export class WorkerCardComponent implements OnDestroy {
 
   @Input() worker!: WorkerSimpleProfile;
 
-  previewUrls: string[] = [];
-  currentPreviewIdx     = 0;
-  isHovering            = false;
-  previewLoaded         = false;
-
-  private intervalId:   ReturnType<typeof setInterval> | null = null;
-  private hoverDelayId: ReturnType<typeof setTimeout>  | null = null;
+  private hoverDelayId: ReturnType<typeof setTimeout> | null = null;
 
   constructor(
     private workerService: WorkerService,
@@ -45,49 +39,17 @@ export class WorkerCardComponent implements OnDestroy {
     });
   }
 
-  // ── Hover ──────────────────────────────────────────────────────────────────
+  // ── Hover ────────────────────────────────________________──────────────────
 
   onMouseEnter(): void {
-    this.isHovering = true;
-    // Wait 300ms before triggering fetch — avoids firing on quick mouse-overs
+    // On garde le prefetch intelligent en arrière-plan si l'utilisateur survole la carte
     this.hoverDelayId = setTimeout(() => {
-      this.loadPreviewsAndStart();
-      // Prefetch full profile in background while user looks at card
       this.workerService.prefetchProfile(this.worker.id);
     }, 300);
   }
 
   onMouseLeave(): void {
-    this.isHovering = false;
-    this.stopCarousel();
     if (this.hoverDelayId) clearTimeout(this.hoverDelayId);
-    this.currentPreviewIdx = 0;
-    this.cdr.markForCheck();
-  }
-
-  // ── Carousel ───────────────────────────────────────────────────────────────
-
-  private loadPreviewsAndStart(): void {
-    if (this.previewLoaded) { this.startCarousel(); return; }
-    this.workerService.getPreviewThumbs(this.worker.id).subscribe(urls => {
-      this.previewUrls   = urls;
-      this.previewLoaded = true;
-      this.startCarousel();
-      this.cdr.markForCheck();
-    });
-  }
-
-  private startCarousel(): void {
-    if (this.previewUrls.length < 2) return;
-    this.stopCarousel();
-    this.intervalId = setInterval(() => {
-      this.currentPreviewIdx = (this.currentPreviewIdx + 1) % this.previewUrls.length;
-      this.cdr.markForCheck();
-    }, 3000);
-  }
-
-  private stopCarousel(): void {
-    if (this.intervalId) { clearInterval(this.intervalId); this.intervalId = null; }
   }
 
   // ── Navigation ─────────────────────────────────────────────────────────────
@@ -99,17 +61,13 @@ export class WorkerCardComponent implements OnDestroy {
     });
   }
 
-  // ── Display URL ────────────────────────────────────────────────────────────
+  // ── Display URL ────────────────────────────────____________________________
 
   get displayUrl(): string | null {
-    if (this.isHovering && this.previewUrls.length > 0) {
-      return this.previewUrls[this.currentPreviewIdx];
-    }
-    return this.worker.mainThumbUrl;
+    return this.worker.mainThumbUrl || null;
   }
 
   ngOnDestroy(): void {
-    this.stopCarousel();
     if (this.hoverDelayId) clearTimeout(this.hoverDelayId);
   }
 }

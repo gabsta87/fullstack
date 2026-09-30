@@ -39,9 +39,9 @@ public class CertificationRequest {
     @Column(name = "processed_at")
     private LocalDateTime processedAt;
 
-    public CertificationRequest(Worker worker, String verificationCode) {
+    public CertificationRequest(Worker worker) {
         this.worker = worker;
-        this.verificationCode = verificationCode;
+        this.verificationCode = worker.getVerificationCode();
         this.createdAt = LocalDateTime.now();
         this.status = "PENDING";
     }

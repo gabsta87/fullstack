@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface CertificationRequestRepository extends JpaRepository<CertificationRequest, Long> {
 
     Optional<CertificationRequest> findByWorkerAndStatus(Worker worker, String status);
+
+    Optional<CertificationRequest> findByWorker(Worker worker);
 }

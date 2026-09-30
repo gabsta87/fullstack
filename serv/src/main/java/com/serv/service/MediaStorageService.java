@@ -1,5 +1,8 @@
 package com.serv.service;
 
+import com.serv.database.entities.Photo;
+import com.serv.database.entities.Video;
+import com.serv.database.entities.Worker;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.geometry.Positions;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,53 +40,47 @@ public class MediaStorageService {
 
     private static final int MAIN_THUMB_W = 600;
     private static final int MAIN_THUMB_H = 800;
-    private static final int PREV_THUMB_W = 400;
-    private static final int PREV_THUMB_H = 300;
 
-    public SavedMedia savePhoto(MultipartFile file, UUID workerId) throws IOException {
+    /**
+     * Sauvegarde une photo, génère la miniature, et retourne une entité Photo prête à l'emploi.
+     */
+    public Photo savePhoto(MultipartFile file, Worker worker) throws IOException {
         validateImage(file);
 
         String uuid = UUID.randomUUID().toString();
         String ext = getExtension(file.getOriginalFilename());
         String baseName = uuid + ext;
 
-        Path originalsDir = resolveDir("originals", workerId);
-        Path mainThumbDir = resolveDir("thumbs/main", workerId);
-        Path prevThumbDir = resolveDir("thumbs/preview", workerId);
+        Path originalsDir = resolveDir("originals", worker.getId());
+        Path mainThumbDir = resolveDir("thumbs/main", worker.getId());
 
         Path originalPath = originalsDir.resolve(baseName).normalize();
         Path mainThumbPath = mainThumbDir.resolve(uuid + "_main" + ext).normalize();
-        Path prevThumbPath = prevThumbDir.resolve(uuid + "_prev" + ext).normalize();
 
-        // 1 — Save original
+        // 1 — Sauvegarde de l'original
         Files.write(originalPath, file.getBytes());
 
-        // 2 — Generate main thumbnail
+        // 2 — Génération de la miniature principale
         Thumbnails.of(originalPath.toFile())
                 .size(MAIN_THUMB_W, MAIN_THUMB_H)
                 .crop(Positions.CENTER)
                 .outputQuality(0.85)
                 .toFile(mainThumbPath.toFile());
 
-        // 3 — Generate preview thumbnail
-        Thumbnails.of(originalPath.toFile())
-                .size(PREV_THUMB_W, PREV_THUMB_H)
-                .crop(Positions.CENTER)
-                .outputQuality(0.75)
-                .toFile(prevThumbPath.toFile());
+        // 3 — Instanciation et remplissage de l'entité Photo
+        Photo photo = new Photo();
+        photo.setUrl(buildUrl("originals", worker.getId(), baseName));
+        photo.setMainThumbUrl(buildUrl("thumbs/main", worker.getId(), uuid + "_main" + ext));
+        photo.setFileSize(file.getSize());
+        photo.setWorker(worker);
 
-        return new SavedMedia(
-                buildUrl("originals", workerId, baseName),
-                buildUrl("thumbs/main", workerId, uuid + "_main" + ext),
-                buildUrl("thumbs/preview", workerId, uuid + "_prev" + ext)
-        );
+        return photo;
     }
 
-    public void deletePhotoFiles(UUID workerId, String originalUrl, String mainThumbUrl, String previewThumbUrl) {
+    public void deletePhotoFiles(UUID workerId, Photo photo) {
         try {
-            deletePhysicalFile("originals", workerId, originalUrl);
-            deletePhysicalFile("thumbs/main", workerId, mainThumbUrl);
-            deletePhysicalFile("thumbs/preview", workerId, previewThumbUrl);
+            deletePhysicalFile("originals", workerId, photo.getUrl());
+            deletePhysicalFile("thumbs/main", workerId, photo.getMainThumbUrl());
         } catch (IOException e) {
             System.err.println("Erreur suppression physique pour le worker " + workerId + ": " + e.getMessage());
         }
@@ -93,55 +90,34 @@ public class MediaStorageService {
         if (url == null || !url.contains("/")) return;
 
         String filename = url.substring(url.lastIndexOf('/') + 1);
-
-        // 🛡️ SÉCURITÉ ANTI-PATH TRAVERSAL : Résolution sécurisée du chemin de base
         Path baseDir = Paths.get(uploadBase).toAbsolutePath().normalize();
         Path targetDir = baseDir.resolve(subdir).resolve(String.valueOf(workerId)).normalize();
         Path filePath = targetDir.resolve(filename).normalize();
 
-        // Vérification absolue que le fichier cible reste bien à l'intérieur du dossier autorisé
         if (!filePath.startsWith(targetDir)) {
             throw new SecurityException("Tentative de Path Traversal détectée !");
         }
 
-        // 1 — Supprime le fichier image s'il existe
         if (Files.exists(filePath)) {
             Files.delete(filePath);
         }
 
-        // 2 — Nettoyage du dossier parent s'il est vide
         if (Files.isDirectory(targetDir)) {
             try (var entries = Files.newDirectoryStream(targetDir)) {
                 if (!entries.iterator().hasNext()) {
                     Files.delete(targetDir);
-                    System.out.println("Dossier vide nettoyé : " + targetDir);
                 }
             }
         }
     }
 
-    public SavedMedia saveVideo(MultipartFile file, UUID workerId) throws IOException {
-        validateVideo(file);
-
-        String uuid = UUID.randomUUID().toString();
-        String ext = getExtension(file.getOriginalFilename());
-        String baseName = uuid + ext;
-
-        Path videosDir = resolveDir("videos", workerId);
-        Path videoPath = videosDir.resolve(baseName).normalize();
-
-        Files.write(videoPath, file.getBytes());
-
-        return new SavedMedia(buildUrl("videos", workerId, baseName), null, null);
-    }
-
     public void deleteAllForWorker(UUID workerId) throws IOException {
         Path baseDir = Paths.get(uploadBase).toAbsolutePath().normalize();
 
-        for (String subdir : List.of("originals", "thumbs/main", "thumbs/preview", "videos")) {
+        // On ne cible plus "thumbs/preview" puisque le carrousel est supprimé
+        for (String subdir : List.of("originals", "thumbs/main", "videos")) {
             Path dir = baseDir.resolve(subdir).resolve(String.valueOf(workerId)).normalize();
 
-            // Double vérification de sécurité
             if (dir.startsWith(baseDir) && Files.exists(dir)) {
                 Files.walk(dir)
                         .sorted(java.util.Comparator.reverseOrder())
@@ -151,8 +127,6 @@ public class MediaStorageService {
         }
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
-
     private Path resolveDir(String subdir, UUID workerId) throws IOException {
         Path baseDir = Paths.get(uploadBase).toAbsolutePath().normalize();
         Path dir = baseDir.resolve(subdir).resolve(String.valueOf(workerId)).normalize();
@@ -160,7 +134,6 @@ public class MediaStorageService {
         if (!dir.startsWith(baseDir)) {
             throw new SecurityException("Chemin non autorisé.");
         }
-
         if (!Files.exists(dir)) {
             Files.createDirectories(dir);
         }
@@ -186,19 +159,48 @@ public class MediaStorageService {
         }
     }
 
+    /**
+     * Sauvegarde une vidéo et retourne une entité Video prête à l'emploi.
+     */
+    public Video saveVideo(MultipartFile file, Worker worker) throws IOException {
+        validateVideo(file);
+
+        String uuid = UUID.randomUUID().toString();
+        String ext = getExtension(file.getOriginalFilename());
+        String baseName = uuid + ext;
+
+        // On sauvegarde les vidéos dans le dossier "videos"
+        Path videosDir = resolveDir("videos", worker.getId());
+        Path videoPath = videosDir.resolve(baseName).normalize();
+
+        // 1 — Sauvegarde physique de la vidéo
+        Files.write(videoPath, file.getBytes());
+
+        // 2 — Instanciation et remplissage de l'entité Video
+        Video video = new Video();
+        video.setUrl(buildUrl("videos", worker.getId(), baseName));
+        video.setFileSize(file.getSize());
+        video.setWorker(worker);
+
+        return video;
+    }
+
     private void validateVideo(MultipartFile file) {
         String ct = file.getContentType();
         if (ct == null || !ct.startsWith("video/")) {
             throw new IllegalArgumentException("Only video files are accepted.");
         }
-        if (file.getSize() > 500L * 1024 * 1024) {
-            throw new IllegalArgumentException("Video must be smaller than 500 MB.");
+        // Par exemple, limite à 50 Mo pour les vidéos (à adapter selon tes besoins)
+        if (file.getSize() > 50 * 1024 * 1024) {
+            throw new IllegalArgumentException("Video must be smaller than 50 MB.");
         }
     }
 
-    public record SavedMedia(
-            String originalUrl,
-            String mainThumbUrl,
-            String previewThumbUrl
-    ) {}
+    public void deleteVideoFiles(UUID workerId, Video video) {
+        try {
+            deletePhysicalFile("videos", workerId, video.getUrl());
+        } catch (IOException e) {
+            System.err.println("Erreur suppression physique de la vidéo pour le worker " + workerId + ": " + e.getMessage());
+        }
+    }
 }

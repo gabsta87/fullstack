@@ -3,36 +3,13 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {
-  IonButton,
-  IonButtons,
-  IonChip,
-  IonContent,
-  IonHeader,
-  IonIcon,
-  IonItem,
-  IonLabel,
-  IonList, IonModal,
-  IonToolbar,
+  IonButton, IonButtons, IonChip, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonModal, IonToolbar,
 } from '@ionic/angular/standalone';
 import {addIcons} from 'ionicons';
 import {
-  bodyOutline,
-  calendarOutline,
-  callOutline,
-  chevronBackOutline,
-  chevronForwardOutline,
-  closeOutline,
-  heart,
-  heartOutline,
-  locationOutline,
-  logoWhatsapp,
-  notifications,
-  notificationsOutline,
-  personOutline,
-  playCircleOutline,
-  timeOutline,
-  warningOutline,
-  womanOutline
+  bodyOutline, calendarOutline, callOutline, chevronBackOutline, chevronForwardOutline, closeOutline, heart, heartOutline,
+  locationOutline, logoWhatsapp, notifications, notificationsOutline, personOutline, playCircleOutline, timeOutline,
+  warningOutline, womanOutline
 } from 'ionicons/icons';
 import {PhotoItem, Review, VideoItem} from '../../models/items.model';
 import {WorkerFullProfile} from "../../models/user.model";

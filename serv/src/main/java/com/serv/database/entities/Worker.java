@@ -36,6 +36,11 @@ public class Worker extends VenusUser {
     private Collection<Photo> photos = new ArrayList<>();
 
     @ToString.Exclude
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="certification_photo_id")
+    private Photo certificationPhoto;
+
+    @ToString.Exclude
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<Comment> comments = new ArrayList<>();
 
@@ -103,8 +108,9 @@ public class Worker extends VenusUser {
     @Column(name = "verification_code")
     private String verificationCode;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "certification_status")
-    private String certificationStatus = "NOT_CERTIFIED"; // NOT_REQUESTED, PENDING_APPROVAL, CERTIFIED, REJECTED
+    private CertificationStatus certificationStatus = CertificationStatus.NOT_CERTIFIED;
 
     @Column(name = "certified_at")
     private LocalDateTime certifiedAt;
@@ -192,7 +198,7 @@ public class Worker extends VenusUser {
     }
 
     public boolean isCertified() {
-        return "CERTIFIED".equals(this.certificationStatus);
+        return CertificationStatus.APPROVED.equals(this.certificationStatus);
     }
 
     public void addPhoto(Photo photo) {

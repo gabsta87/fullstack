@@ -45,11 +45,9 @@ public record WorkerPublicFullProfileDTO(
                 mainThumb,
                 w.getAge(),
                 w.getPhotos() != null ? w.getPhotos().stream().map(PhotoDTO::from).toList() : List.of(),
-                List.of(), // TODO: videos quand l'entité sera prête
+                w.getVideos() != null ? w.getVideos().stream().map(VideoDTO::from).toList() : List.of(),
                 w.getSpokenLanguages().stream().map(WorkerLanguage::toString).toList(),
                 w.getCertifiedAt() != null ? w.getCertifiedAt().toString() : null
         );
     }
-
-    public record VideoDTO(String id, String url, String duration) {}
 }

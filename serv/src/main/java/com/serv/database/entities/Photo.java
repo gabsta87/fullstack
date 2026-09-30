@@ -17,8 +17,4 @@ import java.util.UUID;
 })
 public class Photo extends Media{
 
-    /** 400×300 landscape crop — used in hover preview carousel */
-    @Column(name = "preview_thumb_url", length = 512)
-    private String previewThumbUrl;
-
 }

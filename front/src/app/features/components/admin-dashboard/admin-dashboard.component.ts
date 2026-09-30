@@ -11,22 +11,15 @@ import { addIcons } from "ionicons";
 import { addOutline, trashOutline, pencilOutline } from "ionicons/icons";
 import { ActivatedRoute } from "@angular/router";
 import { BehaviorSubject, firstValueFrom, map, Observable, switchMap } from "rxjs";
-import { Service } from "../../models/common.model";
+import {CertificationStatus, Service} from "../../models/common.model";
 import { GeographicZoneWithParent } from "../../models/filter.model";
 import { CommonService } from "../../services/common-service";
+import {UserRole} from "../../models/roles";
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    TableModule,
-    InputTextModule,
-    DropdownModule,
-    TagModule
-  ],
+  imports: [CommonModule, FormsModule, IonicModule, TableModule, InputTextModule, DropdownModule, TagModule],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss']
 })
@@ -73,7 +66,7 @@ export class AdminDashboardComponent implements OnInit {
     // (Filtre sur le rôle WORKER et le statut de certification PENDING_APPROVAL)
     this.pendingWorkers$ = this.users$.pipe(
       map(users => users
-        .filter(u => u.role === 'WORKER' && u.certificationStatus === 'PENDING_APPROVAL')
+        .filter(u => u.role === UserRole.ADMIN && u.certificationStatus === CertificationStatus.PENDING_APPROVAL)
         .sort((a, b) => new Date(a.certifiedAt || 0).getTime() - new Date(b.certifiedAt || 0).getTime())
       )
     );

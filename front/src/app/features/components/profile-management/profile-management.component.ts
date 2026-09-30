@@ -11,24 +11,16 @@ import {WorkerAccountService} from "../../services/worker-account.service";
 import {tap} from "rxjs/operators";
 import {addIcons} from "ionicons";
 import {
-  addCircleOutline,
-  camera,
-  cloudUploadOutline,
-  move,
-  star,
-  starOutline,
-  trashOutline,
-  warningOutline,
-  shieldCheckmarkOutline,
-  shieldOutline,
-  chevronDownCircleOutline,
-  closeCircleOutline
+  addCircleOutline, camera, cloudUploadOutline, move, star, starOutline, trashOutline,timeOutline,
+  warningOutline, shieldCheckmarkOutline, shieldOutline, chevronDownCircleOutline, closeCircleOutline
 } from 'ionicons/icons';
 import {AccountSettingsComponent} from "../account-settings/account-settings.component";
 import {GeographicZone} from "../../models/filter.model";
 import {ZoneSelectorComponent} from "../zone-selector/zone-selector.component";
 import {environment} from "../../../../environments/environment";
-import {Service} from "../../models/common.model";
+import {CertificationStatus, Service} from "../../models/common.model";
+import {ModalController} from "@ionic/angular/standalone";
+import {CertificationModalComponent} from "../certification-modal/certification-modal.component";
 
 @Component({
   selector: 'app-profile-management',
@@ -57,10 +49,12 @@ export class ProfileManagementComponent implements OnInit {
   draggedIndex: number | null = null;
   isZoneActive: boolean = false;
 
-  constructor(private accountService: WorkerAccountService, private route : ActivatedRoute) {
+  constructor(private accountService: WorkerAccountService,
+              private route : ActivatedRoute,
+              private modalController: ModalController) {
     addIcons({
       addCircleOutline, trashOutline, move, camera, warningOutline, star, starOutline, cloudUploadOutline,
-      shieldCheckmarkOutline, shieldOutline, chevronDownCircleOutline, closeCircleOutline
+      shieldCheckmarkOutline, shieldOutline, chevronDownCircleOutline, closeCircleOutline, timeOutline
     });
   }
 
@@ -170,62 +164,130 @@ export class ProfileManagementComponent implements OnInit {
    * - Orange (7 à 8 mois) : Très proche de l'expiration
    * - Rouge (> 8 mois ou non certifié) : Expiré / Invalide
    */
-  getCertificationBadge(me: WorkerPrivateAccount): { color: string; label: string; icon: string; isCert: boolean } {
-    if (!me.certifiedAt || me.certificationStatus !== 'CERTIFIED') {
+  getCertificationBadge(me: WorkerPrivateAccount): {
+    color: string;
+    label: string;          // Tooltip complet
+    buttonText: string;     // Texte court affiché sur le bouton
+    icon: string;
+    isCert: boolean;
+    hasNotification: boolean;
+    isDisabled: boolean;    // Pour bloquer le clic si besoin
+  } {
+    const status = me.certificationStatus;
+
+    // 1. En attente de photo (ou premier choix)
+    if (status === CertificationStatus.PENDING_PHOTO || !status || status === CertificationStatus.NOT_CERTIFIED) {
       return {
-        color: 'danger',
-        label: 'Cliquez ici pour demander la certification de votre profil',
-        icon: 'shield-outline',
-        isCert: false
+        color: 'tertiary',
+        label: 'Cliquez pour demander la certification de votre profil',
+        buttonText: 'Demander certification',
+        icon: 'camera-outline',
+        isCert: false,
+        hasNotification: false,
+        isDisabled: false
       };
     }
 
-    const certifiedDate = new Date(me.certifiedAt).getTime();
-    const currentTime = new Date().getTime();
-    const diffInDays = Math.floor((currentTime - certifiedDate) / (1000 * 60 * 60 * 24));
-    const diffInMonths = diffInDays / 30.44;
-
-    if (diffInMonths > 8) {
-      return {
-        color: 'danger',
-        label: 'Certification expirée (+8 mois). Cliquez pour renouveler.',
-        icon: 'shield-alert-outline', // ⚠️ Alerte car expiré
-        isCert: false
-      };
-    } else if (diffInMonths >= 7) {
+    // 2. Correction requise par l'admin
+    if (status === CertificationStatus.NEEDS_REVISION) {
       return {
         color: 'warning',
-        label: `Certifié - Expire bientôt (${Math.floor((8*30.44)-diffInDays)}j restants)`,
-        icon: 'shield-outline',
-        isCert: true
+        label: 'L\'administration demande une correction. Cliquez pour modifier.',
+        buttonText: 'Corriger certification',
+        icon: 'alert-circle-outline',
+        isCert: false,
+        hasNotification: true,
+        isDisabled: false
       };
-    } else {
+    }
+
+    // 3. En attente de validation par les admins -> BLOQUÉ 🔒
+    if (status === CertificationStatus.PENDING_APPROVAL) {
       return {
-        color: 'success',
-        label: 'Profil certifié et à jour',
-        icon: 'shield-checkmark-outline', // ✅ Coché quand tout est parfait
-        isCert: true
+        color: 'medium',
+        label: 'Demande en cours d\'examen par l\'administration',
+        buttonText: 'En attente',
+        icon: 'time-outline',
+        isCert: false,
+        hasNotification: false,
+        isDisabled: true // 👈 Désactive le bouton
       };
+    }
+
+    // 4. Si certifié (avec gestion des délais d'expiration si tu veux garder tes couleurs)
+    if (status === CertificationStatus.APPROVED) {
+      const certifiedDate = new Date(me.certifiedAt!).getTime();
+      const currentTime = new Date().getTime();
+      const diffInDays = Math.floor((currentTime - certifiedDate) / (1000 * 60 * 60 * 24));
+      const diffInMonths = diffInDays / 30.44;
+
+      if (diffInMonths > 8) {
+        return { color: 'danger', label: 'Certification expirée. Renouveler.', buttonText: 'Renouveler', icon: 'shield-alert-outline', isCert: false, hasNotification: false, isDisabled: false };
+      } else if (diffInMonths >= 6) {
+        return { color: 'warning', label: 'Votre certification expire bientôt.', buttonText: 'Certifié (Expire)', icon: 'shield-outline', isCert: true, hasNotification: false, isDisabled: false };
+      } else {
+        return { color: 'success', label: 'Profil certifié et à jour', buttonText: 'Certifié', icon: 'shield-checkmark-outline', isCert: true, hasNotification: false, isDisabled: false };
+      }
+    }
+
+    // Fallback par défaut
+    return {
+      color: 'danger',
+      label: 'Demander la certification',
+      buttonText: 'Certifier',
+      icon: 'shield-outline',
+      isCert: false,
+      hasNotification: false,
+      isDisabled: false
+    };
+  }
+
+  /**
+   * Point d'entrée unique au clic sur le bouton de certification :
+   * Ouvre directement la modale en lui passant l'utilisateur.
+   */
+  async openCertificationModal(me: WorkerPrivateAccount) {
+    try {
+      // 1. Si le code n'existe pas, on demande au service de l'initialiser
+      if (!me.verificationCode || me.certificationStatus === CertificationStatus.NOT_CERTIFIED || !me.certificationStatus) {
+        await this.accountService.requestCertification();
+      }
+
+      // 2. Ouvre la modale
+      await this.presentModal(me);
+
+    } catch (err) {
+      console.error("Erreur lors de la demande de certification", err);
     }
   }
 
   /**
-   * Déclenche la demande de certification auprès des admins.
-   * Génère le code / instructions pour l'annonceur.
+   * Crée et présente la modale Ionic
    */
-  async requestCertification() {
-    // Optionnel : Afficher une alerte Ionic (AlertController) avec les consignes strictes
-    // avant d'appeler le service :
-    // "Prenez une photo de tout votre corps en tenant un papier avec le code fourni, sans filtre."
+  async presentModal(me: WorkerPrivateAccount) {
+    const modal = await this.modalController.create({
+      component: CertificationModalComponent,
+      componentProps: {
+        // On récupère les données directement depuis l'objet courant
+        // (qui aura été rafraîchi si le code venait d'être généré)
+        verificationCode: me.verificationCode,
+        adminMessage: me.adminCertificationFeedback
+      }
+    });
 
-    try {
-      // Exemple d'appel au service (à adapter selon ton WorkerAccountService)
-      // const response = await this.accountService.requestCertification();
-      console.log("Demande de certification envoyée !");
+    await modal.present();
 
-      // Tu peux ici afficher un message de succès indiquant que le code généré est affiché ou envoyé par email.
-    } catch (error) {
-      console.error("Erreur lors de la demande de certification", error);
+    const { data, role } = await modal.onDidDismiss();
+    if (role === 'submitted' && data?.file) {
+      const formData = new FormData();
+      formData.append('file', data.file);
+
+      try {
+        // On délègue l'appel au service. Le service émettra la nouvelle version du profil.
+        await this.accountService.uploadCertificationPhoto(formData);
+      } catch (err) {
+        console.error("Erreur lors de l'envoi de la photo de certification", err);
+      }
     }
   }
 

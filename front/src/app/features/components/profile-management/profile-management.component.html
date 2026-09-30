@@ -49,13 +49,19 @@
 
               <!-- Bouton / Pastille de Certification Dynamique -->
               <ion-button
+                *ngIf="currentUser$ | async as me"
                 [color]="getCertificationBadge(me).color"
+                [disabled]="getCertificationBadge(me).isDisabled"
                 class="status-badge"
                 size="small"
                 [title]="getCertificationBadge(me).label"
-                (click)="!getCertificationBadge(me).isCert ? requestCertification() : null">
-                <ion-icon [name]="getCertificationBadge(me).icon" slot="icon-only"></ion-icon>
-                {{ getCertificationBadge(me).isCert ? 'Certifié' : 'Certifier' }}
+                (click)="openCertificationModal(me)">
+
+                <ion-icon [name]="getCertificationBadge(me).icon" slot="start"></ion-icon>
+
+                {{ getCertificationBadge(me).buttonText }}
+
+                <ion-badge *ngIf="getCertificationBadge(me).hasNotification" color="danger" class="notification-dot"></ion-badge>
               </ion-button>
             </div>
 
