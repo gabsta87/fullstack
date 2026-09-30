@@ -42,11 +42,7 @@ public class AdminController {
 
     // ── PROFILES & LOGS ──────────────────────────────────────────────────────
 
-    @GetMapping("/profiles")
-    public ResponseEntity<List<Worker>> getAllProfiles() {
-        return ResponseEntity.ok(workerRepository.findAll());
-    }
-
+    @Transactional(readOnly = true)
     @GetMapping("/users")
     public ResponseEntity<List<AdminUserDTO>> getAllUsers() {
         List<AdminUserDTO> users = userRepository.findAll().stream()

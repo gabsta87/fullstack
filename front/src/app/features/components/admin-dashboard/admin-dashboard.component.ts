@@ -66,7 +66,7 @@ export class AdminDashboardComponent implements OnInit {
     // (Filtre sur le rôle WORKER et le statut de certification PENDING_APPROVAL)
     this.pendingWorkers$ = this.users$.pipe(
       map(users => users
-        .filter(u => u.role === UserRole.ADMIN && u.certificationStatus === CertificationStatus.PENDING_APPROVAL)
+        .filter(u => u.role === UserRole.WORKER && u.certificationStatus === CertificationStatus.PENDING_APPROVAL)
         .sort((a, b) => new Date(a.certifiedAt || 0).getTime() - new Date(b.certifiedAt || 0).getTime())
       )
     );
@@ -163,7 +163,8 @@ export class AdminDashboardComponent implements OnInit {
 
     this.adminService.verifyCertification(workerId, approved, reason).subscribe({
       next: () => {
-        // Optionnel : tu pourrais émettre un rafraîchissement sur les workers si besoin
+        // 💡 Astuce : On peut forcer un rechargement de la route ou mettre à jour le flux users
+        window.location.reload(); // Simple et radical pour actualiser les résolveurs, ou idéalement re-fetcher get Users()
       },
       error: (err) => console.error('Échec traitement certification', err)
     });
