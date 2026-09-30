@@ -37,6 +37,7 @@ export interface WorkerSimpleProfile extends BaseUser{
   previewThumbUrls: string[];
   servicesId: number[];
   certificationStatus: string;
+  certifiedAt: string;
 }
 
 export interface WorkerFullProfile extends WorkerSimpleProfile {

@@ -19,7 +19,8 @@ public record WorkerMinimalProfileDTO (
         List<Integer> servicesId,
         Boolean       available,
         String        mainThumbUrl,
-        List<String>  previewThumbUrls
+        List<String>  previewThumbUrls,
+        String        certifiedAt
 ) implements Comparable<WorkerMinimalProfileDTO>{
 
     public record ZoneLightDTO(Integer id, String name) {}
@@ -38,7 +39,8 @@ public record WorkerMinimalProfileDTO (
                 w.getServices().stream().map(Service::getId).toList(),
                 w.isAvailable(),
                 w.getMainPhoto() != null ? w.getMainPhoto().getMainThumbUrl() : null,
-                preFetchedPreviews != null ? preFetchedPreviews : List.of()
+                preFetchedPreviews != null ? preFetchedPreviews : List.of(),
+                w.getCertifiedAt() != null ? w.getCertifiedAt().toString() : null
         );
     }
 

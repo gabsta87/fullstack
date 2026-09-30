@@ -23,7 +23,8 @@ public record WorkerPublicFullProfileDTO(
         Integer           age,
         List<PhotoDTO>    photos,
         List<VideoDTO>    videos,
-        List<String>      languages
+        List<String>      languages,
+        String            certifiedAt
 ) {
     public static WorkerPublicFullProfileDTO from(Worker w) {
         String mainThumb = w.getMainPhoto() != null
@@ -45,7 +46,8 @@ public record WorkerPublicFullProfileDTO(
                 w.getAge(),
                 w.getPhotos() != null ? w.getPhotos().stream().map(PhotoDTO::from).toList() : List.of(),
                 List.of(), // TODO: videos quand l'entité sera prête
-                w.getSpokenLanguages().stream().map(WorkerLanguage::toString).toList()
+                w.getSpokenLanguages().stream().map(WorkerLanguage::toString).toList(),
+                w.getCertifiedAt() != null ? w.getCertifiedAt().toString() : null
         );
     }
 

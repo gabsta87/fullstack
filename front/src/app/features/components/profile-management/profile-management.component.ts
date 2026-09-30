@@ -18,7 +18,11 @@ import {
   star,
   starOutline,
   trashOutline,
-  warningOutline
+  warningOutline,
+  shieldCheckmarkOutline,
+  shieldOutline,
+  chevronDownCircleOutline,
+  closeCircleOutline
 } from 'ionicons/icons';
 import {AccountSettingsComponent} from "../account-settings/account-settings.component";
 import {GeographicZone} from "../../models/filter.model";
@@ -55,7 +59,8 @@ export class ProfileManagementComponent implements OnInit {
 
   constructor(private accountService: WorkerAccountService, private route : ActivatedRoute) {
     addIcons({
-      addCircleOutline, trashOutline, move, camera, warningOutline, star, starOutline, cloudUploadOutline
+      addCircleOutline, trashOutline, move, camera, warningOutline, star, starOutline, cloudUploadOutline,
+      shieldCheckmarkOutline, shieldOutline, chevronDownCircleOutline, closeCircleOutline
     });
   }
 
@@ -153,6 +158,75 @@ export class ProfileManagementComponent implements OnInit {
     if (this.isFieldMissing('photos', me)) missing.push('Au moins 1 photo');
 
     return missing;
+  }
+
+  // ── Gestion de la Certification ──────────────────────────────────────────
+
+  /**
+   * Calcule la couleur et le libellé de la certification selon un délai fixe de 8 mois
+   * à partir de la date d'obtention (certifiedAt).
+   * - Vert (< 6 mois) : Valide
+   * - Jaune (6 à 7 mois) : Bientôt à renouveler
+   * - Orange (7 à 8 mois) : Très proche de l'expiration
+   * - Rouge (> 8 mois ou non certifié) : Expiré / Invalide
+   */
+  getCertificationBadge(me: WorkerPrivateAccount): { color: string; label: string; icon: string; isCert: boolean } {
+    if (!me.certifiedAt || me.certificationStatus !== 'CERTIFIED') {
+      return {
+        color: 'danger',
+        label: 'Cliquez ici pour demander la certification de votre profil',
+        icon: 'shield-outline',
+        isCert: false
+      };
+    }
+
+    const certifiedDate = new Date(me.certifiedAt).getTime();
+    const currentTime = new Date().getTime();
+    const diffInDays = Math.floor((currentTime - certifiedDate) / (1000 * 60 * 60 * 24));
+    const diffInMonths = diffInDays / 30.44;
+
+    if (diffInMonths > 8) {
+      return {
+        color: 'danger',
+        label: 'Certification expirée (+8 mois). Cliquez pour renouveler.',
+        icon: 'shield-alert-outline', // ⚠️ Alerte car expiré
+        isCert: false
+      };
+    } else if (diffInMonths >= 7) {
+      return {
+        color: 'warning',
+        label: `Certifié - Expire bientôt (${Math.floor((8*30.44)-diffInDays)}j restants)`,
+        icon: 'shield-outline',
+        isCert: true
+      };
+    } else {
+      return {
+        color: 'success',
+        label: 'Profil certifié et à jour',
+        icon: 'shield-checkmark-outline', // ✅ Coché quand tout est parfait
+        isCert: true
+      };
+    }
+  }
+
+  /**
+   * Déclenche la demande de certification auprès des admins.
+   * Génère le code / instructions pour l'annonceur.
+   */
+  async requestCertification() {
+    // Optionnel : Afficher une alerte Ionic (AlertController) avec les consignes strictes
+    // avant d'appeler le service :
+    // "Prenez une photo de tout votre corps en tenant un papier avec le code fourni, sans filtre."
+
+    try {
+      // Exemple d'appel au service (à adapter selon ton WorkerAccountService)
+      // const response = await this.accountService.requestCertification();
+      console.log("Demande de certification envoyée !");
+
+      // Tu peux ici afficher un message de succès indiquant que le code généré est affiché ou envoyé par email.
+    } catch (error) {
+      console.error("Erreur lors de la demande de certification", error);
+    }
   }
 
   // ── Value modification ─────────────────────────────────────────────────────────

@@ -31,12 +31,34 @@
             </ion-fab-button>
           </div>
         </ion-col>
-        <ion-col size="2" size-md="auto" class="ion-text-center ion-text-md-start">
+
+        <!-- Titre, Statut En Ligne & Pastille de Certification -->
+        <ion-col size="10" size-md="auto" class="ion-text-center ion-text-md-start">
           <div class="profile-title">
             <h1>{{ me.username }}</h1>
-            <ion-button [color]="me.available ? 'success' : 'medium'" class="status-badge" (click)="toggleAvailable(!me.available)">
-              {{ me.available ? 'En ligne' : 'Hors ligne' }}
-            </ion-button>
+
+            <div class="badges-container">
+              <!-- Bouton Statut En Ligne / Hors Ligne -->
+              <ion-button [color]="me.available ? 'success' : 'medium'"
+                          class="status-badge"
+                          size="small"
+                          (click)="toggleAvailable(!me.available)">
+                <ion-icon [name]="me.available ? 'chevron-down-circle-outline' : 'close-circle-outline'" slot="start"></ion-icon>
+                {{ me.available ? 'En ligne' : 'Hors ligne' }}
+              </ion-button>
+
+              <!-- Bouton / Pastille de Certification Dynamique -->
+              <ion-button
+                [color]="getCertificationBadge(me).color"
+                class="status-badge"
+                size="small"
+                [title]="getCertificationBadge(me).label"
+                (click)="!getCertificationBadge(me).isCert ? requestCertification() : null">
+                <ion-icon [name]="getCertificationBadge(me).icon" slot="icon-only"></ion-icon>
+                {{ getCertificationBadge(me).isCert ? 'Certifié' : 'Certifier' }}
+              </ion-button>
+            </div>
+
           </div>
         </ion-col>
 

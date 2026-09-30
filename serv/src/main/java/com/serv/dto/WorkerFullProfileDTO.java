@@ -23,7 +23,8 @@ public record WorkerFullProfileDTO(
         String       description,
         String       mainThumbUrl,
         List<PhotoDTO> photos,
-        List<VideoDTO> videos
+        List<VideoDTO> videos,
+        String        certifiedAt
 ) {
     public static WorkerFullProfileDTO from(Worker w) {
         String mainThumb = w.getMainPhoto() != null
@@ -47,7 +48,8 @@ public record WorkerFullProfileDTO(
                 w.getPhotos().stream()
                         .map(PhotoDTO::from)
                         .toList(),
-                List.of() // TODO: videos when Video entity is enabled
+                List.of(),
+                w.getCertifiedAt() != null ? new SimpleDateFormat("yyyy-MM-dd").format(w.getCertifiedAt()) : null
         );
     }
 

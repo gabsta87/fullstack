@@ -50,12 +50,32 @@
       color: var(--text);
     }
 
+    .badges-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
     .status-badge {
       font-size: 0.8rem;
-      height: 28px;
+      height: 32px;
+      min-height: 32px;
       --border-radius: var(--radius-md);
       text-transform: none;
       font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+
+      --padding-start: 12px;
+      --padding-end: 12px;
+
+      ion-icon {
+        margin-right: 6px;
+        font-size: 1rem;
+      }
     }
   }
 }
