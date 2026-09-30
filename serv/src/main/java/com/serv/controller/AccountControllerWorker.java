@@ -63,16 +63,23 @@ public class AccountControllerWorker {
         return ResponseEntity.ok(dto);
     }
 
-
+    @Transactional
     @PatchMapping("/availability")
     public ResponseEntity<?> setAvailability(@RequestBody Map<String, Boolean> body,
-                                             Worker worker) {
-        worker.setAvailable(body.getOrDefault("available", false));
+                                             Worker workerArg) {
+        Worker worker = getWorkerWithPhotos(workerArg);
 
-        this.evaluateWorkerProfileCompleteness(worker);
+        boolean requestedAvailability = body.getOrDefault("available", false);
+        worker.setAvailable(requestedAvailability);
+
+        if (requestedAvailability) {
+            this.setWorkerProfileCompleteness(worker);
+        }
+
         Worker savedWorker = workerRepository.save(worker);
         WorkerFullProfileDTO dto = WorkerFullProfileDTO.from(savedWorker);
         sseStreamService.emitEvent(worker.getId(), "account-update", dto);
+
         return ResponseEntity.ok().body(dto);
     }
 
@@ -136,7 +143,7 @@ public class AccountControllerWorker {
             System.out.println("updateProfile :" + worker.getServices());
         }
 
-        this.evaluateWorkerProfileCompleteness(worker);
+        this.setWorkerProfileCompleteness(worker);
 
         Worker savedWorker = workerRepository.save(worker);
         WorkerFullProfileDTO dto = WorkerFullProfileDTO.from(savedWorker);
@@ -155,7 +162,7 @@ public class AccountControllerWorker {
                 .map(Optional::get)
                 .collect(Collectors.toList());
 
-        worker.setServices(serviceList);this.evaluateWorkerProfileCompleteness(worker);
+        worker.setServices(serviceList);this.setWorkerProfileCompleteness(worker);
 
         Worker savedWorker = workerRepository.save(worker);
 
@@ -193,7 +200,7 @@ public class AccountControllerWorker {
             photoRepository.save(photo);
 
             // On sauvegarde l'état du worker mis à jour
-            this.evaluateWorkerProfileCompleteness(worker);
+            this.setWorkerProfileCompleteness(worker);
             Worker savedWorker = workerRepository.save(worker);
 
             // Plus besoin de refaire un findByIdWithPhotos ici, l'entité est déjà à jour dans la session Hibernate
@@ -246,7 +253,7 @@ public class AccountControllerWorker {
 
         // 3 — Suppression en base de données (déclenché par orphanRemoval = true)
         worker.removePhoto(photo);
-        this.evaluateWorkerProfileCompleteness(worker);
+        this.setWorkerProfileCompleteness(worker);
         Worker savedWorker = workerRepository.save(worker);
 
         // Émission du profil mis à jour
@@ -267,7 +274,7 @@ public class AccountControllerWorker {
             return ResponseEntity.notFound().build();
 
         worker.setMainPhoto(photo);
-        this.evaluateWorkerProfileCompleteness(worker);
+        this.setWorkerProfileCompleteness(worker);
         Worker savedWorker = workerRepository.save(worker);
 
         sseStreamService.emitEvent(worker.getId(), "account-update", WorkerFullProfileDTO.from(savedWorker));
@@ -295,7 +302,7 @@ public class AccountControllerWorker {
 
     // Utility method
 
-    private void evaluateWorkerProfileCompleteness(Worker worker) {
+    private void setWorkerProfileCompleteness(Worker worker) {
         boolean isComplete = worker.getUsername() != null && !worker.getUsername().trim().isEmpty()
                 && worker.getEmail() != null && !worker.getEmail().getValue().trim().isEmpty()
                 && worker.getDescription() != null && !worker.getDescription().trim().isEmpty()
