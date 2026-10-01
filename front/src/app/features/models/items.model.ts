@@ -53,6 +53,7 @@ export interface PhotoItem {
   id: string;
   originalUrl: string;
   mainThumbUrl: string;
+  sortOrder : number;
   type?: 'image';
 }
 
@@ -60,6 +61,7 @@ export interface VideoItem {
   id: string;
   url: string;
   duration?: string;
+  sortOrder : number;
   type?: 'video';
 }
 

@@ -1,3 +1,6 @@
+
+onDrop du profile-management ne marche plus
+afficher les images dans la modale de certification
 replace role === 'ADMIN' by role === UserRole.ADMIN (searching with [A-Z]{3,})
 
 unavailable profiles : hide phone and contact info

@@ -240,9 +240,8 @@ public class AccountControllerWorker {
     // Medias
 
     @PostMapping("/media")
-    public ResponseEntity<?> uploadMedia(@RequestParam("files") List<MultipartFile> files, Worker workerArg) {
+    public ResponseEntity<WorkerFullProfileDTO> uploadMedia(@RequestParam("files") List<MultipartFile> files, Worker workerArg) {
         Worker worker = getWorkerWithPhotos(workerArg);
-        List<Object> responses = new ArrayList<>();
 
         for (MultipartFile file : files) {
             try {
@@ -255,14 +254,13 @@ public class AccountControllerWorker {
                     }
                     worker.addPhoto(photo);
                     photoRepository.save(photo);
-                    responses.add(photo);
                 } else if (contentType != null && contentType.startsWith("video")) {
                     Video video = mediaStorageService.saveVideo(file, worker);
                     worker.addVideo(video);
                     videoRepository.save(video);
-                    responses.add(video);
                 }
-            } catch (Exception e) {
+            } catch (IOException e) {
+                System.out.println("Error uploading media "+ file.getName()+" . CAUSE : " + e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -271,8 +269,9 @@ public class AccountControllerWorker {
         Worker savedWorker = workerRepository.save(worker);
         sseStreamService.emitEvent(savedWorker.getId(), "account-update", WorkerFullProfileDTO.from(savedWorker));
 
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
     }
+
     /**
      * DELETE /account/photos/{photoId}
      */
@@ -355,7 +354,7 @@ public class AccountControllerWorker {
      */
     @PatchMapping("/photos/{photoId}/main")
     public ResponseEntity<WorkerFullProfileDTO> setMainPhoto(@PathVariable UUID photoId, Worker worker) {
-
+        worker = getWorkerWithPhotos(worker);
         Photo photo = photoRepository.findById(photoId).orElse(null);
         if (photo == null || !photo.getWorker().getId().equals(worker.getId()))
             return ResponseEntity.notFound().build();
@@ -374,17 +373,29 @@ public class AccountControllerWorker {
      * Accepts an ordered list of photo IDs and updates sortOrder accordingly.
      */
     @PatchMapping("/photos/reorder")
-    public ResponseEntity<?> reorderPhotos(@RequestBody List<String> orderedIds,
-                                           Worker worker) {
+    public ResponseEntity<WorkerFullProfileDTO> reorderPhotos(@RequestBody List<String> orderedIds,
+                                                              Worker workerArg) {
+        Worker worker = getWorkerWithPhotos(workerArg);
 
         for (int i = 0; i < orderedIds.size(); i++) {
             UUID id = UUID.fromString(orderedIds.get(i));
+            int finalI = i;
             photoRepository.findById(id).ifPresent(p -> {
-                if (p.getWorker().getId().equals(worker.getId()))
-                    p.setSortOrder(orderedIds.indexOf(id.toString()));
+                if (p.getWorker().getId().equals(worker.getId())) {
+                    p.setSortOrder(finalI);
+                    photoRepository.save(p);
+                }
             });
         }
-        return ResponseEntity.ok().build();
+
+        // 💡 On recharge le worker propre avec ses photos triées et on notifie le front
+        this.setWorkerProfileCompleteness(worker);
+        Worker savedWorker = workerRepository.save(worker);
+        WorkerFullProfileDTO updatedDto = WorkerFullProfileDTO.from(savedWorker);
+
+        sseStreamService.emitEvent(savedWorker.getId(), "account-update", updatedDto);
+
+        return ResponseEntity.ok(updatedDto);
     }
 
     // Utility method

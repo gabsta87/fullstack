@@ -4,6 +4,7 @@ import {HttpClient} from "@angular/common/http";
 import {tap} from "rxjs/operators";
 import {environment} from "../../../environments/environment";
 import {WorkerPrivateAccount, WorkerProfileUpdate} from "../models/user.model";
+
 @Injectable({ providedIn: 'root' })
 export class WorkerAccountService {
   private base = `${environment.apiBase}/account/worker`;
@@ -63,30 +64,40 @@ export class WorkerAccountService {
     return updatedAccount;
   }
 
-  async uploadMedia(files: File[]): Promise<any> {
+  async uploadMedia(files: File[]): Promise<WorkerPrivateAccount> {
     const fd = new FormData();
     files.forEach(file => {
       fd.append('files', file, file.name);
     });
-    const result = await firstValueFrom(this.http.post(`${this.base}/media`, fd));
-    return result;
+    const updatedProfile = await firstValueFrom(this.http.post<WorkerPrivateAccount>(`${this.base}/media`, fd));
+    this.accountSubject.next(updatedProfile);
+    return updatedProfile;
   }
 
-  async deletePhoto(photoId: string): Promise<void> {
-    console.log("Deleting photo with ID:", photoId);
-    await firstValueFrom(this.http.delete(`${this.base}/photos/${photoId}`));
+  async deletePhoto(photoId: string): Promise<WorkerPrivateAccount> {
+    const updatedAccount = await firstValueFrom(this.http.delete<WorkerPrivateAccount>(`${this.base}/photos/${photoId}`));
+    this.accountSubject.next(updatedAccount);
+    return updatedAccount;
   }
 
   async setMainPhoto(photoId: string): Promise<any> {
-    return await firstValueFrom(this.http.patch(`${this.base}/photos/${photoId}/main`, {}));
+    const updatedAccount = await firstValueFrom(this.http.patch<WorkerPrivateAccount>(`${this.base}/photos/${photoId}/main`, {}));
+    this.accountSubject.next(updatedAccount);
+    return updatedAccount;
   }
 
   async reorderPhotos(orderedIds: string[]): Promise<any> {
-    return await firstValueFrom(this.http.patch(`${this.base}/photos/reorder`, orderedIds));
+    const updatedAccount = await firstValueFrom(
+      this.http.patch<WorkerPrivateAccount>(`${this.base}/photos/reorder`, orderedIds)
+    );
+    this.accountSubject.next(updatedAccount);
+    return updatedAccount;
   }
 
-  async deleteVideo(videoId: string): Promise<void> {
-    await firstValueFrom(this.http.delete(`${this.base}/videos/${videoId}`));
+  async deleteVideo(videoId: string): Promise<WorkerPrivateAccount> {
+    const updatedAccount = await firstValueFrom(this.http.delete<WorkerPrivateAccount>(`${this.base}/videos/${videoId}`));
+    this.accountSubject.next(updatedAccount);
+    return updatedAccount;
   }
 
   async requestCertification(): Promise<WorkerPrivateAccount> {

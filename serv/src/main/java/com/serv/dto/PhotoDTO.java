@@ -7,13 +7,15 @@ import java.util.UUID;
 public record PhotoDTO(
         UUID id,
         String originalUrl,
-        String mainThumbUrl
+        String mainThumbUrl,
+        Integer sortOrder
 ) {
     public static PhotoDTO from(Photo p) {
         return new PhotoDTO(
                 p.getId(),
                 p.getUrl(),
-                p.getMainThumbUrl()
+                p.getMainThumbUrl(),
+                p.getSortOrder()
         );
     }
 }

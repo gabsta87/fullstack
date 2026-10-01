@@ -73,7 +73,9 @@ export class ProfileManagementComponent implements OnInit {
         // Gestion des zones et du formulaire (reste inchangé)
         this.childZoneId = user.geographicZone?.id;
 
-        this.photos = (user.photos || []).map(photo => {
+        this.photos = (user.photos || [])
+          .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+          .map(photo => {
           const isCurrentMain = photo.mainThumbUrl === user.mainThumbUrl;
           return {
             ...photo,
@@ -118,13 +120,20 @@ export class ProfileManagementComponent implements OnInit {
 
     // 3. Dérivation réactive des photos à partir de currentUser$
     this.photos$ = this.currentUser$.pipe(
-      map(user => (user.photos || []).map(photo => ({
-        ...photo,
-        isMain: photo.mainThumbUrl === user.mainThumbUrl,
-        mainThumbUrl: photo.mainThumbUrl?.startsWith('http')
-          ? photo.mainThumbUrl
-          : `${environment.apiBase}${photo.mainThumbUrl}`
-      })))
+      map(user => {
+        const rawPhotos = user.photos || [];
+
+        // 💡 On trie les photos selon leur sortOrder avant de les mapper
+        const sortedPhotos = [...rawPhotos].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+
+        return sortedPhotos.map(photo => ({
+          ...photo,
+          isMain: photo.mainThumbUrl === user.mainThumbUrl,
+          mainThumbUrl: photo.mainThumbUrl?.startsWith('http')
+            ? photo.mainThumbUrl
+            : `${environment.apiBase}${photo.mainThumbUrl}`
+        }));
+      })
     );
 
     // 4. Dérivation réactive des vidéos
@@ -411,8 +420,12 @@ export class ProfileManagementComponent implements OnInit {
   }
 
   async onDrop(targetIndex: number) {
+    console.log("Drop index:", targetIndex);
     if (this.draggedIndex === null || this.draggedIndex === targetIndex) return;
 
+    // On récupère le tableau actuel depuis le flux ou une copie locale synchrone si besoin,
+    // mais le plus propre avec un flux réactif est de mapper l'ordre des IDs directement :
+    // Si tu as gardé un tableau 'photos' synchrone pour le drag & drop :
     const movedPhoto = this.photos[this.draggedIndex];
     this.photos.splice(this.draggedIndex, 1);
     this.photos.splice(targetIndex, 0, movedPhoto);
@@ -420,7 +433,9 @@ export class ProfileManagementComponent implements OnInit {
     this.draggedIndex  = null;
     this.dragOverIndex = null;
 
+    // On extrait les IDs dans le nouvel ordre visuel
     const orderedIds = this.photos.map(p => p.id);
+
     try {
       await this.accountService.reorderPhotos(orderedIds);
     } catch (error) {
