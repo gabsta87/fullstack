@@ -149,32 +149,6 @@ export class AdminDashboardComponent implements OnInit {
     await alert.present();
   }
 
-  async verifyCertif(workerId: string, approved: boolean) {
-    let reason = '';
-
-    if (!approved) {
-      const alertReason = await this.alertCtrl.create({
-        header: 'Motif du refus',
-        inputs: [{ name: 'reason', type: 'text', placeholder: 'Ex: Panneau ou code illisible' }],
-        buttons: [
-          { text: 'Annuler', role: 'cancel' },
-          { text: 'Valider', handler: (data) => { reason = data.reason; } }
-        ]
-      });
-      await alertReason.present();
-      const result = await alertReason.onDidDismiss();
-      if (result.role === 'cancel') return;
-    }
-
-    this.adminService.verifyCertification(workerId, approved, reason).subscribe({
-      next: () => {
-        // 💡 Astuce : On peut forcer un rechargement de la route ou mettre à jour le flux users
-        window.location.reload(); // Simple et radical pour actualiser les résolveurs, ou idéalement re-fetcher get Users()
-      },
-      error: (err) => console.error('Échec traitement certification', err)
-    });
-  }
-
   // ── GESTION DES SERVICES ──────────────────────────────────────────────────
 
   /**
@@ -333,9 +307,8 @@ export class AdminDashboardComponent implements OnInit {
 
   // Traitement avec commentaire (Demande de plus d'infos / Rejet avec motif)
   async submitCertificationReview(approved: boolean) {
-    if (!this.selectedWorkerDetails) return;
+    if (!this.currentCertifRequestId) return;
 
-    const workerId = this.selectedWorkerDetails.id;
     const reason = this.adminComment.trim();
 
     if (!approved && !reason) {
@@ -343,7 +316,7 @@ export class AdminDashboardComponent implements OnInit {
       return;
     }
 
-    this.adminService.verifyCertification(workerId, approved, reason).subscribe({
+    this.adminService.verifyCertification(this.currentCertifRequestId, approved, reason).subscribe({
       next: () => {
         this.closeCertificationModal();
         window.location.reload(); // Actualise les résolveurs

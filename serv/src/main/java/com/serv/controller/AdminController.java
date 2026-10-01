@@ -5,7 +5,6 @@ import com.serv.common.Requests;
 import com.serv.database.entities.*;
 import com.serv.database.repositories.*;
 import com.serv.dto.*;
-import com.serv.service.MediaStorageService;
 import com.serv.service.PasswordResetService;
 import com.serv.service.SseStreamService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.SQLOutput;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -134,16 +134,16 @@ public class AdminController {
 
     // Gestion des certifications
 
-    @Transactional(readOnly = true)
+    @Transactional
     @GetMapping("/certification-requests")
     public ResponseEntity<List<CertificationRequestDTO>> getPendingRequests() {
-        LocalDateTime expirationThreshold = LocalDateTime.now().minusMinutes(15);
+        LocalDateTime expirationThreshold = LocalDateTime.now().minusMinutes(3);
 
         List<CertificationRequest> requests = certificationRequestRepository.findAll();
 
         for (CertificationRequest req : requests) {
             if (req.isUnderReview() && req.getLockedAt() != null && req.getLockedAt().isBefore(expirationThreshold)) {
-                // Le lock a expiré (ex: admin déconnecté depuis plus de 10 min) -> On libère automatiquement
+                System.out.println("Freeing request " + req.getId() + " after expiration");
                 req.setUnderReview(false);
                 req.setLockedByAdmin(null);
                 req.setLockedAt(null);
@@ -168,7 +168,7 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
-        certificationRequest.setUnderReview(true); // TODO atomicity
+        certificationRequest.setUnderReview(true);
         certificationRequest.setLockedByAdmin( admin );
         certificationRequest.setLockedAt(LocalDateTime.now());
         certificationRequestRepository.save(certificationRequest);
@@ -195,14 +195,16 @@ public class AdminController {
         CertificationRequest request = certificationRequestRepository.findById(requestId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Requête introuvable"));
 
+        Worker worker = request.getWorker();
+
         if (approved) {
             // CAS 1 : C'est accepté, on valide le worker et on supprime la requête (déclenche le @PreRemove et nettoie la photo)
-            Worker worker = request.getWorker();
             worker.setCertificationStatus(CertificationStatus.APPROVED);
             worker.setVerificationCode(null);
             workerRepository.save(worker);
 
             certificationRequestRepository.delete(request);
+            logAdminAction(admin,"CERTIFICATION_APPROVED",worker,"Certification approved for worker " + worker.getEmail());
 
         } else {
             // CAS 2 : Refus ou demande de complément d'information
@@ -213,6 +215,7 @@ public class AdminController {
             request.setComment(comment);
 
             certificationRequestRepository.save(request);
+            logAdminAction(admin,"CERTIFICATION_DENIED",worker,"Certification denied for worker " + worker.getEmail()+" because of "+comment);
         }
     }
 

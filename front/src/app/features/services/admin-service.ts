@@ -45,8 +45,8 @@ export class AdminService {
     return this.http.get<any[]>(`${this.apiUrl}/certification-requests`);
   }
 
-  verifyCertification(workerId: string, approved: boolean, rejectionReason: string): Observable<{ success: boolean }> {
-    const payload = { workerId, approved, rejectionReason };
+  verifyCertification(requestId: number, approved: boolean, rejectionReason: string): Observable<{ success: boolean }> {
+    const payload = { requestId, approved, rejectionReason };
     return this.http.post<{ success: boolean }>(`${this.apiUrl}/profiles/verify-certification`, payload);
   }
 

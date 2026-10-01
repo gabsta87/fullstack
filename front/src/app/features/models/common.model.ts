@@ -21,10 +21,10 @@ export interface CertificationRequest {
   workerUsername: string;
   verificationCode: string;
   certificationPhotoUrl?: string;
-  status: 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED';
+  status: CertificationStatus;
   underReview: boolean;
   lockedByAdminId?: number;
-  createdAt: string; // ou Date
+  createdAt: string;
   processedAt?: string;
   lockedAt?: string;
   comment?: string;
