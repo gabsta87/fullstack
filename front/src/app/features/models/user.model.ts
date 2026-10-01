@@ -84,7 +84,6 @@ export interface WorkerProfileForAdmin{
   phone: string;
   certificationStatus: string;
   verificationCode?: string;
-  certificationPhotoUrl: string;
   certifiedAt : string,
   certificationRequestDate : string,
   servicesId: number[];

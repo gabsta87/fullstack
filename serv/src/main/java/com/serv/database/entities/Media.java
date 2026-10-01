@@ -2,6 +2,8 @@ package com.serv.database.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.UUID;
 
@@ -9,7 +11,9 @@ import java.util.UUID;
 @MappedSuperclass
 public abstract class Media {
     @Id
+    @JdbcTypeCode(SqlTypes.BINARY)
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "BINARY(16)", nullable = false, updatable = false)
     protected UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)

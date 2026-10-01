@@ -17,10 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -31,6 +28,7 @@ import java.util.stream.Collectors;
 public class AccountControllerWorker {
     private final WorkerRepository workerRepository;
     private final PhotoRepository photoRepository;
+    private final VideoRepository videoRepository;
     private final ServiceRepository serviceRepository;
     private final GeographicZoneRepository geographicZoneRepository;
     private final CertificationRequestRepository certificationRequestRepository;
@@ -101,7 +99,6 @@ public class AccountControllerWorker {
             System.out.println("Certification photo saved");
 
             // 2. Associer la photo de certification au Worker
-            worker.setCertificationPhoto(certificationPhoto);
             worker.setCertificationStatus(CertificationStatus.PENDING_APPROVAL);
 
             // 3. Mettre à jour ou créer la CertificationRequest pour l'admin
@@ -240,64 +237,63 @@ public class AccountControllerWorker {
         return ResponseEntity.ok(dto);
     }
 
-    /**
-     * POST /account/photos
-     * Upload a new photo — generates the main thumb and preview thumb.
-     */
-    @PostMapping("/photos")
-    public ResponseEntity<?> uploadPhoto(@RequestParam("file") MultipartFile file,
-                                         Worker worker) {
-        worker = getWorkerWithPhotos(worker);
+    // Medias
 
-        try {
-            Photo photo = mediaStorageService.savePhoto(file, worker);
+    @PostMapping("/media")
+    public ResponseEntity<?> uploadMedia(@RequestParam("files") List<MultipartFile> files, Worker workerArg) {
+        Worker worker = getWorkerWithPhotos(workerArg);
+        List<Object> responses = new ArrayList<>();
 
-            photo.setSortOrder(worker.getPhotos().size());
-
-            if (worker.getMainPhoto() == null) {
-                worker.setMainPhoto(photo);
+        for (MultipartFile file : files) {
+            try {
+                String contentType = file.getContentType();
+                if (contentType != null && contentType.startsWith("image")) {
+                    Photo photo = mediaStorageService.savePhoto(file, worker);
+                    photo.setSortOrder(worker.getPhotos().size());
+                    if (worker.getMainPhoto() == null) {
+                        worker.setMainPhoto(photo);
+                    }
+                    worker.addPhoto(photo);
+                    photoRepository.save(photo);
+                    responses.add(photo);
+                } else if (contentType != null && contentType.startsWith("video")) {
+                    Video video = mediaStorageService.saveVideo(file, worker);
+                    worker.addVideo(video);
+                    videoRepository.save(video);
+                    responses.add(video);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
-            worker.addPhoto(photo);
-            photoRepository.save(photo);
-
-            // On sauvegarde l'état du worker mis à jour
-            this.setWorkerProfileCompleteness(worker);
-            Worker savedWorker = workerRepository.save(worker);
-
-            // Plus besoin de refaire un findByIdWithPhotos ici, l'entité est déjà à jour dans la session Hibernate
-            sseStreamService.emitEvent(savedWorker.getId(), "account-update", WorkerFullProfileDTO.from(savedWorker));
-
-            return ResponseEntity.ok(Map.of(
-                    "id",              photo.getId().toString(),
-                    "mainThumbUrl",    photo.getMainThumbUrl(),
-                    "originalUrl",     photo.getUrl()
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
         }
-    }
 
+        this.setWorkerProfileCompleteness(worker);
+        Worker savedWorker = workerRepository.save(worker);
+        sseStreamService.emitEvent(savedWorker.getId(), "account-update", WorkerFullProfileDTO.from(savedWorker));
+
+        return ResponseEntity.ok(responses);
+    }
     /**
      * DELETE /account/photos/{photoId}
      */
     @DeleteMapping("/photos/{photoId}")
-    public ResponseEntity<?> deletePhoto(@PathVariable UUID photoId, Worker workerArg) {
+    public ResponseEntity<WorkerFullProfileDTO> deletePhoto(@PathVariable UUID photoId, Worker workerArg) {
         Worker worker = getWorkerWithPhotos(workerArg);
 
-        if (photoId == null) return ResponseEntity.badRequest().body("No file provided.");
+        if (photoId == null) {
+            return ResponseEntity.badRequest().build();
+        }
 
-        System.out.println("Deleting photo " + photoId + " for worker " + worker.getId());
+        System.out.println("Deleting photo " + photoId + " for worker " + worker.getUsername());
 
         Photo photo = photoRepository.findById(photoId).orElse(null);
-        if (photo == null || !photo.getWorker().getId().equals(worker.getId()))
+        if (photo == null || photo.getWorker() == null || !photo.getWorker().getId().equals(worker.getId())) {
+            System.out.println("Photo not found or not owned by worker | Photo ID : " + photoId);
             return ResponseEntity.notFound().build();
+        }
 
-        // 1 — Suppression des fichiers physiques sur le disque
-        mediaStorageService.deletePhotoFiles(
-                worker.getId(),
-                photo
-        );
+        // 1 — Suppression des fichiers physiques de la photo
+        mediaStorageService.deletePhotoFiles(worker.getId(), photo);
 
         // 2 — Si on supprime la photo principale, on choisit la suivante disponible
         if (worker.getMainPhoto() != null && worker.getMainPhoto().getId().equals(photoId)) {
@@ -310,15 +306,47 @@ public class AccountControllerWorker {
                     );
         }
 
-        // 3 — Suppression en base de données (déclenché par orphanRemoval = true)
+        // 3 — Suppression de la collection et sauvegarde commune
         worker.removePhoto(photo);
+        Worker savedWorker = finalizeWorkerUpdate(worker);
+
+        return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
+    }
+
+    /**
+     * DELETE /account/videos/{videoId}
+     */
+    @DeleteMapping("/videos/{videoId}")
+    public ResponseEntity<WorkerFullProfileDTO> deleteVideo(@PathVariable UUID videoId, Worker workerArg) {
+        Worker worker = getWorkerWithPhotos(workerArg);
+
+        if (videoId == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        System.out.println("Deleting video " + videoId + " for worker " + worker.getUsername());
+
+        Video video = videoRepository.findById(videoId).orElse(null);
+        if (video == null || video.getWorker() == null || !video.getWorker().getId().equals(worker.getId())) {
+            System.out.println("Video not found or not owned by worker | Video ID : " + videoId);
+            return ResponseEntity.notFound().build();
+        }
+
+        // 1 — Suppression des fichiers physiques de la vidéo
+        mediaStorageService.deleteVideoFiles(worker.getId(), video);
+
+        // 2 — Suppression de la collection et sauvegarde commune
+        worker.removeVideo(video);
+        Worker savedWorker = finalizeWorkerUpdate(worker);
+
+        return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
+    }
+
+    private Worker finalizeWorkerUpdate(Worker worker) {
         this.setWorkerProfileCompleteness(worker);
         Worker savedWorker = workerRepository.save(worker);
-
-        // Émission du profil mis à jour
         sseStreamService.emitEvent(savedWorker.getId(), "account-update", WorkerFullProfileDTO.from(savedWorker));
-
-        return ResponseEntity.ok().build();
+        return savedWorker;
     }
 
     /**
@@ -326,7 +354,7 @@ public class AccountControllerWorker {
      * Set a photo as the main (gallery card) photo.
      */
     @PatchMapping("/photos/{photoId}/main")
-    public ResponseEntity<?> setMainPhoto(@PathVariable UUID photoId, Worker worker) {
+    public ResponseEntity<WorkerFullProfileDTO> setMainPhoto(@PathVariable UUID photoId, Worker worker) {
 
         Photo photo = photoRepository.findById(photoId).orElse(null);
         if (photo == null || !photo.getWorker().getId().equals(worker.getId()))

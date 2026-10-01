@@ -1,6 +1,7 @@
 package com.serv.database.repositories;
 
 import com.serv.database.entities.Photo;
+import jakarta.annotation.Nonnull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,7 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface PhotoRepository extends JpaRepository<Photo, Long> {
+public interface PhotoRepository extends JpaRepository<Photo, UUID> {
 
     /** Only the main profile photo */
     Optional<Photo> findByWorkerId(UUID workerId);
@@ -23,6 +24,7 @@ public interface PhotoRepository extends JpaRepository<Photo, Long> {
     List<Photo> findByWorkerIdInOrderBySortOrderAsc(List<UUID> workerIds);
     void deleteByWorkerId(UUID workerId);
 
+    @Nonnull
     Optional<Photo> findById(UUID photoId);
 
 }

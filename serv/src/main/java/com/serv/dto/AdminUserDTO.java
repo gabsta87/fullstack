@@ -21,7 +21,6 @@ public record AdminUserDTO(
         String phone,
         String certificationStatus,
         String verificationCode,
-        String certificationPhotoUrl,
         String certifiedAt,
         String certificationRequestDate,
         Integer[] servicesId,
@@ -54,11 +53,6 @@ public record AdminUserDTO(
             verifCode = w.getVerificationCode();
             certifiedAt = w.getCertifiedAt() != null ? w.getCertifiedAt().toString() : null;
 
-            // Sécurisé contre le LazyLoading si la session est bien ouverte
-            if (w.getCertificationPhoto() != null) {
-                photoUrl = w.getCertificationPhoto().getUrl();
-            }
-
             if (w.getServices() != null) {
                 servicesId = w.getServices().stream().map(Service::getId).toArray(Integer[]::new);
             }
@@ -85,7 +79,6 @@ public record AdminUserDTO(
                 verifCode,
                 certifiedAt,
                 certificationRequestDateParam,
-                photoUrl,
                 servicesId,
                 zoneDto
         );

@@ -35,8 +35,9 @@ export class ProfileManagementComponent implements OnInit {
 
   currentUser$! : Observable<WorkerPrivateAccount>;
   allServices!  : Service[];
-  photos!: (PhotoItem & { isMain: boolean })[];
-  videos!: VideoItem[];
+  photos$!: Observable<(PhotoItem & { isMain: boolean })[]>;
+  photos: (PhotoItem & { isMain: boolean })[] = [];
+  videos$!: Observable<VideoItem[]>;
   allLocations! : GeographicZone[];
   childZoneId: number | undefined = undefined;
   parentZoneId: number | undefined = undefined;
@@ -69,11 +70,11 @@ export class ProfileManagementComponent implements OnInit {
     this.currentUser$ = this.accountService.listenToMyAccount().pipe(
       filter((user): user is WorkerPrivateAccount => user !== null),
       tap(user => {
+        // Gestion des zones et du formulaire (reste inchangé)
+        this.childZoneId = user.geographicZone?.id;
 
-        // 🎯 On mappe en calculant le booléen 'isMain'
         this.photos = (user.photos || []).map(photo => {
           const isCurrentMain = photo.mainThumbUrl === user.mainThumbUrl;
-
           return {
             ...photo,
             isMain: isCurrentMain,
@@ -82,8 +83,6 @@ export class ProfileManagementComponent implements OnInit {
               : `${environment.apiBase}${photo.mainThumbUrl}`
           };
         });
-
-        this.childZoneId = user.geographicZone?.id;
 
         if (this.childZoneId) {
           const parentZone = this.allLocations.find(parent =>
@@ -116,22 +115,38 @@ export class ProfileManagementComponent implements OnInit {
         this.profileForm = { ...this.lastServerState };
       })
     );
+
+    // 3. Dérivation réactive des photos à partir de currentUser$
+    this.photos$ = this.currentUser$.pipe(
+      map(user => (user.photos || []).map(photo => ({
+        ...photo,
+        isMain: photo.mainThumbUrl === user.mainThumbUrl,
+        mainThumbUrl: photo.mainThumbUrl?.startsWith('http')
+          ? photo.mainThumbUrl
+          : `${environment.apiBase}${photo.mainThumbUrl}`
+      })))
+    );
+
+    // 4. Dérivation réactive des vidéos
+    this.videos$ = this.currentUser$.pipe(
+      map(user => user.videos || [])
+    );
   }
 
   isFieldMissing(field: string, me: any): boolean {
     if (!me) return true;
     switch (field) {
-      case 'username':return !me.username || me.username.trim() === '';
+      case 'username': return !me.username || me.username.trim() === '';
       case 'email':
         const emailStr = typeof me.email === 'object' ? me.email?.value : me.email;
         return !emailStr || emailStr.trim() === '';
-      case 'description':return !me.description || me.description.trim() === '';
-      case 'geographicZoneId':return !me.geographicZone || !me.geographicZone.id || me.geographicZone.id == -1;
-      case 'phone':return !me.phone || me.phone.trim() === '';
-      case 'services':return !me.servicesId || me.servicesId.length === 0;
-      case 'photos':return !this.photos || this.photos.length === 0;
-      case 'birthday':return !me.birthdate;
-      default:return false;
+      case 'description': return !me.description || me.description.trim() === '';
+      case 'geographicZoneId': return !me.geographicZone || !me.geographicZone.id || me.geographicZone.id == -1;
+      case 'phone': return !me.phone || me.phone.trim() === '';
+      case 'services': return !me.servicesId || me.servicesId.length === 0;
+      case 'photos': return !me.photos || me.photos.length === 0;
+      case 'birthday': return !me.birthdate;
+      default: return false;
     }
   }
 

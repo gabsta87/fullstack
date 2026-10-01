@@ -4,10 +4,8 @@ import {HttpClient} from "@angular/common/http";
 import {tap} from "rxjs/operators";
 import {environment} from "../../../environments/environment";
 import {WorkerPrivateAccount, WorkerProfileUpdate} from "../models/user.model";
-
 @Injectable({ providedIn: 'root' })
 export class WorkerAccountService {
-  // 🎯 Changement de chemin vers le contrôleur spécifique Worker
   private base = `${environment.apiBase}/account/worker`;
   private accountSubject = new BehaviorSubject<WorkerPrivateAccount | null>(null);
 
@@ -30,12 +28,10 @@ export class WorkerAccountService {
     this.accountSubject.next(null);
   }
 
-  // 🎯 Plus de fuite réseau ici non plus !
   listenToMyAccount(): Observable<WorkerPrivateAccount | null> {
     return this.accountSubject.asObservable();
   }
 
-  // 🎯 Correction des chemins ci-dessous pour éviter le bug "/worker/worker/..."
   async setAvailability(available: boolean): Promise<WorkerPrivateAccount> {
     const updatedAccount = await firstValueFrom(
       this.http.patch<WorkerPrivateAccount>(`${this.base}/availability`, { available }));
@@ -72,10 +68,12 @@ export class WorkerAccountService {
     files.forEach(file => {
       fd.append('files', file, file.name);
     });
-    return await firstValueFrom(this.http.post(`${this.base}/media`, fd));
+    const result = await firstValueFrom(this.http.post(`${this.base}/media`, fd));
+    return result;
   }
 
   async deletePhoto(photoId: string): Promise<void> {
+    console.log("Deleting photo with ID:", photoId);
     await firstValueFrom(this.http.delete(`${this.base}/photos/${photoId}`));
   }
 
@@ -95,9 +93,6 @@ export class WorkerAccountService {
     const updatedAccount = await firstValueFrom(
       this.http.get<WorkerPrivateAccount>(`${this.base}/request-certification`)
     );
-
-    console.log(updatedAccount);
-
     this.accountSubject.next(updatedAccount);
     return updatedAccount;
   }
@@ -106,9 +101,6 @@ export class WorkerAccountService {
     const updatedAccount = await firstValueFrom(
       this.http.post<WorkerPrivateAccount>(`${this.base}/certification-photo`, formData)
     );
-
-    console.log(updatedAccount);
-
     this.accountSubject.next(updatedAccount);
     return updatedAccount;
   }

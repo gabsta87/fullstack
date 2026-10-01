@@ -36,11 +36,6 @@ public class Worker extends VenusUser {
     private Collection<Photo> photos = new ArrayList<>();
 
     @ToString.Exclude
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="certification_photo_id")
-    private Photo certificationPhoto;
-
-    @ToString.Exclude
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<Comment> comments = new ArrayList<>();
 
@@ -208,6 +203,10 @@ public class Worker extends VenusUser {
     public void removePhoto(Photo photo) {
         this.photos.remove(photo);
     }
+
+    public void addVideo(Video video) {this.videos.add(video);}
+
+    public void removeVideo(Video video) {this.videos.remove(video);}
 
     public void addSpokenLanguage(WorkerLanguage language) {this.spokenLanguages.add(language);}
 

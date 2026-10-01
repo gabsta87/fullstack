@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface VideoRepository extends JpaRepository<Video, Long> {
+public interface VideoRepository extends JpaRepository<Video, UUID> {
 
     List<Video> findByWorkerIdOrderBySortOrderAscIdAsc(UUID workerId);
 
