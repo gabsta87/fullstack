@@ -14,3 +14,27 @@ export const CertificationStatus = {
 } as const;
 
 export type CertificationStatus = typeof CertificationStatus[keyof typeof CertificationStatus];
+
+export interface CertificationRequest {
+  id: number;
+  workerId: string;
+  workerUsername: string;
+  verificationCode: string;
+  certificationPhotoUrl?: string;
+  status: 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED';
+  underReview: boolean;
+  lockedByAdminId?: number;
+  createdAt: string; // ou Date
+  processedAt?: string;
+  lockedAt?: string;
+  comment?: string;
+}
+
+export interface AdminLog {
+  id: number;
+  adminId: number;
+  actionType: string;
+  targetSnapshot?: string;
+  details?: string;
+  createdAt: string;
+}

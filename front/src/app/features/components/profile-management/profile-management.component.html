@@ -260,7 +260,7 @@
                      (dragend)="onDragEnd()"
                      [class.drag-over]="dragOverIndex === i">
 
-                  <img [src]="photo.previewThumbUrl" class="gallery-img" />
+                  <img [src]="photo.mainThumbUrl" class="gallery-img" />
 
                   <div class="gallery-actions-overlay">
                     <ion-button [color]="photo.isMain ? 'warning' : 'light'" fill="clear" size="small" (click)="setMain(photo); $event.stopPropagation();">

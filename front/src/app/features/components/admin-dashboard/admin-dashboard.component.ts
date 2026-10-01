@@ -11,10 +11,11 @@ import { addIcons } from "ionicons";
 import { addOutline, trashOutline, pencilOutline } from "ionicons/icons";
 import { ActivatedRoute } from "@angular/router";
 import { BehaviorSubject, firstValueFrom, map, Observable, switchMap } from "rxjs";
-import {CertificationStatus, Service} from "../../models/common.model";
+import {CertificationRequest, CertificationStatus, Service} from "../../models/common.model";
 import { GeographicZoneWithParent } from "../../models/filter.model";
 import { CommonService } from "../../services/common-service";
 import {UserRole} from "../../models/roles";
+import {WorkerFullProfile, WorkerPrivateAccount, WorkerProfileForAdmin} from "../../models/user.model";
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -27,11 +28,16 @@ export class AdminDashboardComponent implements OnInit {
   currentTab: 'users' | 'certifications' | 'services' | 'zones' | 'logs' = 'users';
 
   // Flux d'observables réactifs principaux
-  users$!: Observable<any[]>;
-  pendingWorkers$!: Observable<any[]>; // Flux dérivé des utilisateurs en attente de certif
+  users$!: Observable<WorkerProfileForAdmin[]>;
+  pendingCertificationRequests$!: Observable<CertificationRequest[]>;
   services$!: Observable<Service[]>;
   zones$!: Observable<GeographicZoneWithParent[]>;
   auditLogs$!: Observable<any[]>;
+
+  selectedWorkerDetails: WorkerPrivateAccount | null = null;
+  isCertifModalOpen: boolean = false;
+  currentCertifRequestId: number | null = null;
+  adminComment: string = '';
 
   // Déclencheurs de rechargement automatiques pour les flux dynamiques
   private servicesRefresh$ = new BehaviorSubject<void>(undefined);
@@ -64,11 +70,10 @@ export class AdminDashboardComponent implements OnInit {
 
     // 2. Dérivation directe des workers en attente à partir du flux `users$` existant
     // (Filtre sur le rôle WORKER et le statut de certification PENDING_APPROVAL)
-    this.pendingWorkers$ = this.users$.pipe(
-      map(users => users
-        .filter(u => u.role === UserRole.WORKER && u.certificationStatus === CertificationStatus.PENDING_APPROVAL)
-        .sort((a, b) => new Date(a.certifiedAt || 0).getTime() - new Date(b.certifiedAt || 0).getTime())
-      )
+    this.pendingCertificationRequests$ = this.route.data.pipe(
+      map(data => (data['certificationRequests'] || []).sort((a: any, b: any) =>
+        new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime()
+      ))
     );
 
     // 3. Flux dynamiques gérés par réactivité
@@ -278,5 +283,72 @@ export class AdminDashboardComponent implements OnInit {
         alert(err.error?.error || "Impossible de supprimer cette zone.");
       }
     }
+  }
+
+  // Certifications
+
+  async openCertificationModal(request: CertificationRequest) {
+    if (request.underReview) {
+      alert("Cette requête est déjà en cours de traitement par un autre administrateur.");
+      return;
+    }
+
+    this.currentCertifRequestId = request.id;
+    this.adminComment = '';
+
+    try {
+      // 1. On appelle le verrouillage côté backend
+      await firstValueFrom(this.adminService.lockCertificationReview(request.id, true));
+
+      // 2. On charge les détails dans la modale
+      this.selectedWorkerDetails = {
+        id: request.workerId,
+        username: request.workerUsername,
+        verificationCode: request.verificationCode,
+        certificationPhotoUrl: request.certificationPhotoUrl
+      } as any;
+
+      this.isCertifModalOpen = true;
+    } catch (err) {
+      console.error("Erreur lors du verrouillage ou du chargement de la requête", err);
+      alert("Impossible d'ouvrir cette requête (elle est peut-être déjà en cours de traitement).");
+      this.currentCertifRequestId = null;
+    }
+  }
+
+  async closeCertificationModal() {
+    if (this.currentCertifRequestId) {
+      try {
+        await firstValueFrom(this.adminService.unlockCertificationReview(this.currentCertifRequestId));
+      } catch (err) {
+        console.error("Erreur lors du déverrouillage de la requête", err);
+      }
+    }
+
+    this.isCertifModalOpen = false;
+    this.selectedWorkerDetails = null;
+    this.currentCertifRequestId = null;
+    this.adminComment = '';
+  }
+
+  // Traitement avec commentaire (Demande de plus d'infos / Rejet avec motif)
+  async submitCertificationReview(approved: boolean) {
+    if (!this.selectedWorkerDetails) return;
+
+    const workerId = this.selectedWorkerDetails.id;
+    const reason = this.adminComment.trim();
+
+    if (!approved && !reason) {
+      alert("Veuillez saisir un commentaire ou un motif pour le refus / la demande de complément.");
+      return;
+    }
+
+    this.adminService.verifyCertification(workerId, approved, reason).subscribe({
+      next: () => {
+        this.closeCertificationModal();
+        window.location.reload(); // Actualise les résolveurs
+      },
+      error: (err) => console.error('Échec traitement certification', err)
+    });
   }
 }

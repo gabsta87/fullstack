@@ -2,6 +2,7 @@ package com.serv.controller;
 
 import com.serv.database.entities.Admin;
 import com.serv.database.entities.VenusUser;
+import com.serv.dto.AdminDTO;
 import com.serv.dto.AdminUserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,6 @@ public class AccountControllerAdmin {
 
     @GetMapping("/me")
     public ResponseEntity<?> getMe(Admin user) {
-        return ResponseEntity.ok(AdminUserDTO.from(user));
+        return ResponseEntity.ok(AdminDTO.from(user));
     }
 }

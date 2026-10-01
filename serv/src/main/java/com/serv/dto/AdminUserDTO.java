@@ -1,56 +1,97 @@
 package com.serv.dto;
 
-import com.serv.database.entities.Admin;
+import com.serv.database.entities.Service;
 import com.serv.database.entities.VenusUser;
 import com.serv.database.entities.Worker;
 
 import java.util.UUID;
+
 public record AdminUserDTO(
         UUID id,
+        boolean available,
+        boolean banned,
+        boolean disabled,
+        boolean locked,
+        String role,
         String username,
         String email,
-        String role,           // "ADMIN", "CLIENT", "WORKER"
-        boolean locked,
-        boolean banned,
-        Integer remainingDaysCredit,
+        String language,
+        String birthdate,
         String description,
+        String phone,
         String certificationStatus,
         String verificationCode,
-        String certificationPhotoUrl
+        String certificationPhotoUrl,
+        String certifiedAt,
+        String certificationRequestDate,
+        Integer[] servicesId,
+        GeographicZoneWithParentDTO geographicZone
 ) {
-    public static AdminUserDTO from(VenusUser user) {
-        String role = "CLIENT";
-        Integer credits = null;
-        String desc = null;
+    public static AdminUserDTO from(VenusUser user, String certificationRequestDateParam) {
+        boolean available = false;
+        boolean disabled = false; // ou user.isDisabled() selon ton entité VenusUser
+        String role = user.getRole().name();
+        String language = null;
+        String birthdate = null;
+        String phone = null;
+
         String certStatus = null;
         String verifCode = null;
+        String certifiedAt = null;
         String photoUrl = null;
+        Integer[] servicesId = null;
+        GeographicZoneWithParentDTO zoneDto = null;
+        String desc = null;
 
-        if (user instanceof Admin) {
-            role = "ADMIN";
-        } else if (user instanceof Worker w) {
-            role = "WORKER";
-            credits = w.getRemainingDaysCredit();
+        if (user instanceof Worker w) {
+            available = w.isAvailable();
+            language = w.getSpokenLanguages().toString();
+            birthdate = w.getBirthdate() != null ? w.getBirthdate().toString() : null;
+            phone = w.getPhone();
             desc = w.getDescription();
+
             certStatus = w.getCertificationStatus() != null ? w.getCertificationStatus().name() : null;
             verifCode = w.getVerificationCode();
+            certifiedAt = w.getCertifiedAt() != null ? w.getCertifiedAt().toString() : null;
+
+            // Sécurisé contre le LazyLoading si la session est bien ouverte
             if (w.getCertificationPhoto() != null) {
                 photoUrl = w.getCertificationPhoto().getUrl();
+            }
+
+            if (w.getServices() != null) {
+                servicesId = w.getServices().stream().map(Service::getId).toArray(Integer[]::new);
+            }
+
+            if (w.getGeographicZone() != null) {
+                zoneDto = GeographicZoneWithParentDTO.from(w.getGeographicZone());
             }
         }
 
         return new AdminUserDTO(
                 user.getId(),
+                available,
+                user.isBanned(),
+                disabled,
+                user.isLocked(),
+                role,
                 user.getUsername(),
                 user.getEmail() != null ? user.getEmail().toString() : null,
-                role,
-                user.isLocked(),
-                user.isBanned(),
-                credits,
+                language,
+                birthdate,
                 desc,
+                phone,
                 certStatus,
                 verifCode,
-                photoUrl
+                certifiedAt,
+                certificationRequestDateParam,
+                photoUrl,
+                servicesId,
+                zoneDto
         );
+    }
+
+    public static AdminUserDTO from(VenusUser user) {
+        return from(user, null);
     }
 }

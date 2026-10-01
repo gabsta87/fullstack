@@ -72,6 +72,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.worker = this.route.snapshot.data['profile'] ?? null;
     this.services = this.route.snapshot.data['services'] ?? [];
 
+    console.log(this.worker);
+
     if (this.worker && this.worker.servicesId) {
       this.workerServices = this.services.filter(s =>
         this.worker!.servicesId.includes(s.id)

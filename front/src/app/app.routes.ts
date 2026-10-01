@@ -18,6 +18,8 @@ import {accountRedirectGuard} from "./features/guards/account-redirect-guard";
 import {usersObservableResolver} from "./features/resolver/users-observable-resolver";
 import {serviceObservableResolver} from "./features/resolver/service-observable-resolver";
 import {geographicZoneObservableResolver} from "./features/resolver/geographic-zone-observable-resolver";
+import {logsObservableResolver} from "./features/resolver/logs-observable-resolver";
+import {certificationsObservableResolver} from "./features/resolver/certifications-observable-resolver";
 
 export const routes: Routes = [
   {
@@ -56,6 +58,8 @@ export const routes: Routes = [
       users:      usersObservableResolver,
       services :  serviceObservableResolver,
       zones:      geographicZoneObservableResolver,
+      logs:       logsObservableResolver,
+      certificationRequests: certificationsObservableResolver,
     },
   },
   { path: 'account-router', canActivate: [authGuard, accountRedirectGuard], children: []},

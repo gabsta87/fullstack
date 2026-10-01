@@ -1,5 +1,5 @@
 import {PhotoItem, Review, VideoItem} from "./items.model";
-import {GeographicZone} from "./filter.model";
+import {GeographicZone, GeographicZoneWithParent} from "./filter.model";
 import {Service} from "./common.model";
 
 export interface BaseUser {
@@ -47,6 +47,7 @@ export interface WorkerFullProfile extends WorkerSimpleProfile {
   mainThumbUrl: string;
   phone: string;
   age : number
+  certificationPhotoUrl : string;
 
   photos: PhotoItem[];
   videos: VideoItem[];
@@ -70,22 +71,26 @@ export interface WorkerProfileUpdate {
 
 export interface WorkerProfileForAdmin{
   id: string;
-  disabled: boolean;
-  username: string;
-  geographicZone: GeographicZone | null;
-  email: string;
-  language : 'EN' | 'FR' | 'IT' | 'DE' | 'ES';
-  lastRefreshed: string;
-  expirationDate: string;
-  birthdate: string;
   available: boolean;
   banned : boolean;
-  servicesId: number[];
+  disabled: boolean;
+  locked: boolean;
+  role : 'WORKER' | 'CLIENT' | 'ADMIN' | 'SUPER_ADMIN';
+  username: string;
+  email: string;
+  language : 'EN' | 'FR' | 'IT' | 'DE' | 'ES';
+  birthdate: string;
   description: string;
   phone: string;
-  age : number
   certificationStatus: string;
+  verificationCode?: string;
+  certificationPhotoUrl: string;
+  certifiedAt : string,
+  certificationRequestDate : string,
+  servicesId: number[];
+  geographicZone: GeographicZoneWithParent | null;
 }
+
 
 export interface UserSimpleForAdmin {
   id: string;

@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,17 +39,42 @@ public class AdminController {
     private final PasswordResetService passwordResetService;
     private final CommentRepository commentRepository;
     private final GeographicZoneRepository zoneRepository;
-    private final MediaStorageService mediaStorageService;
+    private final CertificationRequestRepository certificationRequestRepository;
 
     // ── PROFILES & LOGS ──────────────────────────────────────────────────────
 
-    @Transactional(readOnly = true)
     @GetMapping("/users")
+    @Transactional(readOnly = true)
     public ResponseEntity<List<AdminUserDTO>> getAllUsers() {
-        List<AdminUserDTO> users = userRepository.findAll().stream()
-                .map(AdminUserDTO::from)
+        // 1. On récupère tous les workers et toutes les requêtes de certification d'un coup
+        List<VenusUser> users = userRepository.findAll();
+
+        // On crée une map pour associer facilement un workerId à sa date de demande
+        Map<UUID, String> requestDatesMap = certificationRequestRepository.findAll().stream()
+                .filter(req -> req.getWorker() != null && req.getCreatedAt() != null)
+                .collect(Collectors.toMap(
+                        req -> req.getWorker().getId(),
+                        req -> req.getCreatedAt().toString(),
+                        (existing, replacement) -> existing // Sécurité en cas de doublon
+                ));
+
+        // 2. On transforme en DTO en passant la map ou la date correspondante
+        List<AdminUserDTO> userDTOs = users.stream()
+                .map(user -> {
+                    String reqDate = (user instanceof Worker w) ? requestDatesMap.get(w.getId()) : null;
+                    return AdminUserDTO.from(user, reqDate); // On passe la date en paramètre
+                })
                 .toList();
-        return ResponseEntity.ok(users);
+
+        return ResponseEntity.ok(userDTOs);
+    }
+
+    @GetMapping("/workers/{workerId}")
+    public ResponseEntity<WorkerFullProfileDTO> getWorkerProfileForAdmin(@PathVariable UUID workerId) {
+        Worker worker = workerRepository.findById(workerId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker introuvable"));
+
+        return ResponseEntity.ok(WorkerFullProfileDTO.from(worker));
     }
 
     @GetMapping("/services")
@@ -57,8 +83,8 @@ public class AdminController {
     }
 
     @GetMapping("/logs")
-    public ResponseEntity<List<AdminAuditLog>> getAuditLogs() {
-        return ResponseEntity.ok(auditLogRepository.findAll());
+    public ResponseEntity<List<AdminAuditLogDTO>> getAuditLogs() {
+        return ResponseEntity.ok(auditLogRepository.findAll().stream().map(AdminAuditLogDTO::from).collect(Collectors.toList()));
     }
 
     @PostMapping("/profiles/{id}/status")
@@ -106,47 +132,88 @@ public class AdminController {
         return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
     }
 
-    @PostMapping("/profiles/verify-certification")
-    @Transactional
-    public ResponseEntity<?> verifyCertification(@RequestBody Requests.AdminVerifyCertifRequest req, Admin admin) {
-        Worker targetWorker = workerRepository.findById(UUID.fromString(req.workerId())).orElse(null);
-        if (targetWorker == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Worker not found"));
+    // Gestion des certifications
 
-        if (req.approved()) {
-            targetWorker.setCertificationStatus(CertificationStatus.APPROVED);
-            targetWorker.setCertifiedAt(LocalDateTime.now());
-            targetWorker.setCertificationExpiresAt(LocalDateTime.now().plusMonths(12));
-        } else {
-            targetWorker.setCertificationStatus(CertificationStatus.REJECTED);
+    @Transactional(readOnly = true)
+    @GetMapping("/certification-requests")
+    public ResponseEntity<List<CertificationRequestDTO>> getPendingRequests() {
+        LocalDateTime expirationThreshold = LocalDateTime.now().minusMinutes(15);
+
+        List<CertificationRequest> requests = certificationRequestRepository.findAll();
+
+        for (CertificationRequest req : requests) {
+            if (req.isUnderReview() && req.getLockedAt() != null && req.getLockedAt().isBefore(expirationThreshold)) {
+                // Le lock a expiré (ex: admin déconnecté depuis plus de 10 min) -> On libère automatiquement
+                req.setUnderReview(false);
+                req.setLockedByAdmin(null);
+                req.setLockedAt(null);
+                certificationRequestRepository.save(req);
+            }
         }
-        Worker savedWorker = workerRepository.save(targetWorker);
 
-        logAdminAction(admin, "VERIFY_CERTIFICATION", targetWorker, String.format("Certification : %s | Motif : %s", req.approved() ? "APPROUVEE" : "REFUSEE", req.rejectionReason()));
-        return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
+        return ResponseEntity.ok(requests.stream().map(CertificationRequestDTO::from).collect(Collectors.toList()));
     }
 
     @Transactional
-    public void processAdminDecision(Worker worker, boolean approved, String adminMessage) {
-        if (worker.getCertificationPhoto() != null) {
-            // Supprime le fichier physique du disque
-            mediaStorageService.deletePhotoFiles(worker.getId(), worker.getCertificationPhoto());
+    @PostMapping("/certification-request/{requestId}/lock")
+    public ResponseEntity<Void> lockCertificationReview(@PathVariable Long requestId, Admin admin) {
 
-            // Retire la référence
-            worker.setCertificationPhoto(null);
+        CertificationRequest certificationRequest = certificationRequestRepository.findById(requestId).orElse(null);
+
+        if (certificationRequest == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+
+        if (certificationRequest.isUnderReview()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+
+        certificationRequest.setUnderReview(true); // TODO atomicity
+        certificationRequest.setLockedByAdmin( admin );
+        certificationRequest.setLockedAt(LocalDateTime.now());
+        certificationRequestRepository.save(certificationRequest);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @Transactional
+    @PostMapping("/certification-request/{requestId}/unlock")
+    public ResponseEntity<Void> unlockCertificationReview(@PathVariable Long requestId) {
+        CertificationRequest certificationRequest = certificationRequestRepository.findById(requestId).orElse(null);
+        if (certificationRequest == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        certificationRequest.setUnderReview(false);
+        certificationRequest.setLockedByAdmin(null);
+        certificationRequestRepository.save(certificationRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/profiles/verify-certification")
+    @Transactional
+    public void processCertification(Long requestId, boolean approved, String comment, Admin admin) {
+        CertificationRequest request = certificationRequestRepository.findById(requestId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Requête introuvable"));
 
         if (approved) {
+            // CAS 1 : C'est accepté, on valide le worker et on supprime la requête (déclenche le @PreRemove et nettoie la photo)
+            Worker worker = request.getWorker();
             worker.setCertificationStatus(CertificationStatus.APPROVED);
-            worker.setCertifiedAt(LocalDateTime.now());
-            // Définir la date d'expiration à +8 mois par exemple
-            worker.setCertificationExpiresAt(LocalDateTime.now().plusMonths(8));
-        } else {
-            worker.setCertificationStatus(CertificationStatus.NEEDS_REVISION);
-            // Enregistrer le message de l'admin pour l'utilisateur
-            // worker.setAdminCertificationFeedback(adminMessage);
-        }
+            worker.setVerificationCode(null);
+            workerRepository.save(worker);
 
-        workerRepository.save(worker);
+            certificationRequestRepository.delete(request);
+
+        } else {
+            // CAS 2 : Refus ou demande de complément d'information
+            request.setStatus(CertificationStatus.REJECTED);
+            request.setProcessedAt(LocalDateTime.now());
+            request.setUnderReview(false);
+            request.setLockedByAdmin(null);
+            request.setComment(comment);
+
+            certificationRequestRepository.save(request);
+        }
     }
 
     // ── GESTION DES SERVICES ────────────────────────

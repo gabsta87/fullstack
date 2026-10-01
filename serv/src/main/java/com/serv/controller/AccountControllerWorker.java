@@ -108,8 +108,8 @@ public class AccountControllerWorker {
             CertificationRequest request = certificationRequestRepository.findByWorker(worker)
                     .orElseGet(() -> new CertificationRequest(worker));
 
-            request.setStatus(CertificationStatus.PENDING_APPROVAL.toString());
-            request.setPhotoUrl(certificationPhoto.getUrl());
+            request.setStatus(CertificationStatus.PENDING_APPROVAL);
+            request.setCertificationPhoto(certificationPhoto);
             certificationRequestRepository.save(request);
 
             Worker savedWorker = workerRepository.save(worker);

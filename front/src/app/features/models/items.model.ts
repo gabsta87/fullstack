@@ -52,7 +52,6 @@ export const HAIR_COLORS: ColorOption[] = [
 export interface PhotoItem {
   id: string;
   originalUrl: string;
-  previewThumbUrl: string;
   mainThumbUrl: string;
   type?: 'image';
 }

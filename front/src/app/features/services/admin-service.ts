@@ -2,8 +2,9 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {firstValueFrom, Observable} from 'rxjs';
 import {environment} from "../../../environments/environment";
-import {WorkerFullProfile} from "../models/user.model";
+import {WorkerFullProfile, WorkerProfileForAdmin} from "../models/user.model";
 import {GeographicZone, GeographicZoneWithParent} from "../models/filter.model";
+import {AdminLog, CertificationRequest} from "../models/common.model";
 
 @Injectable({
   providedIn: 'root'
@@ -13,15 +14,15 @@ export class AdminService {
 
   constructor(private http: HttpClient) {}
 
-  getUsers(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/users`);
+  getUsers(): Observable<WorkerProfileForAdmin[]> {
+    return this.http.get<WorkerProfileForAdmin[]>(`${this.apiUrl}/users`);
+  }
+
+  getWorkerProfileForAdmin(workerId: string): Observable<WorkerFullProfile> {
+    return this.http.get<WorkerFullProfile>(`${this.apiUrl}/workers/${workerId}`);
   }
 
   // ── ANNONCEURS / WORKERS ──────────────────────────────────────────────────
-
-  getWorkers(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/profiles`);
-  }
 
   setLockedStatus(workerId: string, lock: boolean): Observable<WorkerFullProfile> {
     const params = new HttpParams().set('lock', lock.toString());
@@ -40,14 +41,27 @@ export class AdminService {
 
   // ── CERTIFICATIONS ────────────────────────────────────────────────────────
 
+  getCertificationRequests():Observable<CertificationRequest[]>{
+    return this.http.get<any[]>(`${this.apiUrl}/certification-requests`);
+  }
+
   verifyCertification(workerId: string, approved: boolean, rejectionReason: string): Observable<{ success: boolean }> {
     const payload = { workerId, approved, rejectionReason };
     return this.http.post<{ success: boolean }>(`${this.apiUrl}/profiles/verify-certification`, payload);
   }
 
+  unlockCertificationReview(certificationId: number): Observable<boolean> {
+    return this.http.post<boolean>(`${this.apiUrl}/certification-request/${certificationId}/unlock`, {});
+  }
+
+  lockCertificationReview(certificationId: number, lock: boolean): Observable<{ success: boolean }> {
+    const params = new HttpParams().set('lock', lock.toString());
+    return this.http.post<{ success: boolean }>(`${this.apiUrl}/certification-request/${certificationId}/lock`, {}, { params });
+  }
+
   // ── AUDIT LOGS ────────────────────────────────────────────────────────────
 
-  getAuditLogs(): Observable<any[]> {
+  getAuditLogs(): Observable<AdminLog[]> {
     return this.http.get<any[]>(`${this.apiUrl}/logs`);
   }
 

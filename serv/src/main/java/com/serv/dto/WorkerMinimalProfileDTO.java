@@ -1,6 +1,5 @@
 package com.serv.dto;
 
-import com.serv.database.entities.Photo;
 import com.serv.database.entities.Service;
 import com.serv.database.entities.Worker;
 

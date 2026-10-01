@@ -58,7 +58,7 @@
           <div class="gallery-grid">
             <img *ngFor="let p of worker.photos"
                  class="media-item"
-                 [src]="p.previewThumbUrl"
+                 [src]="p.mainThumbUrl"
                  (click)="openMedia(p)">
           </div>
         </div>

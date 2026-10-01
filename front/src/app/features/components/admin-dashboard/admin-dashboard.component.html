@@ -10,13 +10,12 @@
   </ion-toolbar>
 
   <ion-toolbar color="light">
-    <!-- Utilisation de pendingWorkers$ pour compter dynamiquement les certifications en attente -->
     <ion-segment [(ngModel)]="currentTab">
       <ion-segment-button value="users">
         <ion-label>Utilisateurs ({{ (users$ | async)?.length || 0 }})</ion-label>
       </ion-segment-button>
       <ion-segment-button value="certifications">
-        <ion-label>Certifications ({{ (pendingWorkers$ | async)?.length || 0 }})</ion-label>
+        <ion-label>Certifications ({{ (pendingCertificationRequests$ | async)?.length || 0 }})</ion-label>
       </ion-segment-button>
       <ion-segment-button value="services">
         <ion-label>Services ({{ (services$ | async)?.length || 0 }})</ion-label>
@@ -25,7 +24,7 @@
         <ion-label>Zones ({{ (zones$ | async)?.length || 0 }})</ion-label>
       </ion-segment-button>
       <ion-segment-button value="logs">
-        <ion-label>Journal d'Audit</ion-label>
+        <ion-label>Journal d'Audit ({{ (auditLogs$ | async)?.length || 0 }})</ion-label>
       </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
@@ -112,44 +111,94 @@
     </p-table>
   </div>
 
-  <!-- ONGLET 2 : CERTIFICATIONS EN ATTENTE (Basé sur pendingWorkers$) -->
+  <!-- ONGLET 2 : CERTIFICATIONS EN ATTENTE -->
   <div *ngIf="currentTab === 'certifications'">
-    <ng-container *ngIf="pendingWorkers$ | async as pending">
+    <ng-container *ngIf="pendingCertificationRequests$ | async as requests">
 
-      <div *ngIf="pending.length === 0" class="ion-text-center ion-padding">
+      <div *ngIf="requests.length === 0" class="ion-text-center ion-padding">
         <p>Aucune demande de certification en attente 🎉</p>
       </div>
 
-      <ion-card *ngFor="let worker of pending">
-        <ion-card-header>
-          <ion-card-title>{{ worker.username }}</ion-card-title>
-          <ion-card-subtitle>Code attendu sur le panneau : <strong>{{ worker.verificationCode }}</strong></ion-card-subtitle>
-        </ion-card-header>
+      <!-- Lignes très fines style tableau épuré -->
+      <ion-list *ngIf="requests.length > 0" lines="full">
+        <ion-item
+          *ngFor="let req of requests"
+          [button]="!req.underReview"
+          (click)="!req.underReview && openCertificationModal(req)"
+          [style.opacity]="req.underReview ? '0.5' : '1'"
+          [style.background]="req.underReview ? '#f8f9fa' : 'transparent'"
+          style="cursor: pointer;">
 
-        <ion-card-content>
-          <p>Comparez la photo récente avec le panneau et le code secret ci-dessous.</p>
+          <ion-label>
+            <h2>
+              <strong>{{ req.workerUsername }}</strong>
+              <span *ngIf="req.underReview" style="color: #e03131; font-size: 0.85em; margin-left: 10px;">
+                (🔒 En cours par un autre admin)
+              </span>
+            </h2>
+            <p>Demandé le : {{ req.createdAt | date:'dd/MM/yyyy HH:mm' }} — Code requis : <code>{{ req.verificationCode }}</code></p>
+          </ion-label>
 
-          <div class="image-verification-box ion-margin-vertical">
-            <img [src]="worker.verificationPhotoUrl || worker.mainPhoto?.url" style="max-height: 250px; border-radius: 8px;" alt="Preuve de certification" />
-          </div>
-
-          <ion-row>
-            <ion-col>
-              <ion-button expand="block" color="success" (click)="verifyCertif(worker.id, true)">
-                Approuver la certification
-              </ion-button>
-            </ion-col>
-            <ion-col>
-              <ion-button expand="block" color="danger" (click)="verifyCertif(worker.id, false)">
-                Refuser
-              </ion-button>
-            </ion-col>
-          </ion-row>
-        </ion-card-content>
-      </ion-card>
+          <ion-badge [color]="req.underReview ? 'medium' : 'warning'" slot="end">
+            {{ req.underReview ? 'Bloqué' : 'À vérifier' }}
+          </ion-badge>
+        </ion-item>
+      </ion-list>
 
     </ng-container>
   </div>
+
+  <!-- MODALE DE DÉTAIL DE LA CERTIFICATION -->
+  <ion-modal [isOpen]="isCertifModalOpen" (didDismiss)="closeCertificationModal()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar color="primary">
+          <ion-title>Modération de la certification</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeCertificationModal()">Fermer</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding" *ngIf="selectedWorkerDetails">
+        <h3>Annonceur : {{ selectedWorkerDetails.username }}</h3>
+        <p><strong>Code de vérification attendu :</strong> <span style="font-size: 1.2em; color: var(--ion-color-primary);">{{ selectedWorkerDetails.verificationCode }}</span></p>
+
+        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;" />
+
+        <!-- Photo de certification -->
+        <h4>1. Photo de certification (avec le panneau)</h4>
+        <div class="image-verification-box ion-margin-bottom" style="text-align: center; background: #f9f9f9; padding: 10px; border-radius: 8px;">
+          <img [src]="selectedWorkerDetails.certificationPhotoUrl " style="max-height: 300px; border-radius: 6px; object-fit: contain;" alt="Photo de certification" />
+        </div>
+
+        <!-- Autres photos de l'annonceur pour vérification d'identité -->
+        <h4>2. Autres photos du profil (Vérification d'identité)</h4>
+        <div *ngIf="selectedWorkerDetails.photos && selectedWorkerDetails.photos.length > 0" style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px;">
+          <img *ngFor="let p of selectedWorkerDetails.photos" [src]="p.mainThumbUrl" style="height: 100px; width: 100px; object-fit: cover; border-radius: 6px; border: 1px solid #ccc;" alt="Photo annonceur" />
+        </div>
+        <p *ngIf="!selectedWorkerDetails.photos || selectedWorkerDetails.photos.length === 0" style="color: #777; font-style: italic;">Aucune autre photo disponible sur ce profil.</p>
+
+        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;" />
+
+        <!-- Commentaire / Motif pour demande de plus d'infos -->
+        <ion-item fill="outline" class="ion-margin-bottom">
+          <ion-input [(ngModel)]="adminComment" label="Commentaire ou motif (requis pour refuser / demander plus d'infos)" labelPlacement="stacked" placeholder="Ex: Le code sur le panneau est flou, veuillez recommencer..."></ion-input>
+        </ion-item>
+
+        <!-- Boutons d'action -->
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <ion-button expand="block" color="success" style="flex: 1;" (click)="submitCertificationReview(true)">
+            Approuver
+          </ion-button>
+          <ion-button expand="block" color="warning" style="flex: 1;" (click)="submitCertificationReview(false)">
+            Demander + d'infos / Refuser
+          </ion-button>
+        </div>
+
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 
   <!-- ONGLET 3 : JOURNAL D'AUDIT -->
   <div *ngIf="currentTab === 'logs'">

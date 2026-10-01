@@ -77,9 +77,6 @@ export class ProfileManagementComponent implements OnInit {
           return {
             ...photo,
             isMain: isCurrentMain,
-            previewThumbUrl: photo.previewThumbUrl?.startsWith('http')
-              ? photo.previewThumbUrl
-              : `${environment.apiBase}${photo.previewThumbUrl}`,
             mainThumbUrl: photo.mainThumbUrl?.startsWith('http')
               ? photo.mainThumbUrl
               : `${environment.apiBase}${photo.mainThumbUrl}`
