@@ -26,7 +26,7 @@ public record WorkerFullProfileDTO(
         List<VideoDTO> videos,
         String        certifiedAt,
         String        verificationCode,
-        String        certificationStatus
+        CertificationRequestDTO certificationRequest
 ) {
     public static WorkerFullProfileDTO from(Worker w) {
         String mainThumb = w.getMainPhoto() != null
@@ -55,8 +55,7 @@ public record WorkerFullProfileDTO(
                         .toList(),
                 w.getCertifiedAt() != null ? new SimpleDateFormat("yyyy-MM-dd").format(w.getCertifiedAt()) : null,
                 w.getVerificationCode(),
-                w.getCertificationStatus() != null ? w.getCertificationStatus().toString() : null
+                CertificationRequestDTO.from(w.getCertificationRequest())
         );
     }
-
 }

@@ -37,7 +37,6 @@ public record AdminUserDTO(
         String certStatus = null;
         String verifCode = null;
         String certifiedAt = null;
-        String photoUrl = null;
         Integer[] servicesId = null;
         GeographicZoneWithParentDTO zoneDto = null;
         String desc = null;
@@ -49,7 +48,7 @@ public record AdminUserDTO(
             phone = w.getPhone();
             desc = w.getDescription();
 
-            certStatus = w.getCertificationStatus() != null ? w.getCertificationStatus().name() : null;
+            certStatus = w.getCertificationRequest() != null ? w.getCertificationRequest().getStatus().toString() : null;
             verifCode = w.getVerificationCode();
             certifiedAt = w.getCertifiedAt() != null ? w.getCertifiedAt().toString() : null;
 

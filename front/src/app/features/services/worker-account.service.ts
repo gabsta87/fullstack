@@ -21,6 +21,14 @@ export class WorkerAccountService {
     );
   }
 
+  async refreshAccount(): Promise<WorkerPrivateAccount> {
+    const account = await firstValueFrom(
+      this.http.get<WorkerPrivateAccount>(`${this.base}/me`)
+    );
+    this.accountSubject.next(account);
+    return account;
+  }
+
   updateCache(account: WorkerPrivateAccount) {
     this.accountSubject.next(account);
   }

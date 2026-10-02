@@ -80,7 +80,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
     this.pendingCertificationRequests$ = this.adminService.pendingCertificationRequests$.pipe(
       map(requests => (requests || []).sort((a: any, b: any) =>
-        new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime()
+        new Date(a.processedAt || 0).getTime() - new Date(b.processedAt || 0).getTime()
       ))
     );
 

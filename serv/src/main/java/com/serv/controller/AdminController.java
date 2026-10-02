@@ -200,7 +200,7 @@ public class AdminController {
         Worker worker = request.getWorker();
 
         if (dto.approved()) {
-            worker.setCertificationStatus(CertificationStatus.APPROVED);
+            worker.setCertifiedAt(LocalDateTime.now());
             worker.setVerificationCode(null);
             workerRepository.save(worker);
 

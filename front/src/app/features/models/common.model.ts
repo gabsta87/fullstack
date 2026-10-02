@@ -25,7 +25,7 @@ export interface CertificationRequest {
   underReview: boolean;
   lockedByAdminId?: number;
   createdAt: string;
-  processedAt?: string;
+  processedAt: string;
   lockedAt?: string;
   comment?: string;
 }

@@ -3,7 +3,7 @@ import {CommonModule} from "@angular/common";
 import {IonicModule} from "@ionic/angular";
 import {FormsModule} from "@angular/forms";
 import {HeaderComponent} from "../header/header.component";
-import {filter, map, Observable} from "rxjs";
+import {filter, firstValueFrom, map, Observable} from "rxjs";
 import {BODY_TYPE_LABELS, EYE_COLOR_LABELS, HAIR_COLOR_LABELS, PhotoItem, VideoItem} from "../../models/items.model";
 import {ActivatedRoute} from "@angular/router";
 import {WorkerPrivateAccount, WorkerProfileUpdate} from "../../models/user.model";
@@ -65,6 +65,8 @@ export class ProfileManagementComponent implements OnInit {
       this.allServices = data['services'] || [];
       this.allLocations = data['locations'] || [];
     });
+
+    await firstValueFrom(this.accountService.getCurrentAccount());
 
     // 2. Flux unique pour l'UI & Synchronisation automatique du formulaire
     this.currentUser$ = this.accountService.listenToMyAccount().pipe(
@@ -186,15 +188,16 @@ export class ProfileManagementComponent implements OnInit {
    * - Rouge (> 8 mois ou non certifié) : Expiré / Invalide
    */
   getCertificationBadge(me: WorkerPrivateAccount): {
-    color: string;
-    label: string;          // Tooltip complet
-    buttonText: string;     // Texte court affiché sur le bouton
-    icon: string;
+      color: string;
+      label: string;          // Tooltip complet
+      buttonText: string;     // Texte court affiché sur le bouton
+      icon: string;
     isCert: boolean;
     hasNotification: boolean;
     isDisabled: boolean;    // Pour bloquer le clic si besoin
   } {
-    const status = me.certificationStatus;
+    const status = me.certificationRequest?.status;
+    console.log("status : "+me.certificationStatus);
 
     // 1. En attente de photo (ou premier choix)
     if (status === CertificationStatus.PENDING_PHOTO || !status || status === CertificationStatus.NOT_CERTIFIED) {
@@ -209,12 +212,14 @@ export class ProfileManagementComponent implements OnInit {
       };
     }
 
-    // 2. Correction requise par l'admin
-    if (status === CertificationStatus.NEEDS_REVISION) {
+    // 2. Correction requise par l'admin OU Rejeté
+    if (status === CertificationStatus.NEEDS_REVISION || status === CertificationStatus.REJECTED) {
       return {
-        color: 'warning',
-        label: 'L\'administration demande une correction. Cliquez pour modifier.',
-        buttonText: 'Corriger certification',
+        color: 'danger', // On met en rouge pour bien signifier qu'une action corrective est requise
+        label: me.adminCertificationFeedback
+          ? `Refusé / Correction demandée : ${me.adminCertificationFeedback}. Cliquez pour modifier.`
+          : 'Votre photo a été refusée ou nécessite une correction. Cliquez pour refaire une demande.',
+        buttonText: 'Refaire certification',
         icon: 'alert-circle-outline',
         isCert: false,
         hasNotification: true,
@@ -269,12 +274,10 @@ export class ProfileManagementComponent implements OnInit {
    */
   async openCertificationModal(me: WorkerPrivateAccount) {
     try {
-      // 1. Si le code n'existe pas, on demande au service de l'initialiser
       if (!me.verificationCode || me.certificationStatus === CertificationStatus.NOT_CERTIFIED || !me.certificationStatus) {
         await this.accountService.requestCertification();
       }
 
-      // 2. Ouvre la modale
       await this.presentModal(me);
 
     } catch (err) {
@@ -289,8 +292,6 @@ export class ProfileManagementComponent implements OnInit {
     const modal = await this.modalController.create({
       component: CertificationModalComponent,
       componentProps: {
-        // On récupère les données directement depuis l'objet courant
-        // (qui aura été rafraîchi si le code venait d'être généré)
         verificationCode: me.verificationCode,
         adminMessage: me.adminCertificationFeedback
       }
@@ -420,7 +421,6 @@ export class ProfileManagementComponent implements OnInit {
   }
 
   async onDrop(targetIndex: number) {
-    console.log("Drop index:", targetIndex);
     if (this.draggedIndex === null || this.draggedIndex === targetIndex) return;
 
     // On récupère le tableau actuel depuis le flux ou une copie locale synchrone si besoin,

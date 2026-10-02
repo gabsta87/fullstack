@@ -1,6 +1,6 @@
 import {PhotoItem, Review, VideoItem} from "./items.model";
 import {GeographicZone, GeographicZoneWithParent} from "./filter.model";
-import {Service} from "./common.model";
+import {CertificationRequest, Service} from "./common.model";
 
 export interface BaseUser {
   id: string;
@@ -22,6 +22,7 @@ export interface WorkerPrivateAccount extends PrivateAccount, WorkerFullProfile 
   birthdate: string;
   verificationCode?: string;
   adminCertificationFeedback?: string;
+  certificationRequest : CertificationRequest;
 }
 
 export interface ClientPrivateAccount extends PrivateAccount, BaseUser{

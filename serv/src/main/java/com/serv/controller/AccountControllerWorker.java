@@ -69,9 +69,12 @@ public class AccountControllerWorker {
             worker.setVerificationCode(verificationCode);
         }
 
+        CertificationRequest request = certificationRequestRepository.findByWorker(worker)
+                .orElseGet(() -> new CertificationRequest(workerArg));
+
         // On s'assure que le statut reflète qu'on attend la photo
-        if (worker.getCertificationStatus() == null || worker.getCertificationStatus() == CertificationStatus.NOT_CERTIFIED) {
-            worker.setCertificationStatus(CertificationStatus.PENDING_PHOTO);
+        if (request.getStatus() == null || request.getStatus() == CertificationStatus.NOT_CERTIFIED) {
+            request.setStatus(CertificationStatus.PENDING_PHOTO);
         }
 
         worker = workerRepository.save(worker);
@@ -98,16 +101,15 @@ public class AccountControllerWorker {
             photoRepository.save(certificationPhoto);
             System.out.println("Certification photo saved");
 
-            // 2. Associer la photo de certification au Worker
-            worker.setCertificationStatus(CertificationStatus.PENDING_APPROVAL);
-
-            // 3. Mettre à jour ou créer la CertificationRequest pour l'admin
+            // 3. Mettre à jour ou créer la CertificationRequest pour le worker
             CertificationRequest request = certificationRequestRepository.findByWorker(worker)
                     .orElseGet(() -> new CertificationRequest(worker));
 
             request.setStatus(CertificationStatus.PENDING_APPROVAL);
             request.setCertificationPhoto(certificationPhoto);
-            certificationRequestRepository.save(request);
+
+            CertificationRequest savedRequest = certificationRequestRepository.save(request);
+            worker.setCertificationRequest(savedRequest);
 
             Worker savedWorker = workerRepository.save(worker);
 
@@ -115,8 +117,8 @@ public class AccountControllerWorker {
             WorkerFullProfileDTO dto = WorkerFullProfileDTO.from(savedWorker);
             sseStreamService.emitEvent(savedWorker.getId(), "account-update", dto);
 
-            System.out.println("Certification photo uploaded and saved");
-
+            System.out.println("Certification updated : "+savedWorker.getCertificationRequest().getStatus());
+            System.out.println("Sending status "+dto.certificationRequest().status());
             return ResponseEntity.ok().body(dto);
 
         } catch (IOException e) {

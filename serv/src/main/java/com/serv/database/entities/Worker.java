@@ -103,15 +103,11 @@ public class Worker extends VenusUser {
     @Column(name = "verification_code")
     private String verificationCode;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "certification_status")
-    private CertificationStatus certificationStatus = CertificationStatus.NOT_CERTIFIED;
-
     @Column(name = "certified_at")
     private LocalDateTime certifiedAt;
 
-    @Column(name = "certification_expires_at")
-    private LocalDateTime certificationExpiresAt;
+    @OneToOne(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
+    private CertificationRequest certificationRequest;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
@@ -193,7 +189,10 @@ public class Worker extends VenusUser {
     }
 
     public boolean isCertified() {
-        return CertificationStatus.APPROVED.equals(this.certificationStatus);
+        if (this.certifiedAt == null) {
+            return false;
+        }
+        return this.certifiedAt.plusMonths(8).isAfter(LocalDateTime.now());
     }
 
     public void addPhoto(Photo photo) {

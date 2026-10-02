@@ -31,7 +31,6 @@ public class CertificationRequest {
 
     private boolean underReview = false;
 
-    @ToString.Exclude
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "worker_id", nullable = false)
     private Worker worker;
@@ -64,6 +63,7 @@ public class CertificationRequest {
         this.worker = worker;
         this.verificationCode = worker.getVerificationCode();
         this.createdAt = LocalDateTime.now();
+        this.processedAt = LocalDateTime.now();
         this.status = CertificationStatus.PENDING_APPROVAL;
     }
 }
