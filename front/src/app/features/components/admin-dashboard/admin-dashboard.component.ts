@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AlertController, IonicModule } from '@ionic/angular';
@@ -8,14 +8,14 @@ import { DropdownModule } from 'primeng/dropdown';
 import { TagModule } from 'primeng/tag';
 import { AdminService } from '../../services/admin-service';
 import { addIcons } from "ionicons";
-import { addOutline, trashOutline, pencilOutline } from "ionicons/icons";
+import { addOutline, pencilOutline, trashOutline } from "ionicons/icons";
 import { ActivatedRoute } from "@angular/router";
-import { BehaviorSubject, firstValueFrom, map, Observable, switchMap } from "rxjs";
-import {CertificationRequest, CertificationStatus, Service} from "../../models/common.model";
+import { firstValueFrom, map, Observable, Subject } from "rxjs";
+import { switchMap, tap } from "rxjs/operators";
+import { CertificationRequest, Service } from "../../models/common.model";
 import { GeographicZoneWithParent } from "../../models/filter.model";
-import { CommonService } from "../../services/common-service";
-import {UserRole} from "../../models/roles";
-import {WorkerFullProfile, WorkerPrivateAccount, WorkerProfileForAdmin} from "../../models/user.model";
+import { WorkerPrivateAccount, WorkerProfileForAdmin } from "../../models/user.model";
+import { AuthService } from "../../services/auth.service";
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -24,28 +24,24 @@ import {WorkerFullProfile, WorkerPrivateAccount, WorkerProfileForAdmin} from "..
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss']
 })
-export class AdminDashboardComponent implements OnInit {
+export class AdminDashboardComponent implements OnInit, OnDestroy {
   currentTab: 'users' | 'certifications' | 'services' | 'zones' | 'logs' = 'users';
 
-  // Flux d'observables réactifs principaux
   users$!: Observable<WorkerProfileForAdmin[]>;
   pendingCertificationRequests$!: Observable<CertificationRequest[]>;
   services$!: Observable<Service[]>;
   zones$!: Observable<GeographicZoneWithParent[]>;
   auditLogs$!: Observable<any[]>;
+  flatZones$!: Observable<{ id: number; name: string; level: number; parentId: number | null }[]>;
 
   selectedWorkerDetails: WorkerPrivateAccount | null = null;
   isCertifModalOpen: boolean = false;
   currentCertifRequestId: number | null = null;
   adminComment: string = '';
 
-  // Déclencheurs de rechargement automatiques pour les flux dynamiques
-  private servicesRefresh$ = new BehaviorSubject<void>(undefined);
-  private zonesRefresh$ = new BehaviorSubject<void>(undefined);
+  private submitCertification$ = new Subject<{ requestId: number; approved: boolean; comment: string }>();
 
-  flatZones$!: Observable<{ id: number; name: string; level: number; parentId: number | null }[]>;
   selectedRole: string | null = null;
-
   roleOptions = [
     { label: 'Tous les rôles', value: null },
     { label: 'Administrateur', value: 'ADMIN' },
@@ -53,39 +49,44 @@ export class AdminDashboardComponent implements OnInit {
     { label: 'Annonceur', value: 'WORKER' }
   ];
 
+  activePreviewUrl: string | null = null;
+  previewImagesList: string[] = [];
+  previewIndex: number = 0;
+  certificationPreviewList: string[] = [];
+
   constructor(
     private adminService: AdminService,
-    private commonService: CommonService,
     private alertCtrl: AlertController,
     private location: Location,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private authService: AuthService,
   ) {
     addIcons({ addOutline, trashOutline, pencilOutline });
   }
 
+  // 💡 Déverrouillage automatique si l'admin ferme ou rafraîchit la page en plein milieu d'une modération
+  @HostListener('window:beforeunload', ['$event'])
+  unloadHandler($event: BeforeUnloadEvent) {
+    if (this.currentCertifRequestId) {
+      // Utilisation synchrone / sendBeacon ou appel direct de secours si possible,
+      // ou on s'appuie sur le mécanisme de timeout côté backend s'il existe.
+      this.adminService.unlockCertificationReview(this.currentCertifRequestId).subscribe();
+    }
+  }
+
   ngOnInit() {
-    // 1. Récupération des données depuis les Resolvers de la route
     this.users$ = this.route.data.pipe(map(data => data['users'] || []));
     this.auditLogs$ = this.route.data.pipe(map(data => data['logs'] || []));
 
-    // 2. Dérivation directe des workers en attente à partir du flux `users$` existant
-    // (Filtre sur le rôle WORKER et le statut de certification PENDING_APPROVAL)
-    this.pendingCertificationRequests$ = this.route.data.pipe(
-      map(data => (data['certificationRequests'] || []).sort((a: any, b: any) =>
+    this.pendingCertificationRequests$ = this.adminService.pendingCertificationRequests$.pipe(
+      map(requests => (requests || []).sort((a: any, b: any) =>
         new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime()
       ))
     );
 
-    // 3. Flux dynamiques gérés par réactivité
-    this.services$ = this.servicesRefresh$.pipe(
-      switchMap(() => this.commonService.getWorkersServices())
-    );
+    this.services$ = this.adminService.services$;
+    this.zones$ = this.adminService.zones$;
 
-    this.zones$ = this.zonesRefresh$.pipe(
-      switchMap(() => this.adminService.getGeographicZones() ? this.adminService.getGeographicZones() : this.route.data.pipe(map(data => data['zones'] || [])))
-    );
-
-    // Aplatissement intelligent pour restaurer l'indentation et le parentId
     this.flatZones$ = this.zones$.pipe(
       map(zones => {
         if (!zones) return [];
@@ -93,10 +94,7 @@ export class AdminDashboardComponent implements OnInit {
         const result: { id: number; name: string; level: number; parentId: number | null }[] = [];
 
         parents.forEach(parent => {
-          // Ajout du parent (parentId vaut null ou 0)
           result.push({ id: parent.id, name: parent.name, level: 0, parentId: parent.parentId ?? null });
-
-          // Ajout des enfants directs de ce parent
           const children = zones.filter(z => z.parentId === parent.id);
           children.forEach(child => {
             result.push({ id: child.id, name: child.name, level: 1, parentId: parent.id });
@@ -106,6 +104,32 @@ export class AdminDashboardComponent implements OnInit {
         return result;
       })
     );
+
+    // 💡 Pipeline réactif de soumission : gère l'appel HTTP et la fermeture de modale automatiquement sans .subscribe() verbeux
+    this.submitCertification$.pipe(
+      switchMap(({ requestId, approved, comment }) =>
+        this.adminService.verifyCertification(requestId, approved, comment).pipe(
+          tap(() => this.closeCertificationModal())
+        )
+      )
+    ).subscribe({
+      error: (err) => {
+        console.error('Échec traitement certification', err);
+        alert("Une erreur est survenue lors du traitement de la requête.");
+      }
+    });
+
+    // Chargement initial
+    this.adminService.refreshCertifications();
+    this.adminService.refreshServices();
+    this.adminService.refreshZones();
+  }
+
+  ngOnDestroy() {
+    // Nettoyage de sécurité si le composant est détruit
+    if (this.currentCertifRequestId) {
+      this.adminService.unlockCertificationReview(this.currentCertifRequestId).subscribe();
+    }
   }
 
   goBack() {
@@ -114,9 +138,7 @@ export class AdminDashboardComponent implements OnInit {
 
   setLocked(user: any, lockState: boolean) {
     this.adminService.updateWorkerStatus(user.id, { locked: lockState }).subscribe({
-      next: (updatedWorker) => {
-        user.locked = updatedWorker.locked;
-      },
+      next: (updatedWorker) => { user.locked = updatedWorker.locked; },
       error: (err) => console.error('Échec de la modification du verrouillage', err)
     });
   }
@@ -134,11 +156,8 @@ export class AdminDashboardComponent implements OnInit {
           text: 'Enregistrer',
           handler: (data) => {
             if (!data.reason || data.reason.trim() === '') return false;
-
             this.adminService.updateDaysCredit(user.id, parseInt(data.days, 10), data.reason).subscribe({
-              next: (res: any) => {
-                user.remainingDaysCredit = res.newDaysValue;
-              },
+              next: (res: any) => { user.remainingDaysCredit = res.newDaysValue; },
               error: (err) => console.error('Échec mise à jour crédit jours', err)
             });
             return true;
@@ -149,15 +168,11 @@ export class AdminDashboardComponent implements OnInit {
     await alert.present();
   }
 
-  // ── GESTION DES SERVICES ──────────────────────────────────────────────────
+  // ── GESTION DES SERVICES & ZONES ──────────────────────────────────────────
 
-  /**
-   * Ouvre les deux modales successives (prompt) pour CRÉER un nouveau service
-   */
   async openServiceModal() {
     const name = prompt("Nom du nouveau service :");
     if (!name || name.trim() === '') return;
-
     const description = prompt("Description (optionnelle) :") || undefined;
 
     try {
@@ -165,18 +180,14 @@ export class AdminDashboardComponent implements OnInit {
         name: name.trim(),
         description: description ? description.trim() : undefined
       }));
-      this.servicesRefresh$.next(); // Actualise le flux services$
     } catch (err: any) {
       alert("Erreur : " + (err.error || "Impossible de créer le service"));
     }
   }
 
-  /**
-   * Ouvre les deux modales successives (prompt) pré-remplies pour MODIFIER un service existant
-   */
   async editServiceModal(service: any) {
     const name = prompt("Modifier le nom du service :", service.name);
-    if (name === null) return; // L'utilisateur a cliqué sur Annuler
+    if (name === null) return;
     if (name.trim() === '') {
       alert("Le nom du service ne peut pas être vide.");
       return;
@@ -186,52 +197,41 @@ export class AdminDashboardComponent implements OnInit {
     if (description === null) return;
 
     try {
-      const descriptionTrimmed = description.trim();
       await firstValueFrom(this.adminService.updateService({
         id: service.id,
         name: name.trim(),
-        ...(descriptionTrimmed !== '' ? {descriptionTrimmed} : {})
+        description: description.trim()
       }));
-      this.servicesRefresh$.next(); // Actualise le flux services$
-    } catch (err: any) {
+    } catch (err:any) {
       alert("Erreur : " + (err.error || "Impossible de modifier le service"));
     }
   }
 
-  /**
-   * Supprime un service après confirmation
-   */
   async deleteService(id: number) {
     if (confirm('Voulez-vous vraiment supprimer ce service ?')) {
       try {
         await firstValueFrom(this.adminService.deleteService(id));
-        this.servicesRefresh$.next(); // Actualise le flux services$
       } catch (err: any) {
         alert("Erreur lors de la suppression du service : " + (err.error?.error || "Erreur inconnue"));
       }
     }
   }
 
-  // ── GESTION DES ZONES GÉOGRAPHIQUES ──────────────────────────────────────
   async openZoneModal(parentId: number | null = null) {
     const title = parentId ? "Nom de la nouvelle sous-zone :" : "Nom de la nouvelle zone parente :";
     const name = prompt(title);
     if (!name || name.trim() === '') return;
 
     try {
-      const payload = {
+      await firstValueFrom(this.adminService.updateRegion({
         name: name.trim(),
-        ...(parentId !== null ? { parentId } : {}) // N'ajoute parentId que s'il n'est pas null
-      };
-
-      await firstValueFrom(this.adminService.updateRegion(payload));
-      this.zonesRefresh$.next();
+        ...(parentId !== null ? { parentId } : {})
+      }));
     } catch (err: any) {
       alert(err.error?.error || "Erreur lors de la création de la zone");
     }
   }
 
-  // Ouvre une modale pour modifier le nom d'une zone existante
   async editZoneName(zone: any) {
     const newName = prompt("Modifier le nom de la zone :", zone.name);
     if (!newName || newName.trim() === '' || newName === zone.name) return;
@@ -242,7 +242,6 @@ export class AdminDashboardComponent implements OnInit {
         name: newName.trim(),
         parentId: zone.parentId
       }));
-      this.zonesRefresh$.next();
     } catch (err: any) {
       alert(err.error?.error || "Erreur lors de la modification de la zone");
     }
@@ -252,17 +251,20 @@ export class AdminDashboardComponent implements OnInit {
     if (confirm('Voulez-vous vraiment supprimer cette zone ?')) {
       try {
         await firstValueFrom(this.adminService.deleteRegion(id));
-        this.zonesRefresh$.next();
       } catch (err: any) {
         alert(err.error?.error || "Impossible de supprimer cette zone.");
       }
     }
   }
 
-  // Certifications
+  // ── CERTIFICATIONS ────────────────────────────────────────────────────────
 
   async openCertificationModal(request: CertificationRequest) {
-    if (request.underReview) {
+    const tokenData = this.authService.getDecodedToken();
+    const currentAdminId = tokenData?.id || tokenData?.userId;
+    const isLockedByOther = request.underReview && request.lockedByAdminId && request.lockedByAdminId !== currentAdminId;
+
+    if (isLockedByOther) {
       alert("Cette requête est déjà en cours de traitement par un autre administrateur.");
       return;
     }
@@ -271,21 +273,28 @@ export class AdminDashboardComponent implements OnInit {
     this.adminComment = '';
 
     try {
-      // 1. On appelle le verrouillage côté backend
       await firstValueFrom(this.adminService.lockCertificationReview(request.id, true));
 
-      // 2. On charge les détails dans la modale
+      const workerDetails = await firstValueFrom(
+        this.adminService.getWorkerProfileForAdmin(request.workerId)
+      );
+
+      const formattedCertifUrl = request.certificationPhotoUrl ?? "";
+
       this.selectedWorkerDetails = {
-        id: request.workerId,
-        username: request.workerUsername,
+        ...workerDetails,
+        certificationRequestId: request.id,
         verificationCode: request.verificationCode,
-        certificationPhotoUrl: request.certificationPhotoUrl
+        certificationPhotoUrl: formattedCertifUrl
       } as any;
+
+      const galleryUrls = (workerDetails.photos || []).map(p => p.mainThumbUrl);
+      this.certificationPreviewList = [formattedCertifUrl, ...galleryUrls];
 
       this.isCertifModalOpen = true;
     } catch (err) {
       console.error("Erreur lors du verrouillage ou du chargement de la requête", err);
-      alert("Impossible d'ouvrir cette requête (elle est peut-être déjà en cours de traitement).");
+      alert("Impossible d'ouvrir cette requête.");
       this.currentCertifRequestId = null;
     }
   }
@@ -305,23 +314,49 @@ export class AdminDashboardComponent implements OnInit {
     this.adminComment = '';
   }
 
-  // Traitement avec commentaire (Demande de plus d'infos / Rejet avec motif)
-  async submitCertificationReview(approved: boolean) {
-    if (!this.currentCertifRequestId) return;
+  // 💡 Soumission ultra-épurée grâce au flux réactif mis en place dans ngOnInit
+  submitCertificationReview(approved: boolean) {
+    const requestId = this.currentCertifRequestId || (this.selectedWorkerDetails as any)?.certificationRequestId;
 
-    const reason = this.adminComment.trim();
+    if (!requestId) {
+      alert("Erreur : Aucun identifiant de requête trouvé.");
+      return;
+    }
 
-    if (!approved && !reason) {
+    const comment = this.adminComment.trim();
+
+    if (!approved && !comment) {
       alert("Veuillez saisir un commentaire ou un motif pour le refus / la demande de complément.");
       return;
     }
 
-    this.adminService.verifyCertification(this.currentCertifRequestId, approved, reason).subscribe({
-      next: () => {
-        this.closeCertificationModal();
-        window.location.reload(); // Actualise les résolveurs
-      },
-      error: (err) => console.error('Échec traitement certification', err)
-    });
+    // On pousse simplement les données dans le flux, le switchMap s'occupe du reste
+    this.submitCertification$.next({ requestId, approved, comment });
+  }
+
+  // ── GESTION DE LA LIGHTBOX D'IMAGES ──────────────────────────────────────
+
+  openImagePreview(url: string, allImages: string[] = []) {
+    this.activePreviewUrl = url;
+    this.previewImagesList = allImages;
+    this.previewIndex = allImages.indexOf(url);
+  }
+
+  closeImagePreview() {
+    this.activePreviewUrl = null;
+    this.previewImagesList = [];
+    this.previewIndex = 0;
+  }
+
+  nextPreviewImage() {
+    if (this.previewImagesList.length === 0) return;
+    this.previewIndex = (this.previewIndex + 1) % this.previewImagesList.length;
+    this.activePreviewUrl = this.previewImagesList[this.previewIndex];
+  }
+
+  prevPreviewImage() {
+    if (this.previewImagesList.length === 0) return;
+    this.previewIndex = (this.previewIndex - 1 + this.previewImagesList.length) % this.previewImagesList.length;
+    this.activePreviewUrl = this.previewImagesList[this.previewIndex];
   }
 }

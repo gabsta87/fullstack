@@ -10,5 +10,13 @@ export const adminOnlyGuard: CanActivateFn = () => {
     return true;
   }
 
+  const tokenData = authService.getDecodedToken();
+  const role = tokenData?.role;
+
+  // 💡 On vérifie avec et sans le préfixe 'ROLE_' pour éviter les faux négatifs au F5
+  if (role === 'ADMIN' || role === 'SUPER_ADMIN' || role === 'ROLE_ADMIN' || role === 'ROLE_SUPER_ADMIN') {
+    return true;
+  }
+
   return router.parseUrl('/');
 };

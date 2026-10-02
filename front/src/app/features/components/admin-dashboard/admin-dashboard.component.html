@@ -167,23 +167,29 @@
         <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;" />
 
         <!-- Photo de certification -->
-        <h4>1. Photo de certification (avec le panneau)</h4>
         <div class="image-verification-box ion-margin-bottom" style="text-align: center; background: #f9f9f9; padding: 10px; border-radius: 8px;">
-          <img [src]="selectedWorkerDetails.certificationPhotoUrl " style="max-height: 300px; border-radius: 6px; object-fit: contain;" alt="Photo de certification" />
+          <img [src]="selectedWorkerDetails.certificationPhotoUrl"
+               (click)="openImagePreview(selectedWorkerDetails.certificationPhotoUrl, certificationPreviewList)"
+               style="max-height: 300px; border-radius: 6px; object-fit: contain; cursor: pointer;"
+               alt="Photo de certification" />
         </div>
 
-        <!-- Autres photos de l'annonceur pour vérification d'identité -->
+        <!-- Autres photos du profil -->
         <h4>2. Autres photos du profil (Vérification d'identité)</h4>
         <div *ngIf="selectedWorkerDetails.photos && selectedWorkerDetails.photos.length > 0" style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px;">
-          <img *ngFor="let p of selectedWorkerDetails.photos" [src]="p.mainThumbUrl" style="height: 100px; width: 100px; object-fit: cover; border-radius: 6px; border: 1px solid #ccc;" alt="Photo annonceur" />
+          <img *ngFor="let p of selectedWorkerDetails.photos"
+               [src]="p.mainThumbUrl"
+               (click)="openImagePreview(p.mainThumbUrl, certificationPreviewList)"
+               style="height: 100px; width: 100px; object-fit: cover; border-radius: 6px; border: 1px solid #ccc; cursor: pointer;"
+               alt="Photo annonceur" />
         </div>
         <p *ngIf="!selectedWorkerDetails.photos || selectedWorkerDetails.photos.length === 0" style="color: #777; font-style: italic;">Aucune autre photo disponible sur ce profil.</p>
 
         <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;" />
 
-        <!-- Commentaire / Motif pour demande de plus d'infos -->
+        <!-- Commentaire / Motif -->
         <ion-item fill="outline" class="ion-margin-bottom">
-          <ion-input [(ngModel)]="adminComment" label="Commentaire ou motif (requis pour refuser / demander plus d'infos)" labelPlacement="stacked" placeholder="Ex: Le code sur le panneau est flou, veuillez recommencer..."></ion-input>
+          <ion-input [(ngModel)]="adminComment" label="Commentaire ou motif (requis pour refuser / demander plus d'infos)" labelPlacement="stacked" placeholder="Ex: Le code sur le panneau est flou..."></ion-input>
         </ion-item>
 
         <!-- Boutons d'action -->
@@ -196,6 +202,38 @@
           </ion-button>
         </div>
 
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- LIGHTBOX / MODALE DE ZOOM D'IMAGE TYPE GALERIE -->
+  <ion-modal [isOpen]="activePreviewUrl !== null" (didDismiss)="closeImagePreview()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar color="dark">
+          <ion-title>Visualisation</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeImagePreview()">Fermer</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding" style="background: black; display: flex; align-items: center; justify-content: center; height: 100%;">
+        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+
+          <!-- Bouton Précédent -->
+          <ion-button *ngIf="previewImagesList.length > 1" fill="clear" color="light" (click)="prevPreviewImage()" style="position: absolute; left: 10px; z-index: 10;">
+            <ion-icon name="chevron-back-outline" size="large"></ion-icon>
+          </ion-button>
+
+          <!-- Image affichée en grand -->
+          <img [src]="activePreviewUrl" style="max-width: 100%; max-height: 85vh; object-fit: contain;" />
+
+          <!-- Bouton Suivant -->
+          <ion-button *ngIf="previewImagesList.length > 1" fill="clear" color="light" (click)="nextPreviewImage()" style="position: absolute; right: 10px; z-index: 10;">
+            <ion-icon name="chevron-forward-outline" size="large"></ion-icon>
+          </ion-button>
+
+        </div>
       </ion-content>
     </ng-template>
   </ion-modal>

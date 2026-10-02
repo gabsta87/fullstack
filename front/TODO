@@ -1,6 +1,9 @@
-
-onDrop du profile-management ne marche plus
+taille des miniatures des images dans le profil
 afficher les images dans la modale de certification
+
+L'admin doit pouvoir ouvrir la certification request qu'il a lui-même vérouillée
+résoudre le problème d'ouverture de la modale pour la certification
+
 replace role === 'ADMIN' by role === UserRole.ADMIN (searching with [A-Z]{3,})
 
 unavailable profiles : hide phone and contact info

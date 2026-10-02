@@ -69,11 +69,11 @@ public class AdminController {
         return ResponseEntity.ok(userDTOs);
     }
 
+    @Transactional(readOnly = true)
     @GetMapping("/workers/{workerId}")
     public ResponseEntity<WorkerFullProfileDTO> getWorkerProfileForAdmin(@PathVariable UUID workerId) {
-        Worker worker = workerRepository.findById(workerId)
+        Worker worker = workerRepository.findByIdWithPhotos(workerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker introuvable"));
-
         return ResponseEntity.ok(WorkerFullProfileDTO.from(worker));
     }
 
@@ -137,7 +137,7 @@ public class AdminController {
     @Transactional
     @GetMapping("/certification-requests")
     public ResponseEntity<List<CertificationRequestDTO>> getPendingRequests() {
-        LocalDateTime expirationThreshold = LocalDateTime.now().minusMinutes(3);
+        LocalDateTime expirationThreshold = LocalDateTime.now().minusMinutes(1);
 
         List<CertificationRequest> requests = certificationRequestRepository.findAll();
 
@@ -191,31 +191,31 @@ public class AdminController {
 
     @PostMapping("/profiles/verify-certification")
     @Transactional
-    public void processCertification(Long requestId, boolean approved, String comment, Admin admin) {
-        CertificationRequest request = certificationRequestRepository.findById(requestId)
+    public void processCertification(@RequestBody CertificationReviewDTO dto, Admin admin) {
+        System.out.println("Request id : " + dto.requestId() + " Approved : " + dto.approved() + " Comment : " + dto.comment() + " Admin : " + admin);
+
+        CertificationRequest request = certificationRequestRepository.findById(dto.requestId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Requête introuvable"));
 
         Worker worker = request.getWorker();
 
-        if (approved) {
-            // CAS 1 : C'est accepté, on valide le worker et on supprime la requête (déclenche le @PreRemove et nettoie la photo)
+        if (dto.approved()) {
             worker.setCertificationStatus(CertificationStatus.APPROVED);
             worker.setVerificationCode(null);
             workerRepository.save(worker);
 
             certificationRequestRepository.delete(request);
-            logAdminAction(admin,"CERTIFICATION_APPROVED",worker,"Certification approved for worker " + worker.getEmail());
+            logAdminAction(admin, "CERTIFICATION_APPROVED", worker, "Certification approved for worker " + worker.getEmail());
 
         } else {
-            // CAS 2 : Refus ou demande de complément d'information
             request.setStatus(CertificationStatus.REJECTED);
             request.setProcessedAt(LocalDateTime.now());
             request.setUnderReview(false);
             request.setLockedByAdmin(null);
-            request.setComment(comment);
+            request.setComment(dto.comment());
 
             certificationRequestRepository.save(request);
-            logAdminAction(admin,"CERTIFICATION_DENIED",worker,"Certification denied for worker " + worker.getEmail()+" because of "+comment);
+            logAdminAction(admin, "CERTIFICATION_DENIED", worker, "Certification denied for worker " + worker.getEmail() + " because of " + dto.comment());
         }
     }
 
