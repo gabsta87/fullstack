@@ -1,8 +1,8 @@
+filtrer les requêtes pour ne voir que celles qui attendent sur les admins (trier par modification)
 taille des miniatures des images dans le profil
-afficher les images dans la modale de certification
+supprimer les certification requests qui ont été validées
 
 L'admin doit pouvoir ouvrir la certification request qu'il a lui-même vérouillée
-résoudre le problème d'ouverture de la modale pour la certification
 
 replace role === 'ADMIN' by role === UserRole.ADMIN (searching with [A-Z]{3,})
 

@@ -139,7 +139,7 @@ public class AdminController {
     public ResponseEntity<List<CertificationRequestDTO>> getPendingRequests() {
         LocalDateTime expirationThreshold = LocalDateTime.now().minusMinutes(1);
 
-        List<CertificationRequest> requests = certificationRequestRepository.findAll();
+        List<CertificationRequest> requests = certificationRequestRepository.findByStatus(CertificationStatus.PENDING_APPROVAL);
 
         for (CertificationRequest req : requests) {
             if (req.isUnderReview() && req.getLockedAt() != null && req.getLockedAt().isBefore(expirationThreshold)) {

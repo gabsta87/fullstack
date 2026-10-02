@@ -1,5 +1,6 @@
 package com.serv.database.repositories;
 
+import com.serv.common.CertificationStatus;
 import com.serv.database.entities.CertificationRequest;
 import com.serv.database.entities.Worker;
 import lombok.NonNull;
@@ -13,6 +14,8 @@ public interface CertificationRequestRepository extends JpaRepository<Certificat
     Optional<CertificationRequest> findByWorkerAndStatus(Worker worker, String status);
 
     Optional<CertificationRequest> findByWorker(Worker worker);
+
+    List<CertificationRequest> findByStatus(CertificationStatus status);
 
     @NonNull
     List<CertificationRequest> findAll();
