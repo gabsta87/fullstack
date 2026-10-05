@@ -41,6 +41,19 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   currentCertifRequestId: number | null = null;
   adminComment: string = '';
 
+  predefinedReasons: string[] = [
+    "L'identité de l'annonceur ne correspond pas à la photo de contrôle",
+    "Certaines photos du profil ne correspondent pas à la photo de contrôle",
+    "Le code de contrôle n'est pas lisible",
+    "Le code de contrôle n'est pas correct",
+    ""
+  ];
+
+// Méthode appelée lors du choix dans le menu déroulant
+  onPredefinedReasonSelected(event: any) {
+    this.adminComment = event.detail.value;
+  }
+
   private submitCertification$ = new Subject<{ requestId: number; approved: boolean; comment: string }>();
 
   selectedRole: string | null = null;
@@ -77,7 +90,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.users$ = this.adminService.users$;
     this.auditLogs$ = this.adminService.getAuditLogs().pipe(
       map(logs => logs.sort((a:AdminLog, b : AdminLog) =>
-        new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime()
+        new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
       )));
 
     this.pendingCertificationRequests$ = this.adminService.pendingCertificationRequests$.pipe(

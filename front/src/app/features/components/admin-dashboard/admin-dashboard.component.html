@@ -187,17 +187,36 @@
 
         <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;" />
 
-        <!-- Commentaire / Motif -->
-        <ion-item fill="outline" class="ion-margin-bottom">
-          <ion-input [(ngModel)]="adminComment" label="Commentaire ou motif (requis pour refuser / demander plus d'infos)" labelPlacement="stacked" placeholder="Ex: Le code sur le panneau est flou..."></ion-input>
-        </ion-item>
+        <div class="ion-margin-bottom">
+          <!-- Menu déroulant pour les motifs fréquents -->
+          <ion-item fill="outline" class="ion-margin-bottom">
+            <ion-select label="Motifs fréquents (Optionnel)"
+                        labelPlacement="stacked"
+                        placeholder="Sélectionner un motif type..."
+                        (ionChange)="onPredefinedReasonSelected($event)"
+                        [interface]="'popover'">
+              <ion-select-option *ngFor="let reason of predefinedReasons" [value]="reason">
+                {{ reason }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <!-- Champ de texte modifiable (liée à adminComment, permettant la saisie libre) -->
+          <ion-item fill="outline">
+            <ion-input [(ngModel)]="adminComment"
+                       label="Commentaire ou motif (requis pour refuser / demander plus d'infos)"
+                       labelPlacement="stacked"
+                       placeholder="Ex: Le code sur le panneau est flou...">
+            </ion-input>
+          </ion-item>
+        </div>
 
         <!-- Boutons d'action -->
         <div style="display: flex; gap: 10px; margin-top: 20px;">
           <ion-button expand="block" color="success" style="flex: 1;" (click)="submitCertificationReview(true)">
             Approuver
           </ion-button>
-          <ion-button expand="block" color="warning" style="flex: 1;" (click)="submitCertificationReview(false)">
+          <ion-button [disabled]="adminComment == ''" expand="block" color="warning" style="flex: 1;" (click)="submitCertificationReview(false)">
             Demander + d'infos / Refuser
           </ion-button>
         </div>
