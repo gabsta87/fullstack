@@ -108,8 +108,9 @@ public class Worker extends VenusUser {
     @Column(name = "certified_at")
     private LocalDateTime certifiedAt;
 
-    @OneToOne(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
-    private CertificationRequest certificationRequest;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "last_certification_request_id")
+    private CertificationRequest lastCertificationRequest;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(

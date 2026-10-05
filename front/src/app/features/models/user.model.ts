@@ -23,6 +23,7 @@ export interface WorkerPrivateAccount extends PrivateAccount, WorkerFullProfile 
   verificationCode?: string;
   adminCertificationFeedback?: string;
   certificationRequest : CertificationRequest;
+  isCertified : boolean;
 }
 
 export interface ClientPrivateAccount extends PrivateAccount, BaseUser{

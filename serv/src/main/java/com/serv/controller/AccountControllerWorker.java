@@ -109,7 +109,7 @@ public class AccountControllerWorker {
             request.setCertificationPhoto(certificationPhoto);
 
             CertificationRequest savedRequest = certificationRequestRepository.save(request);
-            worker.setCertificationRequest(savedRequest);
+            worker.setLastCertificationRequest(savedRequest);
 
             Worker savedWorker = workerRepository.save(worker);
 
@@ -117,7 +117,7 @@ public class AccountControllerWorker {
             WorkerFullProfileDTO dto = WorkerFullProfileDTO.from(savedWorker);
             sseStreamService.emitEvent(savedWorker.getId(), "account-update", dto);
 
-            System.out.println("Certification updated : "+savedWorker.getCertificationRequest().getStatus());
+            System.out.println("Certification updated : "+savedWorker.getLastCertificationRequest().getStatus());
             System.out.println("Sending status "+dto.certificationRequest().status());
             return ResponseEntity.ok().body(dto);
 

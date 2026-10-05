@@ -26,6 +26,7 @@ public record WorkerFullProfileDTO(
         List<VideoDTO> videos,
         String        certifiedAt,
         String        verificationCode,
+        Boolean       isCertified,
         CertificationRequestDTO certificationRequest
 ) {
     public static WorkerFullProfileDTO from(Worker w) {
@@ -53,9 +54,10 @@ public record WorkerFullProfileDTO(
                 w.getVideos().stream()
                         .map(VideoDTO::from)
                         .toList(),
-                w.getCertifiedAt() != null ? new SimpleDateFormat("yyyy-MM-dd").format(w.getCertifiedAt()) : null,
+                w.getCertifiedAt() != null ? w.getCertifiedAt().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd")) : null,
                 w.getVerificationCode(),
-                CertificationRequestDTO.from(w.getCertificationRequest())
+                w.isCertified(),
+                w.getLastCertificationRequest() != null ?CertificationRequestDTO.from(w.getLastCertificationRequest()) : null
         );
     }
 }

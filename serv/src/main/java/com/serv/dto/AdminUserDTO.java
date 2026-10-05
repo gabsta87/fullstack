@@ -48,7 +48,7 @@ public record AdminUserDTO(
             phone = w.getPhone();
             desc = w.getDescription();
 
-            certStatus = w.getCertificationRequest() != null ? w.getCertificationRequest().getStatus().toString() : null;
+            certStatus = w.getLastCertificationRequest() != null ? w.getLastCertificationRequest().getStatus().toString() : null;
             verifCode = w.getVerificationCode();
             certifiedAt = w.getCertifiedAt() != null ? w.getCertifiedAt().toString() : null;
 

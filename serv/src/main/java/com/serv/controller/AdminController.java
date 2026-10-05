@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.sql.SQLOutput;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -200,11 +199,13 @@ public class AdminController {
         Worker worker = request.getWorker();
 
         if (dto.approved()) {
+            request.setStatus(CertificationStatus.APPROVED);
+            certificationRequestRepository.save(request);
+
             worker.setCertifiedAt(LocalDateTime.now());
             worker.setVerificationCode(null);
             workerRepository.save(worker);
 
-            certificationRequestRepository.delete(request);
             logAdminAction(admin, "CERTIFICATION_APPROVED", worker, "Certification approved for worker " + worker.getEmail());
 
         } else {
