@@ -95,6 +95,52 @@
   margin: 4px;
 }
 
+// ── Grilles médias ────────────────────────────────────────────────────────
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); // Grille responsive de petites vignettes
+  gap: 10px;
+
+  .media-item {
+    width: 100%;
+    height: 220px;          // Hauteur fixe pour uniformiser la grille
+    object-fit: cover;      // Recadre l'image proprement sans la déformer
+    border-radius: 8px;     // Jolis coins arrondis
+    cursor: pointer;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.03); // Petit effet de zoom au survol
+    }
+  }
+}
+
+.video-thumbnail-container {
+  position: relative;
+  height: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .play-icon-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 32px;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+  }
+}
+
+
 // ── Swiper Plein Écran ────────────────────────────────────────────────────────
 .fullscreen-photo-modal {
   --width: 100%;
