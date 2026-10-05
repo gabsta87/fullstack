@@ -8,8 +8,14 @@ import { DropdownModule } from 'primeng/dropdown';
 import { TagModule } from 'primeng/tag';
 import { AdminService } from '../../services/admin-service';
 import { addIcons } from "ionicons";
-import { addOutline, pencilOutline, trashOutline } from "ionicons/icons";
-import { ActivatedRoute } from "@angular/router";
+import {
+  addOutline,
+  chevronBackOutline,
+  chevronForwardOutline,
+  closeOutline,
+  pencilOutline,
+  trashOutline
+} from "ionicons/icons";
 import { firstValueFrom, map, Observable, Subject } from "rxjs";
 import { switchMap, tap } from "rxjs/operators";
 import { CertificationRequest, Service } from "../../models/common.model";
@@ -59,25 +65,22 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     private adminService: AdminService,
     private alertCtrl: AlertController,
     private location: Location,
-    private route: ActivatedRoute,
     private authService: AuthService,
   ) {
-    addIcons({ addOutline, trashOutline, pencilOutline });
+    addIcons({ addOutline, trashOutline, pencilOutline, chevronBackOutline, chevronForwardOutline, closeOutline });
   }
 
-  // 💡 Déverrouillage automatique si l'admin ferme ou rafraîchit la page en plein milieu d'une modération
   @HostListener('window:beforeunload', ['$event'])
   unloadHandler($event: BeforeUnloadEvent) {
     if (this.currentCertifRequestId) {
-      // Utilisation synchrone / sendBeacon ou appel direct de secours si possible,
-      // ou on s'appuie sur le mécanisme de timeout côté backend s'il existe.
       this.adminService.unlockCertificationReview(this.currentCertifRequestId).subscribe();
     }
   }
 
   ngOnInit() {
-    this.users$ = this.route.data.pipe(map(data => data['users'] || []));
-    this.auditLogs$ = this.route.data.pipe(map(data => data['logs'] || []));
+    // On récupère les utilisateurs directement depuis le flux réactif du service
+    this.users$ = this.adminService.users$;
+    this.auditLogs$ = this.adminService.getAuditLogs();
 
     this.pendingCertificationRequests$ = this.adminService.pendingCertificationRequests$.pipe(
       map(requests => (requests || []).sort((a: any, b: any) =>
@@ -106,7 +109,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       })
     );
 
-    // 💡 Pipeline réactif de soumission : gère l'appel HTTP et la fermeture de modale automatiquement sans .subscribe() verbeux
     this.submitCertification$.pipe(
       switchMap(({ requestId, approved, comment }) =>
         this.adminService.verifyCertification(requestId, approved, comment).pipe(
@@ -120,14 +122,14 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Chargement initial
+    // Chargement initial des données
+    this.adminService.refreshUsers();
     this.adminService.refreshCertifications();
     this.adminService.refreshServices();
     this.adminService.refreshZones();
   }
 
   ngOnDestroy() {
-    // Nettoyage de sécurité si le composant est détruit
     if (this.currentCertifRequestId) {
       this.adminService.unlockCertificationReview(this.currentCertifRequestId).subscribe();
     }
@@ -137,11 +139,13 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.location.back();
   }
 
-  setLocked(user: any, lockState: boolean) {
-    this.adminService.updateWorkerStatus(user.id, { locked: lockState }).subscribe({
-      next: (updatedWorker) => { user.locked = updatedWorker.locked; },
-      error: (err) => console.error('Échec de la modification du verrouillage', err)
-    });
+  // Utilisation de Async/Await propre, sans manipulation manuelle de tableau
+  async setLocked(user: any, lockState: boolean) {
+    try {
+      await firstValueFrom(this.adminService.updateWorkerStatus(user.id, { locked: lockState }));
+    } catch (err) {
+      console.error('Échec de la modification du verrouillage', err);
+    }
   }
 
   async promptUpdateDays(user: any) {
@@ -155,21 +159,21 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         { text: 'Annuler', role: 'cancel' },
         {
           text: 'Enregistrer',
-          handler: (data) => {
+          handler: async (data) => {
             if (!data.reason || data.reason.trim() === '') return false;
-            this.adminService.updateDaysCredit(user.id, parseInt(data.days, 10), data.reason).subscribe({
-              next: (res: any) => { user.remainingDaysCredit = res.newDaysValue; },
-              error: (err) => console.error('Échec mise à jour crédit jours', err)
-            });
-            return true;
+            try {
+              await firstValueFrom(this.adminService.updateDaysCredit(user.id, parseInt(data.days, 10), data.reason));
+              return true;
+            } catch (err) {
+              console.error('Échec mise à jour crédit jours', err);
+              return false;
+            }
           }
         }
       ]
     });
     await alert.present();
   }
-
-  // ── GESTION DES SERVICES & ZONES ──────────────────────────────────────────
 
   async openServiceModal() {
     const name = prompt("Nom du nouveau service :");
@@ -258,8 +262,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  // ── CERTIFICATIONS ────────────────────────────────────────────────────────
-
   async openCertificationModal(request: CertificationRequest) {
     const tokenData = this.authService.getDecodedToken();
     const currentAdminId = tokenData?.id || tokenData?.userId;
@@ -315,7 +317,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.adminComment = '';
   }
 
-  // 💡 Soumission ultra-épurée grâce au flux réactif mis en place dans ngOnInit
   submitCertificationReview(approved: boolean) {
     const requestId = this.currentCertifRequestId || (this.selectedWorkerDetails as any)?.certificationRequestId;
 
@@ -331,11 +332,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // On pousse simplement les données dans le flux, le switchMap s'occupe du reste
     this.submitCertification$.next({ requestId, approved, comment });
   }
-
-  // ── GESTION DE LA LIGHTBOX D'IMAGES ──────────────────────────────────────
 
   openImagePreview(url: string, allImages: string[] = []) {
     this.activePreviewUrl = url;

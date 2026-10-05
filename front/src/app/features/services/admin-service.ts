@@ -6,16 +6,21 @@ import { environment } from "../../../environments/environment";
 import { WorkerFullProfile, WorkerPrivateAccount, WorkerProfileForAdmin } from "../models/user.model";
 import { GeographicZoneWithParent } from "../models/filter.model";
 import { AdminLog, CertificationRequest, Service } from "../models/common.model";
-
 @Injectable({
   providedIn: 'root'
 })
 export class AdminService {
   private apiUrl = `${environment.apiBase}/admin`;
 
+  private usersRefresh$ = new BehaviorSubject<void>(undefined);
   private certificationRefresh$ = new BehaviorSubject<void>(undefined);
   private servicesRefresh$ = new BehaviorSubject<void>(undefined);
   private zonesRefresh$ = new BehaviorSubject<void>(undefined);
+
+  public users$: Observable<WorkerProfileForAdmin[]> = this.usersRefresh$.pipe(
+    switchMap(() => this.http.get<WorkerProfileForAdmin[]>(`${this.apiUrl}/users`)),
+    shareReplay(1)
+  );
 
   public pendingCertificationRequests$: Observable<CertificationRequest[]> = this.certificationRefresh$.pipe(
     switchMap(() => this.http.get<CertificationRequest[]>(`${this.apiUrl}/certification-requests`)),
@@ -34,6 +39,10 @@ export class AdminService {
 
   constructor(private http: HttpClient) {}
 
+  refreshUsers() {
+    this.usersRefresh$.next();
+  }
+
   refreshCertifications() {
     this.certificationRefresh$.next();
   }
@@ -50,32 +59,38 @@ export class AdminService {
     return this.http.get<WorkerProfileForAdmin[]>(`${this.apiUrl}/users`);
   }
 
+  getCertificationRequests(): Observable<CertificationRequest[]> {
+    return this.http.get<CertificationRequest[]>(`${this.apiUrl}/certification-requests`);
+  }
+
+  getGeographicZones(): Observable<GeographicZoneWithParent[]> {
+    return this.http.get<GeographicZoneWithParent[]>(`${this.apiUrl}/locations-flat`);
+  }
+
   getWorkerProfileForAdmin(workerId: string): Observable<WorkerPrivateAccount> {
     return this.http.get<WorkerPrivateAccount>(`${this.apiUrl}/workers/${workerId}`);
   }
 
-  setLockedStatus(workerId: string, lock: boolean): Observable<WorkerFullProfile> {
-    const params = new HttpParams().set('lock', lock.toString());
-    return this.http.post<WorkerFullProfile>(`${this.apiUrl}/profiles/${workerId}/set-locked`, {}, { params });
-  }
-
   updateWorkerStatus(workerId: string, statusPayload: { locked?: boolean; banned?: boolean; hidden?: boolean }): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/profiles/${workerId}/status`, statusPayload);
+    return this.http.post<any>(`${this.apiUrl}/profiles/${workerId}/status`, statusPayload).pipe(
+      tap(() => this.refreshUsers()) // Rafraîchit automatiquement la liste des utilisateurs
+    );
   }
 
-  updateDaysCredit(workerId: string, newDaysValue: number, reason: string): Observable<{ success: boolean; newDaysValue: number }> {
+  updateDaysCredit(workerId: string, newDaysValue: number, reason: string): Observable<any> {
     const payload = { workerId, newDaysValue, reason };
-    return this.http.post<{ success: boolean; newDaysValue: number }>(`${this.apiUrl}/profiles/update-days`, payload);
-  }
-
-  getCertificationRequests(): Observable<CertificationRequest[]> {
-    return this.http.get<CertificationRequest[]>(`${this.apiUrl}/certification-requests`);
+    return this.http.post(`${this.apiUrl}/profiles/update-days`, payload).pipe(
+      tap(() => this.refreshUsers()) // Rafraîchit automatiquement la liste des utilisateurs
+    );
   }
 
   verifyCertification(requestId: number, approved: boolean, comment: string): Observable<any> {
     const payload = { requestId, approved, comment };
     return this.http.post(`${this.apiUrl}/profiles/verify-certification`, payload).pipe(
-      tap(() => this.refreshCertifications())
+      tap(() => {
+        this.refreshCertifications();
+        this.refreshUsers(); // Au cas où la certification change le profil du worker
+      })
     );
   }
 
@@ -92,24 +107,10 @@ export class AdminService {
     return this.http.get<any[]>(`${this.apiUrl}/logs`);
   }
 
-  getGeographicZones(): Observable<GeographicZoneWithParent[]> {
-    return this.http.get<GeographicZoneWithParent[]>(`${this.apiUrl}/locations-flat`);
-  }
+  // ── SERVICES ──────────────────────────────────────────
 
-  updateRegion(regionData: { id?: number, name: string, parentId?: number }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/region`, regionData).pipe(
-      tap(() => this.refreshZones())
-    );
-  }
-
-  deleteRegion(regionId: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/regions/${regionId}`).pipe(
-      tap(() => this.refreshZones())
-    );
-  }
-
-  updateService(serviceData: { id?: number, name: string, description?: string }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/service`, serviceData).pipe(
+  updateService(servicePayload: { id?: number; name: string; description?: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/services`, servicePayload).pipe(
       tap(() => this.refreshServices())
     );
   }
@@ -120,7 +121,17 @@ export class AdminService {
     );
   }
 
-  updateLegalText(key: string, content: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/legal`, { key, content });
+  // ── ZONES / REGIONS ───────────────────────────────────
+
+  updateRegion(regionPayload: { id?: number; name: string; parentId?: number | null }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/locations`, regionPayload).pipe(
+      tap(() => this.refreshZones())
+    );
+  }
+
+  deleteRegion(regionId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/locations/${regionId}`).pipe(
+      tap(() => this.refreshZones())
+    );
   }
 }
