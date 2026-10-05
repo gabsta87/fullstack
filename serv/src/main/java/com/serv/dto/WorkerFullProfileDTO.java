@@ -20,6 +20,7 @@ public record WorkerFullProfileDTO(
         List<Integer>servicesId,
         Boolean      available,
         String       phone,
+        String       shortDescription,
         String       description,
         String       mainThumbUrl,
         List<PhotoDTO> photos,
@@ -46,6 +47,7 @@ public record WorkerFullProfileDTO(
                 w.getServices().stream().map(Service::getId).toList(),
                 w.isAvailable(),
                 w.getPhone(),
+                w.getShortDescription(),
                 w.getDescription(),
                 mainThumb,
                 w.getPhotos().stream()

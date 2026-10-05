@@ -31,6 +31,7 @@ public class Requests {
     public record WorkerProfileUpdateRequest(
             String username,
             String description,
+            String shortDescription,
             Integer geographicZoneId,
             String eyeColor,
             String hairColor,

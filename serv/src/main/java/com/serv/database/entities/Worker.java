@@ -99,6 +99,9 @@ public class Worker extends VenusUser {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "short_description")
+    private String shortDescription;
+
     @Column(name = "remaining_days_credit")
     private Integer remainingDaysCredit;
 

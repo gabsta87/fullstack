@@ -26,6 +26,7 @@ export interface WorkerMinimalProfile extends BaseUser {
   eyeColor?: string;
   hairColor?: string;
   isCertified: boolean;
+  shortDescription: string;
   galleryIndex?: number;
   servicesId: number[];
   mainThumbUrl?: string;
@@ -92,6 +93,7 @@ export interface AdminUser {
 export interface WorkerProfileUpdate {
   username?: string;
   description?: string;
+  shortDescription?: string;
   geographicZoneId?: number;
   bodyType?: string;
   servicesId?: number[];

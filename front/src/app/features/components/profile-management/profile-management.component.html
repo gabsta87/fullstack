@@ -107,6 +107,18 @@
                              placeholder="Votre pseudo"></ion-input>
                 </ion-item>
               </ion-col>
+              <ion-col size="12" size-md="6">
+                <ion-item lines="none" class="venus-input">
+                  <ion-label position="stacked">Description courte</ion-label>
+                  <ion-input type="text"
+                             name="short description"
+                             [(ngModel)]="profileForm.shortDescription"
+                             [required]="true"
+                             [debounce]="500"
+                             (ionChange)="updateProfileField('shortDescription', $event.detail.value)"
+                             placeholder="Description courte"></ion-input>
+                </ion-item>
+              </ion-col>
             </ion-row>
 
             <ion-row>

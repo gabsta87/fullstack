@@ -112,6 +112,7 @@ export class ProfileManagementComponent implements OnInit {
           hairColor : user.hairColor,
           geographicZoneId: user.geographicZone?.id,
           description: user.description,
+          shortDescription : user.shortDescription,
           phone: user.phone,
           birthdate: cleanBirthdate
         };

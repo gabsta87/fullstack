@@ -3,7 +3,7 @@ import {Router} from '@angular/router';
 import {CommonModule} from '@angular/common';
 import {
   IonBadge,
-  IonCard,
+  IonCard, IonCardContent,
   IonCardHeader,
   IonCardSubtitle,
   IonCardTitle,
@@ -21,7 +21,7 @@ import {personCircleOutline} from "ionicons/icons";
   styleUrls: ['./worker-card.component.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, IonRippleEffect, IonCard, IonIcon, IonBadge, IonCardHeader, IonCardTitle, IonCardSubtitle],
+  imports: [CommonModule, IonRippleEffect, IonCard, IonIcon, IonBadge, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent],
 })
 export class WorkerCardComponent implements OnDestroy {
 

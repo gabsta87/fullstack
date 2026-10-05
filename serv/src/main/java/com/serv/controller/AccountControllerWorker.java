@@ -155,6 +155,7 @@ public class AccountControllerWorker {
     public ResponseEntity<?> updateProfile(@RequestBody Requests.WorkerProfileUpdateRequest req,
                                            Worker workerArg) {
         Worker worker = getWorkerWithPhotos(workerArg);
+        System.out.println("updateProfile :" + req.username() + " with value "+req);
 
         if (req.description() != null) worker.setDescription(req.description());
 
@@ -170,6 +171,7 @@ public class AccountControllerWorker {
         }
 
         if (req.username()    != null) worker.setUsername(req.username());
+        if (req.shortDescription() != null) worker.setShortDescription(req.shortDescription());
         if (req.bodyType()    != null) worker.setBodyType(BodyType.valueOf(req.bodyType()));
         if (req.eyeColor()    != null) worker.setEyeColor(EyeColor.valueOf(req.eyeColor()));
         if (req.hairColor()   != null) worker.setHairColor(HairColor.valueOf(req.hairColor()));
