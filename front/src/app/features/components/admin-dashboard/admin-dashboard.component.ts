@@ -11,7 +11,7 @@ import { addIcons } from "ionicons";
 import {
   addOutline, chevronBackOutline, chevronForwardOutline, closeOutline, pencilOutline, trashOutline
 } from "ionicons/icons";
-import { firstValueFrom, map, Observable, Subject } from "rxjs";
+import {combineLatest, firstValueFrom, map, Observable, Subject} from "rxjs";
 import { switchMap, tap } from "rxjs/operators";
 import { AdminLog, CertificationRequest, Service } from "../../models/common.model";
 import { GeographicZoneWithParent } from "../../models/filter.model";
@@ -33,7 +33,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   pendingCertificationRequests$!: Observable<CertificationRequest[]>;
   services$!: Observable<Service[]>;
   zones$!: Observable<GeographicZoneWithParent[]>;
-  auditLogs$!: Observable<any[]>;
+  auditLogs$!: Observable<AdminLog[]>;
+  displayedAuditLogs$!: Observable<any[]>;
   flatZones$!: Observable<{ id: number; name: string; level: number; parentId: number | null }[]>;
 
   selectedWorkerDetails: WorkerPrivateProfile | null = null;
@@ -92,6 +93,23 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       map(logs => logs.sort((a:AdminLog, b : AdminLog) =>
         new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
       )));
+
+    this.displayedAuditLogs$ = combineLatest([this.auditLogs$, this.users$]).pipe(
+      map(([logs, users]) => {
+        return logs.map(log => {
+          // Recherchez la propriété qui lie le log à l'admin (ex: log.adminId, log.userId, log.admin?.id, etc.)
+          // Adaptez 'log.adminId' selon la structure réelle de votre AdminLog
+          const adminId = (log as any).adminId;
+
+          const matchingUser = users.find(u => u.id === adminId);
+
+          return {
+            ...log,
+            adminUser: matchingUser || null // On ajoute l'objet AdminUser (ou null s'il n'est pas trouvé)
+          };
+        });
+      })
+    );
 
     this.pendingCertificationRequests$ = this.adminService.pendingCertificationRequests$.pipe(
       map(requests => (requests || []).sort((a: any, b: any) =>

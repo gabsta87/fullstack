@@ -34,7 +34,6 @@ export interface AdminLog {
   id: number;
   adminId: number;
   actionType: string;
-  targetSnapshot?: string;
   details?: string;
   createdAt: string;
 }

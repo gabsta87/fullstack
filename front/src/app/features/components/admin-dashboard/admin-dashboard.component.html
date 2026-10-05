@@ -24,7 +24,7 @@
         <ion-label>Zones ({{ (zones$ | async)?.length || 0 }})</ion-label>
       </ion-segment-button>
       <ion-segment-button value="logs">
-        <ion-label>Journal d'Audit ({{ (auditLogs$ | async)?.length || 0 }})</ion-label>
+        <ion-label>Journal d'Audit ({{ (displayedAuditLogs$ | async)?.length || 0 }})</ion-label>
       </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
@@ -261,9 +261,9 @@
   <!-- ONGLET 3 : JOURNAL D'AUDIT -->
   <div *ngIf="currentTab === 'logs'">
     <ion-list>
-      <ion-item *ngFor="let log of (auditLogs$ | async) || []">
+      <ion-item *ngFor="let log of (displayedAuditLogs$ | async) || []">
         <ion-label>
-          <h3><strong>Modérateur :</strong> {{ log.adminUsername || log.admin?.username }}</h3>
+          <h3><strong>Modérateur :</strong> {{ log.adminUser.username ?? log.adminUser.email }}</h3>
           <p><strong>Action :</strong> <ion-badge color="medium">{{ log.actionType }}</ion-badge></p>
           <p>{{ log.details }}</p>
           <p class="ion-text-right"><small>{{ log.createdAt | date:'short' }}</small></p>
