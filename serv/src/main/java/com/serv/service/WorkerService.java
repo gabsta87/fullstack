@@ -23,7 +23,6 @@ import java.util.*;
 public class WorkerService {
 
     private final WorkerRepository workerRepository;
-    private final PhotoRepository  photoRepository;
 
     public static final int PAGE_SIZE          = 24;
 

@@ -55,7 +55,7 @@ public class MediaController {
                 .mapToLong(Media::getFileSize)
                 .sum()
                 +
-                photoRepository.findByWorkerId(workerId).stream()
+                photoRepository.findByWorker(worker).stream()
                         .mapToLong(Media::getFileSize)
                         .sum();
 

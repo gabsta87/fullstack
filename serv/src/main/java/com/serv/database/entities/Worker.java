@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,6 +34,7 @@ public class Worker extends VenusUser {
     @ToString.Exclude
     @BatchSize(size = 20)
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
+    @SQLRestriction("photo_type = 'GALLERY'")
     private Collection<Photo> photos = new ArrayList<>();
 
     @ToString.Exclude

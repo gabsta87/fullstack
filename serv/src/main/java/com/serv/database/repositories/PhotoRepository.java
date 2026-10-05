@@ -1,27 +1,19 @@
 package com.serv.database.repositories;
 
 import com.serv.database.entities.Photo;
+import com.serv.database.entities.Worker;
 import jakarta.annotation.Nonnull;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface PhotoRepository extends JpaRepository<Photo, UUID> {
 
-    /** Only the main profile photo */
-    Optional<Photo> findByWorkerId(UUID workerId);
+    Optional<Photo> findByWorker(Worker worker);
 
-    /** Does the worker already have a main photo? */
-    boolean existsByWorkerId(UUID workerId);
-
-    List<Photo> findByWorkerIdOrderBySortOrderAscIdAsc(UUID workerId);
-    List<Photo> findByWorkerIdInOrderBySortOrderAsc(List<UUID> workerIds);
     void deleteByWorkerId(UUID workerId);
 
     @Nonnull

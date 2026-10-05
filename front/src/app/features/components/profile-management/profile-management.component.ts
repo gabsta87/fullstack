@@ -197,7 +197,6 @@ export class ProfileManagementComponent implements OnInit {
     isDisabled: boolean;    // Pour bloquer le clic si besoin
   } {
     const status = me.certificationRequest?.status;
-    console.log("status : "+me.certificationStatus);
 
     // 1. En attente de photo (ou premier choix)
     if (status === CertificationStatus.PENDING_PHOTO || !status || status === CertificationStatus.NOT_CERTIFIED) {

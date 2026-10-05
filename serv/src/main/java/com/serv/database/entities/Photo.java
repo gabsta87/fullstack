@@ -1,5 +1,6 @@
 package com.serv.database.entities;
 
+import com.serv.common.PhotoType;
 import com.serv.common.TablesNames;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -16,5 +17,9 @@ import java.util.UUID;
         @Index(name = "idx_photo_worker", columnList = "worker_id")
 })
 public class Photo extends Media{
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "photo_type", nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'GALLERY'")
+    private PhotoType type = PhotoType.GALLERY;
 
 }

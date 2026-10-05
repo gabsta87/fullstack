@@ -97,7 +97,7 @@ public class AccountControllerWorker {
 
             // 1. Le service s'occupe de tout : stockage physique, miniatures et instanciation de la Photo
             Photo certificationPhoto = mediaStorageService.savePhoto(file, worker);
-
+            certificationPhoto.setType(PhotoType.CERTIFICATION);
             photoRepository.save(certificationPhoto);
             System.out.println("Certification photo saved");
 
