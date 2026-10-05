@@ -207,7 +207,7 @@
   </ion-modal>
 
   <!-- LIGHTBOX / MODALE DE ZOOM D'IMAGE TYPE GALERIE -->
-  <ion-modal [isOpen]="activePreviewUrl !== null" (didDismiss)="closeImagePreview()">
+  <ion-modal class="image-preview-modal" [isOpen]="activePreviewUrl !== null" (didDismiss)="closeImagePreview()">
     <ng-template>
       <ion-header>
         <ion-toolbar color="dark">
@@ -217,19 +217,20 @@
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
-      <ion-content class="ion-padding" style="background: black; display: flex; align-items: center; justify-content: center; height: 100%;">
-        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
 
-          <!-- Bouton Précédent -->
-          <ion-button *ngIf="previewImagesList.length > 1" fill="clear" color="light" (click)="prevPreviewImage()" style="position: absolute; left: 10px; z-index: 10;">
+      <ion-content class="ion-padding" style="background: black; --background: black; height: 100%;">
+        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+
+          <!-- Zone cliquable / Bouton Précédent (prend toute la hauteur à gauche) -->
+          <ion-button *ngIf="previewImagesList.length > 1" fill="clear" color="light" class="lightbox-nav-button left-nav" (click)="prevPreviewImage()">
             <ion-icon name="chevron-back-outline" size="large"></ion-icon>
           </ion-button>
 
-          <!-- Image affichée en grand -->
-          <img [src]="activePreviewUrl" style="max-width: 100%; max-height: 85vh; object-fit: contain;" />
+          <!-- Image affichée en grand au centre -->
+          <img [src]="activePreviewUrl" style="max-width: 75vw; max-height: 85vh; object-fit: contain; z-index: 5;" />
 
-          <!-- Bouton Suivant -->
-          <ion-button *ngIf="previewImagesList.length > 1" fill="clear" color="light" (click)="nextPreviewImage()" style="position: absolute; right: 10px; z-index: 10;">
+          <!-- Zone cliquable / Bouton Suivant (prend toute la hauteur à droite) -->
+          <ion-button *ngIf="previewImagesList.length > 1" fill="clear" color="light" class="lightbox-nav-button right-nav" (click)="nextPreviewImage()">
             <ion-icon name="chevron-forward-outline" size="large"></ion-icon>
           </ion-button>
 

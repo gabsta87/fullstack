@@ -5,3 +5,48 @@
     font-weight: 600;
   }
 }
+
+/* Cible spécifiquement la modale de zoom (lightbox) */
+/* Astuce : tu peux lui donner une classe personnalisée, ou cibler sa structure */
+ion-modal.image-preview-modal {
+  --background: #000000 !important;
+  --width: 100vw;
+  --height: 100vh;
+  --max-width: 100%;
+  --max-height: 100%;
+  --border-radius: 0;
+
+  /* S'assure que le fond de la zone de contenu est bien noir */
+  ion-content {
+    --background: #000000;
+  }
+}
+
+/* Style pour que les boutons de navigation prennent toute la hauteur sur les côtés */
+.lightbox-nav-button {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 15%; // Occupe 15% de la largeur de chaque côté
+  height: 100%;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  --background: rgba(0, 0, 0, 0.2); // Discret par défaut
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+
+  &:hover {
+    --background: rgba(255, 255, 255, 0.1); // S'illumine légèrement au survol
+  }
+
+  &.left-nav {
+    left: 0;
+  }
+
+  &.right-nav {
+    right: 0;
+  }
+}
