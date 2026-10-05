@@ -11,8 +11,8 @@ import {
   locationOutline, logoWhatsapp, notifications, notificationsOutline, personOutline, playCircleOutline, timeOutline,
   warningOutline, womanOutline
 } from 'ionicons/icons';
-import {PhotoItem, Review, VideoItem} from '../../models/items.model';
-import {WorkerFullProfile} from "../../models/user.model";
+import {PhotoItem, Comment, VideoItem} from '../../models/items.model';
+import {WorkerPublicFullProfile} from "../../models/user.model";
 import {HeaderComponent} from "../header/header.component";
 import {ClientAccountService} from "../../services/client-account.service";
 import {AuthService} from "../../services/auth.service";
@@ -39,7 +39,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   modalMedia: { type: 'photo' | 'video'; url: string }[] = [];
 
-  worker: WorkerFullProfile | null = null;
+  worker: WorkerPublicFullProfile | null = null;
   isFavorite     = false;
   notifyEnabled  = false;
   isClient       = false;
@@ -214,17 +214,17 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   // ── Reviews ───────────────────────────────────────────────────────────────
 
-  submitReview(): void {
-    if (!this.worker || !this.newReview.text || !this.newReview.rating) return;
-    const r: Review = {
-      author: 'Vous',
-      date:   new Date().toISOString(),
-      text:   this.newReview.text,
-    };
-    this.worker.reviews.unshift(r);
-    this.newReview = { rating: 0, text: '' };
-    // TODO: ReviewService.post(this.worker.id, r)
-  }
+  // submitReview(): void {
+  //   if (!this.worker || !this.newReview.text || !this.newReview.rating) return;
+  //   const r: Review = {
+  //     author: 'Vous',
+  //     date:   new Date().toISOString(),
+  //     text:   this.newReview.text,
+  //   };
+  //   this.worker.reviews.unshift(r);
+  //   this.newReview = { rating: 0, text: '' };
+  //   // TODO: ReviewService.post(this.worker.id, r)
+  // }
 
   ratingFill(s: number, rating: number): string {
     return s <= rating ? '#c8956c' : '#e8e4df';

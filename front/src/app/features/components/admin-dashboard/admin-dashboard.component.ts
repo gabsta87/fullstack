@@ -9,20 +9,15 @@ import { TagModule } from 'primeng/tag';
 import { AdminService } from '../../services/admin-service';
 import { addIcons } from "ionicons";
 import {
-  addOutline,
-  chevronBackOutline,
-  chevronForwardOutline,
-  closeOutline,
-  pencilOutline,
-  trashOutline
+  addOutline, chevronBackOutline, chevronForwardOutline, closeOutline, pencilOutline, trashOutline
 } from "ionicons/icons";
 import { firstValueFrom, map, Observable, Subject } from "rxjs";
 import { switchMap, tap } from "rxjs/operators";
-import { CertificationRequest, Service } from "../../models/common.model";
+import { AdminLog, CertificationRequest, Service } from "../../models/common.model";
 import { GeographicZoneWithParent } from "../../models/filter.model";
-import { WorkerPrivateAccount, WorkerProfileForAdmin } from "../../models/user.model";
+import { WorkerPrivateProfile, AdminUser } from "../../models/user.model";
 import { AuthService } from "../../services/auth.service";
-import {UserRole} from "../../models/roles";
+import { UserRole } from "../../models/roles";
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -34,14 +29,14 @@ import {UserRole} from "../../models/roles";
 export class AdminDashboardComponent implements OnInit, OnDestroy {
   currentTab: 'users' | 'certifications' | 'services' | 'zones' | 'logs' = 'users';
 
-  users$!: Observable<WorkerProfileForAdmin[]>;
+  users$!: Observable<AdminUser[]>;
   pendingCertificationRequests$!: Observable<CertificationRequest[]>;
   services$!: Observable<Service[]>;
   zones$!: Observable<GeographicZoneWithParent[]>;
   auditLogs$!: Observable<any[]>;
   flatZones$!: Observable<{ id: number; name: string; level: number; parentId: number | null }[]>;
 
-  selectedWorkerDetails: WorkerPrivateAccount | null = null;
+  selectedWorkerDetails: WorkerPrivateProfile | null = null;
   isCertifModalOpen: boolean = false;
   currentCertifRequestId: number | null = null;
   adminComment: string = '';
@@ -71,7 +66,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   @HostListener('window:beforeunload', ['$event'])
-  unloadHandler($event: BeforeUnloadEvent) {
+  unloadHandler() {
     if (this.currentCertifRequestId) {
       this.adminService.unlockCertificationReview(this.currentCertifRequestId).subscribe();
     }
@@ -80,13 +75,15 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // On récupère les utilisateurs directement depuis le flux réactif du service
     this.users$ = this.adminService.users$;
-    this.auditLogs$ = this.adminService.getAuditLogs();
+    this.auditLogs$ = this.adminService.getAuditLogs().pipe(
+      map(logs => logs.sort((a:AdminLog, b : AdminLog) =>
+        new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime()
+      )));
 
     this.pendingCertificationRequests$ = this.adminService.pendingCertificationRequests$.pipe(
       map(requests => (requests || []).sort((a: any, b: any) =>
         new Date(a.processedAt || 0).getTime() - new Date(b.processedAt || 0).getTime()
-      ))
-    );
+      )));
 
     this.services$ = this.adminService.services$;
     this.zones$ = this.adminService.zones$;
@@ -279,7 +276,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       await firstValueFrom(this.adminService.lockCertificationReview(request.id, true));
 
       const workerDetails = await firstValueFrom(
-        this.adminService.getWorkerProfileForAdmin(request.workerId)
+        this.adminService.getWorkerPrivateProfile(request.workerId)
       );
 
       const formattedCertifUrl = request.certificationPhotoUrl ?? "";

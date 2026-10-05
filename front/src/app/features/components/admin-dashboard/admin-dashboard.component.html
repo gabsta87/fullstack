@@ -162,14 +162,14 @@
 
       <ion-content class="ion-padding" *ngIf="selectedWorkerDetails">
         <h3>Annonceur : {{ selectedWorkerDetails.username }}</h3>
-        <p><strong>Code de vérification attendu :</strong> <span style="font-size: 1.2em; color: var(--ion-color-primary);">{{ selectedWorkerDetails.verificationCode }}</span></p>
+        <p><strong>Code de vérification attendu :</strong> <span style="font-size: 1.2em; color: var(--ion-color-primary);">{{ selectedWorkerDetails.certificationRequest?.verificationCode }}</span></p>
 
         <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;" />
 
         <!-- Photo de certification -->
         <div class="image-verification-box ion-margin-bottom" style="text-align: center; background: #f9f9f9; padding: 10px; border-radius: 8px;">
-          <img [src]="selectedWorkerDetails.certificationPhotoUrl"
-               (click)="openImagePreview(selectedWorkerDetails.certificationPhotoUrl, certificationPreviewList)"
+          <img [src]="selectedWorkerDetails.certificationRequest?.certificationPhotoUrl"
+               (click)="openImagePreview(selectedWorkerDetails.certificationRequest?.certificationPhotoUrl ?? '', certificationPreviewList)"
                style="max-height: 300px; border-radius: 6px; object-fit: contain; cursor: pointer;"
                alt="Photo de certification" />
         </div>

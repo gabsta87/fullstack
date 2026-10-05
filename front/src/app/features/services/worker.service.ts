@@ -4,9 +4,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import {firstValueFrom, Observable, of, shareReplay} from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { WorkerSimpleProfile, WorkerFullProfile } from '../models/user.model';
+import { WorkerMinimalProfile, WorkerPublicFullProfile } from '../models/user.model';
 import {environment} from "../../../environments/environment";
-import {GalleryFilters, GeographicZone} from "../models/filter.model";
+import {GalleryFilters, } from "../models/filter.model";
 import {Service} from "../models/common.model";
 
 @Injectable({ providedIn: 'root' })
@@ -18,7 +18,7 @@ export class WorkerService {
 
   // ── Gallery ────────────────────────────────────────────────────────────────
 
-  getGalleryPage(page: number, filters: GalleryFilters): Observable<WorkerSimpleProfile[]> {
+  getGalleryPage(page: number, filters: GalleryFilters): Observable<WorkerMinimalProfile[]> {
     let params = new HttpParams().set('page', page.toString());
 
     // 🎯 Boucle dynamique sur toutes les clés de l'objet de filtres
@@ -35,14 +35,14 @@ export class WorkerService {
       }
     });
 
-    return this.http.get<WorkerSimpleProfile[]>(`${this.baseUrl}`, { params })
+    return this.http.get<WorkerMinimalProfile[]>(`${this.baseUrl}`, { params })
       .pipe(catchError(() => of([])));
   }
 
   // ── Profile ────────────────────────────────────────────────────────────────
 
-  getProfile(workerId: string): Observable<WorkerFullProfile> {
-    return this.http.get<WorkerFullProfile>(`${this.baseUrl}/${workerId}`);
+  getProfile(workerId: string): Observable<WorkerPublicFullProfile> {
+    return this.http.get<WorkerPublicFullProfile>(`${this.baseUrl}/${workerId}`);
   }
 
   prefetchProfile(workerId: string): void {
@@ -52,7 +52,7 @@ export class WorkerService {
       .subscribe(profile => { if (profile) this.profileCache.set(workerId, profile); });
   }
 
-  getCachedProfile(workerId: string): WorkerFullProfile | null {
+  getCachedProfile(workerId: string): WorkerPublicFullProfile | null {
     return this.profileCache.get(workerId) ?? null;
   }
 
@@ -67,5 +67,5 @@ export class WorkerService {
     return firstValueFrom(this.servicesCache$);
   }
 
-  private profileCache = new Map<string, WorkerFullProfile>();
+  private profileCache = new Map<string, WorkerPublicFullProfile>();
 }

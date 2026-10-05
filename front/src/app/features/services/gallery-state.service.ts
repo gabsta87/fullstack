@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {WorkerSimpleProfile} from "../models/user.model";
+import {WorkerMinimalProfile} from "../models/user.model";
 import {GalleryFilters} from "../models/filter.model";
 
 @Injectable({
@@ -7,7 +7,7 @@ import {GalleryFilters} from "../models/filter.model";
 })
 export class GalleryStateService {
   // On y stocke exactement les variables de ta Homepage
-  allWorkers: WorkerSimpleProfile[] = [];
+  allWorkers: WorkerMinimalProfile[] = [];
   filters: GalleryFilters = {};
   currentPage = 0;
   noMoreData = false;

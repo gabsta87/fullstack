@@ -2,9 +2,9 @@ import {ResolveFn} from '@angular/router';
 import {inject} from "@angular/core";
 import {WorkerService} from "../services/worker.service";
 import {catchError, of} from "rxjs";
-import {WorkerFullProfile} from "../models/user.model";
+import { WorkerPublicFullProfile } from "../models/user.model";
 
-export const profileVisitingResolver: ResolveFn<WorkerFullProfile | null> = (route) => {
+export const profileVisitingResolver: ResolveFn<WorkerPublicFullProfile | null> = (route) => {
   const workerService = inject(WorkerService);
   const id = route.queryParamMap.get('id');
 

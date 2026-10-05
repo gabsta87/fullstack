@@ -65,4 +65,10 @@ export interface VideoItem {
   type?: 'video';
 }
 
-export interface Review       { author: string; date: string; text: string; }
+export interface Comment {
+  id: number;
+  content: string;
+  authorId: string;
+  workerId: string;
+  date: string;
+}

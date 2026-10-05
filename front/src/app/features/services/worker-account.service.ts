@@ -3,33 +3,33 @@ import {BehaviorSubject, firstValueFrom, Observable, of} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {tap} from "rxjs/operators";
 import {environment} from "../../../environments/environment";
-import {WorkerPrivateAccount, WorkerProfileUpdate} from "../models/user.model";
+import {WorkerPrivateProfile, WorkerProfileUpdate} from "../models/user.model";
 
 @Injectable({ providedIn: 'root' })
 export class WorkerAccountService {
   private base = `${environment.apiBase}/account/worker`;
-  private accountSubject = new BehaviorSubject<WorkerPrivateAccount | null>(null);
+  private accountSubject = new BehaviorSubject<WorkerPrivateProfile | null>(null);
 
   constructor(private http: HttpClient) { }
 
-  getCurrentAccount(): Observable<WorkerPrivateAccount> {
+  getCurrentAccount(): Observable<WorkerPrivateProfile> {
     const current = this.accountSubject.value;
     if (current) return of(current);
 
-    return this.http.get<WorkerPrivateAccount>(`${this.base}/me`).pipe(
+    return this.http.get<WorkerPrivateProfile>(`${this.base}/me`).pipe(
       tap(account => this.accountSubject.next(account))
     );
   }
 
-  async refreshAccount(): Promise<WorkerPrivateAccount> {
+  async refreshAccount(): Promise<WorkerPrivateProfile> {
     const account = await firstValueFrom(
-      this.http.get<WorkerPrivateAccount>(`${this.base}/me`)
+      this.http.get<WorkerPrivateProfile>(`${this.base}/me`)
     );
     this.accountSubject.next(account);
     return account;
   }
 
-  updateCache(account: WorkerPrivateAccount) {
+  updateCache(account: WorkerPrivateProfile) {
     this.accountSubject.next(account);
   }
 
@@ -37,88 +37,88 @@ export class WorkerAccountService {
     this.accountSubject.next(null);
   }
 
-  listenToMyAccount(): Observable<WorkerPrivateAccount | null> {
+  listenToMyAccount(): Observable<WorkerPrivateProfile | null> {
     return this.accountSubject.asObservable();
   }
 
-  async setAvailability(available: boolean): Promise<WorkerPrivateAccount> {
+  async setAvailability(available: boolean): Promise<WorkerPrivateProfile> {
     const updatedAccount = await firstValueFrom(
-      this.http.patch<WorkerPrivateAccount>(`${this.base}/availability`, { available }));
+      this.http.patch<WorkerPrivateProfile>(`${this.base}/availability`, { available }));
     this.accountSubject.next(updatedAccount);
     return updatedAccount;
   }
 
-  async updateProfileData(payload: any): Promise<WorkerPrivateAccount> {
+  async updateProfileData(payload: any): Promise<WorkerPrivateProfile> {
     const updatedAccount = await firstValueFrom(
-      this.http.patch<WorkerPrivateAccount>(`${this.base}/data`, payload)
+      this.http.patch<WorkerPrivateProfile>(`${this.base}/data`, payload)
     );
     this.accountSubject.next(updatedAccount);
     return updatedAccount;
   }
 
-  async updateProfile(data: WorkerProfileUpdate): Promise<WorkerPrivateAccount> {
+  async updateProfile(data: WorkerProfileUpdate): Promise<WorkerPrivateProfile> {
     const updatedAccount = await firstValueFrom(
-      this.http.patch<WorkerPrivateAccount>(`${this.base}/profile`, data)
+      this.http.patch<WorkerPrivateProfile>(`${this.base}/profile`, data)
     );
     this.accountSubject.next(updatedAccount);
     return updatedAccount;
   }
 
-  async updateServices(services: number[]): Promise<WorkerPrivateAccount> {
+  async updateServices(services: number[]): Promise<WorkerPrivateProfile> {
     const updatedAccount = await firstValueFrom(
-      this.http.patch<WorkerPrivateAccount>(`${this.base}/updateservices`, services)
+      this.http.patch<WorkerPrivateProfile>(`${this.base}/updateservices`, services)
     );
     this.accountSubject.next(updatedAccount);
     return updatedAccount;
   }
 
-  async uploadMedia(files: File[]): Promise<WorkerPrivateAccount> {
+  async uploadMedia(files: File[]): Promise<WorkerPrivateProfile> {
     const fd = new FormData();
     files.forEach(file => {
       fd.append('files', file, file.name);
     });
-    const updatedProfile = await firstValueFrom(this.http.post<WorkerPrivateAccount>(`${this.base}/media`, fd));
+    const updatedProfile = await firstValueFrom(this.http.post<WorkerPrivateProfile>(`${this.base}/media`, fd));
     this.accountSubject.next(updatedProfile);
     return updatedProfile;
   }
 
-  async deletePhoto(photoId: string): Promise<WorkerPrivateAccount> {
-    const updatedAccount = await firstValueFrom(this.http.delete<WorkerPrivateAccount>(`${this.base}/photos/${photoId}`));
+  async deletePhoto(photoId: string): Promise<WorkerPrivateProfile> {
+    const updatedAccount = await firstValueFrom(this.http.delete<WorkerPrivateProfile>(`${this.base}/photos/${photoId}`));
     this.accountSubject.next(updatedAccount);
     return updatedAccount;
   }
 
   async setMainPhoto(photoId: string): Promise<any> {
-    const updatedAccount = await firstValueFrom(this.http.patch<WorkerPrivateAccount>(`${this.base}/photos/${photoId}/main`, {}));
+    const updatedAccount = await firstValueFrom(this.http.patch<WorkerPrivateProfile>(`${this.base}/photos/${photoId}/main`, {}));
     this.accountSubject.next(updatedAccount);
     return updatedAccount;
   }
 
   async reorderPhotos(orderedIds: string[]): Promise<any> {
     const updatedAccount = await firstValueFrom(
-      this.http.patch<WorkerPrivateAccount>(`${this.base}/photos/reorder`, orderedIds)
+      this.http.patch<WorkerPrivateProfile>(`${this.base}/photos/reorder`, orderedIds)
     );
     this.accountSubject.next(updatedAccount);
     return updatedAccount;
   }
 
-  async deleteVideo(videoId: string): Promise<WorkerPrivateAccount> {
-    const updatedAccount = await firstValueFrom(this.http.delete<WorkerPrivateAccount>(`${this.base}/videos/${videoId}`));
+  async deleteVideo(videoId: string): Promise<WorkerPrivateProfile> {
+    const updatedAccount = await firstValueFrom(this.http.delete<WorkerPrivateProfile>(`${this.base}/videos/${videoId}`));
     this.accountSubject.next(updatedAccount);
     return updatedAccount;
   }
 
-  async requestCertification(): Promise<WorkerPrivateAccount> {
+  async requestCertification(): Promise<WorkerPrivateProfile> {
     const updatedAccount = await firstValueFrom(
-      this.http.get<WorkerPrivateAccount>(`${this.base}/request-certification`)
+      this.http.get<WorkerPrivateProfile>(`${this.base}/request-certification`)
     );
     this.accountSubject.next(updatedAccount);
     return updatedAccount;
   }
 
-  async uploadCertificationPhoto(formData: FormData): Promise<WorkerPrivateAccount> {
+  async uploadCertificationPhoto(formData: FormData): Promise<WorkerPrivateProfile> {
     const updatedAccount = await firstValueFrom(
-      this.http.post<WorkerPrivateAccount>(`${this.base}/certification-photo`, formData)
+      this.http.post<WorkerPrivateProfile>(`${this.base}/certification-photo`, formData)
     );
     this.accountSubject.next(updatedAccount);
     return updatedAccount;

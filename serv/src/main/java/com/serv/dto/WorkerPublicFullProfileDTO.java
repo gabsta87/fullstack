@@ -24,7 +24,8 @@ public record WorkerPublicFullProfileDTO(
         List<PhotoDTO>    photos,
         List<VideoDTO>    videos,
         List<String>      languages,
-        String            certifiedAt
+        String            certifiedAt,
+        List<CommentDTO>  comments
 ) {
     public static WorkerPublicFullProfileDTO from(Worker w) {
         String mainThumb = w.getMainPhoto() != null
@@ -47,7 +48,8 @@ public record WorkerPublicFullProfileDTO(
                 w.getPhotos() != null ? w.getPhotos().stream().map(PhotoDTO::from).toList() : List.of(),
                 w.getVideos() != null ? w.getVideos().stream().map(VideoDTO::from).toList() : List.of(),
                 w.getSpokenLanguages().stream().map(WorkerLanguage::toString).toList(),
-                w.getCertifiedAt() != null ? w.getCertifiedAt().toString() : null
+                w.getCertifiedAt() != null ? w.getCertifiedAt().toString() : null,
+                w.getComments() != null ? w.getComments().stream().map(CommentDTO::from).toList() : List.of()
         );
     }
 }

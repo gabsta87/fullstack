@@ -1,62 +1,93 @@
-import {PhotoItem, Review, VideoItem} from "./items.model";
-import {GeographicZone, GeographicZoneWithParent} from "./filter.model";
-import {CertificationRequest} from "./common.model";
+import { PhotoItem, Comment, VideoItem } from "./items.model";
+import { GeographicZone, GeographicZoneWithParent } from "./filter.model";
+import { CertificationRequest } from "./common.model";
+
+export type UserRole = 'WORKER' | 'CLIENT' | 'ADMIN' | 'SUPER_ADMIN';
+export type LanguageCode = 'EN' | 'FR' | 'IT' | 'DE' | 'ES';
 
 export interface BaseUser {
   id: string;
   username: string;
-  role: 'WORKER' | 'CLIENT' | 'ADMIN' | 'SUPER_ADMIN';
+  role: UserRole;
+  email?: string;
   geographicZone: GeographicZone | null;
+  language?: LanguageCode;
 }
 
-// PRIVATE DATA
+// ==========================================
+// 1. WORKER PROFILES
+// ==========================================
 
-export interface PrivateAccount{
-  email: string;
-  language : 'EN' | 'FR' | 'IT' | 'DE' | 'ES';
-}
-
-export interface WorkerPrivateAccount extends PrivateAccount, WorkerFullProfile {
-  lastRefreshed: string;
-  expirationDate: string;
-  birthdate: string;
-  verificationCode?: string;
-  adminCertificationFeedback?: string;
-  certificationRequest : CertificationRequest;
-  isCertified : boolean;
-}
-
-export interface ClientPrivateAccount extends PrivateAccount, BaseUser{
-  favorites: WorkerSimpleProfile[];
-}
-
-// PUBLIC DATA
-
-export interface WorkerSimpleProfile extends BaseUser{
+// Correspond à WorkerMinimalProfileDTO
+export interface WorkerMinimalProfile extends BaseUser {
+  age?: number;
   available: boolean;
-  bodyType: string;
-  eyeColor: string;
-  hairColor: string;
-  mainThumbUrl: string;
-  previewThumbUrls: string[];
+  bodyType?: string;
+  eyeColor?: string;
+  hairColor?: string;
+  isCertified: boolean;
+  galleryIndex?: number;
   servicesId: number[];
-  certificationStatus: string;
-  certifiedAt: string;
+  mainThumbUrl?: string;
+  certifiedAt?: string;
 }
 
-export interface WorkerFullProfile extends WorkerSimpleProfile {
-  description: string;
-  mainThumbUrl: string;
-  phone: string;
-  age : number
-  certificationPhotoUrl : string;
-
+// Correspond à WorkerPublicFullProfileDTO
+export interface WorkerPublicFullProfile extends WorkerMinimalProfile {
+  phone?: string;
+  description?: string;
   photos: PhotoItem[];
   videos: VideoItem[];
-  reviews: Review[];
+  languages: string[];
+  comments : Comment[];
 }
 
-// UPDATES
+// Correspond à WorkerFullProfileDTO (Profil privé du worker connecté)
+export interface WorkerPrivateProfile extends WorkerPublicFullProfile {
+  birthdate?: string;
+  certificationRequest?: CertificationRequest;
+  adminCertificationFeedback?: string;
+  lastRefreshed?: string;
+  expirationDate?: string;
+}
+
+// ==========================================
+// 2. CLIENT & ADMIN ACCOUNTS
+// ==========================================
+
+// Correspond à ClientDTO
+export interface ClientProfile extends BaseUser {
+  favorites: WorkerMinimalProfile[];
+}
+
+// Correspond à AdminDTO
+export interface AdminProfile extends BaseUser {}
+
+// Correspond à AdminUserDTO (Pour le tableau de bord Admin)
+export interface AdminUser {
+  id: string;
+  username: string;
+  email: string;
+  role: UserRole;
+  language?: string;
+  birthdate?: string;
+  description?: string;
+  phone?: string;
+  available: boolean;
+  banned: boolean;
+  disabled: boolean;
+  locked: boolean;
+  certificationStatus?: string;
+  verificationCode?: string;
+  certifiedAt?: string;
+  certificationRequestDate?: string;
+  servicesId: number[];
+  geographicZone: GeographicZoneWithParent | null;
+}
+
+// ==========================================
+// 3. UPDATES
+// ==========================================
 
 export interface WorkerProfileUpdate {
   username?: string;
@@ -69,35 +100,4 @@ export interface WorkerProfileUpdate {
   phone?: string;
   mainPhotoId?: string;
   birthdate?: string;
-}
-
-export interface WorkerProfileForAdmin{
-  id: string;
-  available: boolean;
-  banned : boolean;
-  disabled: boolean;
-  locked: boolean;
-  role : 'WORKER' | 'CLIENT' | 'ADMIN' | 'SUPER_ADMIN';
-  username: string;
-  email: string;
-  language : 'EN' | 'FR' | 'IT' | 'DE' | 'ES';
-  birthdate: string;
-  description: string;
-  phone: string;
-  certificationStatus: string;
-  verificationCode?: string;
-  certifiedAt : string,
-  certificationRequestDate : string,
-  servicesId: number[];
-  geographicZone: GeographicZoneWithParent | null;
-}
-
-
-export interface UserSimpleForAdmin {
-  id: string;
-  username: string;
-  email: string;
-  role: string;
-  locked: boolean;
-  certified: boolean;
 }

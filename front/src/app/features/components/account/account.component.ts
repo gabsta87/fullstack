@@ -8,7 +8,7 @@ import {BODY_TYPE_LABELS, BODY_TYPES_LIST,} from '../../models/items.model';
 import {WorkerCardComponent} from '../worker-card/worker-card.component';
 import {HeaderComponent} from '../header/header.component';
 import {Observable} from "rxjs";
-import {ClientPrivateAccount} from "../../models/user.model";
+import {ClientProfile} from "../../models/user.model";
 import {AccountSettingsComponent} from "../account-settings/account-settings.component";
 import {GeographicZone} from "../../models/filter.model";
 import {ActivatedRoute} from "@angular/router";
@@ -25,7 +25,7 @@ import { heartDislikeOutline, checkmarkCircle } from 'ionicons/icons';
   styleUrls: ['./account.component.scss']
 })
 export class AccountComponent implements OnInit {
-  currentUser$: Observable<ClientPrivateAccount>;
+  currentUser$: Observable<ClientProfile>;
   activeTab: 'favorites' | 'settings' | 'account' = 'favorites';
 
   locations!:GeographicZone[] ;
@@ -70,7 +70,7 @@ export class AccountComponent implements OnInit {
     console.log("TODO: update location");
   }
 
-  onZoneChange(event: any, user: ClientPrivateAccount) {
+  onZoneChange(event: any, user: ClientProfile) {
     this.selectedZoneId = event.childZoneId;
     const targetId = event.childZoneId || event.parentZoneId;
 

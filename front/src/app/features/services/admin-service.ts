@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { switchMap, tap, shareReplay } from 'rxjs/operators';
 import { environment } from "../../../environments/environment";
-import { WorkerFullProfile, WorkerPrivateAccount, WorkerProfileForAdmin } from "../models/user.model";
+import { WorkerPrivateProfile, AdminUser} from "../models/user.model";
 import { GeographicZoneWithParent } from "../models/filter.model";
 import { AdminLog, CertificationRequest, Service } from "../models/common.model";
 @Injectable({
@@ -17,8 +17,8 @@ export class AdminService {
   private servicesRefresh$ = new BehaviorSubject<void>(undefined);
   private zonesRefresh$ = new BehaviorSubject<void>(undefined);
 
-  public users$: Observable<WorkerProfileForAdmin[]> = this.usersRefresh$.pipe(
-    switchMap(() => this.http.get<WorkerProfileForAdmin[]>(`${this.apiUrl}/users`)),
+  public users$: Observable<AdminUser[]> = this.usersRefresh$.pipe(
+    switchMap(() => this.http.get<AdminUser[]>(`${this.apiUrl}/users`)),
     shareReplay(1)
   );
 
@@ -55,8 +55,8 @@ export class AdminService {
     this.zonesRefresh$.next();
   }
 
-  getUsers(): Observable<WorkerProfileForAdmin[]> {
-    return this.http.get<WorkerProfileForAdmin[]>(`${this.apiUrl}/users`);
+  getUsers(): Observable<AdminUser[]> {
+    return this.http.get<AdminUser[]>(`${this.apiUrl}/users`);
   }
 
   getCertificationRequests(): Observable<CertificationRequest[]> {
@@ -67,8 +67,8 @@ export class AdminService {
     return this.http.get<GeographicZoneWithParent[]>(`${this.apiUrl}/locations-flat`);
   }
 
-  getWorkerProfileForAdmin(workerId: string): Observable<WorkerPrivateAccount> {
-    return this.http.get<WorkerPrivateAccount>(`${this.apiUrl}/workers/${workerId}`);
+  getWorkerPrivateProfile(workerId: string): Observable<WorkerPrivateProfile> {
+    return this.http.get<WorkerPrivateProfile>(`${this.apiUrl}/workers/${workerId}`);
   }
 
   updateWorkerStatus(workerId: string, statusPayload: { locked?: boolean; banned?: boolean; hidden?: boolean }): Observable<any> {

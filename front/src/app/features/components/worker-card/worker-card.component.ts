@@ -11,7 +11,7 @@ import {
   IonRippleEffect
 } from '@ionic/angular/standalone';
 import {WorkerService} from '../../services/worker.service';
-import {WorkerSimpleProfile} from "../../models/user.model";
+import {WorkerMinimalProfile} from "../../models/user.model";
 import {addIcons} from "ionicons";
 import {personCircleOutline} from "ionicons/icons";
 
@@ -25,7 +25,7 @@ import {personCircleOutline} from "ionicons/icons";
 })
 export class WorkerCardComponent implements OnDestroy {
 
-  @Input() worker!: WorkerSimpleProfile;
+  @Input() worker!: WorkerMinimalProfile;
 
   private hoverDelayId: ReturnType<typeof setTimeout> | null = null;
 

@@ -6,7 +6,7 @@ import {HeaderComponent} from "../header/header.component";
 import {filter, firstValueFrom, map, Observable} from "rxjs";
 import {BODY_TYPE_LABELS, EYE_COLOR_LABELS, HAIR_COLOR_LABELS, PhotoItem, VideoItem} from "../../models/items.model";
 import {ActivatedRoute} from "@angular/router";
-import {WorkerPrivateAccount, WorkerProfileUpdate} from "../../models/user.model";
+import {WorkerPrivateProfile, WorkerProfileUpdate} from "../../models/user.model";
 import {WorkerAccountService} from "../../services/worker-account.service";
 import {tap} from "rxjs/operators";
 import {addIcons} from "ionicons";
@@ -33,7 +33,7 @@ export class ProfileManagementComponent implements OnInit {
 
   activeTab     : 'profile' | 'photos' | 'settings' | 'subscription' = 'profile';
 
-  currentUser$! : Observable<WorkerPrivateAccount>;
+  currentUser$! : Observable<WorkerPrivateProfile>;
   allServices!  : Service[];
   photos$!: Observable<(PhotoItem & { isMain: boolean })[]>;
   photos: (PhotoItem & { isMain: boolean })[] = [];
@@ -70,7 +70,7 @@ export class ProfileManagementComponent implements OnInit {
 
     // 2. Flux unique pour l'UI & Synchronisation automatique du formulaire
     this.currentUser$ = this.accountService.listenToMyAccount().pipe(
-      filter((user): user is WorkerPrivateAccount => user !== null),
+      filter((user): user is WorkerPrivateProfile => user !== null),
       tap(user => {
         // Gestion des zones et du formulaire (reste inchangé)
         this.childZoneId = user.geographicZone?.id;
@@ -187,7 +187,7 @@ export class ProfileManagementComponent implements OnInit {
    * - Orange (7 à 8 mois) : Très proche de l'expiration
    * - Rouge (> 8 mois ou non certifié) : Expiré / Invalide
    */
-  getCertificationBadge(me: WorkerPrivateAccount): {
+  getCertificationBadge(me: WorkerPrivateProfile): {
       color: string;
       label: string;          // Tooltip complet
       buttonText: string;     // Texte court affiché sur le bouton
@@ -271,9 +271,9 @@ export class ProfileManagementComponent implements OnInit {
    * Point d'entrée unique au clic sur le bouton de certification :
    * Ouvre directement la modale en lui passant l'utilisateur.
    */
-  async openCertificationModal(me: WorkerPrivateAccount) {
+  async openCertificationModal(me: WorkerPrivateProfile) {
     try {
-      if (!me.verificationCode || me.certificationStatus === CertificationStatus.NOT_CERTIFIED || !me.certificationStatus) {
+      if (!me.certificationRequest?.verificationCode || me.certificationRequest?.status === CertificationStatus.NOT_CERTIFIED) {
         await this.accountService.requestCertification();
       }
 
@@ -287,11 +287,11 @@ export class ProfileManagementComponent implements OnInit {
   /**
    * Crée et présente la modale Ionic
    */
-  async presentModal(me: WorkerPrivateAccount) {
+  async presentModal(me: WorkerPrivateProfile) {
     const modal = await this.modalController.create({
       component: CertificationModalComponent,
       componentProps: {
-        verificationCode: me.verificationCode,
+        verificationCode: me.certificationRequest?.verificationCode,
         adminMessage: me.adminCertificationFeedback
       }
     });
@@ -314,7 +314,7 @@ export class ProfileManagementComponent implements OnInit {
 
   // ── Value modification ─────────────────────────────────────────────────────────
 
-  async toggleService(me: WorkerPrivateAccount, serviceId: number, event: any) {
+  async toggleService(me: WorkerPrivateProfile, serviceId: number, event: any) {
     const isChecked = event.detail.checked;
     let updatedServices = [...(me.servicesId || [])];
 

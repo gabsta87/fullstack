@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { ResolveFn } from '@angular/router';
 import { WorkerService } from '../services/worker.service';
 import { catchError, of } from 'rxjs';
-import {WorkerSimpleProfile} from "../models/user.model";
+import {WorkerMinimalProfile} from "../models/user.model";
 
 /**
  * Loads the first page of gallery cards before the homepage renders.
@@ -12,9 +12,8 @@ import {WorkerSimpleProfile} from "../models/user.model";
  * Subsequent pages (infinite scroll) are loaded directly by the
  * HomepageComponent via WorkerService, not through the resolver.
  */
-export const galleryResolver: ResolveFn<WorkerSimpleProfile[]> = () => {
-  const workerService = inject(WorkerService);
-  return workerService.getGalleryPage(0, {}).pipe(
+export const galleryResolver: ResolveFn<WorkerMinimalProfile[]> = () => {
+  return inject(WorkerService).getGalleryPage(0, {}).pipe(
     catchError(() => of([]))
   );
 };

@@ -24,7 +24,7 @@ export class AccountSettingsComponent implements OnInit {
   @Output() onManageSubscription = new EventEmitter<void>();
 
   form = {
-    email: '',
+    email : '',
     password: '',
     confirmPassword: '',
     oldPassword : ''

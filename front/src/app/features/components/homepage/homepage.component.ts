@@ -27,7 +27,7 @@ import {
   EYE_COLOR_LABELS,
   HAIR_COLOR_LABELS,
 } from "../../models/items.model";
-import {WorkerSimpleProfile} from "../../models/user.model";
+import {WorkerMinimalProfile} from "../../models/user.model";
 import {GalleryFilters, GeographicZone} from "../../models/filter.model";
 import {WorkerService} from "../../services/worker.service";
 import {AuthService} from "../../services/auth.service";
@@ -91,7 +91,7 @@ export class HomepageComponent implements OnInit {
   parentZoneId: number | undefined = undefined;
   private searchSubject = new Subject<string>();
 
-  allWorkers: WorkerSimpleProfile[] = [];
+  allWorkers: WorkerMinimalProfile[] = [];
   allServices: Service[] = [];
   parentZones!: GeographicZone[];
   availableChildZones: GeographicZone[] = [];

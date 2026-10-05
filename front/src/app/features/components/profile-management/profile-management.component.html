@@ -206,7 +206,7 @@
                     <ion-row>
                       <ion-col *ngFor="let service of allServices">
                         <ion-checkbox
-                          [checked]="me.servicesId?.includes(service.id) ?? false"
+                          [checked]="me.servicesId.includes(service.id)"
                           (ionChange)="toggleService(me, service.id, $event)">
                           <ion-label>{{ service.name }}</ion-label>
                         </ion-checkbox>
@@ -305,7 +305,7 @@
         <!-- ONGLET COMPTE-->
         <div *ngIf="activeTab === 'settings'" class="fade-in">
           <account-settings
-            [initialEmail]="me.email"
+            [initialEmail]="me.email ? me.email : ''"
             [isWorker]="true"
             [subscriptionLabel]="subscriptionLabel$ | async"
             [subscriptionColor]="subscriptionColor$ | async"
