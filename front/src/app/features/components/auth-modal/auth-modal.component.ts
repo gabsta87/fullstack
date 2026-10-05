@@ -7,6 +7,7 @@ import {AuthService} from '../../services/auth.service';
 import {RegisterService} from '../../services/register.service';
 import {LoadingController} from "@ionic/angular/standalone";
 import {ForgotPasswordComponent} from "../forgot-password/forgot-password.component";
+import {UserRole} from "../../models/roles";
 
 @Component({
   selector: 'app-auth-modal',
@@ -128,11 +129,11 @@ export class AuthModalComponent implements OnInit {
     // On récupère le rôle de l'utilisateur fraîchement connecté
     const userRole = user?.role || this.authService.getUser()?.role;
 
-    if (userRole === 'WORKER') {
+    if (userRole === UserRole.WORKER) {
       this.router.navigate(['/profile-management']);
-    } else if (userRole === 'CLIENT') {
+    } else if (userRole === UserRole.CLIENT) {
       this.router.navigate(['/account']);
-    } else if (userRole === 'ADMIN') {
+    } else if (userRole === UserRole.ADMIN) {
       this.router.navigate(['/admin-dashboard']);
     } else {
       // Par sécurité, si le rôle est indéterminé à cet instant précis

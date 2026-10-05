@@ -1,10 +1,4 @@
-filtrer les requêtes pour ne voir que celles qui attendent sur les admins (trier par modification)
-taille des miniatures des images dans le profil
-supprimer les certification requests qui ont été validées
-
 L'admin doit pouvoir ouvrir la certification request qu'il a lui-même vérouillée
-
-replace role === 'ADMIN' by role === UserRole.ADMIN (searching with [A-Z]{3,})
 
 unavailable profiles : hide phone and contact info
 favorite profiles should be shown as favorites on the homepage

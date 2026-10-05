@@ -7,6 +7,7 @@ import { environment } from "../../../environments/environment";
 import { BaseUser } from '../models/user.model';
 import { ClientAccountService } from './client-account.service';
 import { WorkerAccountService } from './worker-account.service';
+import {UserRole} from "../models/roles";
 
 interface LoginResponse {
   token: string;
@@ -164,7 +165,7 @@ export class AuthService {
   }
 
   get isAuthenticated(): boolean { return this.isAuthenticatedSubject.value; }
-  get isAdmin(): boolean { return this.currentAccount?.role === 'ADMIN' || this.currentAccount?.role === 'SUPER_ADMIN'; }
+  get isAdmin(): boolean { return this.currentAccount?.role === UserRole.ADMIN || this.currentAccount?.role === UserRole.SUPER_ADMIN; }
   getUser(): BaseUser | null { return this.currentAccount; }
   setRedirectUrl(url: string) { this.redirectUrl = url; }
 }

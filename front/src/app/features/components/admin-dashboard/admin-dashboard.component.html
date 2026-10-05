@@ -93,7 +93,7 @@
             </p-tag>
           </td>
           <td style="text-align: center;">
-            <ion-button size="small" fill="clear" color="warning" (click)="promptUpdateDays(user)" *ngIf="user.role === 'WORKER'">
+            <ion-button size="small" fill="clear" color="warning" (click)="promptUpdateDays(user)" *ngIf="user.role === UserRole.WORKER">
               Jours
             </ion-button>
             <ion-button size="small" fill="clear" [color]="user.locked ? 'success' : 'danger'" (click)="setLocked(user, !user.locked)">

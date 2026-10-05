@@ -4,6 +4,7 @@ import {AuthService} from "../services/auth.service";
 import {catchError, map, of} from "rxjs";
 import {WorkerAccountService} from "../services/worker-account.service";
 import {HttpErrorResponse} from "@angular/common/http";
+import {UserRole} from "../models/roles";
 
 export const workerOnlyGuard: CanActivateFn = (route, state) => {
   const accountService = inject(WorkerAccountService);
@@ -12,7 +13,7 @@ export const workerOnlyGuard: CanActivateFn = (route, state) => {
 
   return accountService.getCurrentAccount().pipe(
     map(user => {
-      if (user?.role === 'WORKER') {
+      if (user?.role === UserRole.WORKER) {
         return true;
       }
 

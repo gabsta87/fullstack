@@ -1,6 +1,6 @@
 import {PhotoItem, Review, VideoItem} from "./items.model";
 import {GeographicZone, GeographicZoneWithParent} from "./filter.model";
-import {CertificationRequest, Service} from "./common.model";
+import {CertificationRequest} from "./common.model";
 
 export interface BaseUser {
   id: string;

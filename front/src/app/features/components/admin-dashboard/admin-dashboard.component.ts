@@ -16,6 +16,7 @@ import { CertificationRequest, Service } from "../../models/common.model";
 import { GeographicZoneWithParent } from "../../models/filter.model";
 import { WorkerPrivateAccount, WorkerProfileForAdmin } from "../../models/user.model";
 import { AuthService } from "../../services/auth.service";
+import {UserRole} from "../../models/roles";
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -44,9 +45,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   selectedRole: string | null = null;
   roleOptions = [
     { label: 'Tous les rôles', value: null },
-    { label: 'Administrateur', value: 'ADMIN' },
-    { label: 'Client', value: 'CLIENT' },
-    { label: 'Annonceur', value: 'WORKER' }
+    { label: 'Administrateur', value: UserRole.ADMIN },
+    { label: 'Client', value: UserRole.CLIENT },
+    { label: 'Annonceur', value: UserRole.WORKER }
   ];
 
   activePreviewUrl: string | null = null;
@@ -359,4 +360,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.previewIndex = (this.previewIndex - 1 + this.previewImagesList.length) % this.previewImagesList.length;
     this.activePreviewUrl = this.previewImagesList[this.previewIndex];
   }
+
+  protected readonly UserRole = UserRole;
 }

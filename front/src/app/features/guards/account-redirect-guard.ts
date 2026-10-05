@@ -2,6 +2,7 @@ import {CanActivateFn, Router} from '@angular/router';
 import {inject} from "@angular/core";
 import {AuthService} from "../services/auth.service";
 import {firstValueFrom} from "rxjs";
+import {UserRole} from "../models/roles";
 
 export const accountRedirectGuard: CanActivateFn = async () => {
   const authService = inject(AuthService);
@@ -18,11 +19,11 @@ export const accountRedirectGuard: CanActivateFn = async () => {
   const role = user?.role;
 
   // Aiguillage propre centralisé
-  if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
+  if (role === UserRole.ADMIN || role === UserRole.SUPER_ADMIN) {
     return router.parseUrl('/admin-dashboard');
-  } else if (role === 'WORKER') {
+  } else if (role === UserRole.WORKER) {
     return router.parseUrl('/profile-management');
-  } else if (role === 'CLIENT') {
+  } else if (role === UserRole.CLIENT) {
     return router.parseUrl('/account');
   }
 
