@@ -109,14 +109,15 @@
               </ion-col>
               <ion-col size="12" size-md="6">
                 <ion-item lines="none" class="venus-input">
-                  <ion-label position="stacked">Description courte</ion-label>
+                  <ion-label position="stacked">Description courte (Max. 45 caractères)</ion-label>
                   <ion-input type="text"
                              name="short description"
                              [(ngModel)]="profileForm.shortDescription"
                              [required]="true"
+                             [maxlength] = 45
                              [debounce]="500"
                              (ionChange)="updateProfileField('shortDescription', $event.detail.value)"
-                             placeholder="Description courte"></ion-input>
+                             placeholder="Ex: Passionnée de voyages ✨"></ion-input>
                 </ion-item>
               </ion-col>
             </ion-row>

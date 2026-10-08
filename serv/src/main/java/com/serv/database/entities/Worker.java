@@ -99,7 +99,7 @@ public class Worker extends VenusUser {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "short_description")
+    @Column(name = "short_description", length = 50)
     private String shortDescription;
 
     @Column(name = "remaining_days_credit")
@@ -220,6 +220,15 @@ public class Worker extends VenusUser {
     public void setActive(boolean active) {
         this.isAvailable = active;
         this.hasBeenActiveToday = active;
+    }
+
+    public void setShortDescription(String shortDescription) {
+        if (shortDescription != null && shortDescription.length() > 45) {
+            // Tronque automatiquement et ajoute une ellipse si le texte dépasse
+            this.shortDescription = shortDescription.substring(0, 42) + "...";
+        } else {
+            this.shortDescription = shortDescription;
+        }
     }
 
     private enum SubscriptionTier{
