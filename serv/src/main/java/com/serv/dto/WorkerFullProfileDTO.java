@@ -28,7 +28,8 @@ public record WorkerFullProfileDTO(
         String        certifiedAt,
         String        verificationCode,
         Boolean       isCertified,
-        CertificationRequestDTO certificationRequest
+        CertificationRequestDTO certificationRequest,
+        String        lastRefreshed
 ) {
     public static WorkerFullProfileDTO from(Worker w) {
         String mainThumb = w.getMainPhoto() != null
@@ -59,7 +60,8 @@ public record WorkerFullProfileDTO(
                 w.getCertifiedAt() != null ? w.getCertifiedAt().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd")) : null,
                 w.getVerificationCode(),
                 w.isCertified(),
-                w.getLastCertificationRequest() != null ?CertificationRequestDTO.from(w.getLastCertificationRequest()) : null
+                w.getLastCertificationRequest() != null ?CertificationRequestDTO.from(w.getLastCertificationRequest()) : null,
+                w.getLastRefreshed() != null ? w.getLastRefreshed().toString() : null
         );
     }
 }
