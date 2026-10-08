@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { switchMap, tap, shareReplay } from 'rxjs/operators';
@@ -6,6 +6,7 @@ import { environment } from "../../../environments/environment";
 import { WorkerPrivateProfile, AdminUser} from "../models/user.model";
 import { GeographicZoneWithParent } from "../models/filter.model";
 import { AdminLog, CertificationRequest, Service } from "../models/common.model";
+
 @Injectable({
   providedIn: 'root'
 })
@@ -37,7 +38,49 @@ export class AdminService {
     shareReplay(1)
   );
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private zone: NgZone) {
+    this.initAdminSseListener();
+  }
+
+  private initAdminSseListener() {
+    const token = localStorage.getItem('auth_token');
+    if (!token) return;
+
+    // On passe le token pour que le serveur l'authentifie dès la première trame
+    const eventSource = new EventSource(`${this.apiUrl}/stream?token=${token}`);
+
+    // 2. Événements liés aux Certifications (extensible à l'infini)
+    const certificationEvents = [
+      'CERTIFICATION_UPDATED',
+      'CERTIFICATION_LOCKED',
+      'CERTIFICATION_UNLOCKED',
+      'CERTIFICATION_PROCESSED'
+    ];
+
+    certificationEvents.forEach(eventName => {
+      eventSource.addEventListener(eventName, () => {
+        this.zone.run(() => {
+          this.refreshCertifications();
+        });
+      });
+    });
+
+    // 🚀 3. ANTICIPATION FUTURE : Tu pourras ajouter d'autres blocs ici sans tout casser
+    /*
+    const userEvents = ['USER_LOCKED', 'USER_UPDATED', 'USER_BANNED'];
+    userEvents.forEach(eventName => {
+      eventSource.addEventListener(eventName, () => {
+        this.zone.run(() => this.refreshUsers());
+      });
+    });
+    */
+
+    eventSource.onerror = (err) => {
+      // EventSource gère la reconnexion automatique nativement,
+      // mais tu peux logger ou fermer proprement si le token expire.
+      console.warn("Connexion SSE Admin interrompue ou en cours de reconnexion...", err);
+    };
+  }
 
   refreshUsers() {
     this.usersRefresh$.next();

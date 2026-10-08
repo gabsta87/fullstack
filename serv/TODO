@@ -30,6 +30,8 @@ admin work
 
 SECONDARY
 
+clean table names by searching @Table(name =
+
 worker tarification :
     when a worker buys time, an event is stored (with his expiration date) in a date sorted queue.
     If a worker/admin modifies the profile status, the event is removed from the queue.

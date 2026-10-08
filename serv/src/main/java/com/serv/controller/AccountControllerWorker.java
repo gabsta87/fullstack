@@ -37,10 +37,8 @@ public class AccountControllerWorker {
     private final MailService emailService;
 
     @GetMapping("/me")
-    public ResponseEntity<?> getMe(Worker user) {
-        return workerRepository.findByIdWithPhotos(user.getId())
-                .map(worker -> ResponseEntity.ok(WorkerFullProfileDTO.from(worker)))
-                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    public ResponseEntity<WorkerFullProfileDTO> getMe(Worker user) {
+        return ResponseEntity.ok(WorkerFullProfileDTO.from(user));
     }
 
     @PatchMapping("/data")

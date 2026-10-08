@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AccountControllerAdmin {
 
     @GetMapping("/me")
-    public ResponseEntity<?> getMe(Admin user) {
+    public ResponseEntity<AdminDTO> getMe(Admin user) {
         return ResponseEntity.ok(AdminDTO.from(user));
     }
 }

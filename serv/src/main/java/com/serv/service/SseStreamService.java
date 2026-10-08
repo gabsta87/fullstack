@@ -71,6 +71,22 @@ public class SseStreamService {
         }
     }
 
+    public void broadcastEvent(String eventName, Object data) {
+        emitters.forEach((userId, userEmitters) -> {
+            List<SseEmitter> emittersCopy = new ArrayList<>(userEmitters);
+            for (SseEmitter emitter : emittersCopy) {
+                try {
+                    emitter.send(SseEmitter.event().name(eventName).data(data));
+                } catch (Exception e) {
+                    try {
+                        emitter.complete();
+                    } catch (Exception ignored) {}
+                    removeEmitter(userId, emitter);
+                }
+            }
+        });
+    }
+
     /**
      * Logique interne d'envoi physique aux sockets (encapsulée)
      */
@@ -92,4 +108,32 @@ public class SseStreamService {
             }
         }
     }
+
+    // ADMINS
+
+    private final List<SseEmitter> adminEmitters = new CopyOnWriteArrayList<>();
+
+    public SseEmitter createAdminStream(UUID adminId) {
+        SseEmitter emitter = new SseEmitter(30 * 60 * 1000L);
+        adminEmitters.add(emitter);
+
+        emitter.onCompletion(() -> adminEmitters.remove(emitter));
+        emitter.onTimeout(() -> { emitter.complete(); adminEmitters.remove(emitter); });
+        emitter.onError((e) -> { emitter.completeWithError(e); adminEmitters.remove(emitter); });
+
+        return emitter;
+    }
+
+    public void broadcastAdminEvent(String eventName, Object data) {
+        List<SseEmitter> emittersCopy = new ArrayList<>(adminEmitters);
+        for (SseEmitter emitter : emittersCopy) {
+            try {
+                emitter.send(SseEmitter.event().name(eventName).data(data));
+            } catch (Exception e) {
+                try { emitter.complete(); } catch (Exception ignored) {}
+                adminEmitters.remove(emitter);
+            }
+        }
+    }
+
 }

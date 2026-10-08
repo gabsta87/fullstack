@@ -9,11 +9,13 @@ import com.serv.service.PasswordResetService;
 import com.serv.service.SseStreamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,6 +41,11 @@ public class AdminController {
     private final CommentRepository commentRepository;
     private final GeographicZoneRepository zoneRepository;
     private final CertificationRequestRepository certificationRequestRepository;
+
+    @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter streamAdmin(Admin adminArg) {
+        return sseStreamService.createAdminStream(adminArg.getId());
+    }
 
     // ── PROFILES & LOGS ──────────────────────────────────────────────────────
 
@@ -155,7 +162,7 @@ public class AdminController {
 
     @Transactional
     @PostMapping("/certification-request/{requestId}/lock")
-    public ResponseEntity<Void> lockCertificationReview(@PathVariable Long requestId, Admin admin) {
+    public ResponseEntity<?> lockCertificationReview(@PathVariable Long requestId, Admin admin) {
 
         CertificationRequest certificationRequest = certificationRequestRepository.findById(requestId).orElse(null);
 
@@ -170,27 +177,28 @@ public class AdminController {
         certificationRequest.setUnderReview(true);
         certificationRequest.setLockedByAdmin( admin );
         certificationRequest.setLockedAt(LocalDateTime.now());
-        certificationRequestRepository.save(certificationRequest);
-
-        return ResponseEntity.ok().build();
+        CertificationRequest saved = certificationRequestRepository.save(certificationRequest);
+        sseStreamService.broadcastAdminEvent("CERTIFICATION_UPDATED", certificationRequest.getId());
+        return ResponseEntity.ok(CertificationRequestDTO.from(saved));
     }
 
     @Transactional
     @PostMapping("/certification-request/{requestId}/unlock")
-    public ResponseEntity<Void> unlockCertificationReview(@PathVariable Long requestId) {
+    public ResponseEntity<?> unlockCertificationReview(@PathVariable Long requestId) {
         CertificationRequest certificationRequest = certificationRequestRepository.findById(requestId).orElse(null);
         if (certificationRequest == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         certificationRequest.setUnderReview(false);
         certificationRequest.setLockedByAdmin(null);
-        certificationRequestRepository.save(certificationRequest);
-        return ResponseEntity.ok().build();
+        CertificationRequest saved = certificationRequestRepository.save(certificationRequest);
+        sseStreamService.broadcastAdminEvent("CERTIFICATION_UPDATED", certificationRequest.getId());
+        return ResponseEntity.ok(CertificationRequestDTO.from(saved));
     }
 
     @PostMapping("/profiles/verify-certification")
     @Transactional
-    public void processCertification(@RequestBody CertificationReviewDTO dto, Admin admin) {
+    public ResponseEntity<?> processCertification(@RequestBody CertificationReviewDTO dto, Admin admin) {
         System.out.println("Request id : " + dto.requestId() + " Approved : " + dto.approved() + " Comment : " + dto.comment() + " Admin : " + admin);
 
         CertificationRequest request = certificationRequestRepository.findById(dto.requestId())
@@ -198,9 +206,11 @@ public class AdminController {
 
         Worker worker = request.getWorker();
 
+        CertificationRequest saved;
+
         if (dto.approved()) {
             request.setStatus(CertificationStatus.APPROVED);
-            certificationRequestRepository.save(request);
+            saved = certificationRequestRepository.save(request);
 
             worker.setCertifiedAt(LocalDateTime.now());
             worker.setVerificationCode(null);
@@ -215,9 +225,11 @@ public class AdminController {
             request.setLockedByAdmin(null);
             request.setComment(dto.comment());
 
-            certificationRequestRepository.save(request);
+            saved = certificationRequestRepository.save(request);
             logAdminAction(admin, "CERTIFICATION_DENIED", worker, "Certification denied for worker " + worker.getEmail() + " because of " + dto.comment());
         }
+        sseStreamService.broadcastAdminEvent("CERTIFICATION_UPDATED", saved.getId());
+        return ResponseEntity.ok(CertificationRequestDTO.from(saved));
     }
 
     // ── GESTION DES SERVICES ────────────────────────

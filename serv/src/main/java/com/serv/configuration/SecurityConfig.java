@@ -30,7 +30,6 @@ public class SecurityConfig {
 
     private final AuthService authService;
 
-    // 1. REMISE EN PLACE DES BEANS INITIALEMENT PRÉSENTS
     @Bean
     public UserDetailsService getUserDetailsService() {
         return authService;
@@ -89,12 +88,12 @@ public class SecurityConfig {
                         // On autorise l'accès public technique à l'endpoint du stream pour que notre contrôleur lise le token de l'URL
                         .requestMatchers("/account/stream").permitAll()
                         .requestMatchers("/error", "/auth/**", "/session-check").permitAll()
-                        .requestMatchers("/public/**","/common/**", "/admin/**", "/gallery/**", "/workers/**", "/media/**").permitAll()
+                        .requestMatchers("/public/**","/common/**", "/gallery/**", "/workers/**", "/media/**").permitAll()
                         .requestMatchers("/auth/reset-password", "/auth/reset-password/confirm").permitAll()
 
                         // 🎯 2. Les règles restrictives globales en DEUXIÈME
                         // Tout le reste de la gestion de compte et des favoris nécessite d'être loggé (Header Bearer standard)
-                        .requestMatchers("/account/**", "/favorites/**").authenticated()
+                        .requestMatchers("/account/**","/admin/**", "/favorites/**").authenticated()
 
                         // 🎯 3. Le gardien final en DERNIER (Une seule fois !)
                         // Par sécurité, toute route non listée au-dessus nécessite d'être authentifiée

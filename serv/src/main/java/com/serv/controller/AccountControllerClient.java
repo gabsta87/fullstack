@@ -34,10 +34,8 @@ public class AccountControllerClient {
 
     @GetMapping("/me")
     @Transactional(readOnly = true)
-    public ResponseEntity<?> getMe(Client user) {
-        return clientRepository.findById(user.getId())
-                .map(client -> ResponseEntity.ok(ClientDTO.from(client)))
-                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    public ResponseEntity<ClientDTO> getMe(Client user) {
+        return ResponseEntity.ok(ClientDTO.from(user));
     }
 
     @PatchMapping("/data")
