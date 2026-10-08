@@ -118,7 +118,12 @@ public class TestDataInitializer implements ApplicationRunner {
                 // Génération de l'identité et de l'adresse email uniques
                 String displayName = firstName + " " + lastName;
                 String username = (firstName + "." + lastName).toLowerCase()
-                        .replaceAll("[éèêëàâäîïôöûüç]", "e"); // Normalisation basique
+                        .replaceAll("[éèêë]", "e")
+                        .replaceAll("[àâä]", "a")
+                        .replaceAll("[îï]", "i")
+                        .replaceAll("[ôö]", "o")
+                        .replaceAll("[ûü]", "u")
+                        .replaceAll("[ç]", "c");
                 String email = username + "@test.com";
 
                 if (generatedEmails.contains(email)) {
