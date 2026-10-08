@@ -15,11 +15,6 @@
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.13);
     border-color: #d4b8a4;
   }
-
-  ion-card-title {
-    font-weight: normal;
-    font-size: 1.1rem;
-  }
 }
 
 @keyframes riseIn {
@@ -67,15 +62,60 @@
   }
 }
 
-// ── Short description ──────────────────────────────────────────────────────────────
+// ── Nom et localisation par-dessus l'image ────────────────────────────────────
+
+// ── Nom et localisation par-dessus l'image (Tokens centralisés) ──────────────
+
+.wcard-overlay-info {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  text-align: center;
+  z-index: 2;
+  pointer-events: none; // Laisse passer les clics vers la carte
+
+  .wcard-overlay-title {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 650; // Police un peu plus épaisse (Solution 3)
+    color: var(--text-dark); // Utilisation du token de texte foncé
+
+    // Solution 1 : Contour / halo blanc basé sur la couleur de surface du design system
+    text-shadow:
+      -1px -1px 0 var(--surface),
+      1px -1px 0 var(--surface),
+      -1px  1px 0 var(--surface),
+      1px  1px 0 var(--surface),
+      0 2px 4px rgba(255, 255, 255, 0.8);
+  }
+
+  .wcard-overlay-subtitle {
+    margin: 2px 0 0 0;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-dark); // Utilisation du token de texte foncé
+
+    // Solution 1 : Même halo de contraste pour la localisation
+    text-shadow:
+      -1px -1px 0 var(--surface),
+      1px -1px 0 var(--surface),
+      -1px  1px 0 var(--surface),
+      1px  1px 0 var(--surface),
+      0 2px 4px rgba(255, 255, 255, 0.8);
+  }
+}
+
+// ── Short description (ou smileys) ──────────────────────────────────────────
 
 .wcard-description {
   font-size: 0.85rem;
   color: var(--ion-color-medium, #666);
-  padding-top: 0; /* Réduit l'espace avec le header */
+  padding-top: 10px;
   padding-bottom: 12px;
+  text-align: center;
 
-  /* Optionnel : limite à 2 lignes maximum avec des points de suspension */
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -124,6 +164,7 @@
   padding: 4px 9px;
   border-radius: 100px;
   border: 1px solid rgba(58, 125, 90, 0.2);
+  z-index: 2;
 
   .pip {
     width: 6px;

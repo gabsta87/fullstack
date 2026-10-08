@@ -11,14 +11,16 @@
     <ion-badge *ngIf="!worker.available" class="online-pill" color="medium">
       Absente
     </ion-badge>
+
+    <!-- Nom et localisation par-dessus l'image en bas au milieu (sans encadrement) -->
+    <div class="wcard-overlay-info">
+      <h3 class="wcard-overlay-title">{{ worker.username }}</h3>
+      <p class="wcard-overlay-subtitle">{{ worker.geographicZone?.name }}</p>
+    </div>
   </div>
 
-  <ion-card-header>
-    <ion-card-title>{{ worker.username }}</ion-card-title>
-    <ion-card-subtitle>{{ worker.geographicZone?.name }}</ion-card-subtitle>
-  </ion-card-header>
-
-  <ion-card-content *ngIf="worker.shortDescription" class="wcard-description">
-    {{ worker.shortDescription }}
+  <!-- Description courte ou smileys cœur par défaut -->
+  <ion-card-content class="wcard-description">
+    {{ worker.shortDescription || '❤️❤️❤️' }}
   </ion-card-content>
 </ion-card>
