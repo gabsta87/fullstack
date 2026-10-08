@@ -20,8 +20,11 @@ public class PasswordResetService {
     @Value("${app.frontend-url}")
     private String frontendUrl;
 
+    /**
+     * @return the reset URL to be sent to the user's email
+     */
     @Transactional
-    public void createTokenAndSendEmail(VenusUser user, boolean isInvitation) {
+    public String createTokenAndSendEmail(VenusUser user, boolean isInvitation) {
         // 1. Nettoyage des anciens tokens
         passwordResetTokenRepository.deleteAllByUserId(user.getId());
         passwordResetTokenRepository.flush();
@@ -57,5 +60,6 @@ public class PasswordResetService {
 
         // 4. Envoi
         mailService.sendHtmlMessage(user.getEmail(), subject, htmlContent);
+        return resetUrl;
     }
 }

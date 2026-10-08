@@ -443,6 +443,17 @@ public class AdminController {
         return ResponseEntity.ok().body(targetWorker);
     }
 
+    @PatchMapping("/comments/{id}")
+    @Transactional
+    public ResponseEntity<CommentDTO> editComment(@PathVariable Long id, String content, Admin admin) {
+        Comment comment = commentRepository.findById(id).orElse(null);
+        if (comment == null) return ResponseEntity.notFound().build();
+        comment.setContent(content);
+        commentRepository.save(comment);
+        logAdminAction(admin, "COMMENT_EDITED", comment, "Comment edited on worker " + comment.getWorker().getEmail());
+        return ResponseEntity.ok(CommentDTO.from(comment));
+    }
+
     // ── ADMINS INVITATIONS ────────────────────────────────────
     @PostMapping("/admins/invite")
     @Transactional
@@ -470,16 +481,15 @@ public class AdminController {
         adminRepository.save(newAdmin);
 
         // 3. Réutilisation immédiate avec le paramètre d'invitation à true
-        passwordResetService.createTokenAndSendEmail(newAdmin, true);
+        String url = passwordResetService.createTokenAndSendEmail(newAdmin, true);
+
+        System.out.println("Reset URL generated for new admin: " + url);
 
         // 4. Audit Log
         String snapshotJson = String.format("{\"invited_email\": \"%s\", \"role_assigned\": \"ADMIN\"}", email);
         logAdminAction(admin, "INVITE_ADMIN", snapshotJson, "Compte admin pré-créé. Flux de reset password déclenché pour activation.");
 
-        return ResponseEntity.ok(Map.of(
-                "success", true,
-                "message", "Le compte administrateur a été pré-créé et le processus de configuration du mot de passe a été envoyé par e-mail."
-        ));
+        return ResponseEntity.ok(AdminDTO.from(newAdmin));
     }
 
     // Encapsulation centralisée des surcharges de logs
