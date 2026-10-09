@@ -10,7 +10,7 @@ import { AdminService } from '../../services/admin-service';
 import { addIcons } from "ionicons";
 import {
   addOutline, chevronBackOutline, chevronForwardOutline, closeOutline, pencilOutline, trashOutline, personAddOutline,
-  shieldCheckmarkOutline
+  shieldCheckmarkOutline, lockClosedOutline, lockOpenOutline
 } from "ionicons/icons";
 import {combineLatest, firstValueFrom, map, Observable, Subject} from "rxjs";
 import { switchMap, tap } from "rxjs/operators";
@@ -79,7 +79,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     private authService: AuthService,
   ) {
     addIcons({ addOutline, trashOutline, pencilOutline, chevronBackOutline, chevronForwardOutline, closeOutline,
-      personAddOutline, shieldCheckmarkOutline
+      personAddOutline, shieldCheckmarkOutline, lockClosedOutline, lockOpenOutline
     });
   }
 

@@ -5,6 +5,6 @@ public enum CertificationStatus {
     PENDING_PHOTO,      // L'utilisateur a cliqué, il doit uploader sa photo (Brun/Doré)
     PENDING_APPROVAL,   // La photo est envoyée, en attente des administrateurs (Gris)
     NEEDS_REVISION,     // L'admin demande une modification/nouvelle photo (Brun/Doré avec alerte)
-    APPROVED,           // Validé et certifié (Vert / Jaune / Orange / Rouge selon l'expiration)
+    CERTIFIED,           // Validé et certifié (Vert / Jaune / Orange / Rouge selon l'expiration)
     REJECTED            // Refusé définitivement
 }

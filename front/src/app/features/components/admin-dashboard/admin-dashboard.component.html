@@ -72,7 +72,7 @@
           <th pSortableColumn="username">Utilisateur <p-sortIcon field="username"></p-sortIcon></th>
           <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
           <th pSortableColumn="role">Rôle <p-sortIcon field="role"></p-sortIcon></th>
-          <th>Crédit Jours</th>
+          <th>...</th>
           <th pSortableColumn="locked">Statut <p-sortIcon field="locked"></p-sortIcon></th>
           <th style="text-align: center;">Actions</th>
         </tr>
@@ -86,8 +86,7 @@
             <p-tag [value]="user.role"></p-tag>
           </td>
           <td>
-            <span *ngIf="user.remainingDaysCredit !== null">{{ user.remainingDaysCredit }} j</span>
-            <span *ngIf="user.remainingDaysCredit === null" style="color: #999;">-</span>
+            ...
           </td>
           <td>
             <p-tag
@@ -96,11 +95,8 @@
             </p-tag>
           </td>
           <td style="text-align: center;">
-            <ion-button size="small" fill="clear" color="warning" (click)="promptUpdateDays(user)" *ngIf="user.role === UserRole.WORKER">
-              Jours
-            </ion-button>
             <ion-button size="small" fill="clear" [color]="user.locked ? 'success' : 'danger'" (click)="setLocked(user, !user.locked)">
-              {{ user.locked ? 'Déverrouiller' : 'Verrouiller' }}
+              <ion-icon [name]="user.locked ? 'lock-open-outline' : 'lock-closed-outline'" slot="icon-only"></ion-icon>
             </ion-button>
             <ion-button size="small" fill="clear" color="danger" (click)="deleteUser(user)" title="Delete">
               <ion-icon name="trash-outline" slot="icon-only"></ion-icon>

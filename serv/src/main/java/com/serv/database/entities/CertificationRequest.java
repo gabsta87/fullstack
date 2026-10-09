@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -27,12 +29,14 @@ public class CertificationRequest {
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "locked_by_admin_id")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Admin lockedByAdmin = null;
 
     private boolean underReview = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "worker_id", nullable = false)
+    @JoinColumn(name = "worker_id")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Worker worker;
 
     @Column(name = "verification_code", nullable = false, length = 10)
@@ -41,6 +45,7 @@ public class CertificationRequest {
     @ToString.Exclude
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "photo_id")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Photo certificationPhoto;
 
     @Enumerated(EnumType.STRING)

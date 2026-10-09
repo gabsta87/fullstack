@@ -234,7 +234,7 @@ public class AdminController {
         CertificationRequest saved;
 
         if (dto.approved()) {
-            request.setStatus(CertificationStatus.APPROVED);
+            request.setStatus(CertificationStatus.CERTIFIED);
             saved = certificationRequestRepository.save(request);
 
             worker.setCertifiedAt(LocalDateTime.now());
