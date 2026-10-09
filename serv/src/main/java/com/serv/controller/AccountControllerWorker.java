@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -36,9 +37,15 @@ public class AccountControllerWorker {
     private final SseStreamService sseStreamService;
     private final MailService emailService;
 
+    @Transactional(readOnly = true)
     @GetMapping("/me")
     public ResponseEntity<WorkerFullProfileDTO> getMe(Worker user) {
-        return ResponseEntity.ok(WorkerFullProfileDTO.from(user));
+        // 1. Recharger le worker depuis le repository pour le rendre "managed" dans la session active
+        Worker managedWorker = workerRepository.findById(user.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker introuvable"));
+
+        // 2. Le mapper vers le DTO (les collections lazy pourront s'initialiser grâce à la session active et au @BatchSize)
+        return ResponseEntity.ok(WorkerFullProfileDTO.from(managedWorker));
     }
 
     @PatchMapping("/data")

@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +36,10 @@ public class AccountControllerClient {
     @GetMapping("/me")
     @Transactional(readOnly = true)
     public ResponseEntity<ClientDTO> getMe(Client user) {
-        return ResponseEntity.ok(ClientDTO.from(user));
+        Client managedClient = clientRepository.findById(user.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client introuvable"));
+
+        return ResponseEntity.ok(ClientDTO.from(managedClient));
     }
 
     @PatchMapping("/data")
