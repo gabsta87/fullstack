@@ -13,7 +13,6 @@ import {AuthService} from "./auth.service";
 })
 export class AdminService {
   private apiUrl = `${environment.apiBase}/admin`;
-
   private adminEventSource: EventSource | null = null;
 
   private usersRefresh$ = new BehaviorSubject<void>(undefined);
@@ -41,7 +40,7 @@ export class AdminService {
     shareReplay(1)
   );
 
-  constructor(private http: HttpClient, private zone: NgZone, private authService : AuthService) {
+  constructor(private http: HttpClient, private zone: NgZone, private authService: AuthService) {
     this.authService.isAuthenticated$.subscribe(isAuth => {
       if (!isAuth) {
         this.closeAdminStream();
@@ -55,22 +54,31 @@ export class AdminService {
     const token = localStorage.getItem('auth_token');
     if (!token) return;
 
-    // On passe le token pour que le serveur l'authentifie dès la première trame
     this.adminEventSource = new EventSource(`${this.apiUrl}/stream?token=${token}`);
 
-    // 2. Événements liés aux Certifications (extensible à l'infini)
+    // 1. Événements de certification
     const certificationEvents = [
       'CERTIFICATION_UPDATED',
       'CERTIFICATION_LOCKED',
       'CERTIFICATION_UNLOCKED',
       'CERTIFICATION_PROCESSED'
     ];
-
     certificationEvents.forEach(eventName => {
       this.adminEventSource?.addEventListener(eventName, () => {
-        this.zone.run(() => {
-          this.refreshCertifications();
-        });
+        this.zone.run(() => this.refreshCertifications());
+      });
+    });
+
+    // 2. Événements de gestion des services
+    this.adminEventSource.addEventListener('SERVICES_UPDATED', () => {
+      this.zone.run(() => this.refreshServices());
+    });
+
+    // 3. Événements de gestion des régions
+    const regionEvents = ['REGIONS_UPDATED', 'ZONE_CREATED', 'ZONE_MODIFIED'];
+    regionEvents.forEach(eventName => {
+      this.adminEventSource?.addEventListener(eventName, () => {
+        this.zone.run(() => this.refreshZones());
       });
     });
 
@@ -86,11 +94,26 @@ export class AdminService {
 
     this.adminEventSource.onerror = (err) => {
       console.warn("Connexion SSE Admin interrompue...", err);
-      // Optionnel : si la connexion meurt définitivement, on nettoie
       if (this.adminEventSource?.readyState === EventSource.CLOSED) {
         this.closeAdminStream();
       }
     };
+  }
+
+  public refreshCertifications() {
+    this.certificationRefresh$.next();
+  }
+
+  public refreshServices() {
+    this.servicesRefresh$.next();
+  }
+
+  public refreshZones() {
+    this.zonesRefresh$.next();
+  }
+
+  public refreshUsers() {
+    this.usersRefresh$.next();
   }
 
   public closeAdminStream() {
@@ -98,22 +121,6 @@ export class AdminService {
       this.adminEventSource.close();
       this.adminEventSource = null;
     }
-  }
-
-  refreshUsers() {
-    this.usersRefresh$.next();
-  }
-
-  refreshCertifications() {
-    this.certificationRefresh$.next();
-  }
-
-  refreshServices() {
-    this.servicesRefresh$.next();
-  }
-
-  refreshZones() {
-    this.zonesRefresh$.next();
   }
 
   getUsers(): Observable<AdminUser[]> {

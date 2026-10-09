@@ -65,7 +65,6 @@ public class AccountControllerWorker {
     public ResponseEntity<?> requestCertification(Worker workerArg) {
         Worker worker = getWorkerWithPhotos(workerArg);
 
-        // 1. Récupérer ou générer un code de vérification s'il n'existe pas déjà
         String verificationCode = worker.getVerificationCode();
         if (verificationCode == null || verificationCode.isEmpty()) {
             verificationCode = UUID.randomUUID().toString().substring(0, 5).toUpperCase();
@@ -75,12 +74,13 @@ public class AccountControllerWorker {
         CertificationRequest request = certificationRequestRepository.findByWorker(worker)
                 .orElseGet(() -> new CertificationRequest(workerArg));
 
-        // On s'assure que le statut reflète qu'on attend la photo
         if (request.getStatus() == null || request.getStatus() == CertificationStatus.NOT_CERTIFIED) {
             request.setStatus(CertificationStatus.PENDING_PHOTO);
         }
 
         worker = workerRepository.save(worker);
+
+        sseStreamService.broadcastAdminEvent("CERTIFICATION_UPDATED", worker.getId());
 
         return ResponseEntity.ok().body(WorkerFullProfileDTO.from(worker));
     }
@@ -105,6 +105,8 @@ public class AccountControllerWorker {
             worker.setLastCertificationRequest(savedRequest);
 
             Worker savedWorker = workerRepository.save(worker);
+
+            sseStreamService.broadcastAdminEvent("CERTIFICATION_UPDATED", savedRequest.getId());
 
             return ResponseEntity.ok().body(WorkerFullProfileDTO.from(savedWorker));
         } catch (IOException e) {

@@ -123,7 +123,6 @@ public class AdminController {
         Worker savedWorker = workerRepository.save(targetWorker);
         logAdminAction(admin, "UPDATE_WORKER_STATUS", targetWorker, "Statuts modifiés -> " + changes.toString().trim());
 
-        sseStreamService.emitEvent(targetWorker.getId(), "WORKER_STATUS_UPDATED", savedWorker);
         return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
     }
 
@@ -204,6 +203,7 @@ public class AdminController {
         certificationRequest.setLockedAt(LocalDateTime.now());
         CertificationRequest saved = certificationRequestRepository.save(certificationRequest);
         sseStreamService.broadcastAdminEvent("CERTIFICATION_UPDATED", certificationRequest.getId());
+
         return ResponseEntity.ok(CertificationRequestDTO.from(saved));
     }
 
@@ -254,6 +254,10 @@ public class AdminController {
             logAdminAction(admin, "CERTIFICATION_DENIED", worker, "Certification denied for worker " + worker.getEmail() + " because of " + dto.comment());
         }
         sseStreamService.broadcastAdminEvent("CERTIFICATION_UPDATED", saved.getId());
+
+        WorkerFullProfileDTO workerDto = WorkerFullProfileDTO.from(worker);
+        sseStreamService.emitEvent(worker.getId(), "account-update", workerDto);
+
         return ResponseEntity.ok(CertificationRequestDTO.from(saved));
     }
 
@@ -295,8 +299,11 @@ public class AdminController {
             logAdminAction(admin, "CREATE_SERVICE", service, "Création du service : " + newService.getName());
         }
 
-        sseStreamService.emitEvent(admin.getId(), "SERVICES_UPDATED", serviceRepository.findAll());
-        return ResponseEntity.ok(serviceRepository.findAll().stream().map(ServiceDTO::from).collect(java.util.stream.Collectors.toList()));
+        List<ServiceDTO> updatedServices = serviceRepository.findAll().stream().map(ServiceDTO::from).collect(Collectors.toList());
+
+        sseStreamService.broadcastAdminEvent("SERVICES_UPDATED", updatedServices);
+
+        return ResponseEntity.ok(updatedServices);
     }
 
     @DeleteMapping("/services/{id}")
@@ -324,7 +331,7 @@ public class AdminController {
                 .collect(Collectors.toList());
 
         // 5. Émission de l'événement SSE
-        sseStreamService.emitEvent(admin.getId(), "SERVICES_UPDATED", updatedServices);
+        sseStreamService.broadcastAdminEvent("SERVICES_UPDATED", updatedServices);
 
         // 6. Retour HTTP final
         return ResponseEntity.ok(updatedServices);
@@ -400,7 +407,7 @@ public class AdminController {
                 .collect(Collectors.toList());
 
         // 7. Émission de l'événement SSE
-        sseStreamService.emitEvent(admin.getId(), "REGIONS_UPDATED", updatedZones);
+        sseStreamService.broadcastAdminEvent("REGIONS_UPDATED", updatedZones);
 
         // 8. Retour HTTP final
         return ResponseEntity.ok(updatedZones);
@@ -424,7 +431,6 @@ public class AdminController {
 
             savedZone = geographicZoneRepository.save(newZone);
 
-            sseStreamService.emitEvent(admin.getId(), "ZONE_CREATED", newZone);
             logAdminAction(admin,"ZONE_CREATED", savedZone,"Zone "+ region.name() +" with "+ (newZone.getParent() != null ? newZone.getParent().getName() : "no parent") +" created");
         }else{
             // Modify existing Region
@@ -447,10 +453,14 @@ public class AdminController {
             geographicZoneRepository.save(zone);
 
             String newParentName = (zone.getParent() != null) ? zone.getParent().getName() : "Aucun";
-            sseStreamService.emitEvent(admin.getId(), "ZONE_MODIFIED", zone);
             logAdminAction(admin, "ZONE_MODIFIED", zone, "Zone " + oldName + " with parent " + oldParentName + " modified to " + zone.getName() + " with parent " + newParentName);
         }
-        return ResponseEntity.ok().body(geographicZoneRepository.findAll().stream().map(GeographicZoneWithParentDTO::from).collect(Collectors.toList()));
+
+        List<GeographicZoneWithParentDTO> updatedZones = geographicZoneRepository.findAll().stream().map(GeographicZoneWithParentDTO::from).collect(Collectors.toList());
+
+        sseStreamService.broadcastAdminEvent("REGIONS_UPDATED", updatedZones);
+
+        return ResponseEntity.ok(updatedZones);
     }
 
     // ── GESTION DES COMMENTAIRES ───────────────────────────────────
