@@ -72,22 +72,32 @@
           <th pSortableColumn="username">Utilisateur <p-sortIcon field="username"></p-sortIcon></th>
           <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
           <th pSortableColumn="role">Rôle <p-sortIcon field="role"></p-sortIcon></th>
-          <th>...</th>
+          <th>Birthdate</th>
+          <th>Available</th>
+          <th>Banned</th>
+          <th>Locked</th>
+          <th>Disabled</th>
+          <th>Certification</th>
+          <th>Certification date</th>
           <th pSortableColumn="locked">Statut <p-sortIcon field="locked"></p-sortIcon></th>
           <th style="text-align: center;">Actions</th>
         </tr>
       </ng-template>
 
-      <ng-template pTemplate="body" let-user>
+      <ng-template pTemplate="body" let-user : AdminUser>
         <tr>
           <td><strong>{{ user.username }}</strong></td>
           <td>{{ user.email }}</td>
           <td>
             <p-tag [value]="user.role"></p-tag>
           </td>
-          <td>
-            ...
-          </td>
+          <td>{{ user.birthdate }}</td>
+          <td>{{ user.available }}</td>
+          <td>{{ user.banned }}</td>
+          <td>{{ user.locked }}</td>
+          <td>{{ user.disabled }}</td>
+          <td> {{ user.certificationStatus }}</td>
+          <td> {{ user.certifiedAt }}</td>
           <td>
             <p-tag
               [value]="user.banned ? 'Banni' : (user.locked ? 'Verrouillé' : 'Actif')"

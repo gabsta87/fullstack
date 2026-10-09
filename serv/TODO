@@ -15,13 +15,9 @@ worker/user profile
     change password/email (Secured by requesting the old password)
 
 Admin pages
-    certifications with generated phrase asked the announcer to write on a paper and show in a photo
-    can create admins -> provide an email, the system will send an email to the user with a link to activate the account
-    can ban a user
     can see messages sent by users / admins
     can modify legal texts
         history of the legal texts
-    Notifications sent when a user requires a certification
     Notifications sent when a user registers with a date birth that makes this person under 18 years old -> send a message to the local authorities
     Liste des cibles des actions admin : Users, Regions, Services, Comments, Messages, Legal texts,
     can deactivate a certification

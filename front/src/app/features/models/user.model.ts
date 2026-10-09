@@ -72,7 +72,6 @@ export interface AdminUser {
   role: UserRole;
   language?: string;
   birthdate?: string;
-  description?: string;
   phone?: string;
   available: boolean;
   banned: boolean;
@@ -82,6 +81,7 @@ export interface AdminUser {
   verificationCode?: string;
   certifiedAt?: string;
   certificationRequestDate?: string;
+  description?: string;
   servicesId: number[];
   geographicZone: GeographicZoneWithParent | null;
 }
