@@ -17,17 +17,29 @@
 
     <div class="field-group">
       <label>Email</label>
-      <input type="email" #input formControlName="email" placeholder="email@exemple.com" />
+      <input type="email" #input
+             formControlName="email"
+             placeholder="email@exemple.com"
+             autocomplete="email"
+      />
     </div>
 
     <div class="field-group">
       <label>Mot de passe</label>
-      <input type="password" formControlName="password" placeholder="••••••••" />
+      <input type="password"
+             formControlName="password"
+             placeholder="••••••••"
+             [attr.autocomplete]="mode === 'login' ? 'current-password' : 'new-password'"
+      />
     </div>
 
     <div class="field-group" *ngIf="mode === 'register'">
       <label>Confirmer le mot de passe</label>
-      <input type="password" formControlName="confirmPassword" placeholder="••••••••" />
+      <input type="password"
+             formControlName="confirmPassword"
+             placeholder="••••••••"
+             autocomplete="new-password"
+      />
       <small class="error-text" *ngIf="authForm.hasError('mismatch') && authForm.get('confirmPassword')?.touched">
         Les mots de passe ne correspondent pas
       </small>
