@@ -14,13 +14,21 @@
 
     <!-- Nom et localisation par-dessus l'image en bas au milieu (sans encadrement) -->
     <div class="wcard-overlay-info">
-      <h3 class="wcard-overlay-title">{{ worker.username }}</h3>
+      <h3 class="wcard-overlay-title">
+        {{ worker.username }}
+        <ion-icon *ngIf="worker.isCertified"
+                  name="shield-checkmark-outline"
+                  color="success"
+                  class="certified-badge">
+        </ion-icon>
+      </h3>
       <p class="wcard-overlay-subtitle">{{ worker.geographicZone?.name }}</p>
     </div>
   </div>
 
   <!-- Description courte ou smileys cœur par défaut -->
   <ion-card-content class="wcard-description">
+<!--    {{ worker.shortDescription || 'xx' }}-->
     {{ worker.shortDescription || '❤️❤️❤️' }}
   </ion-card-content>
 </ion-card>

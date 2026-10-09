@@ -241,7 +241,7 @@ export class ProfileManagementComponent implements OnInit {
     }
 
     // 4. Si certifié (avec gestion des délais d'expiration si tu veux garder tes couleurs)
-    if (status === CertificationStatus.APPROVED) {
+    if (status === CertificationStatus.CERTIFIED) {
       const certifiedDate = new Date(me.certifiedAt!).getTime();
       const currentTime = new Date().getTime();
       const diffInDays = Math.floor((currentTime - certifiedDate) / (1000 * 60 * 60 * 24));

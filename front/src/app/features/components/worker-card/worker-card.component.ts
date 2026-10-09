@@ -1,19 +1,11 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy} from '@angular/core';
 import {Router} from '@angular/router';
 import {CommonModule} from '@angular/common';
-import {
-  IonBadge,
-  IonCard, IonCardContent,
-  IonCardHeader,
-  IonCardSubtitle,
-  IonCardTitle,
-  IonIcon,
-  IonRippleEffect
-} from '@ionic/angular/standalone';
+import {IonBadge, IonCard, IonCardContent, IonIcon, IonRippleEffect} from '@ionic/angular/standalone';
 import {WorkerService} from '../../services/worker.service';
 import {WorkerMinimalProfile} from "../../models/user.model";
 import {addIcons} from "ionicons";
-import {personCircleOutline} from "ionicons/icons";
+import {personCircleOutline, shieldCheckmarkOutline} from "ionicons/icons";
 
 @Component({
   selector: 'worker-card',
@@ -21,7 +13,7 @@ import {personCircleOutline} from "ionicons/icons";
   styleUrls: ['./worker-card.component.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, IonRippleEffect, IonCard, IonIcon, IonBadge, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent],
+  imports: [CommonModule, IonRippleEffect, IonCard, IonIcon, IonBadge, IonCardContent],
 })
 export class WorkerCardComponent implements OnDestroy {
 
@@ -35,7 +27,7 @@ export class WorkerCardComponent implements OnDestroy {
     private cdr: ChangeDetectorRef,
   ) {
     addIcons({
-      personCircleOutline
+      personCircleOutline, shieldCheckmarkOutline
     });
   }
 

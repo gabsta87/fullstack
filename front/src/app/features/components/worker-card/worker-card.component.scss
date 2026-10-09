@@ -77,16 +77,27 @@
   .wcard-overlay-title {
     margin: 0;
     font-size: 1.15rem;
-    font-weight: 650; // Police un peu plus épaisse (Solution 3)
-    color: var(--text-dark); // Utilisation du token de texte foncé
+    font-weight: 650;
+    color: var(--text-dark);
 
-    // Solution 1 : Contour / halo blanc basé sur la couleur de surface du design system
+    // Alignement flex pour l'icône de certification
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
     text-shadow:
       -1px -1px 0 var(--surface),
       1px -1px 0 var(--surface),
       -1px  1px 0 var(--surface),
       1px  1px 0 var(--surface),
       0 2px 4px rgba(255, 255, 255, 0.8);
+
+    .certified-badge {
+      font-size: 1.2rem;
+      vertical-align: middle;
+      filter: drop-shadow(0 1px 0 var(--surface));
+    }
   }
 
   .wcard-overlay-subtitle {
