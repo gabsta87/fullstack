@@ -85,6 +85,29 @@ public class MediaStorageService {
         return photo;
     }
 
+    public Photo saveCertificationPhoto(MultipartFile file, Worker worker) throws IOException {
+        validateImage(file);
+
+        String uuid = UUID.randomUUID().toString();
+        String ext = getExtension(file.getOriginalFilename());
+        String baseName = uuid + ext;
+
+        // Stocké dans /{uploadBase}/{userId}/certification/
+        Path certDir = resolveDir(worker.getId(), "certification");
+        Path certPath = certDir.resolve(baseName).normalize();
+
+        Files.write(certPath, file.getBytes());
+
+        Photo photo = new Photo();
+        photo.setUrl(buildUrl(worker.getId(), "certification", baseName));
+        photo.setFileSize(file.getSize());
+        photo.setWorker(worker);
+        // Si tu as un champ pour différencier le type (comme ton @SQLRestriction("photo_type = 'GALLERY'")),
+        // pense à l'assigner ici si nécessaire, ex: photo.setPhotoType("CERTIFICATION");
+
+        return photo;
+    }
+
     // SUPPRESSION TOTALE ULTRA-RAPIDE : Supprime tout le dossier /{uploadBase}/{userId} en une seule fois !
     public void deleteAllForUser(UUID userId) throws IOException {
         Path baseDir = Paths.get(uploadBase).toAbsolutePath().normalize();
@@ -159,18 +182,17 @@ public class MediaStorageService {
 
         String uuid = UUID.randomUUID().toString();
         String ext = getExtension(file.getOriginalFilename());
-        String baseName = uuid + ext;
+        String baseName = uuid + ext; // ex: e4072d12-7d80-4a73-b537-9fd0e217a6d0.mp4
 
-        // On sauvegarde les vidéos dans le dossier "videos"
-        Path videosDir = resolveDir(worker.getId(),"videos");
+        Path videosDir = resolveDir(worker.getId(), "videos");
         Path videoPath = videosDir.resolve(baseName).normalize();
 
-        // 1 — Sauvegarde physique de la vidéo
+        // Sauvegarde physique de la vidéo
         Files.write(videoPath, file.getBytes());
 
-        // 2 — Instanciation et remplissage de l'entité Video
+        // Instanciation et remplissage de l'entité Video (AVEC L'EXTENSION)
         Video video = new Video();
-        video.setUrl(buildUrl(worker.getId(),"videos",  uuid));
+        video.setUrl(buildUrl(worker.getId(), "videos", baseName)); // 👈 Corrigé ici (baseName au lieu de uuid)
         video.setFileSize(file.getSize());
         video.setWorker(worker);
 

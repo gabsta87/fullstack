@@ -96,17 +96,13 @@ public class AccountControllerWorker {
     @Transactional
     @PostMapping("/certification-photo")
     public ResponseEntity<?> uploadCertificationPhoto(@RequestParam("file") MultipartFile file, Worker workerArg) {
-        System.out.println("Certification photo received");
         try {
             final Worker worker = getWorkerWithPhotos(workerArg);
 
-            // 1. Le service s'occupe de tout : stockage physique, miniatures et instanciation de la Photo
-            Photo certificationPhoto = mediaStorageService.savePhoto(file, worker);
+            Photo certificationPhoto = mediaStorageService.saveCertificationPhoto(file, worker);
             certificationPhoto.setType(PhotoType.CERTIFICATION);
             photoRepository.save(certificationPhoto);
-            System.out.println("Certification photo saved");
 
-            // 3. Mettre à jour ou créer la CertificationRequest pour le worker
             CertificationRequest request = certificationRequestRepository.findByWorker(worker)
                     .orElseGet(() -> new CertificationRequest(worker));
 
@@ -118,14 +114,10 @@ public class AccountControllerWorker {
 
             Worker savedWorker = workerRepository.save(worker);
 
-            // 4. Notification SSE en temps réel
             WorkerFullProfileDTO dto = WorkerFullProfileDTO.from(savedWorker);
             sseStreamService.emitEvent(savedWorker.getId(), "account-update", dto);
 
-            System.out.println("Certification updated : "+savedWorker.getLastCertificationRequest().getStatus());
-            System.out.println("Sending status "+dto.certificationRequest().status());
             return ResponseEntity.ok().body(dto);
-
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("message", "Erreur lors de la sauvegarde : " + e.getMessage()));
