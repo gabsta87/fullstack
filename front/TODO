@@ -2,8 +2,14 @@ URGENT
 language selection
 profile report(signalement)
 contacter l'équipe par email
+admins can ban/revoke certification
+  show tooltip about locked and disabled profiles
+  change display (text) of boolean columns (show banned instead of true, empty string if false)
 profile management : workers can choose level of each spoken languages
 Test and adapt on mobile
+
+  test if worker can see certification update live (thanks to ssestream updates)
+  test if admins can see modifications of other admins live (thanks to ssestream updates)
 
 SECONDARY
 admins should see all required fields for each profile in the table (to see if there is a validity issue)
