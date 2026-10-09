@@ -36,8 +36,11 @@ public abstract class VenusUser {
     protected String passwordHash;
 
     // by ADMINS
-    protected boolean isBanned;
-    protected boolean isLocked;
+    @Column(nullable = false)
+    protected boolean isBanned = false;
+
+    @Column(nullable = false)
+    protected boolean isLocked = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "geographic_zone_id")

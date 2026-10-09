@@ -1,5 +1,9 @@
 L'admin doit pouvoir ouvrir la certification request qu'il a lui-même vérouillée
 
+comment corriger ce warning ? il me semble que ça permettrait au navigateur de proposer l'auto-complétion pour le login.
+[DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) <input _ngcontent-ng-c2393365059 type=​"password" formcontrolname=​"password" placeholder=​"••••••••" ng-reflect-name=​"password" class=​"ng-dirty ng-valid ng-touched">​
+
+
 unavailable profiles : hide phone and contact info
 favorite profiles should be shown as favorites on the homepage
 image selection for workers : only jpg and supported formats

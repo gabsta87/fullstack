@@ -76,15 +76,15 @@ public class Worker extends VenusUser {
     // Has the worker been active today?
     private boolean hasBeenActiveToday;
     // No more days available for the worker
-    private boolean isExpired;
+    private boolean isExpired = false;
     // invalid status
     private boolean isInvalid;
 
     // by WORKERS
     // hidden by the worker himself
-    private boolean isHidden;
+    private boolean isHidden = false;
     // Available for work by the worker himself.
-    private boolean isAvailable;
+    private boolean isAvailable = true;
 
     // Instant stored as UTC timestamp
     @Column(name = "last_refreshed")

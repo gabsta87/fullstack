@@ -39,7 +39,7 @@ public record WorkerFullProfileDTO(
                 w.getId(),
                 w.getUsername(),
                 w.getBirthdate() != null ? new SimpleDateFormat("yyyy-MM-dd").format(w.getBirthdate()) : null,
-                GeographicZoneWithChildrenDTO.from(w.getGeographicZone()),
+                w.getGeographicZone() != null ? GeographicZoneWithChildrenDTO.from(w.getGeographicZone()) : null,
                 w.getBodyType() != null ? w.getBodyType().name() : null,
                 w.getHairColor() != null ? w.getHairColor().toString() : null,
                 w.getEyeColor() != null ? w.getEyeColor().toString() : null,
