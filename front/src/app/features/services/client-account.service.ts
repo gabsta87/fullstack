@@ -46,11 +46,15 @@ export class ClientAccountService {
   }
 
   async addFavorite(workerId: string): Promise<any> {
-    return await firstValueFrom(this.http.post(`${this.base}/favorites/${workerId}`, {}));
+    const updatedClient = await firstValueFrom(this.http.post<ClientProfile>(`${this.base}/favorites/${workerId}`, {}));
+    this.updateCache(updatedClient);
+    return updatedClient;
   }
 
   async removeFavorite(workerId: string): Promise<any> {
-    return await firstValueFrom(this.http.delete(`${this.base}/favorites/${workerId}`));
+    const updatedClient = await firstValueFrom(this.http.delete<ClientProfile>(`${this.base}/favorites/${workerId}`));
+    this.updateCache(updatedClient);
+    return updatedClient;
   }
 
   async getSavedPreferences(): Promise<GalleryFilters>{

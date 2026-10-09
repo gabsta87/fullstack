@@ -56,10 +56,8 @@ public class AccountControllerWorker {
         if (req.email() != null) worker.setEmail(new Email(req.email()));
 
         Worker saved = workerRepository.save(worker);
-        WorkerFullProfileDTO dto = WorkerFullProfileDTO.from(saved);
 
-        sseStreamService.emitEvent(saved.getId(), "account-update", dto);
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.ok(WorkerFullProfileDTO.from(saved));
     }
 
     @Transactional
@@ -84,13 +82,7 @@ public class AccountControllerWorker {
 
         worker = workerRepository.save(worker);
 
-        // 2. Convertir en DTO complet
-        WorkerFullProfileDTO dto = WorkerFullProfileDTO.from(worker);
-
-        // 3. SSE
-        sseStreamService.emitEvent(worker.getId(), "account-update", dto);
-
-        return ResponseEntity.ok().body(dto);
+        return ResponseEntity.ok().body(WorkerFullProfileDTO.from(worker));
     }
 
     @Transactional
@@ -114,10 +106,7 @@ public class AccountControllerWorker {
 
             Worker savedWorker = workerRepository.save(worker);
 
-            WorkerFullProfileDTO dto = WorkerFullProfileDTO.from(savedWorker);
-            sseStreamService.emitEvent(savedWorker.getId(), "account-update", dto);
-
-            return ResponseEntity.ok().body(dto);
+            return ResponseEntity.ok().body(WorkerFullProfileDTO.from(savedWorker));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("message", "Erreur lors de la sauvegarde : " + e.getMessage()));
@@ -141,10 +130,8 @@ public class AccountControllerWorker {
         }
 
         Worker savedWorker = workerRepository.save(worker);
-        WorkerFullProfileDTO dto = WorkerFullProfileDTO.from(savedWorker);
-        sseStreamService.emitEvent(worker.getId(), "account-update", dto);
 
-        return ResponseEntity.ok().body(dto);
+        return ResponseEntity.ok().body(WorkerFullProfileDTO.from(savedWorker));
     }
 
     /** PATCH /account/profile */
@@ -212,9 +199,8 @@ public class AccountControllerWorker {
         this.setWorkerProfileCompleteness(worker);
 
         Worker savedWorker = workerRepository.save(worker);
-        WorkerFullProfileDTO dto = WorkerFullProfileDTO.from(savedWorker);
-        sseStreamService.emitEvent(worker.getId(), "account-update", dto);
-        return ResponseEntity.ok().body(dto);
+
+        return ResponseEntity.ok().body(WorkerFullProfileDTO.from(savedWorker));
     }
 
     @PatchMapping("/updateservices")
@@ -232,10 +218,7 @@ public class AccountControllerWorker {
 
         Worker savedWorker = workerRepository.save(worker);
 
-        WorkerFullProfileDTO dto = WorkerFullProfileDTO.from(savedWorker);
-        sseStreamService.emitEvent(worker.getId(), "account-update", dto);
-
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
     }
 
     // Medias
@@ -267,8 +250,8 @@ public class AccountControllerWorker {
         }
 
         this.setWorkerProfileCompleteness(worker);
+
         Worker savedWorker = workerRepository.save(worker);
-        sseStreamService.emitEvent(savedWorker.getId(), "account-update", WorkerFullProfileDTO.from(savedWorker));
 
         return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
     }
@@ -308,7 +291,10 @@ public class AccountControllerWorker {
 
         // 3 — Suppression de la collection et sauvegarde commune
         worker.removePhoto(photo);
-        Worker savedWorker = finalizeWorkerUpdate(worker);
+
+        this.setWorkerProfileCompleteness(worker);
+
+        Worker savedWorker = workerRepository.save(worker);
 
         return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
     }
@@ -337,16 +323,12 @@ public class AccountControllerWorker {
 
         // 2 — Suppression de la collection et sauvegarde commune
         worker.removeVideo(video);
-        Worker savedWorker = finalizeWorkerUpdate(worker);
+
+        this.setWorkerProfileCompleteness(worker);
+
+        Worker savedWorker = workerRepository.save(worker);
 
         return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
-    }
-
-    private Worker finalizeWorkerUpdate(Worker worker) {
-        this.setWorkerProfileCompleteness(worker);
-        Worker savedWorker = workerRepository.save(worker);
-        sseStreamService.emitEvent(savedWorker.getId(), "account-update", WorkerFullProfileDTO.from(savedWorker));
-        return savedWorker;
     }
 
     /**
@@ -363,8 +345,6 @@ public class AccountControllerWorker {
         worker.setMainPhoto(photo);
         this.setWorkerProfileCompleteness(worker);
         Worker savedWorker = workerRepository.save(worker);
-
-        sseStreamService.emitEvent(worker.getId(), "account-update", WorkerFullProfileDTO.from(savedWorker));
 
         return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
     }
@@ -393,8 +373,6 @@ public class AccountControllerWorker {
         this.setWorkerProfileCompleteness(worker);
         Worker savedWorker = workerRepository.save(worker);
         WorkerFullProfileDTO updatedDto = WorkerFullProfileDTO.from(savedWorker);
-
-        sseStreamService.emitEvent(savedWorker.getId(), "account-update", updatedDto);
 
         return ResponseEntity.ok(updatedDto);
     }

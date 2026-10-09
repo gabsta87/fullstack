@@ -1,17 +1,20 @@
-import { Injectable, NgZone } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { switchMap, tap, shareReplay } from 'rxjs/operators';
-import { environment } from "../../../environments/environment";
-import { WorkerPrivateProfile, AdminUser} from "../models/user.model";
-import { GeographicZoneWithParent } from "../models/filter.model";
-import { AdminLog, CertificationRequest, Service } from "../models/common.model";
+import {Injectable, NgZone} from '@angular/core';
+import {HttpClient, HttpParams} from '@angular/common/http';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {shareReplay, switchMap, tap} from 'rxjs/operators';
+import {environment} from "../../../environments/environment";
+import {AdminUser, WorkerPrivateProfile} from "../models/user.model";
+import {GeographicZoneWithParent} from "../models/filter.model";
+import {AdminLog, CertificationRequest, Service} from "../models/common.model";
+import {AuthService} from "./auth.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminService {
   private apiUrl = `${environment.apiBase}/admin`;
+
+  private adminEventSource: EventSource | null = null;
 
   private usersRefresh$ = new BehaviorSubject<void>(undefined);
   private certificationRefresh$ = new BehaviorSubject<void>(undefined);
@@ -38,16 +41,22 @@ export class AdminService {
     shareReplay(1)
   );
 
-  constructor(private http: HttpClient, private zone: NgZone) {
+  constructor(private http: HttpClient, private zone: NgZone, private authService : AuthService) {
+    this.authService.isAuthenticated$.subscribe(isAuth => {
+      if (!isAuth) {
+        this.closeAdminStream();
+      }
+    });
     this.initAdminSseListener();
   }
 
   private initAdminSseListener() {
+    if (this.adminEventSource) return;
     const token = localStorage.getItem('auth_token');
     if (!token) return;
 
     // On passe le token pour que le serveur l'authentifie dès la première trame
-    const eventSource = new EventSource(`${this.apiUrl}/stream?token=${token}`);
+    this.adminEventSource = new EventSource(`${this.apiUrl}/stream?token=${token}`);
 
     // 2. Événements liés aux Certifications (extensible à l'infini)
     const certificationEvents = [
@@ -58,14 +67,14 @@ export class AdminService {
     ];
 
     certificationEvents.forEach(eventName => {
-      eventSource.addEventListener(eventName, () => {
+      this.adminEventSource?.addEventListener(eventName, () => {
         this.zone.run(() => {
           this.refreshCertifications();
         });
       });
     });
 
-    // 🚀 3. ANTICIPATION FUTURE : Tu pourras ajouter d'autres blocs ici sans tout casser
+    // 🚀 3. ANTICIPATION FUTURE : possibilité d'ajouter d'autres blocs ici sans tout casser
     /*
     const userEvents = ['USER_LOCKED', 'USER_UPDATED', 'USER_BANNED'];
     userEvents.forEach(eventName => {
@@ -75,11 +84,20 @@ export class AdminService {
     });
     */
 
-    eventSource.onerror = (err) => {
-      // EventSource gère la reconnexion automatique nativement,
-      // mais tu peux logger ou fermer proprement si le token expire.
-      console.warn("Connexion SSE Admin interrompue ou en cours de reconnexion...", err);
+    this.adminEventSource.onerror = (err) => {
+      console.warn("Connexion SSE Admin interrompue...", err);
+      // Optionnel : si la connexion meurt définitivement, on nettoie
+      if (this.adminEventSource?.readyState === EventSource.CLOSED) {
+        this.closeAdminStream();
+      }
     };
+  }
+
+  public closeAdminStream() {
+    if (this.adminEventSource) {
+      this.adminEventSource.close();
+      this.adminEventSource = null;
+    }
   }
 
   refreshUsers() {
@@ -116,7 +134,7 @@ export class AdminService {
 
   updateWorkerStatus(workerId: string, statusPayload: { locked?: boolean; banned?: boolean; hidden?: boolean }): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/profiles/${workerId}/status`, statusPayload).pipe(
-      tap(() => this.refreshUsers()) // Rafraîchit automatiquement la liste des utilisateurs
+      tap(() => this.refreshUsers())
     );
   }
 
@@ -129,7 +147,7 @@ export class AdminService {
   updateDaysCredit(workerId: string, newDaysValue: number, reason: string): Observable<any> {
     const payload = { workerId, newDaysValue, reason };
     return this.http.post(`${this.apiUrl}/profiles/update-days`, payload).pipe(
-      tap(() => this.refreshUsers()) // Rafraîchit automatiquement la liste des utilisateurs
+      tap(() => this.refreshUsers())
     );
   }
 
@@ -138,7 +156,7 @@ export class AdminService {
     return this.http.post(`${this.apiUrl}/profiles/verify-certification`, payload).pipe(
       tap(() => {
         this.refreshCertifications();
-        this.refreshUsers(); // Au cas où la certification change le profil du worker
+        this.refreshUsers();
       })
     );
   }

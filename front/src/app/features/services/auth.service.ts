@@ -93,17 +93,15 @@ export class AuthService {
   private establishRealTimeStream() {
     if (this.eventSource) return;
     const token = localStorage.getItem('auth_token');
+    if (!token) return;
 
-    // Connexion sur le hub générique d'écoute
     this.eventSource = new EventSource(`${this.accountUrl}/stream?token=${token}`);
 
-    // 🎯 CENTRALISATION : L'unique écouteur dispatch l'événement au bon service
     this.eventSource.addEventListener('account-update', (event: MessageEvent) => {
       this.zone.run(() => {
         const updatedAccount = JSON.parse(event.data);
         const tokenData = this.getDecodedToken();
 
-        // On aiguille la mise à jour selon le rôle inscrit dans le JWT
         if (tokenData?.role === 'ROLE_CLIENT') {
           this.clientService.updateCache(updatedAccount);
         } else if (tokenData?.role === 'ROLE_WORKER') {
@@ -121,10 +119,7 @@ export class AuthService {
 
     this.eventSource.onerror = () => {
       this.zone.run(() => {
-        if (this.eventSource?.readyState === EventSource.CLOSED) {
-          this.closeStream();
-          this.checkSession().subscribe();
-        }
+        console.warn("Le flux SSE a subitement tressauté ou s'est coupé (reconnexion automatique en cours)...");
       });
     };
   }

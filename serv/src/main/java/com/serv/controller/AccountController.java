@@ -73,9 +73,6 @@ public class AccountController {
             dtoToSend = VenusUserDTO.from(patchedUser); // Cas de secours
         }
 
-        // 3. On émet le DTO spécifique dans le SSE
-        sseStreamService.emitEvent(patchedUser.getId(), "account-update", dtoToSend);
-
         return ResponseEntity.ok(dtoToSend);
     }
 }
