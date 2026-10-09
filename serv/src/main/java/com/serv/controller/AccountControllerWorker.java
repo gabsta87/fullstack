@@ -334,7 +334,7 @@ public class AccountControllerWorker {
         }
 
         // 1 — Suppression des fichiers physiques de la vidéo
-        mediaStorageService.deleteVideoFiles(worker.getId(), video);
+        mediaStorageService.deleteVideo(worker.getId(), video);
 
         // 2 — Suppression de la collection et sauvegarde commune
         worker.removeVideo(video);

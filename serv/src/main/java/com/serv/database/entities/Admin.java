@@ -15,8 +15,7 @@ import java.util.List;
 public class Admin extends VenusUser{
 
     public Admin(String username, Email email, String password) {
-        super(email,password);
-        this.username = username;
+        super(email ,password, username);
     }
 
     public boolean isAdmin(){

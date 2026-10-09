@@ -53,7 +53,7 @@ public class Client extends VenusUser {
     private Integer preferredMaxAge;
 
     public Client(Email email, String password) {
-        super(email, password);
+        super(email, password, null);
     }
 
     public void addPreferredService(Service service) {

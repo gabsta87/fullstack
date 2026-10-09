@@ -101,20 +101,6 @@ public class MediaController {
         return ResponseEntity.ok(responses);
     }
 
-    // ── Delete all media ────────────────────────────────________________
-
-    @DeleteMapping("/{workerId}")
-    public ResponseEntity<Void> deleteAll(@PathVariable UUID workerId) throws IOException {
-        if(workerRepository.existsById(workerId)){
-            storageService.deleteAllForWorker(workerId);
-            photoRepository.deleteByWorkerId(workerId);
-            videoRepository.deleteByWorkerId(workerId);
-        } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker introuvable");
-        }
-        return ResponseEntity.noContent().build();
-    }
-
     // ── Response DTOs ─────────────────────────────────────────────────────────
 
     public record PhotoResponse(

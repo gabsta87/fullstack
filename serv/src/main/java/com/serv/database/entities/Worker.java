@@ -127,7 +127,7 @@ public class Worker extends VenusUser {
     private Set<WorkerDayActivity> daysHistory = new LinkedHashSet<>();
 
     public Worker(Email email, String password) {
-        super(email, password);
+        super(email, password, null);
     }
 
     public Worker(String username, Email email, String password) {

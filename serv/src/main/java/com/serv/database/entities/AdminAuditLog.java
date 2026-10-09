@@ -24,6 +24,7 @@ public class AdminAuditLog {
 
     @ManyToOne
     @JoinColumn(name = "target_user_id")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private VenusUser userTarget;
 
     @ManyToOne

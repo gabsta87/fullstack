@@ -7,6 +7,7 @@ import com.serv.database.repositories.*;
 import com.serv.dto.*;
 import com.serv.service.PasswordResetService;
 import com.serv.service.SseStreamService;
+import com.serv.service.UserCleanupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -41,6 +42,7 @@ public class AdminController {
     private final CommentRepository commentRepository;
     private final GeographicZoneRepository zoneRepository;
     private final CertificationRequestRepository certificationRequestRepository;
+    private final UserCleanupService userCleanupService;
 
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamAdmin(Admin adminArg) {
@@ -93,6 +95,8 @@ public class AdminController {
         return ResponseEntity.ok(auditLogRepository.findAll().stream().map(AdminAuditLogDTO::from).collect(Collectors.toList()));
     }
 
+    // Users Management
+
     @PostMapping("/profiles/{id}/status")
     @Transactional
     public ResponseEntity<?> updateWorkerStatus(@PathVariable UUID id, @RequestBody Requests.AdminUpdateStatusRequest req, Admin admin) {
@@ -136,6 +140,27 @@ public class AdminController {
 
         logAdminAction(admin, "UPDATE_CREDIT_DAYS", targetWorker, String.format("Jours modifiés: %d -> %d | Motif: %s", oldDays, req.newDaysValue(), req.reason()));
         return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
+    }
+
+    @DeleteMapping("/users/{id}")
+    @Transactional
+    public ResponseEntity<?> deleteUser(@PathVariable UUID id, Admin admin) {
+        VenusUser userToDelete = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
+
+        // Empêcher un admin de se supprimer lui-même
+        if (userToDelete.getId().equals(admin.getId())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "Vous ne pouvez pas supprimer votre propre compte administrateur."));
+        }
+
+        // Appel du service de nettoyage et de suppression
+        userCleanupService.deleteUserCompletely(userToDelete);
+
+        // Audit Log
+        logAdminAction(admin, "DELETE_USER", "null", "Suppression du compte " + userToDelete.getEmail());
+
+        return ResponseEntity.ok(Map.of("message", "Utilisateur supprimé avec succès"));
     }
 
     // Gestion des certifications
@@ -455,9 +480,10 @@ public class AdminController {
     }
 
     // ── ADMINS INVITATIONS ────────────────────────────────────
-    @PostMapping("/admins/invite")
+    @PostMapping("/invite")
     @Transactional
     public ResponseEntity<?> inviteAdmin(@RequestBody Requests.AdminInviteRequest req, Admin admin) {
+        System.out.println("Invite admin : " + req);
         Email email;
 
         if (req.email() == null || req.email().isBlank()) {
@@ -500,12 +526,16 @@ public class AdminController {
         log.setDetails(details);
         log.setCreatedAt(LocalDateTime.now());
 
-        if (target instanceof VenusUser) log.setTarget((VenusUser) target);
-        else if (target instanceof GeographicZone) log.setTarget((GeographicZone) target);
-        else if (target instanceof Service) log.setTarget((Service) target);
-        else if (target instanceof LegalText) log.setTarget((LegalText) target);
-        else if (target instanceof Comment) log.setTarget((Comment) target);
-        else if (target instanceof String) log.setTarget((String) target); // snapshot JSON
+        switch (target) {
+            case VenusUser venusUser -> log.setTarget(venusUser);
+            case GeographicZone geographicZone -> log.setTarget(geographicZone);
+            case Service service -> log.setTarget(service);
+            case LegalText legalText -> log.setTarget(legalText);
+            case Comment comment -> log.setTarget(comment);
+            case String s -> log.setTarget(s);
+            default -> {
+            }
+        }
 
         auditLogRepository.save(log);
     }

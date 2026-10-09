@@ -40,5 +40,4 @@ public interface WorkerRepository extends JpaRepository<Worker, UUID>, JpaSpecif
 
     long countByGeographicZoneIdIn(List<Integer> ids);
 
-    Optional<Worker> findByEmail(String email);
 }

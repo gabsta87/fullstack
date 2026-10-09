@@ -41,9 +41,20 @@ public class MediaStorageService {
     private static final int MAIN_THUMB_W = 600;
     private static final int MAIN_THUMB_H = 800;
 
-    /**
-     * Sauvegarde une photo, génère la miniature, et retourne une entité Photo prête à l'emploi.
-     */
+    // Nouvelle méthode pour cibler directement /{uploadBase}/{userId}/{subdir}
+    private Path resolveDir(UUID userId, String subdir) throws IOException {
+        Path baseDir = Paths.get(uploadBase).toAbsolutePath().normalize();
+        Path dir = baseDir.resolve(String.valueOf(userId)).resolve(subdir).normalize();
+
+        if (!dir.startsWith(baseDir)) {
+            throw new SecurityException("Chemin non autorisé.");
+        }
+        if (!Files.exists(dir)) {
+            Files.createDirectories(dir);
+        }
+        return dir;
+    }
+
     public Photo savePhoto(MultipartFile file, Worker worker) throws IOException {
         validateImage(file);
 
@@ -51,30 +62,44 @@ public class MediaStorageService {
         String ext = getExtension(file.getOriginalFilename());
         String baseName = uuid + ext;
 
-        Path originalsDir = resolveDir("originals", worker.getId());
-        Path mainThumbDir = resolveDir("thumbs/main", worker.getId());
+        Path originalsDir = resolveDir(worker.getId(), "originals");
+        Path mainThumbDir = resolveDir(worker.getId(), "thumbs/main");
 
         Path originalPath = originalsDir.resolve(baseName).normalize();
         Path mainThumbPath = mainThumbDir.resolve(uuid + "_main" + ext).normalize();
 
-        // 1 — Sauvegarde de l'original
         Files.write(originalPath, file.getBytes());
 
-        // 2 — Génération de la miniature principale
         Thumbnails.of(originalPath.toFile())
                 .size(MAIN_THUMB_W, MAIN_THUMB_H)
                 .crop(Positions.CENTER)
                 .outputQuality(0.85)
                 .toFile(mainThumbPath.toFile());
 
-        // 3 — Instanciation et remplissage de l'entité Photo
         Photo photo = new Photo();
-        photo.setUrl(buildUrl("originals", worker.getId(), baseName));
-        photo.setMainThumbUrl(buildUrl("thumbs/main", worker.getId(), uuid + "_main" + ext));
+        photo.setUrl(buildUrl(worker.getId(), "originals", baseName));
+        photo.setMainThumbUrl(buildUrl(worker.getId(), "thumbs/main", uuid + "_main" + ext));
         photo.setFileSize(file.getSize());
         photo.setWorker(worker);
 
         return photo;
+    }
+
+    // SUPPRESSION TOTALE ULTRA-RAPIDE : Supprime tout le dossier /{uploadBase}/{userId} en une seule fois !
+    public void deleteAllForUser(UUID userId) throws IOException {
+        Path baseDir = Paths.get(uploadBase).toAbsolutePath().normalize();
+        Path userDir = baseDir.resolve(String.valueOf(userId)).normalize();
+
+        if (userDir.startsWith(baseDir) && Files.exists(userDir)) {
+            Files.walk(userDir)
+                    .sorted(java.util.Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(java.io.File::delete);
+        }
+    }
+
+    private String buildUrl(UUID userId, String subdir, String filename) {
+        return publicBaseUrl + "/" + userId + "/" + subdir + "/" + filename;
     }
 
     public void deletePhotoFiles(UUID workerId, Photo photo) {
@@ -111,39 +136,6 @@ public class MediaStorageService {
         }
     }
 
-    public void deleteAllForWorker(UUID workerId) throws IOException {
-        Path baseDir = Paths.get(uploadBase).toAbsolutePath().normalize();
-
-        // On ne cible plus "thumbs/preview" puisque le carrousel est supprimé
-        for (String subdir : List.of("originals", "thumbs/main", "videos")) {
-            Path dir = baseDir.resolve(subdir).resolve(String.valueOf(workerId)).normalize();
-
-            if (dir.startsWith(baseDir) && Files.exists(dir)) {
-                Files.walk(dir)
-                        .sorted(java.util.Comparator.reverseOrder())
-                        .map(Path::toFile)
-                        .forEach(java.io.File::delete);
-            }
-        }
-    }
-
-    private Path resolveDir(String subdir, UUID workerId) throws IOException {
-        Path baseDir = Paths.get(uploadBase).toAbsolutePath().normalize();
-        Path dir = baseDir.resolve(subdir).resolve(String.valueOf(workerId)).normalize();
-
-        if (!dir.startsWith(baseDir)) {
-            throw new SecurityException("Chemin non autorisé.");
-        }
-        if (!Files.exists(dir)) {
-            Files.createDirectories(dir);
-        }
-        return dir;
-    }
-
-    private String buildUrl(String subdir, UUID workerId, String filename) {
-        return publicBaseUrl + "/" + subdir + "/" + workerId + "/" + filename;
-    }
-
     private String getExtension(String filename) {
         if (filename == null || !filename.contains(".")) return ".jpg";
         return filename.substring(filename.lastIndexOf('.'));
@@ -170,7 +162,7 @@ public class MediaStorageService {
         String baseName = uuid + ext;
 
         // On sauvegarde les vidéos dans le dossier "videos"
-        Path videosDir = resolveDir("videos", worker.getId());
+        Path videosDir = resolveDir(worker.getId(),"videos");
         Path videoPath = videosDir.resolve(baseName).normalize();
 
         // 1 — Sauvegarde physique de la vidéo
@@ -178,7 +170,7 @@ public class MediaStorageService {
 
         // 2 — Instanciation et remplissage de l'entité Video
         Video video = new Video();
-        video.setUrl(buildUrl("videos", worker.getId(), baseName));
+        video.setUrl(buildUrl(worker.getId(),"videos",  uuid));
         video.setFileSize(file.getSize());
         video.setWorker(worker);
 
@@ -196,7 +188,7 @@ public class MediaStorageService {
         }
     }
 
-    public void deleteVideoFiles(UUID workerId, Video video) {
+    public void deleteVideo(UUID workerId, Video video) {
         try {
             deletePhysicalFile("videos", workerId, video.getUrl());
         } catch (IOException e) {

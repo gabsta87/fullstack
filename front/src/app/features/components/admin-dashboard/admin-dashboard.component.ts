@@ -9,7 +9,8 @@ import { TagModule } from 'primeng/tag';
 import { AdminService } from '../../services/admin-service';
 import { addIcons } from "ionicons";
 import {
-  addOutline, chevronBackOutline, chevronForwardOutline, closeOutline, pencilOutline, trashOutline
+  addOutline, chevronBackOutline, chevronForwardOutline, closeOutline, pencilOutline, trashOutline, personAddOutline,
+  shieldCheckmarkOutline
 } from "ionicons/icons";
 import {combineLatest, firstValueFrom, map, Observable, Subject} from "rxjs";
 import { switchMap, tap } from "rxjs/operators";
@@ -18,16 +19,17 @@ import { GeographicZoneWithParent } from "../../models/filter.model";
 import { WorkerPrivateProfile, AdminUser } from "../../models/user.model";
 import { AuthService } from "../../services/auth.service";
 import { UserRole } from "../../models/roles";
+import {Select} from "primeng/select";
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, TableModule, InputTextModule, DropdownModule, TagModule],
+  imports: [CommonModule, FormsModule, IonicModule, TableModule, InputTextModule, DropdownModule, TagModule, Select],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss']
 })
 export class AdminDashboardComponent implements OnInit, OnDestroy {
-  currentTab: 'users' | 'certifications' | 'services' | 'zones' | 'logs' = 'users';
+  currentTab: 'users' | 'certifications' | 'services' | 'zones' | 'logs' | 'admins' = 'users';
 
   users$!: Observable<AdminUser[]>;
   pendingCertificationRequests$!: Observable<CertificationRequest[]>;
@@ -76,7 +78,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     private location: Location,
     private authService: AuthService,
   ) {
-    addIcons({ addOutline, trashOutline, pencilOutline, chevronBackOutline, chevronForwardOutline, closeOutline });
+    addIcons({ addOutline, trashOutline, pencilOutline, chevronBackOutline, chevronForwardOutline, closeOutline,
+      personAddOutline, shieldCheckmarkOutline
+    });
   }
 
   @HostListener('window:beforeunload', ['$event'])
@@ -173,6 +177,14 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       await firstValueFrom(this.adminService.updateWorkerStatus(user.id, { locked: lockState }));
     } catch (err) {
       console.error('Échec de la modification du verrouillage', err);
+    }
+  }
+
+  async deleteUser(user:any){
+    try {
+      await firstValueFrom(this.adminService.deleteUser(user.id));
+    } catch (err) {
+      console.error('Échec de la suppression de l\'utilisateur ', user.email , err);
     }
   }
 
@@ -388,4 +400,36 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   protected readonly UserRole = UserRole;
+
+  async inviteAdminModal() {
+    const alertRef = await this.alertCtrl.create({
+      header: 'Inviter un nouvel administrateur',
+      inputs: [
+        { name: 'email', type: 'email', placeholder: 'Adresse email du nouvel admin' }
+      ],
+      buttons: [
+        { text: 'Annuler', role: 'cancel' },
+        {
+          text: 'Envoyer l\'invitation',
+          handler: async (data) => {
+            if (!data.email || data.email.trim() === '') {
+              alert('Veuillez saisir une adresse email.'); // C'est ici que l'erreur se produisait
+              return false;
+            }
+            try {
+              await firstValueFrom(this.adminService.inviteAdmin(data.email.trim()));
+              alert('Invitation envoyée avec succès ! Un e-mail de réinitialisation a été généré.');
+              this.adminService.refreshUsers();
+              return true;
+            } catch (err: any) {
+              console.error('Erreur lors de l\'invitation de l\'admin', err);
+              alert(err?.error?.error || 'Impossible d\'inviter cet administrateur.');
+              return false;
+            }
+          }
+        }
+      ]
+    });
+    await alertRef.present();
+  }
 }

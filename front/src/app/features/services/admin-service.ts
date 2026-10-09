@@ -120,6 +120,12 @@ export class AdminService {
     );
   }
 
+  deleteUser(userId:string):Observable<any>{
+    return this.http.delete(`${this.apiUrl}/users/${userId}`).pipe(
+      tap(() => this.refreshUsers())
+    );
+  }
+
   updateDaysCredit(workerId: string, newDaysValue: number, reason: string): Observable<any> {
     const payload = { workerId, newDaysValue, reason };
     return this.http.post(`${this.apiUrl}/profiles/update-days`, payload).pipe(
@@ -175,6 +181,14 @@ export class AdminService {
   deleteRegion(regionId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/locations/${regionId}`).pipe(
       tap(() => this.refreshZones())
+    );
+  }
+
+  // ── ADMINS ───────────────────────────────────
+
+  inviteAdmin(email: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/invite`, { email }).pipe(
+      tap(() => this.refreshUsers())
     );
   }
 }
