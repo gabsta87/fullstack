@@ -34,7 +34,7 @@ export class AdminService {
   );
 
   public zones$: Observable<GeographicZoneWithParent[]> = this.zonesRefresh$.pipe(
-    switchMap(() => this.http.get<GeographicZoneWithParent[]>(`${this.apiUrl}/locations-flat`)),
+    switchMap(() => this.http.get<GeographicZoneWithParent[]>(`${this.apiUrl}/regions-flat`)),
     shareReplay(1)
   );
 
@@ -107,7 +107,7 @@ export class AdminService {
   }
 
   getGeographicZones(): Observable<GeographicZoneWithParent[]> {
-    return this.http.get<GeographicZoneWithParent[]>(`${this.apiUrl}/locations-flat`);
+    return this.http.get<GeographicZoneWithParent[]>(`${this.apiUrl}/regions-flat`);
   }
 
   getWorkerPrivateProfile(workerId: string): Observable<WorkerPrivateProfile> {
@@ -159,7 +159,7 @@ export class AdminService {
   // ── SERVICES ──────────────────────────────────────────
 
   updateService(servicePayload: { id?: number; name: string; description?: string }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/services`, servicePayload).pipe(
+    return this.http.post(`${this.apiUrl}/service`, servicePayload).pipe(
       tap(() => this.refreshServices())
     );
   }
@@ -173,13 +173,13 @@ export class AdminService {
   // ── ZONES / REGIONS ───────────────────────────────────
 
   updateRegion(regionPayload: { id?: number; name: string; parentId?: number | null }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/locations`, regionPayload).pipe(
+    return this.http.post(`${this.apiUrl}/region`, regionPayload).pipe(
       tap(() => this.refreshZones())
     );
   }
 
   deleteRegion(regionId: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/locations/${regionId}`).pipe(
+    return this.http.delete(`${this.apiUrl}/regions/${regionId}`).pipe(
       tap(() => this.refreshZones())
     );
   }

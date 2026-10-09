@@ -252,7 +252,7 @@ export class ProfileManagementComponent implements OnInit {
       } else if (diffInMonths >= 6) {
         return { color: 'warning', label: 'Votre certification expire bientôt.', buttonText: 'Certifié (Expire)', icon: 'shield-outline', isCert: true, hasNotification: false, isDisabled: false };
       } else {
-        return { color: 'success', label: 'Profil certifié et à jour', buttonText: 'Certifié', icon: 'shield-checkmark-outline', isCert: true, hasNotification: false, isDisabled: false };
+        return { color: 'success', label: 'Profil certifié et à jour', buttonText: 'Certifié', icon: 'shield-checkmark-outline', isCert: true, hasNotification: false, isDisabled: true };
       }
     }
 

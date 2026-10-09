@@ -31,7 +31,7 @@ public class CommonController {
     }
 
     @Transactional(readOnly = true)
-    @GetMapping("/locations")
+    @GetMapping("/regions")
     public ResponseEntity<List<GeographicZoneWithChildrenDTO>> getLocationsTree() {
         List<GeographicZoneWithChildrenDTO> roots = zoneRepository.findAll().stream()
                 .filter(z -> z.getParent() == null)

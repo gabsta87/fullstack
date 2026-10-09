@@ -349,7 +349,7 @@ public class AdminController {
     // ── GESTION DES RÉGIONS ───────────────────────────────────
 
     @Transactional(readOnly = true)
-    @GetMapping("/locations-flat")
+    @GetMapping("/regions-flat")
     public ResponseEntity<List<GeographicZoneWithParentDTO>> getAllLocationsFlat() {
         List<GeographicZoneWithParentDTO> zones = zoneRepository.findAll().stream()
                 .map(GeographicZoneWithParentDTO::from)
@@ -409,10 +409,8 @@ public class AdminController {
     @PostMapping("/region")
     @Transactional
     public ResponseEntity<List<GeographicZoneWithParentDTO>> updateRegion(Admin admin, @RequestBody Requests.RegionRequest region){
-        System.out.println("Admin : "+admin);
         GeographicZone savedZone;
         if(region.id() == null){
-            System.out.println("Region ID = null");
             // Create new Region
             GeographicZone newZone = new GeographicZone();
             newZone.setName(region.name());
@@ -429,7 +427,6 @@ public class AdminController {
             sseStreamService.emitEvent(admin.getId(), "ZONE_CREATED", newZone);
             logAdminAction(admin,"ZONE_CREATED", savedZone,"Zone "+ region.name() +" with "+ (newZone.getParent() != null ? newZone.getParent().getName() : "no parent") +" created");
         }else{
-            System.out.println("Region ID : "+" "+region.id());
             // Modify existing Region
             GeographicZone zone = geographicZoneRepository.findById(region.id()).orElse(null);
             if(zone == null) return ResponseEntity.notFound().build();

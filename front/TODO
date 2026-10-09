@@ -8,6 +8,7 @@ SECONDARY
 admins should see all required fields for each profile in the table (to see if there is a validity issue)
 favorite profiles should be shown as favorites on the homepage
 unavailable profiles : hide phone and contact info
+secure certification request (if certified, button is disabled, but no other security)
 
 FUTURE
 Alerte (par email) quand un profil arrive dans la ville souhaitée
