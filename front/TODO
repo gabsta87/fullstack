@@ -9,6 +9,8 @@ admins can ban/revoke certification
     If a photo is deleted, the certification is still valid
     If a photo is added, certification is not valid anymore
 
+modifier le guard sur profile pour ne pas permettre d'accéder à un profil banni (sauf pour les admins)
+
 profile management : workers can choose level of each spoken languages
 Test and adapt on mobile
 

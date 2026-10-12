@@ -4,6 +4,7 @@ import com.serv.common.CertificationStatus;
 import com.serv.database.listeners.CertificationRequestEventListener;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.OnDelete;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @EntityListeners({AuditingEntityListener.class, CertificationRequestEventListener.class})
 @Entity
 @Table(name = "certification_requests", indexes = {
@@ -23,6 +25,7 @@ import java.time.LocalDateTime;
 public class CertificationRequest {
 
     @Id
+    @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

@@ -20,6 +20,7 @@ import { WorkerPrivateProfile, AdminUser } from "../../models/user.model";
 import { AuthService } from "../../services/auth.service";
 import { UserRole } from "../../models/roles";
 import {Select} from "primeng/select";
+import {AdminWorkerReport} from "../../models/items.model";
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -29,15 +30,20 @@ import {Select} from "primeng/select";
   styleUrls: ['./admin-dashboard.component.scss']
 })
 export class AdminDashboardComponent implements OnInit, OnDestroy {
-  currentTab: 'users' | 'certifications' | 'services' | 'zones' | 'logs' | 'admins' = 'users';
+  currentTab: 'users' | 'certifications' | 'reports' | 'services' | 'zones' | 'logs' | 'admins' = 'users';
 
   users$!: Observable<AdminUser[]>;
   pendingCertificationRequests$!: Observable<CertificationRequest[]>;
+  reportsSummary$!: Observable<AdminWorkerReport[]>;
   services$!: Observable<Service[]>;
   zones$!: Observable<GeographicZoneWithParent[]>;
   auditLogs$!: Observable<AdminLog[]>;
   displayedAuditLogs$!: Observable<any[]>;
   flatZones$!: Observable<{ id: number; name: string; level: number; parentId: number | null }[]>;
+
+  selectedReportWorker: AdminWorkerReport | null = null;
+  totalReportsCount$!: Observable<number>;
+  isReportsModalOpen = false;
 
   selectedWorkerDetails: WorkerPrivateProfile | null = null;
   isCertifModalOpen: boolean = false;
@@ -93,6 +99,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // On récupère les utilisateurs directement depuis le flux réactif du service
     this.users$ = this.adminService.users$;
+
     this.auditLogs$ = this.adminService.getAuditLogs().pipe(
       map(logs => logs.sort((a:AdminLog, b : AdminLog) =>
         new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
@@ -153,6 +160,14 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         alert("Une erreur est survenue lors du traitement de la requête.");
       }
     });
+
+    this.reportsSummary$ = this.adminService.reportsSummary$;
+
+    this.totalReportsCount$ = this.reportsSummary$.pipe(
+      map(list => (list || []).reduce((acc, curr) => acc + curr.reportCount, 0))
+    );
+
+    this.adminService.refreshReports();
 
     // Chargement initial des données
     this.adminService.refreshUsers();
@@ -397,6 +412,37 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     if (this.previewImagesList.length === 0) return;
     this.previewIndex = (this.previewIndex - 1 + this.previewImagesList.length) % this.previewImagesList.length;
     this.activePreviewUrl = this.previewImagesList[this.previewIndex];
+  }
+
+  openReportsModal(workerReport: AdminWorkerReport) {
+    this.selectedReportWorker = workerReport;
+    this.isReportsModalOpen = true;
+  }
+
+  closeReportsModal() {
+    this.selectedReportWorker = null;
+    this.isReportsModalOpen = false;
+    this.adminService.refreshReports(); // Rafraîchit au cas où on a banni/bloqué
+  }
+
+  async dismissReport(reportId: number) {
+    try {
+      await firstValueFrom(this.adminService.dismissReport(reportId));
+      this.adminService.refreshReports();
+    } catch (err) {
+      console.error("Erreur lors du classement du signalement", err);
+      alert("Impossible de classer ce signalement.");
+    }
+  }
+
+  async banUser(workerId: string, currentBannedState: boolean) {
+    try {
+      await firstValueFrom(this.adminService.updateWorkerStatus(workerId, { banned: !currentBannedState }));
+      this.adminService.refreshReports();
+      this.adminService.refreshUsers();
+    } catch (err) {
+      console.error("Erreur modification ban", err);
+    }
   }
 
   protected readonly UserRole = UserRole;

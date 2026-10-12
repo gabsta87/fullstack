@@ -4,6 +4,7 @@ import com.serv.common.TablesNames;
 import com.serv.common.UserRole;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,6 +17,7 @@ import java.util.UUID;
 
 @Data
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @Table(name = TablesNames.USERS, indexes = {
         @Index(name = "idx_user_zone", columnList = "geographic_zone_id")
@@ -26,6 +28,7 @@ public abstract class VenusUser {
 
     @Id
     @GeneratedValue(strategy=GenerationType.UUID)
+    @EqualsAndHashCode.Include
     protected UUID id;
     protected String username;
     @Embedded

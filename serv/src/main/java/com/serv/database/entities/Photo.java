@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Entity
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @Table(name = TablesNames.PHOTOS, indexes = {
         @Index(name = "idx_photo_worker", columnList = "worker_id")
 })

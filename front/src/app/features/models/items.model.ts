@@ -72,3 +72,18 @@ export interface Comment {
   workerId: string;
   date: string;
 }
+
+export interface AdminWorkerReport{
+  workerId: string;
+  workerUsername: string;
+  workerEmail: string;
+  reportCount: number;
+  reports: Report[];
+}
+export interface Report{
+  reportId: number;
+  authorEmail: string;
+  reportStatus : string;
+  reason: string;
+  createdAt: string;
+}

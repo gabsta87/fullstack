@@ -1,6 +1,7 @@
 package com.serv.controller;
 
 import com.serv.common.CertificationStatus;
+import com.serv.common.ReportStatus;
 import com.serv.common.Requests;
 import com.serv.database.entities.*;
 import com.serv.database.repositories.*;
@@ -19,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -43,6 +45,7 @@ public class AdminController {
     private final GeographicZoneRepository zoneRepository;
     private final CertificationRequestRepository certificationRequestRepository;
     private final UserCleanupService userCleanupService;
+    private final ReportRepository reportRepository;
 
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamAdmin(Admin adminArg) {
@@ -484,6 +487,63 @@ public class AdminController {
         commentRepository.save(comment);
         logAdminAction(admin, "COMMENT_EDITED", comment, "Comment edited on worker " + comment.getWorker().getEmail());
         return ResponseEntity.ok(CommentDTO.from(comment));
+    }
+
+    // ── GESTION DES SIGNALEMENTS ───────────────────────────────────
+
+    @GetMapping("/reports-summary")
+    @Transactional(readOnly = true)
+    public ResponseEntity<List<AdminWorkerReportDTO>> getReportsSummary() {
+        List<Report> allReports = reportRepository.findAll();
+
+        Map<Worker, List<Report>> reportsByWorker = allReports.stream()
+                .collect(Collectors.groupingBy(Report::getWorker));
+
+        List<AdminWorkerReportDTO> summary = reportsByWorker.entrySet().stream()
+                .map(entry -> {
+                    Worker worker = entry.getKey();
+                    List<Report> reports = entry.getValue();
+
+                    // On compte uniquement les signalements actifs (PENDING)
+                    long activeCount = reports.stream()
+                            .filter(r -> r.getStatus() == ReportStatus.PENDING)
+                            .count();
+
+                    List<AdminWorkerReportDTO.ReportDetailDTO> reportDetails = reports.stream()
+                            .map(AdminWorkerReportDTO.ReportDetailDTO::from)
+                            .sorted(Comparator.comparing(AdminWorkerReportDTO.ReportDetailDTO::createdAt).reversed())
+                            .toList();
+
+                    return new AdminWorkerReportDTO(
+                            worker.getId(),
+                            worker.getUsername(),
+                            worker.getEmail().getValue(),
+                            activeCount,
+                            reportDetails
+                    );
+                })
+                .filter(dto -> dto.reportCount() > 0) // On n'affiche que les annonceurs ayant des signalements actifs
+                .sorted(Comparator.comparingLong(AdminWorkerReportDTO::reportCount).reversed())
+                .toList();
+
+        return ResponseEntity.ok(summary);
+    }
+
+    @PostMapping("/reports/{reportId}/dismiss")
+    @Transactional
+    public ResponseEntity<?> dismissReport(@PathVariable Long reportId, Admin admin) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Signalement introuvable"));
+
+        report.setStatus(ReportStatus.DISMISSED);
+        reportRepository.save(report);
+
+        logAdminAction(admin, "DISMISS_REPORT", report, "Signalement classé sans suite pour le worker " + report.getWorker().getEmail() + " : "+ report.getStatus());
+
+        // On diffuse la mise à jour aux autres admins connectés
+        sseStreamService.broadcastAdminEvent("REPORT_UPDATED", report.getId());
+
+        return ResponseEntity.ok(AdminWorkerReportDTO.ReportDetailDTO.from(report));
     }
 
     // ── ADMINS INVITATIONS ────────────────────────────────────

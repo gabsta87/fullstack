@@ -3,12 +3,14 @@ package com.serv.database.entities;
 import com.serv.common.ReportStatus;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Data
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @Table(name = "reports", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"worker_id", "client_id"}) // Empêche un client de spammer les signalements sur le même worker
@@ -17,6 +19,7 @@ public class Report {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)

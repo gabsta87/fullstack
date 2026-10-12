@@ -7,6 +7,7 @@ import {AdminUser, WorkerPrivateProfile} from "../models/user.model";
 import {GeographicZoneWithParent} from "../models/filter.model";
 import {AdminLog, CertificationRequest, Service} from "../models/common.model";
 import {AuthService} from "./auth.service";
+import {AdminWorkerReport} from "../models/items.model";
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,7 @@ export class AdminService {
   private certificationRefresh$ = new BehaviorSubject<void>(undefined);
   private servicesRefresh$ = new BehaviorSubject<void>(undefined);
   private zonesRefresh$ = new BehaviorSubject<void>(undefined);
+  private reportsRefresh$ = new BehaviorSubject<void>(undefined);
 
   public users$: Observable<AdminUser[]> = this.usersRefresh$.pipe(
     switchMap(() => this.http.get<AdminUser[]>(`${this.apiUrl}/users`)),
@@ -37,6 +39,11 @@ export class AdminService {
 
   public zones$: Observable<GeographicZoneWithParent[]> = this.zonesRefresh$.pipe(
     switchMap(() => this.http.get<GeographicZoneWithParent[]>(`${this.apiUrl}/regions-flat`)),
+    shareReplay(1)
+  );
+
+  public reportsSummary$: Observable<AdminWorkerReport[]> = this.reportsRefresh$.pipe(
+    switchMap(() => this.http.get<AdminWorkerReport[]>(`${this.apiUrl}/reports-summary`)),
     shareReplay(1)
   );
 
@@ -63,10 +70,15 @@ export class AdminService {
       'CERTIFICATION_UNLOCKED',
       'CERTIFICATION_PROCESSED'
     ];
+
     certificationEvents.forEach(eventName => {
       this.adminEventSource?.addEventListener(eventName, () => {
         this.zone.run(() => this.refreshCertifications());
       });
+    });
+
+    this.adminEventSource.addEventListener('REPORT_UPDATED', () => {
+      this.zone.run(() => this.refreshReports());
     });
 
     // 2. Événements de gestion des services
@@ -114,6 +126,10 @@ export class AdminService {
 
   public refreshUsers() {
     this.usersRefresh$.next();
+  }
+
+  public refreshReports() {
+    this.reportsRefresh$.next();
   }
 
   public closeAdminStream() {
@@ -206,6 +222,14 @@ export class AdminService {
   deleteRegion(regionId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/regions/${regionId}`).pipe(
       tap(() => this.refreshZones())
+    );
+  }
+
+  // ── REPORTS ───────────────────────────────────
+
+  dismissReport(reportId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/reports/${reportId}/dismiss`, {}).pipe(
+      tap(() => this.refreshReports())
     );
   }
 
