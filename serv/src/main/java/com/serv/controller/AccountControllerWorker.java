@@ -143,8 +143,6 @@ public class AccountControllerWorker {
         Worker worker = getWorkerWithPhotos(workerArg);
         boolean requestedVisibility = body.getOrDefault("hidden", false);
 
-        System.out.println("setVisibility :" + requestedVisibility + " for worker " + worker.getUsername());
-
         worker.setHidden(requestedVisibility);
 
         Worker savedWorker = workerRepository.save(worker);
