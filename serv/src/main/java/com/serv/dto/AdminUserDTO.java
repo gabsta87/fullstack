@@ -12,6 +12,7 @@ public record AdminUserDTO(
         boolean banned,
         boolean disabled,
         boolean locked,
+        boolean hidden,
         String role,
         String username,
         String email,
@@ -29,6 +30,7 @@ public record AdminUserDTO(
     public static AdminUserDTO from(VenusUser user, String certificationRequestDateParam) {
         boolean available = false;
         boolean disabled = false; // ou user.isDisabled() selon ton entité VenusUser
+        boolean hidden = false;
         String role = user.getRole().name();
         String language = null;
         String birthdate = null;
@@ -47,6 +49,7 @@ public record AdminUserDTO(
             birthdate = w.getBirthdate() != null ? w.getBirthdate().toString() : null;
             phone = w.getPhone();
             desc = w.getDescription();
+            hidden = w.isHidden();
 
             certStatus = w.getLastCertificationRequest() != null ? w.getLastCertificationRequest().getStatus().toString() : null;
             verifCode = w.getVerificationCode();
@@ -67,6 +70,7 @@ public record AdminUserDTO(
                 user.isBanned(),
                 disabled,
                 user.isLocked(),
+                hidden,
                 role,
                 user.getUsername(),
                 user.getEmail() != null ? user.getEmail().toString() : null,

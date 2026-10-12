@@ -50,6 +50,7 @@ export interface WorkerPrivateProfile extends WorkerPublicFullProfile {
   adminCertificationFeedback?: string;
   lastRefreshed?: string;
   expirationDate?: string;
+  hidden : boolean;
 }
 
 // ==========================================
@@ -77,6 +78,7 @@ export interface AdminUser {
   banned: boolean;
   disabled: boolean;
   locked: boolean;
+  hidden : boolean;
   certificationStatus?: string;
   verificationCode?: string;
   certifiedAt?: string;

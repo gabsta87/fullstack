@@ -47,6 +47,14 @@
                 {{ me.available ? 'En ligne' : 'Hors ligne' }}
               </ion-button>
 
+              <ion-button [color]="!me.hidden ? 'success' : 'medium'"
+                          class="status-badge"
+                          size="small"
+                          (click)="toggleVisible(!me.hidden)">
+                <ion-icon [name]="!me.hidden ? 'eye-outline' : 'eye-off-outline'" slot="start"></ion-icon>
+                {{ !me.hidden ? 'Visible' : 'Invisible' }}
+              </ion-button>
+
               <!-- Bouton / Pastille de Certification Dynamique -->
               <ion-button
                 *ngIf="currentUser$ | async as me"

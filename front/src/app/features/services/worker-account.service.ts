@@ -48,6 +48,14 @@ export class WorkerAccountService {
     return updatedAccount;
   }
 
+  async setVisibility(hidden: boolean): Promise<WorkerPrivateProfile> {
+    console.log("sending hidden: ", hidden, " to backend");
+    const updatedAccount = await firstValueFrom(
+      this.http.patch<WorkerPrivateProfile>(`${this.base}/visibility`, { hidden }));
+    this.accountSubject.next(updatedAccount);
+    return updatedAccount;
+  }
+
   async updateProfileData(payload: any): Promise<WorkerPrivateProfile> {
     const updatedAccount = await firstValueFrom(
       this.http.patch<WorkerPrivateProfile>(`${this.base}/data`, payload)

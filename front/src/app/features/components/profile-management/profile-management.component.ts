@@ -12,7 +12,8 @@ import {tap} from "rxjs/operators";
 import {addIcons} from "ionicons";
 import {
   addCircleOutline, camera, cloudUploadOutline, move, star, starOutline, trashOutline,timeOutline, cameraOutline,
-  warningOutline, shieldCheckmarkOutline, shieldOutline, chevronDownCircleOutline, closeCircleOutline
+  warningOutline, shieldCheckmarkOutline, shieldOutline, chevronDownCircleOutline, closeCircleOutline, eyeOffOutline,
+  eyeOutline
 } from 'ionicons/icons';
 import {AccountSettingsComponent} from "../account-settings/account-settings.component";
 import {GeographicZone} from "../../models/filter.model";
@@ -55,7 +56,8 @@ export class ProfileManagementComponent implements OnInit {
               private modalController: ModalController) {
     addIcons({
       addCircleOutline, trashOutline, move, camera, warningOutline, star, starOutline, cloudUploadOutline,
-      shieldCheckmarkOutline, shieldOutline, chevronDownCircleOutline, closeCircleOutline, timeOutline,cameraOutline
+      shieldCheckmarkOutline, shieldOutline, chevronDownCircleOutline, closeCircleOutline, timeOutline,cameraOutline,
+      eyeOutline, eyeOffOutline
     });
   }
 
@@ -333,6 +335,10 @@ export class ProfileManagementComponent implements OnInit {
 
   async toggleAvailable(currentAvailability: boolean) {
     await this.accountService.setAvailability(currentAvailability);
+  }
+
+  async toggleVisible(currentVisibility: boolean){
+    await this.accountService.setVisibility(currentVisibility);
   }
 
   async updateProfileField(field: keyof WorkerProfileUpdate, value: any) {

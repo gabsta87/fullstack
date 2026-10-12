@@ -136,6 +136,22 @@ public class AccountControllerWorker {
         return ResponseEntity.ok().body(WorkerFullProfileDTO.from(savedWorker));
     }
 
+    @Transactional
+    @PatchMapping("/visibility")
+    public ResponseEntity<?> setVisibility(@RequestBody Map<String, Boolean> body,
+                                             Worker workerArg) {
+        Worker worker = getWorkerWithPhotos(workerArg);
+        boolean requestedVisibility = body.getOrDefault("hidden", false);
+
+        System.out.println("setVisibility :" + requestedVisibility + " for worker " + worker.getUsername());
+
+        worker.setHidden(requestedVisibility);
+
+        Worker savedWorker = workerRepository.save(worker);
+
+        return ResponseEntity.ok().body(WorkerFullProfileDTO.from(savedWorker));
+    }
+
     /** PATCH /account/profile */
     @PatchMapping("/profile")
     public ResponseEntity<?> updateProfile(@RequestBody Requests.WorkerProfileUpdateRequest req,
