@@ -3,11 +3,14 @@ package com.serv.controller;
 import com.serv.common.Requests;
 import com.serv.database.entities.Client;
 import com.serv.database.entities.Email;
+import com.serv.database.entities.Report;
 import com.serv.database.entities.Worker;
 import com.serv.database.repositories.ClientRepository;
+import com.serv.database.repositories.ReportRepository;
 import com.serv.database.repositories.WorkerRepository;
 import com.serv.dto.ClientDTO;
 import com.serv.dto.GalleryFiltersDTO;
+import com.serv.dto.ReportDTO;
 import com.serv.service.WorkerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,6 +32,7 @@ public class AccountControllerClient {
     private final WorkerRepository workerRepository;
     private final WorkerService galleryService;
     private final ClientRepository clientRepository;
+    private final ReportRepository reportRepository;
 
     @GetMapping("/me")
     @Transactional(readOnly = true)
@@ -99,4 +103,29 @@ public class AccountControllerClient {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client introuvable"));
         return ResponseEntity.ok(GalleryFiltersDTO.from(client));
     }
+
+    @PostMapping("/report-account")
+    @Transactional
+    public ResponseEntity<?> reportWorker(@RequestBody Requests.ReportRequest body, Client clientArg){
+        System.out.println("Report request received");
+        Client c = clientRepository.findById(clientArg.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client introuvable"));
+
+        Worker w = workerRepository.findById(UUID.fromString(body.workerId())).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker introuvable")
+        );
+
+        System.out.println("Report worker "+w.getUsername()+" by client "+c.getUsername()+" with reason "+body.reason());
+        Report r;
+        if(reportRepository.findByWorkerAndAuthor(w, c).isEmpty()){
+            r = new Report(w, c, body.reason());
+            reportRepository.save(r);
+        }else{
+            r = reportRepository.findByWorkerAndAuthor(w, c).get();
+            r.setReason(body.reason());
+        }
+
+        return ResponseEntity.ok(ReportDTO.from(r));
+    }
+
 }

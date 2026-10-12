@@ -34,6 +34,11 @@
             <ion-icon slot="start" [name]="notifyEnabled ? 'notifications' : 'notifications-outline'"></ion-icon>
             Me notifier son retour
           </ion-button>
+
+          <ion-button *ngIf="isClient" expand="block" fill="outline" color="danger" (click)="report()">
+            <ion-icon slot="start" name="alert-circle-outline"></ion-icon>
+            Signaler
+          </ion-button>
         </div>
 
         <div class="profile-card">

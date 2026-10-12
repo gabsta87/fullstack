@@ -9,7 +9,7 @@ import {addIcons} from 'ionicons';
 import {
   bodyOutline, calendarOutline, callOutline, chevronBackOutline, chevronForwardOutline, closeOutline, heart, heartOutline,
   locationOutline, logoWhatsapp, notifications, notificationsOutline, personOutline, playCircleOutline, timeOutline,
-  warningOutline, womanOutline
+  warningOutline, womanOutline, alertCircleOutline
 } from 'ionicons/icons';
 import {PhotoItem, Comment, VideoItem} from '../../models/items.model';
 import {WorkerPublicFullProfile} from "../../models/user.model";
@@ -62,17 +62,14 @@ export class ProfileComponent implements OnInit, OnDestroy {
       notificationsOutline, notifications, warningOutline,
       chevronBackOutline, chevronForwardOutline, closeOutline,
       playCircleOutline, locationOutline, calendarOutline,
-      bodyOutline, timeOutline, womanOutline, personOutline
+      bodyOutline, timeOutline, womanOutline, personOutline,
+      alertCircleOutline
     });
   }
 
   ngOnInit(): void {
-    // The resolver already fetched (or cache-hit) the profile —
-    // it's available synchronously here, no subscribe needed.
     this.worker = this.route.snapshot.data['profile'] ?? null;
     this.services = this.route.snapshot.data['services'] ?? [];
-
-    console.log(this.worker);
 
     if (this.worker && this.worker.servicesId) {
       this.workerServices = this.services.filter(s =>
@@ -86,14 +83,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
     if (this.isClient && this.worker) {
       this.clientAccountSub = this.clientAccountService.listenToMyAccount().subscribe({
         next: (clientAccount) => {
-          // On vérifie en temps réel si l'ID du worker est dans la liste des favoris du client
+          // Vérification en temps réel de la liste des favoris depuis le cache local
           this.isFavorite = clientAccount?.favorites?.some(f => f.id === this.worker?.id) ?? false;
-          console.log(`[SSE] Statut favori mis à jour pour ${this.worker?.username} :`, this.isFavorite);
         },
         error: (err) => console.error("Erreur du flux de favoris client", err)
       });
     }
-    console.log("Worker : ", this.worker);
   }
 
   // ── Gallery navigation ──────────────────────────────────────────────────────────────
@@ -184,9 +179,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
         console.log("Ajout aux favoris...");
         await this.clientAccountService.addFavorite(this.worker.id);
       }
-      // Note : Pas besoin d'écrire "this.isFavorite = !this.isFavorite" manuellement ici !
-      // Dès que le serveur répond, le flux SSE (Etape 2) va intercepter l'événement
-      // et faire basculer l'icône automatiquement à l'écran.
     } catch (error) {
       console.error("Impossible de modifier le favori :", error);
     }
@@ -198,9 +190,15 @@ export class ProfileComponent implements OnInit, OnDestroy {
     // TODO: Appel à ton futur NotificationService.toggle(this.worker!.id)
   }
 
-  report(): void {
-    alert('Signalement envoyé.');
-    // TODO: ReportService.report(this.worker!.id)
+  async report(): Promise<void> {
+    const reason = prompt("Raison du signalement :");
+
+    if(reason && this.worker?.id){
+      await this.clientAccountService.reportAccount(reason,this.worker?.id);
+      alert('Signalement envoyé.');
+    }else{
+      alert('Impossible de signaler sans fournir une raison valide');
+    }
   }
 
   goBack(): void {

@@ -122,9 +122,9 @@ public class Worker extends VenusUser {
     )
     private Collection<WorkerLanguage> spokenLanguages = new ArrayList<>();
 
-    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @OrderBy("id.activityDate DESC")
-    private Set<WorkerDayActivity> daysHistory = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    private List<Report> reports = new ArrayList<>();
 
     public Worker(Email email, String password) {
         super(email, password, null);

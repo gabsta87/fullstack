@@ -77,4 +77,6 @@ public class Requests {
             String certificationStatus,   // "CERTIFIED", "REJECTED", etc.
             String reason                 // Justification obligatoire pour l'audit
     ) {}
+
+    public record ReportRequest(String reason, String workerId){};
 }

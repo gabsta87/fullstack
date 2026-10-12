@@ -23,7 +23,6 @@ export class ClientAccountService {
     );
   }
 
-  // Permet à l'AuthService de pousser les mises à jour SSE ici
   updateCache(account: ClientProfile) {
     this.accountSubject.next(account);
   }
@@ -32,17 +31,12 @@ export class ClientAccountService {
     this.accountSubject.next(null);
   }
 
-  // 🎯 Plus de fuite réseau ! On écoute simplement le BehaviorSubject local
   listenToMyAccount(): Observable<ClientProfile | null> {
     return this.accountSubject.asObservable();
   }
 
   async updateSettings(data: ClientProfile): Promise<any> {
     return await firstValueFrom(this.http.patch(`${this.base}/data`, data));
-  }
-
-  async setCurrentUserLanguage(lang: string): Promise<any> {
-    return await firstValueFrom(this.http.patch(`${environment.apiBase}/account/language`, { lang }));
   }
 
   async addFavorite(workerId: string): Promise<any> {
@@ -59,5 +53,9 @@ export class ClientAccountService {
 
   async getSavedPreferences(): Promise<GalleryFilters>{
     return await firstValueFrom(this.http.get(`${this.base}/filters`));
+  }
+
+  async reportAccount(reason: string, workerId: string): Promise<any> {
+    return await firstValueFrom(this.http.post(`${this.base}/report-account`, {reason, workerId}));
   }
 }
