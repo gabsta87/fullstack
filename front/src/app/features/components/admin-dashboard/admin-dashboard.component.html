@@ -65,23 +65,22 @@
       [paginator]="true"
       [rows]="20"
       [rowsPerPageOptions]="[20, 50, 100]"
-      [globalFilterFields]="['username', 'email', 'description']"
+      [globalFilterFields]="['username', 'email', 'description', 'id']"
       styleClass="p-datatable-gridlines p-datatable-sm"
       [tableStyle]="{'min-width': '65rem'}">
 
       <ng-template pTemplate="header">
         <tr>
           <th pSortableColumn="username">Utilisateur <p-sortIcon field="username"></p-sortIcon></th>
-          <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
-          <th pSortableColumn="role">Rôle <p-sortIcon field="role"></p-sortIcon></th>
-          <th>Birthdate</th>
-          <th>Available</th>
-          <th>Hidden</th>
-          <th>Banned</th>
-          <th>Locked</th>
-          <th>Disabled</th>
+          <th pSortableColumn="email">Email<p-sortIcon field="email"></p-sortIcon></th>
+          <th pSortableColumn="role">Rôle<p-sortIcon field="role"></p-sortIcon></th>
+          <th pSortableColumn="birthdate">Birthdate<p-sortIcon field="birthdate"></p-sortIcon></th>
+          <th pSortableColumn="banned">Banned<p-sortIcon field="banned"></p-sortIcon></th>
+          <th pSortableColumn="locked">Locked<p-sortIcon field="locked"></p-sortIcon></th>
+          <th pSortableColumn="available">Available<p-sortIcon field="available"></p-sortIcon></th>
+          <th pSortableColumn="hidden">Hidden<p-sortIcon field="hidden"></p-sortIcon></th>
           <th>Certification</th>
-          <th>Certification date</th>
+          <th pSortableColumn="certifiedAt">Certification date<p-sortIcon field="certifiedAt"></p-sortIcon></th>
           <th style="text-align: center; width: 70px;">Action</th>
         </tr>
       </ng-template>
@@ -105,14 +104,8 @@
           <td>
             <p-tag [value]="user.role"></p-tag>
           </td>
+
           <td>{{ user.birthdate }}</td>
-
-          <!-- Available en entier (1 ou 0) -->
-          <td style="text-align: center;">{{ user.available ? 1 : 0 }}</td>
-
-          <td>
-            <span *ngIf="user.hidden" style="color: var(--text-muted); font-size: 0.85rem; font-weight: 500;">hidden</span>
-          </td>
 
           <!-- Colonne Banned avec tooltip explicatif -->
           <td>
@@ -138,14 +131,16 @@
             </ion-button>
           </td>
 
+          <td style="text-align: center;">{{ user.available ? "Available" : "Not available" }}</td>
+
           <td>
-            <span *ngIf="user.disabled" style="color: var(--ion-color-danger); font-size: 0.85rem; font-weight: 500;">disabled</span>
+            <span *ngIf="user.hidden" style="color: var(--text-muted); font-size: 0.85rem; font-weight: 500;">hidden</span>
           </td>
 
           <!-- Certification et option de révocation -->
           <td>
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
-              <span>{{ user.certificationStatus || '—' }}</span>
+              <span>{{ user.certificationStatus || '' }}</span>
               <ion-button *ngIf="user.certificationStatus === 'CERTIFIED'"
                           size="small"
                           fill="clear"
@@ -158,7 +153,7 @@
             </div>
           </td>
 
-          <td>{{ user.certifiedAt || '—' }}</td>
+          <td>{{ user.certifiedAt | date:'yyyy-mm-dd' || '' }}</td>
 
           <td style="text-align: center;">
             <ion-button size="small" fill="clear" color="danger" (click)="deleteUser(user)" title="Supprimer le compte">
