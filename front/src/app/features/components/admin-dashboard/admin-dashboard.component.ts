@@ -10,7 +10,7 @@ import { AdminService } from '../../services/admin-service';
 import { addIcons } from "ionicons";
 import {
   addOutline, chevronBackOutline, chevronForwardOutline, closeOutline, pencilOutline, trashOutline, personAddOutline,
-  shieldCheckmarkOutline, lockClosedOutline, lockOpenOutline
+  shieldCheckmarkOutline, lockClosedOutline, lockOpenOutline, closeCircleOutline
 } from "ionicons/icons";
 import {combineLatest, firstValueFrom, map, Observable, Subject} from "rxjs";
 import { switchMap, tap } from "rxjs/operators";
@@ -21,6 +21,8 @@ import { AuthService } from "../../services/auth.service";
 import { UserRole } from "../../models/roles";
 import {Select} from "primeng/select";
 import {AdminWorkerReport} from "../../models/items.model";
+import {WorkerService} from "../../services/worker.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -83,9 +85,10 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     private alertCtrl: AlertController,
     private location: Location,
     private authService: AuthService,
+    private router : Router
   ) {
     addIcons({ addOutline, trashOutline, pencilOutline, chevronBackOutline, chevronForwardOutline, closeOutline,
-      personAddOutline, shieldCheckmarkOutline, lockClosedOutline, lockOpenOutline
+      personAddOutline, shieldCheckmarkOutline, lockClosedOutline, lockOpenOutline, closeCircleOutline
     });
   }
 
@@ -196,38 +199,14 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   async deleteUser(user:any){
+    // TODO
+    // Demande de confirmation
+    // if (!confirm(`Voulez-vous vraiment supprimer le compte de ${user.username} ?`)) return;
     try {
       await firstValueFrom(this.adminService.deleteUser(user.id));
     } catch (err) {
       console.error('Échec de la suppression de l\'utilisateur ', user.email , err);
     }
-  }
-
-  async promptUpdateDays(user: any) {
-    const alert = await this.alertCtrl.create({
-      header: `Ajuster l'abonnement de ${user.username}`,
-      inputs: [
-        { name: 'days', type: 'number', value: user.remainingDaysCredit, placeholder: 'Nombre de jours' },
-        { name: 'reason', type: 'text', placeholder: 'Motif de la modification (Requis)' }
-      ],
-      buttons: [
-        { text: 'Annuler', role: 'cancel' },
-        {
-          text: 'Enregistrer',
-          handler: async (data) => {
-            if (!data.reason || data.reason.trim() === '') return false;
-            try {
-              await firstValueFrom(this.adminService.updateDaysCredit(user.id, parseInt(data.days, 10), data.reason));
-              return true;
-            } catch (err) {
-              console.error('Échec mise à jour crédit jours', err);
-              return false;
-            }
-          }
-        }
-      ]
-    });
-    await alert.present();
   }
 
   async openServiceModal() {
@@ -435,9 +414,31 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  async banUser(workerId: string, currentBannedState: boolean) {
+  async revokeCertification(user: any) {
+    // 1. On demande le motif via une boîte de dialogue
+    const reason = prompt(`Motif de la révocation de la certification pour ${user.username} (Requis) :`);
+
+    console.log(user);
+
+    if (!reason || reason.trim() === '') {
+      alert("Un motif valide est obligatoire pour révoquer une certification.");
+      return;
+    }
+
     try {
-      await firstValueFrom(this.adminService.updateWorkerStatus(workerId, { banned: !currentBannedState }));
+      // 3. Appel au service avec l'ID et la raison
+      await firstValueFrom(this.adminService.revokeCertification(user.id, reason.trim()));
+      this.adminService.refreshUsers();
+      alert('Certification révoquée avec succès.');
+    } catch (err) {
+      console.error('Erreur révocation certification', err);
+      alert("Impossible de révoquer la certification.");
+    }
+  }
+
+  async banUser(worker: any, currentBannedState: boolean) {
+    try {
+      await firstValueFrom(this.adminService.updateWorkerStatus(worker.id, { banned: !currentBannedState }));
       this.adminService.refreshReports();
       this.adminService.refreshUsers();
     } catch (err) {
@@ -445,7 +446,16 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  protected readonly UserRole = UserRole;
+  viewProfile(user: any) {
+    // Vérification : Seuls les annonceurs (WORKER) ont un profil visitable
+    if (user.role === 'WORKER' || user.role === UserRole.WORKER) {
+      // Navigation vers la page de profil publique
+      // (qui utilise automatiquement WorkerService via ton profileVisitingResolver)
+      this.router.navigate(['/profile', user.id]);
+    } else {
+      alert(`Cet utilisateur est un ${user.role}. Il ne possède pas de profil annonceur.`);
+    }
+  }
 
   async inviteAdminModal() {
     const alertRef = await this.alertCtrl.create({

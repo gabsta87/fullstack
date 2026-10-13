@@ -39,11 +39,11 @@ public abstract class VenusUser {
     protected String passwordHash;
 
     // by ADMINS
-    // Banned account cannot log in
+    // Banned account cannot log in or be seen by visitors
     @Column(nullable = false)
     protected boolean isBanned = false;
 
-    // Locked account cannot perform certain actions
+    // Locked account cannot perform certain actions or be seen by visitors
     @Column(nullable = false)
     protected boolean isLocked = false;
 

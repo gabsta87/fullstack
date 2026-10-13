@@ -37,7 +37,6 @@
 </ion-header>
 
 <ion-content class="ion-padding content-with-bottom-spacing">
-
   <!-- ONGLET 1 : UTILISATEURS (Table PrimeNG) -->
   <div *ngIf="currentTab === 'users'">
     <div class="admin-toolbar ion-margin-bottom" style="display: flex; gap: 15px; flex-wrap: wrap;">
@@ -68,7 +67,7 @@
       [rowsPerPageOptions]="[20, 50, 100]"
       [globalFilterFields]="['username', 'email', 'description']"
       styleClass="p-datatable-gridlines p-datatable-sm"
-      [tableStyle]="{'min-width': '60rem'}">
+      [tableStyle]="{'min-width': '65rem'}">
 
       <ng-template pTemplate="header">
         <tr>
@@ -83,37 +82,86 @@
           <th>Disabled</th>
           <th>Certification</th>
           <th>Certification date</th>
-          <th pSortableColumn="locked">Statut <p-sortIcon field="locked"></p-sortIcon></th>
-          <th style="text-align: center;">Actions</th>
+          <th style="text-align: center; width: 70px;">Action</th>
         </tr>
       </ng-template>
 
-      <ng-template pTemplate="body" let-user : AdminUser>
+      <ng-template pTemplate="body" let-user>
         <tr>
-          <td><strong>{{ user.username }}</strong></td>
-          <td>{{ user.email }}</td>
+          <!-- Pseudo cliquable pour consulter le profil -->
+          <td>
+            <a (click)="viewProfile(user.id)" style="cursor: pointer; color: var(--ion-color-primary, #c8956c); text-decoration: underline; font-weight: bold;">
+              {{ user.username }}
+            </a>
+          </td>
+
+          <!-- Email cliquable avec mailto -->
+          <td>
+            <a [href]="'mailto:' + user.email" style="color: inherit; text-decoration: none;" title="Envoyer un e-mail">
+              {{ user.email }}
+            </a>
+          </td>
+
           <td>
             <p-tag [value]="user.role"></p-tag>
           </td>
           <td>{{ user.birthdate }}</td>
-          <td>{{ user.available }}</td>
-          <td>{{ user.hidden }}</td>
-          <td>{{ user.banned }}</td>
-          <td>{{ user.locked }}</td>
-          <td>{{ user.disabled }}</td>
-          <td> {{ user.certificationStatus }}</td>
-          <td> {{ user.certifiedAt }}</td>
+
+          <!-- Available en entier (1 ou 0) -->
+          <td style="text-align: center;">{{ user.available ? 1 : 0 }}</td>
+
           <td>
-            <p-tag
-              [value]="user.banned ? 'Banni' : (user.locked ? 'Verrouillé' : 'Actif')"
-              [severity]="user.banned ? 'danger' : (user.locked ? 'warn' : 'success')">
-            </p-tag>
+            <span *ngIf="user.hidden" style="color: var(--text-muted); font-size: 0.85rem; font-weight: 500;">hidden</span>
           </td>
-          <td style="text-align: center;">
-            <ion-button size="small" fill="clear" [color]="user.locked ? 'success' : 'danger'" (click)="setLocked(user, !user.locked)">
-              <ion-icon [name]="user.locked ? 'lock-open-outline' : 'lock-closed-outline'" slot="icon-only"></ion-icon>
+
+          <!-- Colonne Banned avec tooltip explicatif -->
+          <td>
+            <ion-button size="small"
+                        [fill]="user.banned ? 'solid' : 'outline'"
+                        [color]="user.banned ? 'danger' : 'medium'"
+                        (click)="banUser(user, user.banned)"
+                        title="Banned account cannot log in or be seen by visitors"
+                        style="text-transform: none; font-size: 0.75rem; height: 28px;">
+              {{ user.banned ? 'Banned' : 'Bannir' }}
             </ion-button>
-            <ion-button size="small" fill="clear" color="danger" (click)="deleteUser(user)" title="Delete">
+          </td>
+
+          <!-- Colonne Locked avec tooltip explicatif -->
+          <td>
+            <ion-button size="small"
+                        [fill]="user.locked ? 'solid' : 'outline'"
+                        [color]="user.locked ? 'warning' : 'medium'"
+                        (click)="setLocked(user, !user.locked)"
+                        title="Locked account cannot perform certain actions or be seen by visitors"
+                        style="text-transform: none; font-size: 0.75rem; height: 28px;">
+              {{ user.locked ? 'Locked' : 'Verrouiller' }}
+            </ion-button>
+          </td>
+
+          <td>
+            <span *ngIf="user.disabled" style="color: var(--ion-color-danger); font-size: 0.85rem; font-weight: 500;">disabled</span>
+          </td>
+
+          <!-- Certification et option de révocation -->
+          <td>
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+              <span>{{ user.certificationStatus || '—' }}</span>
+              <ion-button *ngIf="user.certificationStatus === 'CERTIFIED'"
+                          size="small"
+                          fill="clear"
+                          color="danger"
+                          (click)="revokeCertification(user)"
+                          title="Révoquer la certification"
+                          style="font-size: 0.7rem; height: 24px; padding: 0;">
+                Révoquer
+              </ion-button>
+            </div>
+          </td>
+
+          <td>{{ user.certifiedAt || '—' }}</td>
+
+          <td style="text-align: center;">
+            <ion-button size="small" fill="clear" color="danger" (click)="deleteUser(user)" title="Supprimer le compte">
               <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
             </ion-button>
           </td>
@@ -122,7 +170,7 @@
 
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="6" style="text-align: center; padding: 20px;">Aucun utilisateur trouvé.</td>
+          <td colspan="12" style="text-align: center; padding: 20px;">Aucun utilisateur trouvé.</td>
         </tr>
       </ng-template>
     </p-table>

@@ -227,8 +227,6 @@ public class AdminController {
     @PostMapping("/profiles/verify-certification")
     @Transactional
     public ResponseEntity<?> processCertification(@RequestBody CertificationReviewDTO dto, Admin admin) {
-        System.out.println("Request id : " + dto.requestId() + " Approved : " + dto.approved() + " Comment : " + dto.comment() + " Admin : " + admin);
-
         CertificationRequest request = certificationRequestRepository.findById(dto.requestId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Requête introuvable"));
 
@@ -256,6 +254,32 @@ public class AdminController {
             saved = certificationRequestRepository.save(request);
             logAdminAction(admin, "CERTIFICATION_DENIED", worker, "Certification denied for worker " + worker.getEmail() + " because of " + dto.comment());
         }
+        sseStreamService.broadcastAdminEvent("CERTIFICATION_UPDATED", saved.getId());
+
+        WorkerFullProfileDTO workerDto = WorkerFullProfileDTO.from(worker);
+        sseStreamService.emitEvent(worker.getId(), "account-update", workerDto);
+
+        return ResponseEntity.ok(CertificationRequestDTO.from(saved));
+    }
+
+    @Transactional
+    @PostMapping("/profiles/revoke-certification")
+    public ResponseEntity<?> revokeCertification(@RequestBody CertificationRevocationDTO dto, Admin admin) {
+        Worker worker = workerRepository.findById(dto.workerId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker introuvable"));
+
+        CertificationRequest request = worker.getLastCertificationRequest();
+
+        request.setStatus(CertificationStatus.NOT_CERTIFIED);
+
+        CertificationRequest saved = certificationRequestRepository.save(request);
+
+        worker.setCertifiedAt(null);
+        worker.setVerificationCode(null);
+        workerRepository.save(worker);
+
+        logAdminAction(admin, "CERTIFICATION_REVOKED", worker, "Certification revoked for worker " + worker.getEmail()+ " for reason: " + dto.reason());
+
         sseStreamService.broadcastAdminEvent("CERTIFICATION_UPDATED", saved.getId());
 
         WorkerFullProfileDTO workerDto = WorkerFullProfileDTO.from(worker);
