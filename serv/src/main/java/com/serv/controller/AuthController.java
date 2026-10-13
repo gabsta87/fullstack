@@ -46,6 +46,10 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials.");
         }
 
+        if(user.isBanned()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Your account has been banned.");
+        }
+
         String jwtToken = jwtProvider.generateToken(user);
 
         return ResponseEntity.ok(new Requests.LoginResponse(jwtToken, VenusUserDTO.from(user)));
@@ -85,7 +89,7 @@ public class AuthController {
         // TODO check password
 
         Client client = new Client(new Email(req.email()), req.password());
-        client.setLocked(true);
+        client.setLocked(false);
         clientRepository.save(client);
         return ResponseEntity.ok().build();
     }
