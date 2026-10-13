@@ -43,7 +43,7 @@ export const routes: Routes = [
   } },
   { path: 'account', component: AccountComponent, canActivate: [authGuard],
     resolve: {
-      profile: accountResolver,
+      profile:      accountResolver,
       locations:    geographicZonesResolver,
     } },
   { path: 'profile-management', component: ProfileManagementComponent,

@@ -8,11 +8,7 @@ import { BaseUser } from '../models/user.model';
 import { ClientAccountService } from './client-account.service';
 import { WorkerAccountService } from './worker-account.service';
 import {UserRole} from "../models/roles";
-
-interface LoginResponse {
-  token: string;
-  user: BaseUser;
-}
+import {LoginResponse} from "../models/common.model";
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -35,7 +31,6 @@ export class AuthService {
     private zone: NgZone
   ) {}
 
-  // 🎯 Nouvelle méthode pour lire le contenu du JWT sans appel API
   public getDecodedToken(): any {
     const token = localStorage.getItem('auth_token');
     if (!token) return null;

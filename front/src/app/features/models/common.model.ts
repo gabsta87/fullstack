@@ -1,7 +1,14 @@
+import {BaseUser} from "./user.model";
+
 export interface Service{
   id: number;
   name: string;
   description: string;
+}
+
+export interface LoginResponse {
+  token: string;
+  user: BaseUser;
 }
 
 export const CertificationStatus = {
