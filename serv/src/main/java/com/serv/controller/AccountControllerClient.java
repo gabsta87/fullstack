@@ -1,5 +1,6 @@
 package com.serv.controller;
 
+import com.serv.common.ReportStatus;
 import com.serv.common.Requests;
 import com.serv.database.entities.Client;
 import com.serv.database.entities.Email;
@@ -116,13 +117,15 @@ public class AccountControllerClient {
         );
 
         System.out.println("Report worker "+w.getUsername()+" by client "+c.getUsername()+" with reason "+body.reason());
-        Report r;
-        if(reportRepository.findByWorkerAndAuthor(w, c).isEmpty()){
+        Report r = reportRepository.findByWorkerAndAuthor(w, c).orElse(null);
+        if(r == null){
             r = new Report(w, c, body.reason());
             reportRepository.save(r);
-        }else{
+        }else if(r.getStatus() == ReportStatus.PENDING){
             r = reportRepository.findByWorkerAndAuthor(w, c).get();
             r.setReason(body.reason());
+        }else{
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Account already reported");
         }
 
         return ResponseEntity.ok(ReportDTO.from(r));

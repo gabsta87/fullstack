@@ -522,7 +522,7 @@ public class AdminController {
                             reportDetails
                     );
                 })
-                .filter(dto -> dto.reportCount() > 0) // On n'affiche que les annonceurs ayant des signalements actifs
+                .filter(dto -> dto.reportCount() > 0)
                 .sorted(Comparator.comparingLong(AdminWorkerReportDTO::reportCount).reversed())
                 .toList();
 
