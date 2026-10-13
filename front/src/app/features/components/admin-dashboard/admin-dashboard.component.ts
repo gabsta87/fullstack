@@ -21,7 +21,6 @@ import { AuthService } from "../../services/auth.service";
 import { UserRole } from "../../models/roles";
 import {Select} from "primeng/select";
 import {AdminWorkerReport} from "../../models/items.model";
-import {WorkerService} from "../../services/worker.service";
 import {Router} from "@angular/router";
 
 @Component({
