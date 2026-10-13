@@ -155,7 +155,7 @@ export class AdminService {
     return this.http.get<WorkerPrivateProfile>(`${this.apiUrl}/workers/${workerId}`);
   }
 
-  updateWorkerStatus(workerId: string, statusPayload: { locked?: boolean; banned?: boolean; hidden?: boolean }): Observable<any> {
+  updateWorkerStatus(workerId: string, statusPayload: { locked?: boolean; banned?: boolean; }): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/profiles/${workerId}/status`, statusPayload).pipe(
       tap(() => this.refreshUsers())
     );

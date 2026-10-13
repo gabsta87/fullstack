@@ -78,7 +78,6 @@ export interface AdminUser {
   phone?: string;
   available: boolean;
   banned: boolean;
-  disabled: boolean;
   locked: boolean;
   hidden : boolean;
   certificationStatus?: string;

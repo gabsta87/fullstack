@@ -16,8 +16,7 @@ public class Requests {
 
     public record AdminUpdateStatusRequest(
             Boolean locked,
-            Boolean banned,
-            Boolean hidden
+            Boolean banned
     ) {}
 
     public record LoginRequest(String email, String password) { }
