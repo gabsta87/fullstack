@@ -198,9 +198,10 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   async deleteUser(user:any){
-    // TODO
-    // Demande de confirmation
-    // if (!confirm(`Voulez-vous vraiment supprimer le compte de ${user.username} ?`)) return;
+    if (!confirm(`
+    Ne supprimer les comptes que dans les cas nécessaires (erreur de création).
+    Veuillez prioriser le banissement.
+    Voulez-vous vraiment supprimer le compte de ${user.username} ?`)) return;
     try {
       await firstValueFrom(this.adminService.deleteUser(user.id));
     } catch (err) {
@@ -447,7 +448,10 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   viewProfile(user: any) {
     if (user.role === 'WORKER' || user.role === UserRole.WORKER) {
-      this.router.navigate(['/profile'], { queryParams: { id: user.id } });
+      this.router.navigate(['/profile'], {
+        queryParams: { id: user.id },
+        state: { from: this.router.url }
+      });
     } else {
       alert(`Cet utilisateur est un ${user.role}. Il ne possède pas de profil annonceur.`);
     }
