@@ -43,18 +43,18 @@ public class WorkerController {
         }
 
         // 2. Assignations explicites et robustes
-        if (req.username() != null && !req.username().isBlank()) allFilters.put("username", req.username().trim());
-        if (req.bodyType() != null && !req.bodyType().isBlank()) allFilters.put("bodyType", req.bodyType().trim());
-        if (req.eyeColor() != null && !req.eyeColor().isBlank()) allFilters.put("eyeColor", req.eyeColor().trim());
+        if (req.username()  != null && !req.username().isBlank()) allFilters.put("username", req.username().trim());
+        if (req.bodyType()  != null && !req.bodyType().isBlank()) allFilters.put("bodyType", req.bodyType().trim());
+        if (req.eyeColor()  != null && !req.eyeColor().isBlank()) allFilters.put("eyeColor", req.eyeColor().trim());
         if (req.hairColor() != null && !req.hairColor().isBlank()) allFilters.put("hairColor", req.hairColor().trim());
-        if (req.gender() != null && !req.gender().isBlank()) allFilters.put("gender", req.gender().trim());
+        if (req.gender()    != null && !req.gender().isBlank()) allFilters.put("gender", req.gender().trim());
 
         // Pour l'âge (on accepte le fait que ça vienne sous n'importe quelle forme textuelle ou numérique)
         if (req.minAge() != null && !req.minAge().toString().isBlank()) allFilters.put("minAge", req.minAge().toString().trim());
         if (req.maxAge() != null && !req.maxAge().toString().isBlank()) allFilters.put("maxAge", req.maxAge().toString().trim());
 
         // Collections
-        if (req.services() != null && !req.services().isEmpty()) allFilters.put("services", req.services());
+        if (req.services()  != null && !req.services().isEmpty()) allFilters.put("services", req.services());
         if (req.languages() != null && !req.languages().isEmpty()) allFilters.put("languages", req.languages());
 
         return ResponseEntity.ok(galleryService.getGalleryPage(req.getPageOrZero(), allFilters));

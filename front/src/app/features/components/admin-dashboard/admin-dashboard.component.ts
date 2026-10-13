@@ -447,11 +447,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   viewProfile(user: any) {
-    // Vérification : Seuls les annonceurs (WORKER) ont un profil visitable
     if (user.role === 'WORKER' || user.role === UserRole.WORKER) {
-      // Navigation vers la page de profil publique
-      // (qui utilise automatiquement WorkerService via ton profileVisitingResolver)
-      this.router.navigate(['/profile', user.id]);
+      this.router.navigate(['/profile'], { queryParams: { id: user.id } });
     } else {
       alert(`Cet utilisateur est un ${user.role}. Il ne possède pas de profil annonceur.`);
     }
