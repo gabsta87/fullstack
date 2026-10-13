@@ -84,7 +84,7 @@ public class AdminController {
     @GetMapping("/workers/{workerId}")
     public ResponseEntity<WorkerFullProfileDTO> getWorkerProfileForAdmin(@PathVariable UUID workerId) {
         Worker worker = workerRepository.findByIdWithPhotos(workerId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker introuvable"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found"));
         return ResponseEntity.ok(WorkerFullProfileDTO.from(worker));
     }
 
@@ -103,10 +103,8 @@ public class AdminController {
     @PostMapping("/profiles/{id}/status")
     @Transactional
     public ResponseEntity<?> updateWorkerStatus(@PathVariable UUID id, @RequestBody Requests.AdminUpdateStatusRequest req, Admin admin) {
-        Worker targetWorker = workerRepository.findById(id).orElse(null);
-        if (targetWorker == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        Worker targetWorker = workerRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found"));
 
         StringBuilder changes = new StringBuilder();
 
@@ -118,10 +116,6 @@ public class AdminController {
             targetWorker.setBanned(req.banned());
             changes.append("Banni: ").append(req.banned()).append(" ");
         }
-        if (req.hidden() != null) {
-            targetWorker.setHidden(req.hidden());
-            changes.append("Masqué: ").append(req.hidden()).append(" ");
-        }
 
         Worker savedWorker = workerRepository.save(targetWorker);
         logAdminAction(admin, "UPDATE_WORKER_STATUS", targetWorker, "Statuts modifiés -> " + changes.toString().trim());
@@ -132,8 +126,8 @@ public class AdminController {
     @PostMapping("/profiles/update-days")
     @Transactional
     public ResponseEntity<?> updateDays(@RequestBody Requests.AdminUpdateDaysRequest req, Admin admin) {
-        Worker targetWorker = workerRepository.findById(UUID.fromString(req.workerId())).orElse(null);
-        if (targetWorker == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Worker not found"));
+        Worker targetWorker = workerRepository.findById(UUID.fromString(req.workerId()))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found"));
 
         int oldDays = targetWorker.getRemainingDaysCredit();
         targetWorker.setRemainingDaysCredit(req.newDaysValue());
@@ -148,7 +142,7 @@ public class AdminController {
     @Transactional
     public ResponseEntity<?> deleteUser(@PathVariable UUID id, Admin admin) {
         VenusUser userToDelete = userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         // Empêcher un admin de se supprimer lui-même
         if (userToDelete.getId().equals(admin.getId())) {
@@ -190,12 +184,8 @@ public class AdminController {
     @Transactional
     @PostMapping("/certification-request/{requestId}/lock")
     public ResponseEntity<?> lockCertificationReview(@PathVariable Long requestId, Admin admin) {
-
-        CertificationRequest certificationRequest = certificationRequestRepository.findById(requestId).orElse(null);
-
-        if (certificationRequest == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        CertificationRequest certificationRequest = certificationRequestRepository.findById(requestId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found"));
 
         if (certificationRequest.isUnderReview()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
@@ -213,10 +203,9 @@ public class AdminController {
     @Transactional
     @PostMapping("/certification-request/{requestId}/unlock")
     public ResponseEntity<?> unlockCertificationReview(@PathVariable Long requestId) {
-        CertificationRequest certificationRequest = certificationRequestRepository.findById(requestId).orElse(null);
-        if (certificationRequest == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        CertificationRequest certificationRequest = certificationRequestRepository.findById(requestId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found"));
+
         certificationRequest.setUnderReview(false);
         certificationRequest.setLockedByAdmin(null);
         CertificationRequest saved = certificationRequestRepository.save(certificationRequest);
@@ -228,7 +217,7 @@ public class AdminController {
     @Transactional
     public ResponseEntity<?> processCertification(@RequestBody CertificationReviewDTO dto, Admin admin) {
         CertificationRequest request = certificationRequestRepository.findById(dto.requestId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Requête introuvable"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found"));
 
         Worker worker = request.getWorker();
 
@@ -266,7 +255,7 @@ public class AdminController {
     @PostMapping("/profiles/revoke-certification")
     public ResponseEntity<?> revokeCertification(@RequestBody CertificationRevocationDTO dto, Admin admin) {
         Worker worker = workerRepository.findById(dto.workerId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker introuvable"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found"));
 
         CertificationRequest request = worker.getLastCertificationRequest();
 
@@ -296,7 +285,6 @@ public class AdminController {
     @PostMapping("/service")
     @Transactional
     public ResponseEntity<?> saveOrUpdateService(@RequestBody Requests.ServiceRequest service, Admin admin) {
-        System.out.println("service : "+service);
 
         boolean isUpdate = service.id() != null;
 
@@ -336,10 +324,8 @@ public class AdminController {
     @DeleteMapping("/services/{id}")
     @Transactional
     public ResponseEntity<?> deleteService(@PathVariable int id, Admin admin) {
-        Service service = serviceRepository.findById(id).orElse(null);
-        if (service == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Service introuvable."));
-        }
+        Service service = serviceRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Service not found"));
 
         // 1. Sauvegarde des infos pour l'audit
         String serviceName = service.getName();
@@ -394,10 +380,8 @@ public class AdminController {
     @DeleteMapping("/regions/{id}")
     @Transactional
     public ResponseEntity<?> deleteRegion(@PathVariable int id, Admin admin) {
-        GeographicZone zone = geographicZoneRepository.findById(id).orElse(null);
-        if (zone == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Région introuvable."));
-        }
+        GeographicZone zone = geographicZoneRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Region not found"));
 
         // 1. Rassembler l'ID de la zone parente et de ses enfants directs (2 niveaux max)
         List<Integer> zoneIdsToCheck = new java.util.ArrayList<>();
@@ -495,21 +479,34 @@ public class AdminController {
     @DeleteMapping("/comments/{id}")
     @Transactional
     public ResponseEntity<?> deleteComment(@PathVariable Long id, Admin admin) {
-        if(commentRepository.findById(id).isEmpty()) return ResponseEntity.notFound().build();
-        Worker targetWorker = commentRepository.findById(id).get().getWorker();
-        commentRepository.deleteById(id);
+        Comment c = commentRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found"));
+
+        Worker targetWorker = c.getWorker();
+
+        targetWorker.getComments().remove(c);
+
+        commentRepository.delete(c);
+
+        List<CommentDTO> remainingComments = targetWorker.getComments().stream()
+                .map(CommentDTO::from)
+                .collect(Collectors.toList());
+
         logAdminAction(admin, "COMMENT_DELETED", id, "Comment deleted on worker " + targetWorker.getEmail());
-        return ResponseEntity.ok().body(targetWorker);
+
+        return ResponseEntity.ok().body(remainingComments);
     }
 
     @PatchMapping("/comments/{id}")
     @Transactional
-    public ResponseEntity<CommentDTO> editComment(@PathVariable Long id, String content, Admin admin) {
-        Comment comment = commentRepository.findById(id).orElse(null);
-        if (comment == null) return ResponseEntity.notFound().build();
+    public ResponseEntity<CommentDTO> editComment(@PathVariable Long id, @RequestBody String content, Admin admin) {
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found"));
+
         comment.setContent(content);
-        commentRepository.save(comment);
-        logAdminAction(admin, "COMMENT_EDITED", comment, "Comment edited on worker " + comment.getWorker().getEmail());
+
+        logAdminAction(admin, "COMMENT_EDITED", comment.getId(), "Comment edited on worker " + comment.getWorker().getEmail());
+
         return ResponseEntity.ok(CommentDTO.from(comment));
     }
 
@@ -574,7 +571,6 @@ public class AdminController {
     @PostMapping("/invite")
     @Transactional
     public ResponseEntity<?> inviteAdmin(@RequestBody Requests.AdminInviteRequest req, Admin admin) {
-        System.out.println("Invite admin : " + req);
         Email email;
 
         if (req.email() == null || req.email().isBlank()) {
