@@ -81,9 +81,9 @@ public class Worker extends VenusUser {
     private boolean isInvalid;
 
     // by WORKERS
-    // hidden by the worker himself
+    // hidden by the worker himself. The profile won't appear in the gallery
     private boolean isHidden = false;
-    // Available for work by the worker himself.
+    // Available for work by the worker himself. If not available, the profile will still appear, but as unavailable
     private boolean isAvailable = true;
 
     // Instant stored as UTC timestamp

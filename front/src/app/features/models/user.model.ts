@@ -35,6 +35,8 @@ export interface WorkerMinimalProfile extends BaseUser {
 
 // Correspond à WorkerPublicFullProfileDTO
 export interface WorkerPublicFullProfile extends WorkerMinimalProfile {
+  banned: boolean;
+  locked: boolean;
   phone?: string;
   description?: string;
   photos: PhotoItem[];

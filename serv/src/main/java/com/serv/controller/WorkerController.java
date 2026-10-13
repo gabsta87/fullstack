@@ -63,6 +63,13 @@ public class WorkerController {
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
     public ResponseEntity<WorkerPublicFullProfileDTO> getProfile(@PathVariable UUID id) {
+//        // TODO Sécuriser l'accès aux profils bannis
+//        if (worker.isBanned() || worker.isLocked()) {
+//            boolean isAdmin = /* vérifier si l'admin est connecté */;
+//            if (!isAdmin) {
+//                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Ce profil n'est pas accessible.");
+//            }
+//        }
         return workerRepository.findByIdWithPhotos(id)
                 .map(w -> ResponseEntity.ok(WorkerPublicFullProfileDTO.from(w)))
                 .orElse(ResponseEntity.notFound().build());
