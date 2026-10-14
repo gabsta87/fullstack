@@ -103,24 +103,25 @@ public class AdminController {
     @PostMapping("/profiles/{id}/status")
     @Transactional
     public ResponseEntity<?> updateWorkerStatus(@PathVariable UUID id, @RequestBody Requests.AdminUpdateStatusRequest req, Admin admin) {
-        Worker targetWorker = workerRepository.findById(id)
+        System.out.println("updateWorkerStatus: " + id + " " + req.locked() + " " + req.banned());
+        VenusUser targetUser = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found"));
 
         StringBuilder changes = new StringBuilder();
 
         if (req.locked() != null) {
-            targetWorker.setLocked(req.locked());
+            targetUser.setLocked(req.locked());
             changes.append("Verrouillé: ").append(req.locked()).append(" ");
         }
         if (req.banned() != null) {
-            targetWorker.setBanned(req.banned());
+            targetUser.setBanned(req.banned());
             changes.append("Banni: ").append(req.banned()).append(" ");
         }
 
-        Worker savedWorker = workerRepository.save(targetWorker);
-        logAdminAction(admin, "UPDATE_WORKER_STATUS", targetWorker, "Statuts modifiés -> " + changes.toString().trim());
+        VenusUser savedUser = userRepository.save(targetUser);
+        logAdminAction(admin, "UPDATE_WORKER_STATUS", targetUser, "Statuts modifiés -> " + changes.toString().trim());
 
-        return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
+        return ResponseEntity.ok(AdminUserDTO.from(savedUser));
     }
 
     @PostMapping("/profiles/update-days")

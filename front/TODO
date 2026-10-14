@@ -1,22 +1,22 @@
 URGENT
-language selection
 contacter l'équipe par email
-admins can ban/revoke certification
-  show tooltip about locked and disabled profiles
-  change display (text) of boolean columns (show banned instead of true, empty string if false)
-  Certification
-    If a photo is deleted, the certification is still valid
-    If a photo is added, certification is not valid anymore
+language selection
+Certification
+  If a photo is deleted, the certification is still valid
+  If a photo is added, certification is not valid anymore
 
-modifier le guard sur profile pour ne pas permettre d'accéder à un profil banni (sauf pour les admins)
+find a way to mix sorting order on gallery (maybe paying refresh, or cooldown refresh)
+  certified first, then by refresh date
 
 profile management : workers can choose level of each spoken languages
 Test and adapt on mobile
 
-  test if worker can see certification update live (thanks to ssestream updates)
-  test if admins can see modifications of other admins live (thanks to ssestream updates)
 
 SECONDARY
+test if worker can see certification update live (thanks to ssestream updates)
+test if admins can see modifications of other admins live (thanks to ssestream updates)
+
+modifier le guard sur profile pour ne pas permettre d'accéder à un profil banni (sauf pour les admins)
 admins should see all required fields for each profile in the table (to see if there is a validity issue)
 favorite profiles should be shown as favorites on the homepage
 unavailable profiles : hide phone and contact info
