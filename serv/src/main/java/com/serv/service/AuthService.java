@@ -5,6 +5,7 @@ import com.serv.database.entities.VenusUser;
 import com.serv.database.repositories.UserRepository;
 import com.serv.database.repositories.WorkerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,19 +23,18 @@ public class AuthService implements UserDetailsService{
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<VenusUser> userOpt = userRepository.findByEmail(email);
+        VenusUser venusUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        if (userOpt.isPresent()) {
-            VenusUser venusUser = userOpt.get();
-
-            return User.builder()
-                    .username(venusUser.getEmail().getValue())
-                    .password(venusUser.getPasswordHash())
-                    .authorities("ROLE_" + venusUser.getRole().name())
-                    .build();
-        } else {
-            throw new UsernameNotFoundException("User with email " + email + " not found");
+        if (venusUser.isBanned()) {
+            throw new DisabledException("Ce compte a été banni.");
         }
+
+        return User.builder()
+                .username(venusUser.getEmail().getValue())
+                .password(venusUser.getPasswordHash())
+                .authorities("ROLE_" + venusUser.getRole().name())
+                .build();
     }
 
     public VenusUser verifyCredentials(String email, String password){

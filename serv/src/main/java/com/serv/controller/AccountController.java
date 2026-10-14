@@ -53,7 +53,6 @@ public class AccountController {
     @Transactional
     public ResponseEntity<?> updateSettings(@RequestBody Requests.AccountDataRequest req,
                                             VenusUser user) {
-
         // 1. Mise à jour des champs communs
         if (req.username() != null) user.setUsername(req.username());
         if (req.email() != null) user.setEmail(new Email(req.email()));
@@ -61,18 +60,16 @@ public class AccountController {
 
         VenusUser patchedUser = userRepository.save(user);
 
-        // 2. Détection dynamique du type pour envoyer le BON DTO complet 🎯
-        Object dtoToSend;
-        if (patchedUser instanceof Client client) {
-            dtoToSend = ClientDTO.from(client); // Contient les favoris !
-        } else if (patchedUser instanceof Worker worker) {
-            dtoToSend = WorkerFullProfileDTO.from(worker); // Contient la galerie, les services, etc.
-        } else if( patchedUser instanceof Admin admin) {
-            dtoToSend = AdminDTO.from(admin);
-        }else{
-            dtoToSend = VenusUserDTO.from(patchedUser); // Cas de secours
-        }
+        // 2. Détection dynamique du type pour envoyer le BON DTO complet
+        Object dtoToSend = switch (patchedUser) {
+            case Client client -> ClientDTO.from(client); // Contient les favoris !
 
+            case Worker worker -> WorkerFullProfileDTO.from(worker); // Contient la galerie, les services, etc.
+
+            case Admin admin -> AdminDTO.from(admin);
+            default -> VenusUserDTO.from(patchedUser); // Cas de secours
+
+        };
         return ResponseEntity.ok(dtoToSend);
     }
 }

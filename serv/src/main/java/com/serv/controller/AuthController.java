@@ -70,7 +70,13 @@ public class AuthController {
         String email = jwt.getSubject();
 
         return userRepository.findByEmail(email)
-                .map(user -> ResponseEntity.ok(VenusUserDTO.from(user)))
+                .map(user -> {
+                    if (user.isBanned()) {
+                        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Your account has been banned.");
+                    }
+
+                    return ResponseEntity.ok(VenusUserDTO.from(user));
+                })
                 .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
     }
 

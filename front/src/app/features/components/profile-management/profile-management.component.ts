@@ -250,7 +250,7 @@ export class ProfileManagementComponent implements OnInit {
       const diffInMonths = diffInDays / 30.44;
 
       if (diffInMonths > 8) {
-        return { color: 'danger', label: 'Certification expirée. Renouveler.', buttonText: 'Renouveler', icon: 'shield-alert-outline', isCert: false, hasNotification: false, isDisabled: false };
+        return { color: 'danger', label: 'Certification expirée. Renouveler.', buttonText: 'Renouveler', icon: 'camera-outline', isCert: false, hasNotification: false, isDisabled: false };
       } else if (diffInMonths >= 6) {
         return { color: 'warning', label: 'Votre certification expire bientôt.', buttonText: 'Certifié (Expire)', icon: 'shield-outline', isCert: true, hasNotification: false, isDisabled: false };
       } else {
