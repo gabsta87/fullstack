@@ -1,15 +1,18 @@
 {
   "fr": {
     "header": { "home": "Accueil", "login": "Connexion", "logout": "Déconnexion", "account": "Mon Compte", "register": "S'inscrire" },
-    "filters": { "placeholder_name": "Nom...", "search": "Rechercher", "all_regions": "Toutes les régions"}
+    "filters": {"placeholder_name": "Nom...", "search": "Rechercher", "clear": "Effacer", "filters_btn": "Filtres", "all_body_types": "Toutes les silhouettes", "all_eye_colors": "Toutes les couleurs d'yeux", "all_hair_colors": "Toutes les couleurs de cheveux", "all_services": "Tous les services", "all_languages": "Toutes les langues"},
+    "common": { "loading": "Chargement...", "all_regions": "Toutes les régions" }
   },
   "en": {
     "header": { "home": "Home", "login": "Login", "logout": "Logout", "account": "My Account", "register": "Subscribe"  },
-    "filters": { "placeholder_name": "Name...", "search": "Search", "all_regions": "All regions" }
+    "filters": {"placeholder_name": "Name...", "search": "Search", "clear": "Clear", "filters_btn": "Filters", "all_body_types": "All body types", "all_eye_colors": "All eye colors", "all_hair_colors": "All hair colors", "all_services": "All services", "all_languages": "All languages"},
+    "common": { "loading": "Loading...", "all_regions": "All regions" }
   },
   "de": {
     "header": { "home": "Startseite", "login": "Einloggen", "logout": "Ausloggen", "account": "Mein Konto", "register": "Abonnieren" },
-    "filters": { "placeholder_name": "Name...", "search": "Suche", "all_regions": "Alle Regionen" }
+    "filters": {"placeholder_name": "Name...", "search": "Suchen", "clear": "Löschen", "filters_btn": "Filter", "all_body_types": "Alle Körpertypen", "all_eye_colors": "Alle Augenfarben", "all_hair_colors": "Alle Haarfarben", "all_services": "Alle Dienstleistungen", "all_languages": "Alle Sprachen"},
+    "common": { "loading": "Wird geladen...", "all_regions": "Alle Regionen" }
   },
   "es": {
     "header": { "home": "Inicio", "login": "Acceder", "logout": "Salir", "account": "Mi Cuenta", "register": "Suscribirse" },
@@ -33,6 +36,6 @@
   },
   "ar": {
     "header": { "home": "الرئيسية", "login": "تسجيل الدخول", "logout": "تسجيل الخروج", "account": "حسابي", "register": "اشترك" },
-    "filters": { "placeholder_name": "الاسم...", "search": "بحث", "all_regions": "كل المناطق" }
+    "filters": {"placeholder_name": "الاسم...", "search": "بحث", "all_regions": "جميع المناطق", "clear": "مسح", "filters_btn": "عوامل التصفية", "all_body_types": "جميع أنواع الأجسام", "all_eye_colors": "جميع ألوان العيون", "all_hair_colors": "جميع ألوان الشعر", "all_services": "جميع الخدمات", "all_languages": "جميع اللغات"}
   }
 }

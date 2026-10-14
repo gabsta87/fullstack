@@ -36,8 +36,9 @@ import {ZoneSelectorComponent} from "../zone-selector/zone-selector.component";
 import { GalleryStateService } from '../../services/gallery-state.service';
 import { sparklesOutline } from 'ionicons/icons';
 import {ClientAccountService} from "../../services/client-account.service";
-import {KeyValuePipe, NgForOf, NgIf} from "@angular/common";
+import {AsyncPipe, KeyValuePipe, NgForOf, NgIf} from "@angular/common";
 import {Service} from "../../models/common.model";
+import {LanguageManagerService} from "../../services/language-manager.service";
 
 @Component({
   selector: 'app-homepage',
@@ -68,7 +69,8 @@ import {Service} from "../../models/common.model";
     KeyValuePipe,
     NgIf,
     IonFab,
-    IonFabButton
+    IonFabButton,
+    AsyncPipe
   ],
 })
 export class HomepageComponent implements OnInit {
@@ -102,7 +104,8 @@ export class HomepageComponent implements OnInit {
     private workerService: WorkerService,
     private authService: AuthService,
     private stateService: GalleryStateService,
-    private clientAccountService: ClientAccountService
+    private clientAccountService: ClientAccountService,
+    public langService: LanguageManagerService
   ) {
     addIcons({ optionsOutline, closeOutline, locationOutline, personOutline, sparklesOutline, arrowUpOutline });
   }
