@@ -1,66 +1,72 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>{{ mode === 'login' ? 'Se connecter' : 'Créer un compte' }}</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="dismiss()"><ion-icon name="close-outline"></ion-icon></ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<ng-container *ngIf="languageService.currentLanguage$ | async as t">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>{{ mode === 'login' ? t.auth?.login_title : t.auth?.register_title }}</ion-title>
+      <ion-buttons slot="end">
+        <ion-button (click)="dismiss()"><ion-icon name="close-outline"></ion-icon></ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
 
-<ion-content class="ion-padding">
-  <form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="auth-form">
+  <ion-content class="ion-padding">
+    <form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="auth-form">
 
-    <div class="role-toggle" *ngIf="mode === 'register'">
-      <button type="button" [class.active]="authForm.get('role')?.value === 'client'" (click)="authForm.patchValue({role:'client'})">Client</button>
-      <button type="button" [class.active]="authForm.get('role')?.value === 'worker'" (click)="authForm.patchValue({role:'worker'})">Annonceur</button>
-    </div>
+      <div class="role-toggle" *ngIf="mode === 'register'">
+        <button type="button" [class.active]="authForm.get('role')?.value === 'client'" (click)="authForm.patchValue({role:'client'})">
+          {{ t.auth?.role_client }}
+        </button>
+        <button type="button" [class.active]="authForm.get('role')?.value === 'worker'" (click)="authForm.patchValue({role:'worker'})">
+          {{ t.auth?.role_worker }}
+        </button>
+      </div>
 
-    <div class="field-group">
-      <label>Email</label>
-      <input type="email" #input
-             formControlName="email"
-             placeholder="email@exemple.com"
-             autocomplete="email"
-      />
-    </div>
+      <div class="field-group">
+        <label>{{ t.auth?.email }}</label>
+        <input type="email" #input
+               formControlName="email"
+               [placeholder]="t.auth?.email_placeholder"
+               autocomplete="email"
+        />
+      </div>
 
-    <div class="field-group">
-      <label>Mot de passe</label>
-      <input type="password"
-             formControlName="password"
-             placeholder="••••••••"
-             [attr.autocomplete]="mode === 'login' ? 'current-password' : 'new-password'"
-      />
-    </div>
+      <div class="field-group">
+        <label>{{ t.auth?.password }}</label>
+        <input type="password"
+               formControlName="password"
+               placeholder="••••••••"
+               [attr.autocomplete]="mode === 'login' ? 'current-password' : 'new-password'"
+        />
+      </div>
 
-    <div class="field-group" *ngIf="mode === 'register'">
-      <label>Confirmer le mot de passe</label>
-      <input type="password"
-             formControlName="confirmPassword"
-             placeholder="••••••••"
-             autocomplete="new-password"
-      />
-      <small class="error-text" *ngIf="authForm.hasError('mismatch') && authForm.get('confirmPassword')?.touched">
-        Les mots de passe ne correspondent pas
-      </small>
-    </div>
+      <div class="field-group" *ngIf="mode === 'register'">
+        <label>{{ t.auth?.confirm_password }}</label>
+        <input type="password"
+               formControlName="confirmPassword"
+               placeholder="••••••••"
+               autocomplete="new-password"
+        />
+        <small class="error-text" *ngIf="authForm.hasError('mismatch') && authForm.get('confirmPassword')?.touched">
+          {{ t.auth?.password_mismatch }}
+        </small>
+      </div>
 
-    <div class="form-feedback error" *ngIf="errorMsg">{{ errorMsg }}</div>
+      <div class="form-feedback error" *ngIf="errorMsg">{{ errorMsg }}</div>
 
-    <ion-button type="submit" expand="block" class="auth-btn" [disabled]="authForm.invalid || isLoading">
-      <ion-spinner *ngIf="isLoading" name="crescent" slot="start"></ion-spinner>
-      {{ mode === 'login' ? 'Se connecter' : "S'inscrire" }}
-    </ion-button>
+      <ion-button type="submit" expand="block" class="auth-btn" [disabled]="authForm.invalid || isLoading">
+        <ion-spinner *ngIf="isLoading" name="crescent" slot="start"></ion-spinner>
+        {{ mode === 'login' ? t.auth?.login_btn : t.auth?.register_btn }}
+      </ion-button>
 
-    <!-- Switches -->
-    <p class="auth-switch" *ngIf="mode === 'login'">
-      Pas encore de compte ? <a (click)="switchMode('register')">S'inscrire</a>
-    </p>
-    <p class="auth-switch" *ngIf="mode === 'register'">
-      Déjà un compte ? <a (click)="switchMode('login')">Se connecter</a>
-    </p>
-    <p class="auth-switch" *ngIf="mode === 'login'">
-      <a (click)="goToForgotPassword()">Mot de passe oublié ?</a>
-    </p>
-  </form>
-</ion-content>
+      <!-- Switches -->
+      <p class="auth-switch" *ngIf="mode === 'login'">
+        {{ t.auth?.no_account }} <a (click)="switchMode('register')">{{ t.auth?.register_btn }}</a>
+      </p>
+      <p class="auth-switch" *ngIf="mode === 'register'">
+        {{ t.auth?.already_account }} <a (click)="switchMode('login')">{{ t.auth?.login_btn }}</a>
+      </p>
+      <p class="auth-switch" *ngIf="mode === 'login'">
+        <a (click)="goToForgotPassword()">{{ t.auth?.forgot_password }}</a>
+      </p>
+    </form>
+  </ion-content>
+</ng-container>

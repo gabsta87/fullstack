@@ -8,6 +8,7 @@ import {RegisterService} from '../../services/register.service';
 import {LoadingController} from "@ionic/angular/standalone";
 import {ForgotPasswordComponent} from "../forgot-password/forgot-password.component";
 import {UserRole} from "../../models/roles";
+import {LanguageManagerService} from "../../services/language-manager.service";
 
 @Component({
   selector: 'app-auth-modal',
@@ -26,12 +27,11 @@ export class AuthModalComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private alertCtrl: AlertController,
-    private loadingCtrl: LoadingController,
     private authService: AuthService,
     private registerService: RegisterService,
     private modalCtrl: ModalController,
-    private router: Router
+    private router: Router,
+    protected languageService : LanguageManagerService,
   ) {}
 
   ngOnInit() {

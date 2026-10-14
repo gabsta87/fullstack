@@ -12,7 +12,6 @@
       Absente
     </ion-badge>
 
-    <!-- Nom et localisation par-dessus l'image en bas au milieu (sans encadrement) -->
     <div class="wcard-overlay-info">
       <h3 class="wcard-overlay-title">
         {{ worker.username }}
@@ -26,9 +25,7 @@
     </div>
   </div>
 
-  <!-- Description courte ou smileys cœur par défaut -->
   <ion-card-content class="wcard-description">
-<!--    {{ worker.shortDescription || 'xx' }}-->
     {{ worker.shortDescription || '❤️❤️❤️' }}
   </ion-card-content>
 </ion-card>

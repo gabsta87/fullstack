@@ -1,16 +1,19 @@
-<div [class.filter-banner-mode]="isFilterBanner" [class.form-profile-mode]="!isFilterBanner">
+<div [class.filter-banner-mode]="isFilterBanner" [class.form-profile-mode]="!isFilterBanner" *ngIf="langService.currentLanguage$ | async as t">
 
   <!-- SÉLECTION DE LA RÉGION -->
   <div class="zone-col">
     <ion-item lines="none" [class.filter-input-item]="isFilterBanner" [class.venus-input]="!isFilterBanner">
       <ion-icon *ngIf="showIcons" name="location-outline" slot="start" class="filter-icon"></ion-icon>
-      <ion-label *ngIf="!isFilterBanner" position="stacked">Région</ion-label>
+      <ion-label *ngIf="!isFilterBanner" position="stacked">{{ t.zones?.region_label }}</ion-label>
       <ion-select aria-label="Région" interface="popover"
                   [(ngModel)]="parentZoneId"
                   (ionChange)="onParentChange()"
-                  [placeholder]="parentPlaceholder">
-        <!-- Utilisation d'un attribut vide ou undefined pour réinitialiser proprement -->
-        <ion-select-option *ngIf="allowAllOption" [value]="undefined">{{ allParentsLabel }}</ion-select-option>
+                  [placeholder]="parentPlaceholder || t.zones?.select_region">
+
+        <ion-select-option *ngIf="allowAllOption" [value]="undefined">
+          {{ allParentsLabel || t.filters?.all_regions }}
+        </ion-select-option>
+
         <ion-select-option *ngFor="let zone of zones" [value]="zone.id">
           {{ zone.name }}
         </ion-select-option>
@@ -22,13 +25,16 @@
   <div class="zone-col" [class.disabled-col]="!parentZoneId">
     <ion-item lines="none" [class.filter-input-item]="isFilterBanner" [class.venus-input]="!isFilterBanner" [disabled]="!parentZoneId">
       <ion-icon *ngIf="showIcons" name="business-outline" slot="start" class="filter-icon"></ion-icon>
-      <ion-label *ngIf="!isFilterBanner" position="stacked">Localisation précise</ion-label>
+      <ion-label *ngIf="!isFilterBanner" position="stacked">{{ t.zones?.precise_location_label }}</ion-label>
       <ion-select aria-label="Localisation" interface="popover"
                   [(ngModel)]="childZoneId"
                   (ionChange)="onChildChange()"
-                  [placeholder]="childPlaceholder">
-        <!-- 🎯 On force la valeur à -1 ici -->
-        <ion-select-option *ngIf="allowAllOption" [value]="-1">{{ allChildrenLabel }}</ion-select-option>
+                  [placeholder]="childPlaceholder || t.zones?.select_location">
+
+        <ion-select-option *ngIf="allowAllOption" [value]="-1">
+          {{ allChildrenLabel || t.filters?.all_locations }}
+        </ion-select-option>
+
         <ion-select-option *ngFor="let subZone of availableChildZones" [value]="subZone.id">
           {{ subZone.name }}
         </ion-select-option>

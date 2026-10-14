@@ -1,25 +1,27 @@
 <app-header></app-header>
 
-<ion-content *ngIf="currentUser$ | async as user" class="venus-content">
-  <ion-toolbar class="segment-toolbar">
-    <ion-segment [(ngModel)]="activeTab" mode="md">
-      <ion-segment-button value="favorites">
-        <ion-label>Favoris</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="settings">
-        <ion-label>Réglages</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="account">
-        <ion-label>Compte</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-  </ion-toolbar>
+<ng-container *ngIf="languageService.currentLanguage$ | async as t">
+  <ion-content *ngIf="currentUser$ | async as user" class="venus-content">
+    <ion-toolbar class="segment-toolbar">
+      <ion-segment [(ngModel)]="activeTab" mode="md">
+        <ion-segment-button value="favorites">
+          <ion-label>{{ t.account?.tabs?.favorites }}</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="settings">
+          <ion-label>{{ t.account?.tabs?.settings }}</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="account">
+          <ion-label>{{ t.account?.tabs?.account }}</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </ion-toolbar>
 
-  <ion-grid [fixed]="false" class="ion-no-padding">
+    <ion-grid [fixed]="false" class="ion-no-padding">
 
-    <div *ngIf="activeTab === 'favorites' && user.favorites" class="fade-in ion-padding">
+      <!-- ONGLET FAVORIS -->
+      <div *ngIf="activeTab === 'favorites' && user.favorites" class="fade-in ion-padding">
         <div class="section-header">
-          <h2>Vos favoris ({{ user.favorites.length }})</h2>
+          <h2>{{ t.account?.favorites?.title }} ({{ user.favorites.length }})</h2>
         </div>
 
         <ion-row>
@@ -31,53 +33,55 @@
 
         <div *ngIf="user.favorites.length === 0" class="empty-favorites">
           <ion-icon name="heart-dislike-outline"></ion-icon>
-          <p>Vous n'avez pas encore de favoris.</p>
+          <p>{{ t.account?.favorites?.empty }}</p>
         </div>
-    </div>
-
-    <div *ngIf="activeTab === 'settings'" class="fade-in ion-padding">
-      <div class="settings-container">
-
-        <ion-card class="settings-card">
-          <ion-card-header>
-            <ion-card-title>Mes préférences de recherche</ion-card-title>
-          </ion-card-header>
-
-          <ion-card-content>
-            <ion-list lines="none">
-              <zone-selector
-                [zones]="locations"
-                [selectedChildId]="selectedZoneId"
-                [allowAllOption]="true"
-                [allParentsLabel]="'Toutes les régions'"
-                [allChildrenLabel]="'Toutes les localisations'"
-                (onZoneSelected)="onZoneChange($event, user)">
-              </zone-selector>
-
-              <div class="field-label ion-margin-top">Silhouettes préférées</div>
-              <div class="chips-group">
-                <ion-chip *ngFor="let b of bodyTypesList"
-                          [outline]="!selectionStates.bodyType[b]"
-                          [color]="selectionStates.bodyType[b] ? 'primary' : 'medium'"
-                          (click)="selectionStates.bodyType[b] = !selectionStates.bodyType[b]">
-                  <ion-label>{{ bodyTypeLabels[b] || b }}</ion-label>
-                  <ion-icon name="checkmark-circle" *ngIf="selectionStates.bodyType[b]"></ion-icon>
-                </ion-chip>
-              </div>
-            </ion-list>
-          </ion-card-content>
-        </ion-card>
-
       </div>
-    </div>
 
-    <div *ngIf="activeTab === 'account'" class="fade-in ion-padding">
-      <account-settings
-        [initialEmail]="user.email ? user.email : ''"
-        [isWorker]="false"
-        (onSaveSettings)="handleSettingsSave($event)">
-      </account-settings>
-    </div>
+      <!-- ONGLET RÉGLAGES -->
+      <div *ngIf="activeTab === 'settings'" class="fade-in ion-padding">
+        <div class="settings-container">
 
-  </ion-grid>
-</ion-content>
+          <ion-card class="settings-card">
+            <ion-card-header>
+              <ion-card-title>{{ t.account?.settings?.title }}</ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content>
+              <ion-list lines="none">
+                <!-- Zone Selector (utilise désormais les traductions internes automatiques) -->
+                <zone-selector
+                  [zones]="locations"
+                  [selectedChildId]="selectedZoneId"
+                  [allowAllOption]="true"
+                  (onZoneSelected)="onZoneChange($event, user)">
+                </zone-selector>
+
+                <div class="field-label ion-margin-top">{{ t.account?.settings?.body_types_label }}</div>
+                <div class="chips-group">
+                  <ion-chip *ngFor="let b of bodyTypesList"
+                            [outline]="!selectionStates.bodyType[b]"
+                            [color]="selectionStates.bodyType[b] ? 'primary' : 'medium'"
+                            (click)="selectionStates.bodyType[b] = !selectionStates.bodyType[b]">
+                    <ion-label>{{ bodyTypeLabels[b] || b }}</ion-label>
+                    <ion-icon name="checkmark-circle" *ngIf="selectionStates.bodyType[b]"></ion-icon>
+                  </ion-chip>
+                </div>
+              </ion-list>
+            </ion-card-content>
+          </ion-card>
+
+        </div>
+      </div>
+
+      <!-- ONGLET COMPTE -->
+      <div *ngIf="activeTab === 'account'" class="fade-in ion-padding">
+        <account-settings
+          [initialEmail]="user.email ? user.email : ''"
+          [isWorker]="false"
+          (onSaveSettings)="handleSettingsSave($event)">
+        </account-settings>
+      </div>
+
+    </ion-grid>
+  </ion-content>
+</ng-container>

@@ -16,6 +16,7 @@ import {tap} from "rxjs/operators";
 import {ZoneSelectorComponent} from "../zone-selector/zone-selector.component";
 import { addIcons } from 'ionicons';
 import { heartDislikeOutline, checkmarkCircle } from 'ionicons/icons';
+import {LanguageManagerService} from "../../services/language-manager.service";
 
 @Component({
   selector: 'app-account',
@@ -41,7 +42,7 @@ export class AccountComponent implements OnInit {
 
   constructor(
     private accountService: ClientAccountService,
-    private workerService: WorkerService,
+    protected languageService: LanguageManagerService,
     private route : ActivatedRoute,
   ) {
     addIcons({ heartDislikeOutline, checkmarkCircle });

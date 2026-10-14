@@ -18,6 +18,7 @@ import {ClientAccountService} from "../../services/client-account.service";
 import {AuthService} from "../../services/auth.service";
 import {Subscription} from "rxjs";
 import {Service} from "../../models/common.model";
+import {LanguageManagerService} from "../../services/language-manager.service";
 
 @Component({
   selector: 'app-profile',
@@ -55,7 +56,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
   constructor(private route: ActivatedRoute,
               private clientAccountService: ClientAccountService,
               private authService : AuthService,
-              private router: Router
+              private router: Router,
+              protected languageService : LanguageManagerService
   ) {
     addIcons({
       callOutline, logoWhatsapp, heartOutline, heart,

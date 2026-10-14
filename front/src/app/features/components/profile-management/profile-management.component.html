@@ -1,22 +1,22 @@
 <app-header></app-header>
 
-<ion-content class="pm-main-container content-with-bottom-spacing">
+<ion-content class="pm-main-container content-with-bottom-spacing" *ngIf="languageService.currentLanguage$ | async as t">
 
-  <div class="pm-wrapper" *ngIf="currentUser$ | async as me ">
+  <div class="pm-wrapper" *ngIf="currentUser$ | async as me">
 
-    <!-- Banner to tell the user that his profile is not complete yet   -->
+    <!-- Bannière d'alerte profil incomplet -->
     <div class="profile-warning-banner" *ngIf="getMissingFieldsList(me).length > 0">
       <ion-icon name="warning-outline" color="danger"></ion-icon>
       <div class="banner-text">
-        <h3>Votre profil est actuellement invisible</h3>
-        <p>Tant que ces informations essentielles ne sont pas fournies, votre annonce restera invisible.</p>
+        <h3>{{ t.profile_management?.warning_title }}</h3>
+        <p>{{ t.profile_management?.warning_subtitle }}</p>
         <div class="missing-tags">
           <span class="tag" *ngFor="let label of getMissingFieldsList(me)">{{ label }}</span>
         </div>
       </div>
     </div>
 
-    <!-- Hero grid -->
+    <!-- Grille En-tête / Hero -->
     <ion-grid class="pm-hero-grid ion-no-padding">
       <ion-row class="ion-align-items-center">
         <ion-col size="2" size-md="auto" class="ion-text-center">
@@ -44,7 +44,7 @@
                           size="small"
                           (click)="toggleAvailable(!me.available)">
                 <ion-icon [name]="me.available ? 'chevron-down-circle-outline' : 'close-circle-outline'" slot="start"></ion-icon>
-                {{ me.available ? 'En ligne' : 'Hors ligne' }}
+                {{ me.available ? t.profile_management?.online : t.profile_management?.offline }}
               </ion-button>
 
               <ion-button [color]="!me.hidden ? 'success' : 'medium'"
@@ -52,10 +52,10 @@
                           size="small"
                           (click)="toggleVisible(!me.hidden)">
                 <ion-icon [name]="!me.hidden ? 'eye-outline' : 'eye-off-outline'" slot="start"></ion-icon>
-                {{ !me.hidden ? 'Visible' : 'Invisible' }}
+                {{ !me.hidden ? t.profile_management?.visible : t.profile_management?.invisible }}
               </ion-button>
 
-              <!-- Bouton / Pastille de Certification Dynamique -->
+              <!-- Pastille de Certification Dynamique -->
               <ion-button
                 *ngIf="currentUser$ | async as me"
                 [color]="getCertificationBadge(me).color"
@@ -79,18 +79,19 @@
       </ion-row>
     </ion-grid>
 
+    <!-- Navigation par Onglets -->
     <ion-toolbar class="segment-toolbar">
       <ion-segment [(ngModel)]="activeTab" mode="md">
         <ion-segment-button value="profile">
           <ion-label [class.tab-error]="isFieldMissing('username', me) || isFieldMissing('description', me) || isFieldMissing('geographicZoneId', me) || isFieldMissing('phone', me) || isFieldMissing('birthday', me) || isFieldMissing('services', me)">
-            Profil
+            {{ t.profile_management?.tabs?.profile }}
           </ion-label>
         </ion-segment-button>
         <ion-segment-button value="photos">
-          <ion-label [class.tab-error]="isFieldMissing('photos', me)">Medias</ion-label>
+          <ion-label [class.tab-error]="isFieldMissing('photos', me)">{{ t.profile_management?.tabs?.media }}</ion-label>
         </ion-segment-button>
         <ion-segment-button value="settings">
-          <ion-label [class.tab-error]="isFieldMissing('email', me)">Compte</ion-label>
+          <ion-label [class.tab-error]="isFieldMissing('email', me)">{{ t.profile_management?.tabs?.account }}</ion-label>
         </ion-segment-button>
       </ion-segment>
     </ion-toolbar>
@@ -105,27 +106,27 @@
               <!-- Username -->
               <ion-col size="12" size-md="6">
                 <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('username', me)">
-                  <ion-label position="stacked">Nom affiché</ion-label>
+                  <ion-label position="stacked">{{ t.profile_management?.form?.display_name }}</ion-label>
                   <ion-input type="text"
                              name="username"
                              [(ngModel)]="profileForm.username"
                              [required]="true"
                              [debounce]="500"
                              (ionChange)="updateProfileField('username', $event.detail.value)"
-                             placeholder="Votre pseudo"></ion-input>
+                             [placeholder]="t.profile_management?.form?.display_name_placeholder"></ion-input>
                 </ion-item>
               </ion-col>
               <ion-col size="12" size-md="6">
                 <ion-item lines="none" class="venus-input">
-                  <ion-label position="stacked">Description courte (Max. 45 caractères)</ion-label>
+                  <ion-label position="stacked">{{ t.profile_management?.form?.short_desc }}</ion-label>
                   <ion-input type="text"
                              name="short description"
                              [(ngModel)]="profileForm.shortDescription"
                              [required]="true"
-                             [maxlength] = 45
+                             [maxlength]="45"
                              [debounce]="500"
                              (ionChange)="updateProfileField('shortDescription', $event.detail.value)"
-                             placeholder="Ex: Passionnée de voyages ✨"></ion-input>
+                             [placeholder]="t.profile_management?.form?.short_desc_placeholder"></ion-input>
                 </ion-item>
               </ion-col>
             </ion-row>
@@ -134,13 +135,13 @@
               <!-- Description -->
               <ion-col size="12">
                 <ion-item lines="none" class="description-container" [class.invalid-item]="isFieldMissing('description', me)">
-                  <ion-label position="stacked">Description *</ion-label>
+                  <ion-label position="stacked">{{ t.profile_management?.form?.description }}</ion-label>
                   <ion-textarea [(ngModel)]="profileForm.description"
                                 [debounce]="500"
                                 [autoGrow]="true"
                                 (ionChange)="updateProfileField('description', $event.detail.value)"
-                                class = "description-input"
-                                placeholder="Décrivez votre profil, vos spécialités..."></ion-textarea>
+                                class="description-input"
+                                [placeholder]="t.profile_management?.form?.description_placeholder"></ion-textarea>
                 </ion-item>
               </ion-col>
             </ion-row>
@@ -170,19 +171,19 @@
               <!-- Téléphone -->
               <ion-col size="6" size-md="6">
                 <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('phone', me)">
-                  <ion-label position="stacked">Téléphone *</ion-label>
+                  <ion-label position="stacked">{{ t.profile_management?.form?.phone }}</ion-label>
                   <ion-input type="tel"
                              [(ngModel)]="profileForm.phone"
                              [debounce]="500"
                              (ionChange)="updateProfileField('phone', $event.detail.value)"
-                             placeholder="Ex: +33 6 12 34 56 78"></ion-input>
+                             [placeholder]="t.profile_management?.form?.phone_placeholder"></ion-input>
                 </ion-item>
               </ion-col>
 
               <!-- Date de Naissance -->
               <ion-col size="6" size-md="6">
                 <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('birthday', me)">
-                  <ion-label position="stacked">Date de naissance *</ion-label>
+                  <ion-label position="stacked">{{ t.profile_management?.form?.birthdate }}</ion-label>
                   <ion-input type="date"
                              [(ngModel)]="profileForm.birthdate"
                              (ionInput)="updateProfileField('birthdate', $event.detail.value)">
@@ -192,10 +193,10 @@
             </ion-row>
 
             <ion-row>
-              <!-- Silhouette, Yeux, Cheveux sont optionnels -->
+              <!-- Silhouette, Cheveux, Yeux -->
               <ion-col size="12" size-md="4">
                 <ion-item lines="none" class="venus-input">
-                  <ion-select label="Silhouette" label-placement="stacked" interface="popover" [(ngModel)]="profileForm.bodyType" (ionChange)="updateProfileField('bodyType', $event.detail.value)">
+                  <ion-select [label]="t.profile_management?.form?.body_type" label-placement="stacked" interface="popover" [(ngModel)]="profileForm.bodyType" (ionChange)="updateProfileField('bodyType', $event.detail.value)">
                     <ion-select-option *ngFor="let type of BODY_TYPE_LABELS | keyvalue" [value]="type.key">{{ type.value }}</ion-select-option>
                   </ion-select>
                 </ion-item>
@@ -203,7 +204,7 @@
 
               <ion-col size="12" size-md="4">
                 <ion-item lines="none" class="venus-input">
-                  <ion-select label="Cheveux" label-placement="stacked" interface="popover" [(ngModel)]="profileForm.hairColor" (ionChange)="updateProfileField('hairColor', $event.detail.value)">
+                  <ion-select [label]="t.profile_management?.form?.hair_color" label-placement="stacked" interface="popover" [(ngModel)]="profileForm.hairColor" (ionChange)="updateProfileField('hairColor', $event.detail.value)">
                     <ion-select-option *ngFor="let type of HAIR_COLOR_LABELS | keyvalue" [value]="type.key">{{ type.value }}</ion-select-option>
                   </ion-select>
                 </ion-item>
@@ -211,7 +212,7 @@
 
               <ion-col size="12" size-md="4">
                 <ion-item lines="none" class="venus-input">
-                  <ion-select label="Yeux" label-placement="stacked" interface="popover" [(ngModel)]="profileForm.eyeColor" (ionChange)="updateProfileField('eyeColor', $event.detail.value)">
+                  <ion-select [label]="t.profile_management?.form?.eye_color" label-placement="stacked" interface="popover" [(ngModel)]="profileForm.eyeColor" (ionChange)="updateProfileField('eyeColor', $event.detail.value)">
                     <ion-select-option *ngFor="let type of EYE_COLOR_LABELS | keyvalue" [value]="type.key">{{ type.value }}</ion-select-option>
                   </ion-select>
                 </ion-item>
@@ -223,7 +224,7 @@
               <ion-col size="12">
                 <div class="services-container" [class.invalid-container]="isFieldMissing('services', me)">
                   <ion-grid class="services-grid">
-                    <ion-label>Services proposés * (Sélectionnez-en au moins un)</ion-label>
+                    <ion-label>{{ t.profile_management?.form?.services_title }}</ion-label>
                     <ion-row>
                       <ion-col *ngFor="let service of allServices">
                         <ion-checkbox
@@ -241,11 +242,10 @@
           </ion-grid>
         </div>
 
-        <!-- ONGLET PHOTOS -->
+        <!-- ONGLET PHOTOS / MÉDIAS -->
         <div *ngIf="activeTab === 'photos'" class="fade-in">
 
           <div class="drop-zone-container">
-            <!-- On élargit l'attribut accept pour inclure les formats vidéo courants -->
             <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/jpeg, image/png, image/webp, video/mp4, video/quicktime, video/webm" multiple style="display: none">
 
             <div class="drop-zone"
@@ -256,19 +256,19 @@
                  (click)="fileInput.click()">
 
               <ion-icon name="cloud-upload-outline" size="large" color="primary"></ion-icon>
-              <p>Glissez-déposez vos photos ou vidéos ici ou <strong>cliquez pour parcourir</strong></p>
-              <p class="format-hint">Photos : JPG, PNG, WEBP • Vidéos : MP4, MOV, WEBM</p>
+              <p>{{ t.profile_management?.media?.drop_title }} <strong>{{ t.profile_management?.media?.drop_click }}</strong></p>
+              <p class="format-hint">{{ t.profile_management?.media?.format_hint }}</p>
             </div>
 
             <ion-button expand="block" (click)="fileInput.click()" [color]="isFieldMissing('photos', me) ? 'danger' : 'primary'" class="ion-margin">
               <ion-icon slot="start" name="add-circle-outline"></ion-icon>
-              Ajouter vos photos ou vidéos * (Au moins une photo obligatoire)
+              {{ t.profile_management?.media?.add_btn }}
             </ion-button>
           </div>
 
-          <!-- ── SECTION 1 : GALERIE Media (Photo obligatoire) ──────────────────────── -->
+          <!-- Galerie Photos -->
           <div class="media-section-title">
-            <h3>Photos <span class="required-asterisk">*</span></h3>
+            <h3>{{ t.profile_management?.media?.photos_title }} <span class="required-asterisk">*</span></h3>
           </div>
           <ion-grid class="ion-no-padding ion-padding-horizontal">
             <ion-row>
@@ -301,15 +301,14 @@
             </ion-row>
           </ion-grid>
 
-          <!-- ── SECTION 2 : GALERIE VIDÉOS (OPTIONNELLES) ─────────────────────── -->
+          <!-- Galerie Vidéos -->
           <div class="media-section-title ion-margin-top">
-            <h3>Vidéos <span class="optional-text">(Optionnel)</span></h3>
+            <h3>{{ t.profile_management?.media?.videos_title }} <span class="optional-text">{{ t.profile_management?.media?.optional }}</span></h3>
           </div>
           <ion-grid class="ion-no-padding ion-padding-horizontal">
             <ion-row>
               <ion-col size="4" size-md="3" *ngFor="let video of videos$ | async; let i = index" class="ion-padding-tiny photo-col">
                 <div class="gallery-item video-gallery-item">
-                  <!-- Balise vidéo pour un aperçu direct -->
                   <video [src]="video.url" class="gallery-img" controls preload="metadata"></video>
 
                   <div class="gallery-actions-overlay">
@@ -323,7 +322,7 @@
           </ion-grid>
         </div>
 
-        <!-- ONGLET COMPTE-->
+        <!-- ONGLET COMPTE -->
         <div *ngIf="activeTab === 'settings'" class="fade-in">
           <account-settings
             [initialEmail]="me.email ? me.email : ''"
@@ -333,18 +332,6 @@
             (onSaveSettings)="handleSettingsSave($event)"
             (onManageSubscription)="handleSubscriptionClick()">
           </account-settings>
-
-<!--          <div class="pack-selector">-->
-<!--            <button (click)="chosenAmount = 2500; chosenType = 'DAYS'">Acheter du crédit de visibilité (25€)</button>-->
-<!--            <button (click)="chosenAmount = 500; chosenType = 'BOOST'">Remonter en tête de liste (5€)</button>-->
-<!--          </div>-->
-
-<!--          <stripe-payment-->
-<!--            *ngIf="chosenAmount > 0"-->
-<!--            [workerId]="me.id"-->
-<!--            [amount]="chosenAmount"-->
-<!--            [paymentType]="chosenType">-->
-<!--          </stripe-payment>-->
         </div>
 
       </ion-card-content>

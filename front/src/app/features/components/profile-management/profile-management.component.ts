@@ -22,6 +22,7 @@ import {environment} from "../../../../environments/environment";
 import {CertificationStatus, Service} from "../../models/common.model";
 import {ModalController} from "@ionic/angular/standalone";
 import {CertificationModalComponent} from "../certification-modal/certification-modal.component";
+import {LanguageManagerService} from "../../services/language-manager.service";
 
 @Component({
   selector: 'app-profile-management',
@@ -53,7 +54,8 @@ export class ProfileManagementComponent implements OnInit {
 
   constructor(private accountService: WorkerAccountService,
               private route : ActivatedRoute,
-              private modalController: ModalController) {
+              private modalController: ModalController,
+              protected languageService: LanguageManagerService) {
     addIcons({
       addCircleOutline, trashOutline, move, camera, warningOutline, star, starOutline, cloudUploadOutline,
       shieldCheckmarkOutline, shieldOutline, chevronDownCircleOutline, closeCircleOutline, timeOutline,cameraOutline,

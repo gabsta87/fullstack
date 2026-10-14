@@ -2,14 +2,15 @@ import {Component, Input, OnInit} from '@angular/core';
 import {IonHeader, ModalController, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonIcon} from "@ionic/angular/standalone";
 import {addIcons} from "ionicons";
 import { alertCircleOutline, cloudUploadOutline, sendOutline } from "ionicons/icons";
-import {NgIf} from "@angular/common";
+import {AsyncPipe, NgIf} from "@angular/common";
+import {LanguageManagerService} from "../../services/language-manager.service";
 
 @Component({
   selector: 'app-certification-modal',
   templateUrl: './certification-modal.component.html',
   styleUrls: ['./certification-modal.component.scss'],
   standalone : true,
-  imports: [IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonIcon, NgIf],
+  imports: [IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonIcon, NgIf, AsyncPipe],
 })
 export class CertificationModalComponent implements OnInit {
   @Input() verificationCode!: string;
@@ -17,7 +18,7 @@ export class CertificationModalComponent implements OnInit {
 
   selectedFile: File | null = null;
 
-  constructor(private modalController: ModalController) {
+  constructor(private modalController: ModalController, protected languageService : LanguageManagerService) {
     addIcons({
       alertCircleOutline, cloudUploadOutline, sendOutline
     });

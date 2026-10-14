@@ -3,13 +3,15 @@ import {AuthService} from "../../services/auth.service";
 import {IonButton, IonContent, IonInput, IonItem, LoadingController, ModalController} from "@ionic/angular/standalone";
 import {AlertController} from "@ionic/angular";
 import {FormsModule} from "@angular/forms";
+import {LanguageManagerService} from "../../services/language-manager.service";
+import {AsyncPipe, NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-forgot-password',
   templateUrl: './forgot-password.component.html',
   styleUrls: ['./forgot-password.component.scss'],
   standalone: true,
-  imports: [IonContent, FormsModule, IonItem, IonInput, IonButton]
+  imports: [IonContent, FormsModule, IonItem, IonInput, IonButton, NgIf, AsyncPipe]
 })
 export class ForgotPasswordComponent implements OnInit {
   email = '';
@@ -18,7 +20,8 @@ export class ForgotPasswordComponent implements OnInit {
     private authService: AuthService,
     private loadingCtrl: LoadingController,
     private alertCtrl: AlertController,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    protected languageService : LanguageManagerService,
   ) {}
 
   ngOnInit() {

@@ -1,13 +1,307 @@
 {
   "fr": {
     "header": { "home": "Accueil", "login": "Connexion", "logout": "Déconnexion", "account": "Mon Compte", "register": "S'inscrire" },
-    "filters": {"placeholder_name": "Nom...", "search": "Rechercher", "clear": "Effacer", "filters_btn": "Filtres", "all_body_types": "Toutes les silhouettes", "all_eye_colors": "Toutes les couleurs d'yeux", "all_hair_colors": "Toutes les couleurs de cheveux", "all_services": "Tous les services", "all_languages": "Toutes les langues"},
-    "common": { "loading": "Chargement...", "all_regions": "Toutes les régions" }
+    "filters": {
+      "placeholder_name": "Nom...",
+      "search": "Rechercher",
+      "clear": "Effacer",
+      "filters_btn": "Filtres",
+      "all_body_types": "Toutes les silhouettes",
+      "all_eye_colors": "Toutes les couleurs d'yeux",
+      "all_hair_colors": "Toutes les couleurs de cheveux",
+      "all_services": "Tous les services",
+      "all_languages": "Toutes les langues",
+      "all_regions": "Toutes les régions",
+      "all_locations": "Toutes les localisations"
+    },
+    "zones": {
+      "region_label": "Région",
+      "precise_location_label": "Localisation précise",
+      "select_region": "Choisir une région...",
+      "select_location": "Choisir une localisation..."
+    },
+    "account": {
+      "tabs": {
+        "favorites": "Favoris",
+        "settings": "Réglages",
+        "account": "Compte"
+      },
+      "favorites": {
+        "title": "Vos favoris",
+        "empty": "Vous n'avez pas encore de favoris."
+      },
+      "settings": {
+        "title": "Mes préférences de recherche",
+        "body_types_label": "Silhouettes préférées"
+      }
+    },
+    "common": { "loading": "Chargement..." },
+    "account_settings": {
+      "title": "Sécurité & Identifiants",
+      "email_label": "Adresse Email",
+      "email_placeholder": "votre@email.com",
+      "current_password_label": "Mot de passe actuel",
+      "current_password_placeholder": "Mot de passe actuel",
+      "new_password_label": "Nouveau mot de passe (Optionnel)",
+      "new_password_placeholder": "Minimum 6 caractères",
+      "confirm_password_label": "Confirmer le nouveau mot de passe",
+      "confirm_password_placeholder": "Répétez le mot de passe",
+      "save_btn": "Enregistrer les modifications"
+    },
+    "age": {
+      "label": "Âge :",
+      "years": "ans"
+    },
+    "auth": {
+      "login_title": "Se connecter",
+      "register_title": "Créer un compte",
+      "role_client": "Client",
+      "role_worker": "Annonceur",
+      "email": "Email",
+      "email_placeholder": "email@exemple.com",
+      "password": "Mot de passe",
+      "confirm_password": "Confirmer le mot de passe",
+      "password_mismatch": "Les mots de passe ne correspondent pas",
+      "login_btn": "Se connecter",
+      "register_btn": "S'inscrire",
+      "no_account": "Pas encore de compte ?",
+      "already_account": "Déjà un compte ?",
+      "forgot_password": "Mot de passe oublié ?"
+    },
+    "certification": {
+      "title": "Certification du profil",
+      "close": "Fermer",
+      "admin_message_title": "Message de l'administration :",
+      "step1_title": "Étape 1 : Notez votre code secret",
+      "step1_desc": "Prenez une photo de vous (visage découvert) en tenant un support (papier, téléphone) sur lequel est clairement écrit ce code :",
+      "step2_title": "Étape 2 : Envoyez votre photo",
+      "drop_zone_text": "Glissez votre photo ici ou cliquez pour parcourir",
+      "format_hint": "Formats acceptés : JPG, PNG",
+      "submit_btn": "Envoyer pour validation"
+    },
+    "forgot_password": {
+      "title": "Mot de passe oublié",
+      "subtitle": "Saisissez votre adresse email pour recevoir un lien de réinitialisation.",
+      "email_placeholder": "Votre email",
+      "submit_btn": "Envoyer le lien",
+      "cancel_btn": "Annuler"
+    },
+    "worker_profile": {
+      "back": "Retour",
+      "contact_btn": "Contacter",
+      "favorite": "Favoris",
+      "notify_me": "Me notifier son retour",
+      "report": "Signaler",
+      "body_type": "Silhouette :",
+      "age": "Âge :",
+      "photos": "Photos",
+      "videos": "Vidéos",
+      "about": "À propos",
+      "reviews": "Avis",
+      "contact_title": "Contacter"
+    },
+    "reset_password": {
+      "title": "Nouveau mot de passe",
+      "subtitle": "Définissez votre nouveau mot de passe de connexion.",
+      "new_password_placeholder": "Nouveau mot de passe",
+      "confirm_password_placeholder": "Confirmer le mot de passe",
+      "password_mismatch": "Les mots de passe ne correspondent pas.",
+      "update_btn": "Mettre à jour",
+      "invalid_token": "Le jeton de réinitialisation est manquant ou invalide.",
+      "retry_btn": "Refaire une demande",
+      "success_msg": "Votre mot de passe a été modifié avec succès.",
+      "back_home_btn": "Retour à l'accueil"
+    },
+    "profile_management": {
+      "warning_title": "Votre profil est actuellement invisible",
+      "warning_subtitle": "Tant que ces informations essentielles ne sont pas fournies, votre annonce restera invisible.",
+      "online": "En ligne",
+      "offline": "Hors ligne",
+      "visible": "Visible",
+      "invisible": "Invisible",
+      "tabs": {
+        "profile": "Profil",
+        "media": "Medias",
+        "account": "Compte"
+      },
+      "form": {
+        "display_name": "Nom affiché",
+        "display_name_placeholder": "Votre pseudo",
+        "short_desc": "Description courte (Max. 45 caractères)",
+        "short_desc_placeholder": "Ex: Passionnée de voyages ✨",
+        "description": "Description *",
+        "description_placeholder": "Décrivez votre profil, vos spécialités...",
+        "phone": "Téléphone *",
+        "phone_placeholder": "Ex: +33 6 12 34 56 78",
+        "birthdate": "Date de naissance *",
+        "body_type": "Silhouette",
+        "hair_color": "Cheveux",
+        "eye_color": "Yeux",
+        "services_title": "Services proposés * (Sélectionnez-en au moins un)"
+      },
+      "media": {
+        "drop_title": "Glissez-déposez vos photos ou vidéos ici ou",
+        "drop_click": "cliquez pour parcourir",
+        "format_hint": "Photos : JPG, PNG, WEBP • Vidéos : MP4, MOV, WEBM",
+        "add_btn": "Ajouter vos photos ou vidéos * (Au moins une photo obligatoire)",
+        "photos_title": "Photos",
+        "videos_title": "Vidéos",
+        "optional": "(Optionnel)"
+      }
+    }
   },
   "en": {
-    "header": { "home": "Home", "login": "Login", "logout": "Logout", "account": "My Account", "register": "Subscribe"  },
-    "filters": {"placeholder_name": "Name...", "search": "Search", "clear": "Clear", "filters_btn": "Filters", "all_body_types": "All body types", "all_eye_colors": "All eye colors", "all_hair_colors": "All hair colors", "all_services": "All services", "all_languages": "All languages"},
-    "common": { "loading": "Loading...", "all_regions": "All regions" }
+    "header": { "home": "Home", "login": "Login", "logout": "Logout", "account": "My Account", "register": "Subscribe" },
+    "filters": {
+      "placeholder_name": "Name...",
+      "search": "Search",
+      "clear": "Clear",
+      "filters_btn": "Filters",
+      "all_body_types": "All body types",
+      "all_eye_colors": "All eye colors",
+      "all_hair_colors": "All hair colors",
+      "all_services": "All services",
+      "all_languages": "All languages",
+      "all_regions": "All regions",
+      "all_locations": "All locations"
+    },
+    "zones": {
+      "region_label": "Region",
+      "precise_location_label": "Precise location",
+      "select_region": "Choose a region...",
+      "select_location": "Choose a location..."
+    },
+    "account": {
+      "tabs": {
+        "favorites": "Favorites",
+        "settings": "Settings",
+        "account": "Account"
+      },
+      "favorites": {
+        "title": "Your favorites",
+        "empty": "You do not have any favorites yet."
+      },
+      "settings": {
+        "title": "My search preferences",
+        "body_types_label": "Preferred body types"
+      }
+    },
+    "common": { "loading": "Loading..." },
+    "account_settings": {
+      "title": "Security & Credentials",
+      "email_label": "Email Address",
+      "email_placeholder": "your@email.com",
+      "current_password_label": "Current password",
+      "current_password_placeholder": "Current password",
+      "new_password_label": "New password (Optional)",
+      "new_password_placeholder": "Minimum 6 characters",
+      "confirm_password_label": "Confirm new password",
+      "confirm_password_placeholder": "Repeat password",
+      "save_btn": "Save changes"
+    },
+    "age": {
+      "label": "Age:",
+      "years": "years"
+    },
+    "auth": {
+      "login_title": "Log in",
+      "register_title": "Create an account",
+      "role_client": "Client",
+      "role_worker": "Advertiser",
+      "email": "Email",
+      "email_placeholder": "email@example.com",
+      "password": "Password",
+      "confirm_password": "Confirm password",
+      "password_mismatch": "Passwords do not match",
+      "login_btn": "Log in",
+      "register_btn": "Register",
+      "no_account": "Don't have an account yet?",
+      "already_account": "Already have an account?",
+      "forgot_password": "Forgot password?"
+    },
+    "certification": {
+      "title": "Profile Certification",
+      "close": "Close",
+      "admin_message_title": "Admin message:",
+      "step1_title": "Step 1: Note your secret code",
+      "step1_desc": "Take a photo of yourself (uncovered face) holding a medium (paper, phone) with this code clearly written on it:",
+      "step2_title": "Step 2: Upload your photo",
+      "drop_zone_text": "Drop your photo here or click to browse",
+      "format_hint": "Accepted formats: JPG, PNG",
+      "submit_btn": "Submit for validation"
+    },
+    "forgot_password": {
+      "title": "Forgot password",
+      "subtitle": "Enter your email address to receive a reset link.",
+      "email_placeholder": "Your email",
+      "submit_btn": "Send link",
+      "cancel_btn": "Cancel"
+    },
+    "worker_profile": {
+      "back": "Back",
+      "contact_btn": "Contact",
+      "favorite": "Favorites",
+      "notify_me": "Notify me when back",
+      "report": "Report",
+      "body_type": "Body type:",
+      "age": "Age:",
+      "photos": "Photos",
+      "videos": "Videos",
+      "about": "About",
+      "reviews": "Reviews",
+      "contact_title": "Contact"
+    },
+    "reset_password": {
+      "title": "New password",
+      "subtitle": "Set your new login password.",
+      "new_password_placeholder": "New password",
+      "confirm_password_placeholder": "Confirm password",
+      "password_mismatch": "Passwords do not match.",
+      "update_btn": "Update",
+      "invalid_token": "The reset token is missing or invalid.",
+      "retry_btn": "Request again",
+      "success_msg": "Your password has been successfully updated.",
+      "back_home_btn": "Back to home"
+    },
+    "en": {
+      "profile_management": {
+        "warning_title": "Your profile is currently invisible",
+        "warning_subtitle": "As long as this essential information is missing, your ad will remain invisible.",
+        "online": "Online",
+        "offline": "Offline",
+        "visible": "Visible",
+        "invisible": "Invisible",
+        "tabs": {
+          "profile": "Profile",
+          "media": "Media",
+          "account": "Account"
+        },
+        "form": {
+          "display_name": "Display name",
+          "display_name_placeholder": "Your username",
+          "short_desc": "Short description (Max. 45 characters)",
+          "short_desc_placeholder": "Ex: Passionate traveler ✨",
+          "description": "Description *",
+          "description_placeholder": "Describe your profile, your specialties...",
+          "phone": "Phone *",
+          "phone_placeholder": "Ex: +33 6 12 34 56 78",
+          "birthdate": "Date of birth *",
+          "body_type": "Body type",
+          "hair_color": "Hair color",
+          "eye_color": "Eye color",
+          "services_title": "Offered services * (Select at least one)"
+        },
+        "media": {
+          "drop_title": "Drag and drop your photos or videos here or",
+          "drop_click": "click to browse",
+          "format_hint": "Photos: JPG, PNG, WEBP • Videos: MP4, MOV, WEBM",
+          "add_btn": "Add your photos or videos * (At least one photo required)",
+          "photos_title": "Photos",
+          "videos_title": "Videos",
+          "optional": "(Optional)"
+        }
+      }
+    }
   },
   "de": {
     "header": { "home": "Startseite", "login": "Einloggen", "logout": "Ausloggen", "account": "Mein Konto", "register": "Abonnieren" },

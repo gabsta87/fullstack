@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
+import {LanguageManagerService} from "../../services/language-manager.service";
 
 @Component({
   selector: 'account-settings',
@@ -33,6 +34,8 @@ export class AccountSettingsComponent implements OnInit {
   errorMessage: string = '';
   successMessage: string = '';
   isSaving: boolean = false;
+
+  constructor(protected languageService : LanguageManagerService) {}
 
   ngOnInit() {
     this.form.email = this.initialEmail;

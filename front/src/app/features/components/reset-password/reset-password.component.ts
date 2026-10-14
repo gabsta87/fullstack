@@ -3,9 +3,10 @@ import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/
 import {ActivatedRoute, Router} from '@angular/router';
 import {ModalController} from '@ionic/angular/standalone';
 import {IonButton, IonContent, IonIcon, IonInput, IonItem, IonSpinner} from "@ionic/angular/standalone";
-import {NgIf} from "@angular/common";
+import {AsyncPipe, NgIf} from "@angular/common";
 import {AuthService} from "../../services/auth.service";
 import {ForgotPasswordComponent} from "../forgot-password/forgot-password.component";
+import {LanguageManagerService} from "../../services/language-manager.service";
 
 @Component({
   selector: 'app-reset-password',
@@ -19,7 +20,8 @@ import {ForgotPasswordComponent} from "../forgot-password/forgot-password.compon
     IonButton,
     IonSpinner,
     IonIcon,
-    NgIf
+    NgIf,
+    AsyncPipe
   ],
   standalone: true
 })
@@ -36,6 +38,7 @@ export class ResetPasswordComponent implements OnInit {
     private authService: AuthService,
     private modalCtrl: ModalController,
     private router : Router,
+    protected languageService : LanguageManagerService,
   ) {}
 
   ngOnInit() {

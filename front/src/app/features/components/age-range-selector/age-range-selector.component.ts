@@ -1,11 +1,13 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { IonItem, IonLabel, IonRange } from '@ionic/angular/standalone';
+import {LanguageManagerService} from "../../services/language-manager.service";
+import {AsyncPipe, NgIf} from "@angular/common";
 
 @Component({
   selector: 'age-range-selector',
   templateUrl: './age-range-selector.component.html',
   styleUrls: ['./age-range-selector.component.scss'],
-  imports: [IonItem, IonLabel, IonRange],
+  imports: [IonItem, IonLabel, IonRange, NgIf, AsyncPipe],
   standalone: true
 })
 export class AgeRangeSelectorComponent implements OnInit, OnChanges {
@@ -19,6 +21,8 @@ export class AgeRangeSelectorComponent implements OnInit, OnChanges {
   // 🎯 L'unique source de vérité locale pour l'affichage et le curseur
   currentLower: number = 18;
   currentUpper: number = 60;
+
+  constructor(protected languageService:LanguageManagerService) {}
 
   ngOnInit() {
     this.syncInputsToLocal();

@@ -105,7 +105,7 @@ export class HomepageComponent implements OnInit {
     private authService: AuthService,
     private stateService: GalleryStateService,
     private clientAccountService: ClientAccountService,
-    public langService: LanguageManagerService
+    protected langService: LanguageManagerService
   ) {
     addIcons({ optionsOutline, closeOutline, locationOutline, personOutline, sparklesOutline, arrowUpOutline });
   }

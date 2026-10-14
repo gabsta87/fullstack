@@ -5,6 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { locationOutline, businessOutline } from 'ionicons/icons';
 import { GeographicZone } from "../../models/filter.model";
+import {LanguageManagerService} from "../../services/language-manager.service";
 
 @Component({
   selector: 'zone-selector',
@@ -19,12 +20,12 @@ export class ZoneSelectorComponent implements OnChanges {
   @Input() selectedParentId: number | undefined = undefined;
   @Input() selectedChildId: number | undefined = undefined;
 
-  @Input() parentPlaceholder = "Choisir une région...";
-  @Input() childPlaceholder = "Choisir une localisation...";
+  @Input() parentPlaceholder = "";
+  @Input() childPlaceholder = "";
 
   @Input() allowAllOption = false;
-  @Input() allParentsLabel = "Toutes les régions";
-  @Input() allChildrenLabel = "Toutes les localisations";
+  @Input() allParentsLabel = "";
+  @Input() allChildrenLabel = "";
 
   @Input() showIcons = false;
   @Input() isFilterBanner = false;
@@ -37,7 +38,7 @@ export class ZoneSelectorComponent implements OnChanges {
   childZoneId: number | undefined = undefined;
   availableChildZones: GeographicZone[] = [];
 
-  constructor() {
+  constructor(protected langService: LanguageManagerService) {
     addIcons({ locationOutline, businessOutline });
   }
 
