@@ -1,19 +1,15 @@
 <ion-header class="ion-no-border main-header">
   <ion-toolbar>
-    <ion-header class="ion-no-border main-header">
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-button routerLink="/" fill="clear" class="brand-button">
-            <span class="brand">
-              <span class="brand-mark">◆</span> Venus
-            </span>
-          </ion-button>
-        </ion-buttons>
-
-      </ion-toolbar>
-    </ion-header>
+    <ion-buttons slot="start">
+      <ion-button routerLink="/" fill="clear" class="brand-button">
+        <span class="brand">
+          <span class="brand-mark">◆</span> Venus
+        </span>
+      </ion-button>
+    </ion-buttons>
 
     <ion-buttons slot="end">
+      <!-- 🎯 Le déclencheur DOIT rester permanent dans le DOM pour que le popover fonctionne -->
       <ion-button id="lang-selector-trigger">
         <img [src]="langService.currentLanguageFlag" class="header-flag-icon" alt="Langue active" />
         <ion-text class="ion-hide-sm-down" style="margin-left: 5px; font-size: 14px;">
@@ -21,37 +17,41 @@
         </ion-text>
       </ion-button>
 
-      <ng-container *ngIf="!(authService.isAuthenticated$ | async)">
-        <ion-button (click)="openAuth('login')" fill="clear" class="nav-link-btn">
-          <ion-icon name="log-in-outline" slot="start"></ion-icon>
-          Se connecter
-        </ion-button>
-        <ion-button (click)="openAuth('register')" fill="solid" class="nav-cta-btn">
-          S'inscrire
-        </ion-button>
-      </ng-container>
-
-      <ng-container *ngIf="authService.isAuthenticated$ | async">
-        <ng-container *ngIf="authService.isAdmin">
-          <ion-button (click)="openAdmin()" fill="clear" class="nav-link-btn">
-            <ion-icon name="build-outline" slot="start"></ion-icon>
-            Administration
+      <!-- Le reste des boutons qui dépendent des traductions -->
+      <ng-container *ngIf="langService.currentLanguage$ | async as t">
+        <ng-container *ngIf="!(authService.isAuthenticated$ | async)">
+          <ion-button (click)="openAuth('login')" fill="clear" class="nav-link-btn">
+            <ion-icon name="log-in-outline" slot="start"></ion-icon>
+            {{ t.header.login }}
+          </ion-button>
+          <ion-button (click)="openAuth('register')" fill="solid" class="nav-cta-btn">
+            {{ t.header.register || "S'inscrire" }}
           </ion-button>
         </ng-container>
 
-        <ion-button (click)="openAccount()" fill="clear" class="nav-link-btn">
-          <ion-icon name="person-circle-outline" slot="start"></ion-icon>
-          Mon Compte
-        </ion-button>
-        <ion-button (click)="onLogout()" fill="clear" class="nav-link-btn">
-          <ion-icon name="log-out-outline" slot="start"></ion-icon>
-          Se déconnecter
-        </ion-button>
+        <ng-container *ngIf="authService.isAuthenticated$ | async">
+          <ng-container *ngIf="authService.isAdmin">
+            <ion-button (click)="openAdmin()" fill="clear" class="nav-link-btn">
+              <ion-icon name="build-outline" slot="start"></ion-icon>
+              Administration
+            </ion-button>
+          </ng-container>
+
+          <ion-button (click)="openAccount()" fill="clear" class="nav-link-btn">
+            <ion-icon name="person-circle-outline" slot="start"></ion-icon>
+            {{ t.header.account }}
+          </ion-button>
+          <ion-button (click)="onLogout()" fill="clear" class="nav-link-btn">
+            <ion-icon name="log-out-outline" slot="start"></ion-icon>
+            {{ t.header.logout }}
+          </ion-button>
+        </ng-container>
       </ng-container>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
+<!-- Popover de choix de la langue (relié au bouton permanent ci-dessus) -->
 <ion-popover trigger="lang-selector-trigger" [dismissOnSelect]="true" side="bottom" alignment="end">
   <ng-template>
     <ion-content>
