@@ -8,6 +8,7 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -26,65 +27,39 @@ import java.util.Properties;
 public class MailService {
 
     private final PasswordResetTokenRepository passwordResetTokenRepository;
-
-    @Value("${spring.mail.host}")
-    private String mailHost;
-
-    @Value("${spring.mail.port}")
-    private int mailPort;
-
-    @Value("${spring.mail.username}")
-    private String username;
-
-    @Value("${spring.mail.password}")
-    private String password;
-
-    private final String messageSender = "no-reply-venus@gmail.com";
+    private final JavaMailSender javaMailSender;
+    @Value("${app.mail.sender:no-reply@mondomaine.com}")
+    private String messageSender;
 
     public void sendSimpleMessage(Email to, String subject, String content) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(messageSender);
-        message.setTo(to.toString());
-        message.setSubject(subject);
-        message.setText(content);
-        getJavaMailSender().send(message);
-    }
-
-    public void sendHtmlMessage(Email to, String subject, String htmlBody) {
-        MimeMessage message = getJavaMailSender().createMimeMessage();
         try {
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setTo(to.toString());
-            helper.setSubject(subject);
-
-            helper.setText(htmlBody, true);
-
-            getJavaMailSender().send(message);
-        } catch (MessagingException e) {
-            // Gérer l'exception (log)
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(messageSender);
+            message.setTo(to.toString());
+            message.setSubject(subject);
+            message.setText(content);
+            javaMailSender.send(message);
+        } catch (Exception e) {
+            // Log propre de l'erreur d'envoi
+            System.err.println("Erreur lors de l'envoi du mail simple à " + to + " : " + e.getMessage());
         }
     }
 
-    private JavaMailSender getJavaMailSender() {
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost(mailHost);
-        mailSender.setPort(mailPort);
-        mailSender.setUsername(username);
-        mailSender.setPassword(password);
+    public void sendHtmlMessage(Email to, String subject, String htmlBody) {
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(messageSender);
+            helper.setTo(to.toString());
+            helper.setSubject(subject);
+            helper.setText(htmlBody, true);
 
-        Properties props = mailSender.getJavaMailProperties();
-        props.put("mail.transport.protocol", "smtp");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.debug", "true");
-
-        return mailSender;
-    }
-
-    public SimpleMailMessage templateSimpleMessage() {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setText("Voici votre lien de réinitialisation de mot de passe :\n%s\n");
-        return message;
+            javaMailSender.send(message);
+        } catch (MessagingException e) {
+            System.err.println("Erreur de format ou d'envoi du mail HTML à " + to + " : " + e.getMessage());
+        } catch (MailException e) {
+            System.err.println("Erreur SMTP/Réseau lors de l'envoi à " + to + " : " + e.getMessage());
+        }
     }
 
     @Scheduled(cron = "0 0 3 * * *")
@@ -94,13 +69,8 @@ public class MailService {
     }
 
     public void sendAlertToLocalAuthorities(Worker worker) {
-        /* TODO send to authorities
-         * localisation/address
-         * phone number
-         * email
-         * username
-         * mainPhoto (TODO check if legal problem by detaining these photos. Better to delete them, or send them to authorities)
-         */
+        // TODO: Implémenter l'envoi aux autorités si besoin
         System.out.println("Alert sent to local authorities for worker " + worker.getId());
     }
+
 }
