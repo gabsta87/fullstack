@@ -21,7 +21,7 @@
       </div>
 
       <div class="field-group">
-        <label>{{ t.auth?.email }}</label>
+        <label>{{ t.common?.email }}</label>
         <input type="email" #input
                formControlName="email"
                [placeholder]="t.auth?.email_placeholder"
@@ -30,7 +30,7 @@
       </div>
 
       <div class="field-group">
-        <label>{{ t.auth?.password }}</label>
+        <label>{{ t.common?.password }}</label>
         <input type="password"
                formControlName="password"
                placeholder="••••••••"
@@ -39,7 +39,7 @@
       </div>
 
       <div class="field-group" *ngIf="mode === 'register'">
-        <label>{{ t.auth?.confirm_password }}</label>
+        <label>{{ t.common?.confirm_password }}</label>
         <input type="password"
                formControlName="confirmPassword"
                placeholder="••••••••"

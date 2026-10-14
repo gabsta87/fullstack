@@ -1,31 +1,33 @@
-<ion-card class="wcard ion-activatable" mode="md" (click)="navigateToProfile()">
-  <ion-ripple-effect></ion-ripple-effect>
+<ng-container *ngIf="languageService.currentLanguage$ | async as t">
+  <ion-card class="wcard ion-activatable" mode="md" (click)="navigateToProfile()">
+    <ion-ripple-effect></ion-ripple-effect>
 
-  <div class="wcard-photo" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
-    <img *ngIf="displayUrl" [src]="displayUrl" [alt]="worker.username" class="wcard-img" loading="lazy" />
+    <div class="wcard-photo" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+      <img *ngIf="displayUrl" [src]="displayUrl" [alt]="worker.username" class="wcard-img" loading="lazy" />
 
-    <div *ngIf="!displayUrl" class="wcard-ph">
-      <ion-icon name="person-circle-outline"></ion-icon>
+      <div *ngIf="!displayUrl" class="wcard-ph">
+        <ion-icon name="person-circle-outline"></ion-icon>
+      </div>
+
+      <ion-badge *ngIf="!worker.available" class="online-pill" color="medium">
+        {{ t.common?.unavailable }}
+      </ion-badge>
+
+      <div class="wcard-overlay-info">
+        <h3 class="wcard-overlay-title">
+          {{ worker.username }}
+          <ion-icon *ngIf="worker.isCertified"
+                    name="shield-checkmark-outline"
+                    color="success"
+                    class="certified-badge">
+          </ion-icon>
+        </h3>
+        <p class="wcard-overlay-subtitle">{{ worker.geographicZone?.name }}</p>
+      </div>
     </div>
 
-    <ion-badge *ngIf="!worker.available" class="online-pill" color="medium">
-      Absente
-    </ion-badge>
-
-    <div class="wcard-overlay-info">
-      <h3 class="wcard-overlay-title">
-        {{ worker.username }}
-        <ion-icon *ngIf="worker.isCertified"
-                  name="shield-checkmark-outline"
-                  color="success"
-                  class="certified-badge">
-        </ion-icon>
-      </h3>
-      <p class="wcard-overlay-subtitle">{{ worker.geographicZone?.name }}</p>
-    </div>
-  </div>
-
-  <ion-card-content class="wcard-description">
-    {{ worker.shortDescription || '❤️❤️❤️' }}
-  </ion-card-content>
-</ion-card>
+    <ion-card-content class="wcard-description">
+      {{ worker.shortDescription || '❤️❤️❤️' }}
+    </ion-card-content>
+  </ion-card>
+</ng-container>

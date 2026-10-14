@@ -22,11 +22,13 @@ import { UserRole } from "../../models/roles";
 import {Select} from "primeng/select";
 import {AdminWorkerReport} from "../../models/items.model";
 import {Router} from "@angular/router";
+import {LanguageManagerService} from "../../services/language-manager.service";
+import {HeaderComponent} from "../header/header.component";
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, TableModule, InputTextModule, DropdownModule, TagModule, Select],
+  imports: [CommonModule, FormsModule, IonicModule, TableModule, InputTextModule, DropdownModule, TagModule, Select, HeaderComponent],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss']
 })
@@ -51,27 +53,16 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   currentCertifRequestId: number | null = null;
   adminComment: string = '';
 
-  predefinedReasons: string[] = [
-    "L'identité de l'annonceur ne correspond pas à la photo de contrôle",
-    "Certaines photos du profil ne correspondent pas à la photo de contrôle",
-    "Le code de contrôle n'est pas lisible",
-    "Le code de contrôle n'est pas correct",
-    ""
-  ];
-
-// Méthode appelée lors du choix dans le menu déroulant
-  onPredefinedReasonSelected(event: any) {
-    this.adminComment = event.detail.value;
-  }
-
   private submitCertification$ = new Subject<{ requestId: number; approved: boolean; comment: string }>();
 
   selectedRole: string | null = null;
-  roleOptions = [
-    { label: 'Tous les rôles', value: null },
-    { label: 'Administrateur', value: UserRole.ADMIN },
-    { label: 'Client', value: UserRole.CLIENT },
-    { label: 'Annonceur', value: UserRole.WORKER }
+
+  predefinedReasons: string[] = [
+    "Advertiser identity does not match control photo",
+    "Some profile photos do not match control photo",
+    "Control code is unreadable",
+    "Control code is incorrect",
+    ""
   ];
 
   activePreviewUrl: string | null = null;
@@ -84,7 +75,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     private alertCtrl: AlertController,
     private location: Location,
     private authService: AuthService,
-    private router : Router
+    private router : Router,
+    protected languageService : LanguageManagerService
   ) {
     addIcons({ addOutline, trashOutline, pencilOutline, chevronBackOutline, chevronForwardOutline, closeOutline,
       personAddOutline, shieldCheckmarkOutline, lockClosedOutline, lockOpenOutline, closeCircleOutline
@@ -96,6 +88,20 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     if (this.currentCertifRequestId) {
       this.adminService.unlockCertificationReview(this.currentCertifRequestId).subscribe();
     }
+  }
+
+  onPredefinedReasonSelected(event: any) {
+    this.adminComment = event.detail.value;
+  }
+
+  get roleOptions() {
+    const currentLang = this.languageService.currentLanguage$.value?.admin?.roles;
+    return [
+      { label: currentLang?.all, value: null },
+      { label: currentLang?.admin, value: UserRole.ADMIN },
+      { label: currentLang?.client, value: UserRole.CLIENT },
+      { label: currentLang?.worker, value: UserRole.WORKER }
+    ];
   }
 
   ngOnInit() {

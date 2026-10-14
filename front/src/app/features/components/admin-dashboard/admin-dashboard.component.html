@@ -1,553 +1,561 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-buttons slot="end">
-      <ion-button (click)="goBack()" title="Fermer le tableau de bord">
-        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+<app-header></app-header>
 
-    <ion-title>Tableau de bord de Modération</ion-title>
-  </ion-toolbar>
+<ng-container *ngIf="languageService.currentLanguage$ | async as t">
+  <ion-header class="ion-no-border">
 
-  <ion-toolbar color="light">
-    <ion-segment [(ngModel)]="currentTab">
-      <ion-segment-button value="users">
-        <ion-label>Utilisateurs ({{ (users$ | async)?.length || 0 }})</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="certifications">
-        <ion-label>Certifications ({{ (pendingCertificationRequests$ | async)?.length || 0 }})</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="reports">
-        <ion-label>Signalements ({{ (totalReportsCount$ | async) || 0 }})</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="services">
-        <ion-label>Services ({{ (services$ | async)?.length || 0 }})</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="zones">
-        <ion-label>Zones ({{ (zones$ | async)?.length || 0 }})</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="logs">
-        <ion-label>Journal d'Audit ({{ (displayedAuditLogs$ | async)?.length || 0 }})</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="admins">
-        <ion-label>Administration</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-  </ion-toolbar>
-</ion-header>
+    <!-- Segments de navigation des onglets -->
+    <ion-toolbar color="light">
+      <ion-segment [(ngModel)]="currentTab">
+        <ion-segment-button value="users">
+          <ion-label>{{ t.admin?.tabs?.users }} ({{ (users$ | async)?.length || 0 }})</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="certifications">
+          <ion-label>{{ t.admin?.tabs?.certifications }} ({{ (pendingCertificationRequests$ | async)?.length || 0 }})</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="reports">
+          <ion-label>{{ t.admin?.tabs?.reports }} ({{ (totalReportsCount$ | async) || 0 }})</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="services">
+          <ion-label>{{ t.admin?.tabs?.services }} ({{ (services$ | async)?.length || 0 }})</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="zones">
+          <ion-label>{{ t.admin?.tabs?.zones }} ({{ (zones$ | async)?.length || 0 }})</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="logs">
+          <ion-label>{{ t.admin?.tabs?.logs }} ({{ (displayedAuditLogs$ | async)?.length || 0 }})</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="admins">
+          <ion-label>{{ t.admin?.tabs?.admins }}</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </ion-toolbar>
+  </ion-header>
 
-<ion-content class="ion-padding content-with-bottom-spacing">
-  <!-- ONGLET 1 : UTILISATEURS (Table PrimeNG) -->
-  <div *ngIf="currentTab === 'users'">
-    <div class="admin-toolbar ion-margin-bottom" style="display: flex; gap: 15px; flex-wrap: wrap;">
-      <span class="p-input-icon-left" style="flex: 1; min-width: 250px;">
-        <i class="pi pi-search"></i>
-        <input
-          pInputText
-          type="text"
-          (input)="dt.filterGlobal($any($event.target).value, 'contains')"
-          placeholder="Rechercher par nom, email, description, id"
-          style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;" />
-      </span>
+  <ion-content class="ion-padding content-with-bottom-spacing">
+    <!-- ONGLET 1 : UTILISATEURS (Table PrimeNG) -->
+    <div *ngIf="currentTab === 'users'">
+      <div class="admin-toolbar ion-margin-bottom" style="display: flex; gap: 15px; flex-wrap: wrap;">
+        <span class="p-input-icon-left" style="flex: 1; min-width: 250px;">
+          <i class="pi pi-search"></i>
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            [placeholder]="t.admin?.users_tab?.search_placeholder"
+            style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;" />
+        </span>
 
-      <p-select
-        [options]="roleOptions"
-        [(ngModel)]="selectedRole"
-        (onChange)="dt.filter($event.value, 'role', 'equals')"
-        placeholder="Filtrer par Statut"
-        [showClear]="true">
-      </p-select>
-    </div>
-
-    <p-table
-      #dt
-      [value]="(users$ | async) || []"
-      [paginator]="true"
-      [rows]="20"
-      [rowsPerPageOptions]="[20, 50, 100]"
-      [globalFilterFields]="['username', 'email', 'description', 'id']"
-      styleClass="p-datatable-gridlines p-datatable-sm"
-      [tableStyle]="{'min-width': '65rem'}">
-
-      <ng-template pTemplate="header">
-        <tr>
-          <th pSortableColumn="username">Utilisateur <p-sortIcon field="username"></p-sortIcon></th>
-          <th pSortableColumn="email">Email<p-sortIcon field="email"></p-sortIcon></th>
-          <th pSortableColumn="role">Rôle<p-sortIcon field="role"></p-sortIcon></th>
-          <th pSortableColumn="birthdate">Birthdate<p-sortIcon field="birthdate"></p-sortIcon></th>
-          <th pSortableColumn="banned">Banned<p-sortIcon field="banned"></p-sortIcon></th>
-          <th pSortableColumn="locked">Locked<p-sortIcon field="locked"></p-sortIcon></th>
-          <th pSortableColumn="available">Available<p-sortIcon field="available"></p-sortIcon></th>
-          <th pSortableColumn="hidden">Hidden<p-sortIcon field="hidden"></p-sortIcon></th>
-          <th>Certification</th>
-          <th pSortableColumn="certifiedAt">Certification date<p-sortIcon field="certifiedAt"></p-sortIcon></th>
-          <th style="text-align: center; width: 70px;">Action</th>
-        </tr>
-      </ng-template>
-
-      <ng-template pTemplate="body" let-user>
-        <tr>
-          <!-- Pseudo cliquable pour consulter le profil -->
-          <td>
-            <a (click)="viewProfile(user)" style="cursor: pointer; color: var(--ion-color-primary, #c8956c); text-decoration: underline; font-weight: bold;">
-              {{ user.username }}
-            </a>
-          </td>
-
-          <!-- Email cliquable avec mailto -->
-          <td>
-            <a [href]="'mailto:' + user.email" style="color: inherit; text-decoration: none;" title="Envoyer un e-mail">
-              {{ user.email }}
-            </a>
-          </td>
-
-          <td>
-            <p-tag [value]="user.role"></p-tag>
-          </td>
-
-          <td>{{ user.birthdate }}</td>
-
-          <!-- Colonne Banned avec tooltip explicatif -->
-          <td>
-            <ion-button size="small"
-                        [fill]="user.banned ? 'solid' : 'outline'"
-                        [color]="user.banned ? 'danger' : 'medium'"
-                        (click)="banUser(user, user.banned)"
-                        title="Banned account cannot log in or be seen by visitors"
-                        style="text-transform: none; font-size: 0.75rem; height: 28px;">
-              {{ user.banned ? 'Banned' : 'Bannir' }}
-            </ion-button>
-          </td>
-
-          <!-- Colonne Locked avec tooltip explicatif -->
-          <td>
-            <ion-button size="small"
-                        [fill]="user.locked ? 'solid' : 'outline'"
-                        [color]="user.locked ? 'warning' : 'medium'"
-                        (click)="setLocked(user, !user.locked)"
-                        title="Locked account cannot perform certain actions or be seen by visitors"
-                        style="text-transform: none; font-size: 0.75rem; height: 28px;">
-              {{ user.locked ? 'Locked' : 'Verrouiller' }}
-            </ion-button>
-          </td>
-
-          <td style="text-align: center;">{{ user.available ? "Available" : "Not available" }}</td>
-
-          <td>
-            <span *ngIf="user.hidden" style="color: var(--text-muted); font-size: 0.85rem; font-weight: 500;">hidden</span>
-          </td>
-
-          <!-- Certification et option de révocation -->
-          <td>
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
-              <span>{{ user.certificationStatus || '' }}</span>
-              <ion-button *ngIf="user.certificationStatus === 'CERTIFIED'"
-                          size="small"
-                          fill="clear"
-                          color="danger"
-                          (click)="revokeCertification(user)"
-                          title="Révoquer la certification"
-                          style="font-size: 0.7rem; height: 24px; padding: 0;">
-                Révoquer
-              </ion-button>
-            </div>
-          </td>
-
-          <td>{{ user.certifiedAt | date:'yyyy-mm-dd' || '' }}</td>
-
-          <td style="text-align: center;">
-            <ion-button size="small" fill="clear" color="danger" (click)="deleteUser(user)" title="Supprimer le compte">
-              <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-          </td>
-        </tr>
-      </ng-template>
-
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="12" style="text-align: center; padding: 20px;">Aucun utilisateur trouvé.</td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
-
-  <!-- ONGLET 2 : CERTIFICATIONS EN ATTENTE -->
-  <div *ngIf="currentTab === 'certifications'">
-    <ng-container *ngIf="pendingCertificationRequests$ | async as requests">
-
-      <div *ngIf="requests.length === 0" class="ion-text-center ion-padding">
-        <p>Aucune demande de certification en attente 🎉</p>
+        <p-select
+          [options]="roleOptions"
+          [(ngModel)]="selectedRole"
+          (onChange)="dt.filter($event.value, 'role', 'equals')"
+          [placeholder]="t.admin?.users_tab?.filter_role_placeholder"
+          [showClear]="true">
+        </p-select>
       </div>
 
-      <!-- Lignes très fines style tableau épuré -->
-      <ion-list *ngIf="requests.length > 0" lines="full">
-        <ion-item
-          *ngFor="let req of requests"
-          [button]="!req.underReview"
-          (click)="!req.underReview && openCertificationModal(req)"
-          [style.opacity]="req.underReview ? '0.5' : '1'"
-          [style.background]="req.underReview ? '#f8f9fa' : 'transparent'"
-          style="cursor: pointer;">
+      <p-table
+        #dt
+        [value]="(users$ | async) || []"
+        [paginator]="true"
+        [rows]="20"
+        [rowsPerPageOptions]="[20, 50, 100]"
+        [globalFilterFields]="['username', 'email', 'description', 'id']"
+        styleClass="p-datatable-gridlines p-datatable-sm"
+        [tableStyle]="{'min-width': '65rem'}">
 
-          <ion-label>
-            <h2>
-              <strong>{{ req.workerUsername }}</strong>
-              <span *ngIf="req.underReview" style="color: #e03131; font-size: 0.85em; margin-left: 10px;">
-                (🔒 En cours par un autre admin)
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="username">{{ t.admin?.users_tab?.col_user }} <p-sortIcon field="username"></p-sortIcon></th>
+            <th pSortableColumn="email">{{ t.common?.email }}<p-sortIcon field="email"></p-sortIcon></th>
+            <th pSortableColumn="role">{{ t.common?.role }}<p-sortIcon field="role"></p-sortIcon></th>
+            <th pSortableColumn="birthdate">{{ t.common?.birthdate }}<p-sortIcon field="birthdate"></p-sortIcon></th>
+            <th pSortableColumn="banned">{{ t.common?.banned }}<p-sortIcon field="banned"></p-sortIcon></th>
+            <th pSortableColumn="locked">{{ t.common?.locked }}<p-sortIcon field="locked"></p-sortIcon></th>
+            <th pSortableColumn="available">{{ t.common?.available }}<p-sortIcon field="available"></p-sortIcon></th>
+            <th pSortableColumn="hidden">{{ t.common?.hidden }}<p-sortIcon field="hidden"></p-sortIcon></th>
+            <th>{{ t.admin?.users_tab?.col_certification }}</th>
+            <th pSortableColumn="certifiedAt">{{ t.admin?.users_tab?.col_certif_date }}<p-sortIcon field="certifiedAt"></p-sortIcon></th>
+            <th style="text-align: center; width: 70px;">{{ t.common?.actions }}</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-user>
+          <tr>
+            <!-- Pseudo cliquable pour consulter le profil -->
+            <td>
+              <a (click)="viewProfile(user)" style="cursor: pointer; color: var(--ion-color-primary, #c8956c); text-decoration: underline; font-weight: bold;">
+                {{ user.username }}
+              </a>
+            </td>
+
+            <!-- Email cliquable avec mailto -->
+            <td>
+              <a [href]="'mailto:' + user.email" style="color: inherit; text-decoration: none;" title="Envoyer un e-mail">
+                {{ user.email }}
+              </a>
+            </td>
+
+            <td>
+              <p-tag [value]="user.role"></p-tag>
+            </td>
+
+            <td>{{ user.birthdate }}</td>
+
+            <!-- Colonne Banned avec tooltip explicatif -->
+            <td>
+              <ion-button size="small"
+                          [fill]="user.banned ? 'solid' : 'outline'"
+                          [color]="user.banned ? 'danger' : 'medium'"
+                          (click)="banUser(user, user.banned)"
+                          [title]="t.admin?.users_tab?.tooltip_banned"
+                          style="text-transform: none; font-size: 0.75rem; height: 28px;">
+                {{ user.banned ? t.common?.banned : t.admin?.users_tab?.btn_ban }}
+              </ion-button>
+            </td>
+
+            <!-- Colonne Locked avec tooltip explicatif -->
+            <td>
+              <ion-button size="small"
+                          [fill]="user.locked ? 'solid' : 'outline'"
+                          [color]="user.locked ? 'warning' : 'medium'"
+                          (click)="setLocked(user, !user.locked)"
+                          [title]="t.admin?.users_tab?.tooltip_locked"
+                          style="text-transform: none; font-size: 0.75rem; height: 28px;">
+                {{ user.locked ? t.common?.locked : t.admin?.users_tab?.btn_lock }}
+              </ion-button>
+            </td>
+
+            <td style="text-align: center;">
+              {{ user.available ? t.common?.available : t.common?.unavailable }}
+            </td>
+
+            <td>
+              <span *ngIf="user.hidden" style="color: var(--text-muted); font-size: 0.85rem; font-weight: 500;">
+                {{ t.common?.hidden }}
               </span>
-            </h2>
-            <p>Demandé le : {{ req.createdAt | date:'dd/MM/yyyy HH:mm' }} — Code requis : <code>{{ req.verificationCode }}</code></p>
-          </ion-label>
+            </td>
 
-          <ion-badge [color]="req.underReview ? 'medium' : 'warning'" slot="end">
-            {{ req.underReview ? 'Bloqué' : 'À vérifier' }}
-          </ion-badge>
-        </ion-item>
-      </ion-list>
+            <!-- Certification et option de révocation -->
+            <td>
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+                <span>{{ user.certificationStatus || '' }}</span>
+                <ion-button *ngIf="user.certificationStatus === 'CERTIFIED'"
+                            size="small"
+                            fill="clear"
+                            color="danger"
+                            (click)="revokeCertification(user)"
+                            [title]="t.admin?.users_tab?.btn_revoke"
+                            style="font-size: 0.7rem; height: 24px; padding: 0;">
+                  {{ t.admin?.users_tab?.btn_revoke }}
+                </ion-button>
+              </div>
+            </td>
 
-    </ng-container>
-  </div>
+            <td>{{ user.certifiedAt | date:'yyyy-MM-dd' || '' }}</td>
 
-  <!-- MODALE DE DÉTAIL DE LA CERTIFICATION -->
-  <ion-modal [isOpen]="isCertifModalOpen" (didDismiss)="closeCertificationModal()">
-    <ng-template>
-      <ion-header>
-        <ion-toolbar color="primary">
-          <ion-title>Modération de la certification</ion-title>
-          <ion-buttons slot="end">
-            <ion-button (click)="closeCertificationModal()">Fermer</ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
+            <td style="text-align: center;">
+              <ion-button size="small" fill="clear" color="danger" (click)="deleteUser(user)" [title]="t.common?.delete">
+                <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+            </td>
+          </tr>
+        </ng-template>
 
-      <ion-content class="ion-padding" *ngIf="selectedWorkerDetails">
-        <h3>Annonceur : {{ selectedWorkerDetails.username }}</h3>
-        <p><strong>Code de vérification attendu :</strong> <span style="font-size: 1.2em; color: var(--ion-color-primary);">{{ selectedWorkerDetails.certificationRequest?.verificationCode }}</span></p>
-
-        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;" />
-
-        <!-- Photo de certification -->
-        <div class="image-verification-box ion-margin-bottom" style="text-align: center; background: #f9f9f9; padding: 10px; border-radius: 8px;">
-          <img [src]="selectedWorkerDetails.certificationRequest?.certificationPhotoUrl"
-               (click)="openImagePreview(selectedWorkerDetails.certificationRequest?.certificationPhotoUrl ?? '', certificationPreviewList)"
-               style="max-height: 300px; border-radius: 6px; object-fit: contain; cursor: pointer;"
-               alt="Photo de certification" />
-        </div>
-
-        <!-- Autres photos du profil -->
-        <h4>2. Autres photos du profil (Vérification d'identité)</h4>
-        <div *ngIf="selectedWorkerDetails.photos && selectedWorkerDetails.photos.length > 0" style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px;">
-          <img *ngFor="let p of selectedWorkerDetails.photos"
-               [src]="p.mainThumbUrl"
-               (click)="openImagePreview(p.mainThumbUrl, certificationPreviewList)"
-               style="height: 100px; width: 100px; object-fit: cover; border-radius: 6px; border: 1px solid #ccc; cursor: pointer;"
-               alt="Photo annonceur" />
-        </div>
-        <p *ngIf="!selectedWorkerDetails.photos || selectedWorkerDetails.photos.length === 0" style="color: #777; font-style: italic;">Aucune autre photo disponible sur ce profil.</p>
-
-        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;" />
-
-        <div class="ion-margin-bottom">
-          <!-- Menu déroulant pour les motifs fréquents -->
-          <ion-item fill="outline" class="ion-margin-bottom">
-            <ion-select label="Motifs fréquents (Optionnel)"
-                        labelPlacement="stacked"
-                        placeholder="Sélectionner un motif type..."
-                        (ionChange)="onPredefinedReasonSelected($event)"
-                        [interface]="'popover'">
-              <ion-select-option *ngFor="let reason of predefinedReasons" [value]="reason">
-                {{ reason }}
-              </ion-select-option>
-            </ion-select>
-          </ion-item>
-
-          <!-- Champ de texte modifiable (liée à adminComment, permettant la saisie libre) -->
-          <ion-item fill="outline">
-            <ion-input [(ngModel)]="adminComment"
-                       label="Commentaire ou motif (requis pour refuser / demander plus d'infos)"
-                       labelPlacement="stacked"
-                       placeholder="Ex: Le code sur le panneau est flou...">
-            </ion-input>
-          </ion-item>
-        </div>
-
-        <!-- Boutons d'action -->
-        <div style="display: flex; gap: 10px; margin-top: 20px;">
-          <ion-button expand="block" color="success" style="flex: 1;" (click)="submitCertificationReview(true)">
-            Approuver
-          </ion-button>
-          <ion-button [disabled]="adminComment == ''" expand="block" color="warning" style="flex: 1;" (click)="submitCertificationReview(false)">
-            Demander + d'infos / Refuser
-          </ion-button>
-        </div>
-
-      </ion-content>
-    </ng-template>
-  </ion-modal>
-
-  <!-- LIGHTBOX / MODALE DE ZOOM D'IMAGE TYPE GALERIE -->
-  <ion-modal class="image-preview-modal" [isOpen]="activePreviewUrl !== null" (didDismiss)="closeImagePreview()">
-    <ng-template>
-      <ion-header>
-        <ion-toolbar color="dark">
-          <ion-title>Visualisation</ion-title>
-          <ion-buttons slot="end">
-            <ion-button (click)="closeImagePreview()">Fermer</ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-
-      <ion-content class="ion-padding" style="background: black; --background: black; height: 100%;">
-        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-
-          <!-- Zone cliquable / Bouton Précédent (prend toute la hauteur à gauche) -->
-          <ion-button *ngIf="previewImagesList.length > 1" fill="clear" color="light" class="lightbox-nav-button left-nav" (click)="prevPreviewImage()">
-            <ion-icon name="chevron-back-outline" size="large"></ion-icon>
-          </ion-button>
-
-          <!-- Image affichée en grand au centre -->
-          <img [src]="activePreviewUrl" style="max-width: 75vw; max-height: 85vh; object-fit: contain; z-index: 5;" />
-
-          <!-- Zone cliquable / Bouton Suivant (prend toute la hauteur à droite) -->
-          <ion-button *ngIf="previewImagesList.length > 1" fill="clear" color="light" class="lightbox-nav-button right-nav" (click)="nextPreviewImage()">
-            <ion-icon name="chevron-forward-outline" size="large"></ion-icon>
-          </ion-button>
-
-        </div>
-      </ion-content>
-    </ng-template>
-  </ion-modal>
-
-  <div *ngIf="currentTab === 'reports'">
-    <div style="margin-bottom: 15px;">
-      <h2>Annonceurs signalés</h2>
-      <p style="color: var(--text-muted); font-size: 0.9rem;">Classement des utilisateurs par nombre de signalements reçus.</p>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="12" style="text-align: center; padding: 20px;">{{ t.admin?.users_tab?.empty_users }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
     </div>
 
-    <p-table [value]="(reportsSummary$ | async) || []" styleClass="p-datatable-gridlines p-datatable-sm" [tableStyle]="{'min-width': '50rem'}">
-      <ng-template pTemplate="header">
-        <tr>
-          <th pSortableColumn="workerUsername">Annonceur <p-sortIcon field="workerUsername"></p-sortIcon></th>
-          <th>Email</th>
-          <th pSortableColumn="reportCount">Nombre de signalements <p-sortIcon field="reportCount"></p-sortIcon></th>
-          <th style="text-align: center;">Actions</th>
-        </tr>
-      </ng-template>
+    <!-- ONGLET 2 : CERTIFICATIONS EN ATTENTE -->
+    <div *ngIf="currentTab === 'certifications'">
+      <ng-container *ngIf="pendingCertificationRequests$ | async as requests">
 
-      <ng-template pTemplate="body" let-item>
-        <tr>
-          <td><strong>{{ item.workerUsername }}</strong></td>
-          <td>{{ item.workerEmail }}</td>
-          <td>
-            <p-tag [value]="item.reportCount + ' signalement(s)'" severity="danger"></p-tag>
-          </td>
-          <td style="text-align: center;">
-            <ion-button size="small" color="primary" (click)="openReportsModal(item)">
-              Voir les requêtes
-            </ion-button>
-          </td>
-        </tr>
-      </ng-template>
-
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="4" style="text-align: center; padding: 20px;">Aucun signalement enregistré 🎉</td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
-
-  <!-- MODALE DE CONSULTATION DES SIGNALEMENTS D'UN UTILISATEUR -->
-  <!-- MODALE DE CONSULTATION DES SIGNALEMENTS D'UN UTILISATEUR -->
-  <ion-modal [isOpen]="isReportsModalOpen" (didDismiss)="closeReportsModal()">
-    <ng-template>
-      <ion-header>
-        <ion-toolbar color="primary">
-          <ion-title>Signalements pour {{ selectedReportWorker?.workerUsername }}</ion-title>
-          <ion-buttons slot="end">
-            <ion-button (click)="closeReportsModal()">Fermer</ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-
-      <ion-content class="ion-padding" *ngIf="selectedReportWorker">
-        <div style="margin-bottom: 20px; display: flex; gap: 10px;">
-          <ion-button color="danger" size="small" (click)="banUser(selectedReportWorker.workerId, false)">
-            Bannir l'annonceur
-          </ion-button>
-          <ion-button color="warning" size="small" (click)="setLocked({ id: selectedReportWorker.workerId, locked: false }, true)">
-            Verrouiller le compte
-          </ion-button>
+        <div *ngIf="requests.length === 0" class="ion-text-center ion-padding">
+          <p>{{ t.admin?.certif_tab?.empty_certifs }}</p>
         </div>
 
-        <h3>Historique des requêtes / signalements :</h3>
-        <ion-list lines="full">
-          <ion-item *ngFor="let rep of selectedReportWorker.reports"
-                    [style.opacity]="rep.reportStatus === 'DISMISSED' ? '0.4' : '1'"
-                    [style.background]="rep.reportStatus === 'DISMISSED' ? '#f1f3f5' : 'transparent'">
+        <!-- Lignes très fines style tableau épuré -->
+        <ion-list *ngIf="requests.length > 0" lines="full">
+          <ion-item
+            *ngFor="let req of requests"
+            [button]="!req.underReview"
+            (click)="!req.underReview && openCertificationModal(req)"
+            [style.opacity]="req.underReview ? '0.5' : '1'"
+            [style.background]="req.underReview ? '#f8f9fa' : 'transparent'"
+            style="cursor: pointer;">
+
             <ion-label>
-              <p>
-                <strong>Auteur :</strong> {{ rep.authorEmail }}
-                <span *ngIf="rep.reportStatus === 'DISMISSED'" style="color: #e03131; font-weight: bold; margin-left: 10px;">
-                  (🔒 Classé / Abusif)
+              <h2>
+                <strong>{{ req.workerUsername }}</strong>
+                <span *ngIf="req.underReview" style="color: #e03131; font-size: 0.85em; margin-left: 10px;">
+                  {{ t.admin?.certif_tab?.under_review_suffix }}
                 </span>
-              </p>
-              <p><strong>Raison :</strong> <span [style.text-decoration]="rep.reportStatus === 'DISMISSED' ? 'line-through' : 'none'">{{ rep.reason }}</span></p>
-              <p><small style="color: gray;">Date : {{ rep.createdAt | date:'dd/MM/yyyy HH:mm' }}</small></p>
+              </h2>
+              <p>{{ t.admin?.certif_tab?.requested_on }} {{ req.createdAt | date:'dd/MM/yyyy HH:mm' }} — {{ t.admin?.certif_tab?.code_required }} <code>{{ req.verificationCode }}</code></p>
             </ion-label>
 
-            <!-- Bouton pour classer un signalement actif -->
-            <ion-button *ngIf="rep.reportStatus === 'PENDING'"
-                        slot="end"
-                        size="small"
-                        color="medium"
-                        (click)="dismissReport(rep.reportId)">
-              Classer sans suite
-            </ion-button>
+            <ion-badge [color]="req.underReview ? 'medium' : 'warning'" slot="end">
+              {{ req.underReview ? t.admin?.certif_tab?.badge_blocked : t.admin?.certif_tab?.badge_pending }}
+            </ion-badge>
           </ion-item>
         </ion-list>
-      </ion-content>
-    </ng-template>
-  </ion-modal>
 
-  <!-- ONGLET 3 : JOURNAL D'AUDIT -->
-  <div *ngIf="currentTab === 'logs'">
-    <ion-list>
-      <ion-item *ngFor="let log of (displayedAuditLogs$ | async) || []">
-        <ion-label>
-          <h3><strong>Modérateur :</strong> {{ log.adminUser.username ?? log.adminUser.email }}</h3>
-          <p><strong>Action :</strong> <ion-badge color="medium">{{ log.actionType }}</ion-badge></p>
-          <p>{{ log.details }}</p>
-          <p class="ion-text-right"><small>{{ log.createdAt | date:'short' }}</small></p>
-        </ion-label>
-      </ion-item>
-    </ion-list>
-  </div>
-
-  <!-- ONGLET 4 : SERVICES -->
-  <div *ngIf="currentTab === 'services'">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-      <h2>Liste des Services</h2>
-      <ion-button color="primary" size="small" (click)="openServiceModal()">
-        <ion-icon slot="start" name="add-outline"></ion-icon> Ajouter un service
-      </ion-button>
+      </ng-container>
     </div>
 
-    <p-table [value]="(services$ | async) || []" styleClass="p-datatable-gridlines p-datatable-sm" [tableStyle]="{'min-width': '40rem'}">
-      <ng-template pTemplate="header">
-        <tr>
-          <th>Nom du service</th>
-          <th>Description</th>
-          <th style="text-align: center; width: 140px;">Actions</th>
-        </tr>
-      </ng-template>
+    <!-- MODALE DE DÉTAIL DE LA CERTIFICATION -->
+    <ion-modal [isOpen]="isCertifModalOpen" (didDismiss)="closeCertificationModal()">
+      <ng-template>
+        <ion-header>
+          <ion-toolbar color="primary">
+            <ion-title>{{ t.admin?.certif_tab?.modal_title }}</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="closeCertificationModal()">{{ t.common?.close }}</ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
 
-      <ng-template pTemplate="body" let-service>
-        <tr>
-          <td>
-            <span style="font-weight: 500;">{{ service.name }}</span>
-          </td>
-          <td>{{ service.description || '—' }}</td>
+        <ion-content class="ion-padding" *ngIf="selectedWorkerDetails">
+          <h3>{{ t.admin?.certif_tab?.advertiser_label }} {{ selectedWorkerDetails.username }}</h3>
+          <p><strong>{{ t.admin?.certif_tab?.expected_code_label }}</strong> <span style="font-size: 1.2em; color: var(--ion-color-primary);">{{ selectedWorkerDetails.certificationRequest?.verificationCode }}</span></p>
 
-          <td style="text-align: center; white-space: nowrap;">
-            <!-- Bouton Modifier -->
-            <ion-button size="small" fill="clear" color="medium" (click)="editServiceModal(service)" title="Modifier">
-              <ion-icon name="pencil-outline" slot="icon-only"></ion-icon>
-            </ion-button>
+          <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;" />
 
-            <!-- Bouton Supprimer -->
-            <ion-button size="small" fill="clear" color="danger" (click)="deleteService(service.id)" title="Supprimer">
-              <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-          </td>
-        </tr>
-      </ng-template>
-
-      <ng-template pTemplate="emptymessage">
-        <tr><td colspan="3" style="text-align: center; padding: 20px;">Aucun service trouvé.</td></tr>
-      </ng-template>
-    </p-table>
-  </div>
-
-  <!-- ONGLET 5 : ZONES GÉOGRAPHIQUES -->
-  <div *ngIf="currentTab === 'zones'">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-      <h2>Zones Géographiques</h2>
-      <!-- Bouton pour ajouter une zone parente racine -->
-      <ion-button color="primary" size="small" (click)="openZoneModal(null)">
-        <ion-icon slot="start" name="add-outline"></ion-icon> Ajouter une zone parente
-      </ion-button>
-    </div>
-
-    <p-table [value]="(flatZones$ | async) || []" styleClass="p-datatable-gridlines p-datatable-sm" [tableStyle]="{'min-width': '40rem'}">
-      <ng-template pTemplate="header">
-        <tr>
-          <th>Nom de la zone</th>
-          <th style="text-align: center; width: 160px;">Actions</th>
-        </tr>
-      </ng-template>
-
-      <ng-template pTemplate="body" let-zone>
-        <tr [ngClass]="{'parent-zone-row': zone.level === 0}">
-
-          <!-- Nom avec indentation dynamique -->
-          <td [style.padding-left.px]="15 + (zone.level * 25)">
-            <span *ngIf="zone.level > 0" style="color: #999; margin-right: 6px;">└─</span>
-            <span [style.font-weight]="zone.level === 0 ? 'bold' : 'normal'">
-            {{ zone.name }}
-          </span>
-          </td>
-
-          <td style="text-align: center; white-space: nowrap;">
-            <!-- Bouton Ajouter une sous-zone (visible uniquement sur les parents de niveau 0) -->
-            <ion-button size="small" fill="clear" color="primary" (click)="openZoneModal(zone.id)" *ngIf="zone.level === 0" title="Ajouter une sous-zone">
-              <ion-icon name="add-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-
-            <!-- Bouton Modifier le nom -->
-            <ion-button size="small" fill="clear" color="medium" (click)="editZoneName(zone)" title="Modifier">
-              <ion-icon name="pencil-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-
-            <!-- Bouton Supprimer -->
-            <ion-button size="small" fill="clear" color="danger" (click)="deleteZone(zone.id)" title="Supprimer">
-              <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-          </td>
-        </tr>
-      </ng-template>
-
-      <ng-template pTemplate="emptymessage">
-        <tr><td colspan="2" style="text-align: center; padding: 20px;">Aucune zone trouvée.</td></tr>
-      </ng-template>
-    </p-table>
-  </div>
-
-  <!-- ONGLET 6 : ADMINISTRATION / ÉQUIPE -->
-  <div *ngIf="currentTab === 'admins'">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-      <div>
-        <h2>Gestion de l'équipe d'administration</h2>
-        <p style="color: var(--text-mid, #6b6560); font-size: 0.9rem; margin: 4px 0 0 0;">
-          Invitez de nouveaux modérateurs et gérez les accès sécurisés de la plateforme.
-        </p>
-      </div>
-      <ion-button color="primary" size="small" (click)="inviteAdminModal()">
-        <ion-icon slot="start" name="person-add-outline"></ion-icon> Inviter un administrateur
-      </ion-button>
-    </div>
-
-    <!-- Grille vide prête pour de futurs ajouts (statistiques admins, rôles, etc.) -->
-    <ion-grid class="ion-no-padding">
-      <ion-row>
-        <ion-col size="12">
-          <div style="background: var(--surface-card, #f0ece7); border: 1px dashed var(--border-dashed, #d4c8be); border-radius: 12px; padding: 30px; text-align: center;">
-            <ion-icon name="shield-checkmark-outline" style="font-size: 2.5rem; color: var(--accent, #c8956c); margin-bottom: 10px;"></ion-icon>
-            <p style="margin: 0; font-weight: 500; color: var(--text-dark, #332d29);">Espace réservé aux futurs outils de supervision des administrateurs.</p>
+          <!-- Photo de certification -->
+          <div class="image-verification-box ion-margin-bottom" style="text-align: center; background: #f9f9f9; padding: 10px; border-radius: 8px;">
+            <img [src]="selectedWorkerDetails.certificationRequest?.certificationPhotoUrl"
+                 (click)="openImagePreview(selectedWorkerDetails.certificationRequest?.certificationPhotoUrl ?? '', certificationPreviewList)"
+                 style="max-height: 300px; border-radius: 6px; object-fit: contain; cursor: pointer;"
+                 alt="Photo de certification" />
           </div>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </div>
 
-</ion-content>
+          <!-- Autres photos du profil -->
+          <h4>{{ t.admin?.certif_tab?.other_photos_title }}</h4>
+          <div *ngIf="selectedWorkerDetails.photos && selectedWorkerDetails.photos.length > 0" style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px;">
+            <img *ngFor="let p of selectedWorkerDetails.photos"
+                 [src]="p.mainThumbUrl"
+                 (click)="openImagePreview(p.mainThumbUrl, certificationPreviewList)"
+                 style="height: 100px; width: 100px; object-fit: cover; border-radius: 6px; border: 1px solid #ccc; cursor: pointer;"
+                 alt="Photo annonceur" />
+          </div>
+          <p *ngIf="!selectedWorkerDetails.photos || selectedWorkerDetails.photos.length === 0" style="color: #777; font-style: italic;">
+            {{ t.admin?.certif_tab?.no_other_photos }}
+          </p>
+
+          <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;" />
+
+          <div class="ion-margin-bottom">
+            <!-- Menu déroulant pour les motifs fréquents -->
+            <ion-item class="ion-margin-bottom">
+              <ion-select [label]="t.admin?.certif_tab?.frequent_reasons_label"
+                          labelPlacement="stacked"
+                          fill="outline"
+                          [placeholder]="t.admin?.certif_tab?.frequent_reasons_placeholder"
+                          (ionChange)="onPredefinedReasonSelected($event)"
+                          [interface]="'popover'">
+                <ion-select-option *ngFor="let reason of predefinedReasons" [value]="reason">
+                  {{ reason }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <!-- Champ de texte modifiable -->
+            <ion-item>
+              <ion-input [(ngModel)]="adminComment"
+                         [label]="t.admin?.certif_tab?.comment_label"
+                         labelPlacement="stacked"
+                         fill="outline"
+                         [placeholder]="t.admin?.certif_tab?.comment_placeholder">
+              </ion-input>
+            </ion-item>
+          </div>
+
+          <!-- Boutons d'action -->
+          <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <ion-button expand="block" color="success" style="flex: 1;" (click)="submitCertificationReview(true)">
+              {{ t.admin?.certif_tab?.btn_approve }}
+            </ion-button>
+            <ion-button [disabled]="adminComment == ''" expand="block" color="warning" style="flex: 1;" (click)="submitCertificationReview(false)">
+              {{ t.admin?.certif_tab?.btn_reject }}
+            </ion-button>
+          </div>
+
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+
+    <!-- LIGHTBOX / MODALE DE ZOOM D'IMAGE TYPE GALERIE -->
+    <ion-modal class="image-preview-modal" [isOpen]="activePreviewUrl !== null" (didDismiss)="closeImagePreview()">
+      <ng-template>
+        <ion-header>
+          <ion-toolbar color="dark">
+            <ion-title>{{ t.admin?.preview?.title }}</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="closeImagePreview()">{{ t.common?.close }}</ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+
+        <ion-content class="ion-padding" style="background: black; --background: black; height: 100%;">
+          <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+
+            <ion-button *ngIf="previewImagesList.length > 1" fill="clear" color="light" class="lightbox-nav-button left-nav" (click)="prevPreviewImage()">
+              <ion-icon name="chevron-back-outline" size="large"></ion-icon>
+            </ion-button>
+
+            <img [src]="activePreviewUrl" style="max-width: 75vw; max-height: 85vh; object-fit: contain; z-index: 5;" />
+
+            <ion-button *ngIf="previewImagesList.length > 1" fill="clear" color="light" class="lightbox-nav-button right-nav" (click)="nextPreviewImage()">
+              <ion-icon name="chevron-forward-outline" size="large"></ion-icon>
+            </ion-button>
+
+          </div>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+
+    <!-- ONGLET 3 : SIGNALEMENTS -->
+    <div *ngIf="currentTab === 'reports'">
+      <div style="margin-bottom: 15px;">
+        <h2>{{ t.admin?.reports_tab?.title }}</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">{{ t.admin?.reports_tab?.subtitle }}</p>
+      </div>
+
+      <p-table [value]="(reportsSummary$ | async) || []" styleClass="p-datatable-gridlines p-datatable-sm" [tableStyle]="{'min-width': '50rem'}">
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="workerUsername">{{ t.admin?.reports_tab?.col_advertiser }} <p-sortIcon field="workerUsername"></p-sortIcon></th>
+            <th>{{ t.common?.email }}</th>
+            <th pSortableColumn="reportCount">{{ t.admin?.reports_tab?.col_count }} <p-sortIcon field="reportCount"></p-sortIcon></th>
+            <th style="text-align: center;">{{ t.common?.actions }}</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-item>
+          <tr>
+            <td><strong>{{ item.workerUsername }}</strong></td>
+            <td>{{ item.workerEmail }}</td>
+            <td>
+              <p-tag [value]="item.reportCount + ' ' + (t.admin?.reports_tab?.col_count || 'signalement(s)')" severity="danger"></p-tag>
+            </td>
+            <td style="text-align: center;">
+              <ion-button size="small" color="primary" (click)="openReportsModal(item)">
+                {{ t.admin?.reports_tab?.btn_view_requests }}
+              </ion-button>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="4" style="text-align: center; padding: 20px;">{{ t.admin?.reports_tab?.empty_reports }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <!-- MODALE DE CONSULTATION DES SIGNALEMENTS D'UN UTILISATEUR -->
+    <ion-modal [isOpen]="isReportsModalOpen" (didDismiss)="closeReportsModal()">
+      <ng-template>
+        <ion-header>
+          <ion-toolbar color="primary">
+            <ion-title>{{ t.admin?.reports_tab?.modal_title }} {{ selectedReportWorker?.workerUsername }}</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="closeReportsModal()">{{ t.common?.close }}</ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+
+        <ion-content class="ion-padding" *ngIf="selectedReportWorker">
+          <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+            <ion-button color="danger" size="small" (click)="banUser(selectedReportWorker.workerId, false)">
+              {{ t.admin?.reports_tab?.btn_ban_worker }}
+            </ion-button>
+            <ion-button color="warning" size="small" (click)="setLocked({ id: selectedReportWorker.workerId, locked: false }, true)">
+              {{ t.admin?.reports_tab?.btn_lock_account }}
+            </ion-button>
+          </div>
+
+          <h3>{{ t.admin?.reports_tab?.history_title }}</h3>
+          <ion-list lines="full">
+            <ion-item *ngFor="let rep of selectedReportWorker.reports"
+                      [style.opacity]="rep.reportStatus === 'DISMISSED' ? '0.4' : '1'"
+                      [style.background]="rep.reportStatus === 'DISMISSED' ? '#f1f3f5' : 'transparent'">
+              <ion-label>
+                <p>
+                  <strong>{{ t.admin?.reports_tab?.author_label }}</strong> {{ rep.authorEmail }}
+                  <span *ngIf="rep.reportStatus === 'DISMISSED'" style="color: #e03131; font-weight: bold; margin-left: 10px;">
+                    {{ t.admin?.reports_tab?.dismissed_suffix }}
+                  </span>
+                </p>
+                <p><strong>{{ t.admin?.reports_tab?.reason_label }}</strong> <span [style.text-decoration]="rep.reportStatus === 'DISMISSED' ? 'line-through' : 'none'">{{ rep.reason }}</span></p>
+                <p><small style="color: gray;">{{ t.admin?.reports_tab?.date_label }} {{ rep.createdAt | date:'dd/MM/yyyy HH:mm' }}</small></p>
+              </ion-label>
+
+              <!-- Bouton pour classer un signalement actif -->
+              <ion-button *ngIf="rep.reportStatus === 'PENDING'"
+                          slot="end"
+                          size="small"
+                          color="medium"
+                          (click)="dismissReport(rep.reportId)">
+                {{ t.admin?.reports_tab?.btn_dismiss }}
+              </ion-button>
+            </ion-item>
+          </ion-list>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+
+    <!-- ONGLET 4 : SERVICES -->
+    <div *ngIf="currentTab === 'services'">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h2>{{ t.admin?.services_tab?.title }}</h2>
+        <ion-button color="primary" size="small" (click)="openServiceModal()">
+          <ion-icon slot="start" name="add-outline"></ion-icon>
+          {{ t.admin?.services_tab?.btn_add }}
+        </ion-button>
+      </div>
+
+      <p-table [value]="(services$ | async) || []" styleClass="p-datatable-gridlines p-datatable-sm" [tableStyle]="{'min-width': '40rem'}">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>{{ t.admin?.services_tab?.col_name }}</th>
+            <th>{{ t.admin?.services_tab?.col_desc }}</th>
+            <th style="text-align: center; width: 140px;">{{ t.common?.actions }}</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-service>
+          <tr>
+            <td>
+              <span style="font-weight: 500;">{{ service.name }}</span>
+            </td>
+            <td>{{ service.description || '—' }}</td>
+
+            <td style="text-align: center; white-space: nowrap;">
+              <!-- Bouton Modifier -->
+              <ion-button size="small" fill="clear" color="medium" (click)="editServiceModal(service)" [title]="t.common?.edit">
+                <ion-icon name="pencil-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+
+              <!-- Bouton Supprimer -->
+              <ion-button size="small" fill="clear" color="danger" (click)="deleteService(service.id)" [title]="t.common?.delete">
+                <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="3" style="text-align: center; padding: 20px;">{{ t.admin?.services_tab?.empty_services }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <!-- ONGLET 5 : ZONES GÉOGRAPHIQUES -->
+    <div *ngIf="currentTab === 'zones'">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h2>{{ t.admin?.zones_tab?.title }}</h2>
+        <!-- Bouton pour ajouter une zone parente racine -->
+        <ion-button color="primary" size="small" (click)="openZoneModal(null)">
+          <ion-icon slot="start" name="add-outline"></ion-icon>
+          {{ t.admin?.zones_tab?.btn_add_parent }}
+        </ion-button>
+      </div>
+
+      <p-table [value]="(flatZones$ | async) || []" styleClass="p-datatable-gridlines p-datatable-sm" [tableStyle]="{'min-width': '40rem'}">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>{{ t.admin?.zones_tab?.col_name }}</th>
+            <th style="text-align: center; width: 160px;">{{ t.common?.actions }}</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-zone>
+          <tr [ngClass]="{'parent-zone-row': zone.level === 0}">
+
+            <!-- Nom avec indentation dynamique -->
+            <td [style.padding-left.px]="15 + (zone.level * 25)">
+              <span *ngIf="zone.level > 0" style="color: #999; margin-right: 6px;">└─</span>
+              <span [style.font-weight]="zone.level === 0 ? 'bold' : 'normal'">
+                {{ zone.name }}
+              </span>
+            </td>
+
+            <td style="text-align: center; white-space: nowrap;">
+              <!-- Bouton Ajouter une sous-zone (visible uniquement sur les parents de niveau 0) -->
+              <ion-button size="small" fill="clear" color="primary" (click)="openZoneModal(zone.id)" *ngIf="zone.level === 0" [title]="t.admin?.zones_tab?.tooltip_add_child">
+                <ion-icon name="add-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+
+              <!-- Bouton Modifier le nom -->
+              <ion-button size="small" fill="clear" color="medium" (click)="editZoneName(zone)" [title]="t.common?.edit">
+                <ion-icon name="pencil-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+
+              <!-- Bouton Supprimer -->
+              <ion-button size="small" fill="clear" color="danger" (click)="deleteZone(zone.id)" [title]="t.common?.delete">
+                <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr><td colspan="2" style="text-align: center; padding: 20px;">{{ t.admin?.zones_tab?.empty_zones }}</td></tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <!-- ONGLET 6 : JOURNAL D'AUDIT -->
+    <div *ngIf="currentTab === 'logs'">
+      <ion-list>
+        <ion-item *ngFor="let log of (displayedAuditLogs$ | async) || []">
+          <ion-label>
+            <h3><strong>{{ t.admin?.logs_tab?.moderator_label }}</strong> {{ log.adminUser.username ?? log.adminUser.email }}</h3>
+            <p><strong>{{ t.admin?.logs_tab?.action_label }}</strong> <ion-badge color="medium">{{ log.actionType }}</ion-badge></p>
+            <p>{{ log.details }}</p>
+            <p class="ion-text-right"><small>{{ log.createdAt | date:'short' }}</small></p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+
+    <!-- ONGLET 7 : ADMINISTRATION / ÉQUIPE -->
+    <div *ngIf="currentTab === 'admins'">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div>
+          <h2>{{ t.admin?.admins_tab?.title }}</h2>
+          <p style="color: var(--text-mid, #6b6560); font-size: 0.9rem; margin: 4px 0 0 0;">
+            {{ t.admin?.admins_tab?.subtitle }}
+          </p>
+        </div>
+        <ion-button color="primary" size="small" (click)="inviteAdminModal()">
+          <ion-icon slot="start" name="person-add-outline"></ion-icon>
+          {{ t.admin?.admins_tab?.btn_invite }}
+        </ion-button>
+      </div>
+
+      <!-- Grille de présentation -->
+      <ion-grid class="ion-no-padding">
+        <ion-row>
+          <ion-col size="12">
+            <div style="background: var(--surface-card, #f0ece7); border: 1px dashed var(--border-dashed, #d4c8be); border-radius: 12px; padding: 30px; text-align: center;">
+              <ion-icon name="shield-checkmark-outline" style="font-size: 2.5rem; color: var(--accent, #c8956c); margin-bottom: 10px;"></ion-icon>
+              <p style="margin: 0; font-weight: 500; color: var(--text-dark, #332d29);">
+                {{ t.admin?.admins_tab?.placeholder_box }}
+              </p>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+
+  </ion-content>
+</ng-container>

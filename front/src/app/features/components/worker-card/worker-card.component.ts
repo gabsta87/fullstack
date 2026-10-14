@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnDestroy} from '@angular/core';
 import {Router} from '@angular/router';
 import {CommonModule} from '@angular/common';
 import {IonBadge, IonCard, IonCardContent, IonIcon, IonRippleEffect} from '@ionic/angular/standalone';
@@ -6,6 +6,7 @@ import {WorkerService} from '../../services/worker.service';
 import {WorkerMinimalProfile} from "../../models/user.model";
 import {addIcons} from "ionicons";
 import {personCircleOutline, shieldCheckmarkOutline} from "ionicons/icons";
+import {LanguageManagerService} from "../../services/language-manager.service";
 
 @Component({
   selector: 'worker-card',
@@ -24,7 +25,7 @@ export class WorkerCardComponent implements OnDestroy {
   constructor(
     private workerService: WorkerService,
     private router: Router,
-    private cdr: ChangeDetectorRef,
+    protected languageService : LanguageManagerService,
   ) {
     addIcons({
       personCircleOutline, shieldCheckmarkOutline

@@ -22,10 +22,10 @@
         <ng-container *ngIf="!(authService.isAuthenticated$ | async)">
           <ion-button (click)="openAuth('login')" fill="clear" class="nav-link-btn">
             <ion-icon name="log-in-outline" slot="start"></ion-icon>
-            {{ t.header.login }}
+            {{ t.header?.login }}
           </ion-button>
           <ion-button (click)="openAuth('register')" fill="solid" class="nav-cta-btn">
-            {{ t.header.register || "S'inscrire" }}
+            {{ t.header?.register }}
           </ion-button>
         </ng-container>
 
@@ -33,17 +33,17 @@
           <ng-container *ngIf="authService.isAdmin">
             <ion-button (click)="openAdmin()" fill="clear" class="nav-link-btn">
               <ion-icon name="build-outline" slot="start"></ion-icon>
-              Administration
+              {{ t.admin?.tabs?.admins || 'Administration' }}
             </ion-button>
           </ng-container>
 
           <ion-button (click)="openAccount()" fill="clear" class="nav-link-btn">
             <ion-icon name="person-circle-outline" slot="start"></ion-icon>
-            {{ t.header.account }}
+            {{ t.header?.account }}
           </ion-button>
           <ion-button (click)="onLogout()" fill="clear" class="nav-link-btn">
             <ion-icon name="log-out-outline" slot="start"></ion-icon>
-            {{ t.header.logout }}
+            {{ t.header?.logout }}
           </ion-button>
         </ng-container>
       </ng-container>

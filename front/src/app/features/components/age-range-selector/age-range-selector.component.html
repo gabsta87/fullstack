@@ -1,7 +1,7 @@
 <ion-item lines="none" class="filter-input-item age-range-item" *ngIf="languageService.currentLanguage$ | async as t">
   <ion-range
     labelPlacement="start"
-    [label]="(t.age?.label) + ' ' + currentLower + ' - ' + (currentUpper === 60 ? '60+' : currentUpper + ' ' + (t.age?.years))"
+    [label]="(t.common?.age) + ' ' + currentLower + ' - ' + (currentUpper === 60 ? '60+' : currentUpper + ' ' + (t.common?.years))"
     [dualKnobs]="true"
     [min]="18"
     [max]="60"

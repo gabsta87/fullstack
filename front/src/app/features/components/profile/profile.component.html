@@ -6,7 +6,7 @@
       <ion-buttons slot="start">
         <ion-button (click)="goBack()" color="dark">
           <ion-icon slot="start" name="chevron-back-outline"></ion-icon>
-          {{ t.worker_profile?.back }}
+          {{ t.common?.back || t.worker_profile?.back }}
         </ion-button>
       </ion-buttons>
     </ion-toolbar>
@@ -50,7 +50,7 @@
               </ion-item>
               <ion-item>
                 <ion-icon name="woman-outline" slot="start"></ion-icon>
-                <ion-label>{{ t.worker_profile?.age }} {{ worker.age }}</ion-label>
+                <ion-label>{{ t.common?.age }}: {{ worker.age }} {{ t.common?.years }}</ion-label>
               </ion-item>
             </ion-list>
           </div>
@@ -60,7 +60,7 @@
 
           <!-- Section Photos -->
           <div class="profile-card" *ngIf="worker.photos && worker.photos.length > 0">
-            <h3>{{ t.worker_profile?.photos }}</h3>
+            <h3>{{ t.common?.photos }}</h3>
             <div class="gallery-grid">
               <img *ngFor="let p of worker.photos"
                    class="media-item"
@@ -71,7 +71,7 @@
 
           <!-- Section Vidéos -->
           <div class="profile-card ion-margin-top" *ngIf="worker.videos && worker.videos.length > 0">
-            <h3>{{ t.worker_profile?.videos }}</h3>
+            <h3>{{ t.common?.videos }}</h3>
             <div class="gallery-grid">
               <div *ngFor="let v of worker.videos" class="video-thumbnail-container" (click)="openMedia(v)">
                 <ion-icon name="play-circle-outline" class="play-icon-overlay media-item"></ion-icon>
@@ -156,7 +156,7 @@
           </button>
 
           <div class="contact-container">
-            <h2>{{ t.worker_profile?.contact_title }} {{ worker.username }}</h2>
+            <h2>{{ t.worker_profile?.contact_btn }} {{ worker.username }}</h2>
 
             <div class="contact-actions" *ngIf="worker.phone">
               <a class="contact-btn call-btn" [href]="'tel:' + worker.phone">

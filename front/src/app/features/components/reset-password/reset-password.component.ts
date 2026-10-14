@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ModalController} from '@ionic/angular/standalone';
+import {IonText, ModalController} from '@ionic/angular/standalone';
 import {IonButton, IonContent, IonIcon, IonInput, IonItem, IonSpinner} from "@ionic/angular/standalone";
 import {AsyncPipe, NgIf} from "@angular/common";
 import {AuthService} from "../../services/auth.service";
@@ -21,7 +21,8 @@ import {LanguageManagerService} from "../../services/language-manager.service";
     IonSpinner,
     IonIcon,
     NgIf,
-    AsyncPipe
+    AsyncPipe,
+    IonText
   ],
   standalone: true
 })

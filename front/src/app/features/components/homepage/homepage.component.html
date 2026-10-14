@@ -27,7 +27,7 @@
             <ion-item lines="none" class="filter-input-item">
               <ion-icon name="person-outline" slot="start" class="filter-icon"></ion-icon>
               <ion-input aria-label="Nom"
-                         [placeholder]="t.filters.placeholder_name"
+                         [placeholder]="t.filters?.placeholder_name"
                          [(ngModel)]="filters.username"
                          (ionInput)="onSearchInput($event)"
                          (keyup.enter)="loadPage(true)">
@@ -40,12 +40,12 @@
                         fill="outline" class="more-filters-btn"
                         color="medium" size="small"
                         (click)="clearFilters()">
-              {{ t.filters.clear }}
+              {{ t.common?.clear || t.filters?.clear }}
             </ion-button>
 
             <ion-button fill="outline" class="more-filters-btn" (click)="toggleMoreFilters()">
               <ion-icon slot="start" [name]="showMoreFilters ? 'close-outline' : 'options-outline'"></ion-icon>
-              {{ t.filters.filters_btn }}
+              {{ t.filters?.filters_btn }}
             </ion-button>
           </ion-col>
 
@@ -55,8 +55,8 @@
           <ion-row class="advanced-filters-row">
             <ion-col size="12" size-sm="4">
               <ion-item lines="none" class="filter-input-item">
-                <ion-select aria-label="Silhouette" interface="popover" [(ngModel)]="filters.bodyType" (ionChange)="loadPage(true)" [placeholder]="t.filters.all_body_types">
-                  <ion-select-option [value]="null">{{ t.filters.all_body_types }}</ion-select-option>
+                <ion-select aria-label="Silhouette" interface="popover" [(ngModel)]="filters.bodyType" (ionChange)="loadPage(true)" [placeholder]="t.filters?.all_body_types">
+                  <ion-select-option [value]="null">{{ t.filters?.all_body_types }}</ion-select-option>
                   <ion-select-option *ngFor="let type of BODY_TYPE_LABELS | keyvalue" [value]="type.key">{{ type.value }}</ion-select-option>
                 </ion-select>
               </ion-item>
@@ -64,8 +64,8 @@
 
             <ion-col size="12" size-sm="4">
               <ion-item lines="none" class="filter-input-item">
-                <ion-select aria-label="Yeux" interface="popover" [(ngModel)]="filters.eyeColor" (ionChange)="loadPage(true)" [placeholder]="t.filters.all_eye_colors">
-                  <ion-select-option [value]="null">{{ t.filters.all_eye_colors }}</ion-select-option>
+                <ion-select aria-label="Yeux" interface="popover" [(ngModel)]="filters.eyeColor" (ionChange)="loadPage(true)" [placeholder]="t.filters?.all_eye_colors">
+                  <ion-select-option [value]="null">{{ t.filters?.all_eye_colors }}</ion-select-option>
                   <ion-select-option *ngFor="let eye of EYE_COLOR_LABELS | keyvalue" [value]="eye.key">{{ eye.value }}</ion-select-option>
                 </ion-select>
               </ion-item>
@@ -73,8 +73,8 @@
 
             <ion-col size="12" size-sm="4">
               <ion-item lines="none" class="filter-input-item">
-                <ion-select aria-label="Cheveux" interface="popover" [(ngModel)]="filters.hairColor" (ionChange)="loadPage(true)" [placeholder]="t.filters.all_hair_colors">
-                  <ion-select-option [value]="null">{{ t.filters.all_hair_colors }}</ion-select-option>
+                <ion-select aria-label="Cheveux" interface="popover" [(ngModel)]="filters.hairColor" (ionChange)="loadPage(true)" [placeholder]="t.filters?.all_hair_colors">
+                  <ion-select-option [value]="null">{{ t.filters?.all_hair_colors }}</ion-select-option>
                   <ion-select-option *ngFor="let hair of HAIR_COLOR_LABELS | keyvalue" [value]="hair.key">{{ hair.value }}</ion-select-option>
                 </ion-select>
               </ion-item>
@@ -84,7 +84,7 @@
           <ion-row class="advanced-filters-row ion-margin-top">
             <ion-col size="12" size-sm="4">
               <ion-item lines="none" class="filter-input-item">
-                <ion-select aria-label="Services" interface="popover" [multiple]="true" [(ngModel)]="filters.services" (ionChange)="loadPage(true)" [placeholder]="t.filters.all_services">
+                <ion-select aria-label="Services" interface="popover" [multiple]="true" [(ngModel)]="filters.services" (ionChange)="loadPage(true)" [placeholder]="t.filters?.all_services">
                   <ion-select-option *ngFor="let service of allServices" [value]="service.name">{{ service.name }}</ion-select-option>
                 </ion-select>
               </ion-item>
@@ -92,7 +92,7 @@
 
             <ion-col size="12" size-sm="4">
               <ion-item lines="none" class="filter-input-item">
-                <ion-select aria-label="Langues" interface="popover" [multiple]="true" [(ngModel)]="filters.languages" (ionChange)="loadPage(true)" [placeholder]="t.filters.all_languages">
+                <ion-select aria-label="Langues" interface="popover" [multiple]="true" [(ngModel)]="filters.languages" (ionChange)="loadPage(true)" [placeholder]="t.filters?.all_languages">
                   <ion-select-option *ngFor="let lang of availableLanguages" [value]="lang">{{ lang }}</ion-select-option>
                 </ion-select>
               </ion-item>
@@ -124,7 +124,7 @@
   </ion-grid>
 
   <ion-infinite-scroll threshold="50px" (ionInfinite)="onIonInfinite($event)" [disabled]="noMoreData">
-    <ion-infinite-scroll-content loadingSpinner="crescent" [loadingText]="t.common?.loading || 'Chargement...'"></ion-infinite-scroll-content>
+    <ion-infinite-scroll-content loadingSpinner="crescent" [loadingText]="t.common?.loading"></ion-infinite-scroll-content>
   </ion-infinite-scroll>
 
   <ion-fab slot="fixed" vertical="bottom" horizontal="center" *ngIf="showScrollTopButton" class="fade-in">

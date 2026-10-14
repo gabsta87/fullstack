@@ -1,10 +1,301 @@
 {
-  "fr": {
-    "header": { "home": "Accueil", "login": "Connexion", "logout": "Déconnexion", "account": "Mon Compte", "register": "S'inscrire" },
+  "en": {
+    "common": {
+      "loading": "Loading...",
+      "save": "Save",
+      "cancel": "Cancel",
+      "close": "Close",
+      "back": "Back",
+      "search": "Search",
+      "clear": "Clear",
+      "delete": "Delete",
+      "edit": "Edit",
+      "actions": "Actions",
+      "email": "Email",
+      "password": "Password",
+      "confirm_password": "Confirm password",
+      "birthdate": "Date of birth",
+      "phone": "Phone",
+      "description": "Description",
+      "role": "Role",
+      "age": "Age",
+      "years": "years",
+      "photos": "Photos",
+      "videos": "Videos",
+      "optional": "(Optional)",
+      "banned": "Banned",
+      "locked": "Locked",
+      "available": "Available",
+      "unavailable": "Unavailable",
+      "hidden": "Hidden",
+      "visible": "Visible",
+      "invisible": "Invisible",
+      "online": "Online",
+      "offline": "Offline"
+    },
+    "header": {
+      "home": "Home",
+      "login": "Login",
+      "logout": "Logout",
+      "account": "My Account",
+      "register": "Register"
+    },
     "filters": {
-      "placeholder_name": "Nom...",
+      "placeholder_name": "Name...",
+      "filters_btn": "Filters",
+      "all_body_types": "All body types",
+      "all_eye_colors": "All eye colors",
+      "all_hair_colors": "All hair colors",
+      "all_services": "All services",
+      "all_languages": "All languages",
+      "all_regions": "All regions",
+      "all_locations": "All locations"
+    },
+    "zones": {
+      "region_label": "Region",
+      "precise_location_label": "Precise location",
+      "select_region": "Select a region...",
+      "select_location": "Select a location..."
+    },
+    "account": {
+      "tabs": {
+        "favorites": "Favorites",
+        "settings": "Settings",
+        "account": "Account"
+      },
+      "favorites": {
+        "title": "Your favorites",
+        "empty": "You have no favorites yet."
+      },
+      "settings": {
+        "title": "My search preferences",
+        "body_types_label": "Preferred body types"
+      }
+    },
+    "account_settings": {
+      "title": "Security & Credentials",
+      "email_label": "Email Address",
+      "email_placeholder": "your@email.com",
+      "current_password_label": "Current password",
+      "current_password_placeholder": "Current password",
+      "new_password_label": "New password (Optional)",
+      "new_password_placeholder": "Minimum 6 characters",
+      "save_btn": "Save changes"
+    },
+    "auth": {
+      "login_title": "Log in",
+      "register_title": "Create an account",
+      "role_client": "Client",
+      "role_worker": "Advertiser",
+      "email_placeholder": "email@example.com",
+      "password_mismatch": "Passwords do not match",
+      "login_btn": "Log in",
+      "register_btn": "Register",
+      "no_account": "Don't have an account yet?",
+      "already_account": "Already have an account?",
+      "forgot_password": "Forgot password?"
+    },
+    "certification": {
+      "title": "Profile Certification",
+      "admin_message_title": "Admin message:",
+      "step1_title": "Step 1: Write down your secret code",
+      "step1_desc": "Take a photo of yourself (uncovered face) holding a paper or phone clearly displaying this code:",
+      "step2_title": "Step 2: Upload your photo",
+      "drop_zone_text": "Drag and drop your photo here or click to browse",
+      "format_hint": "Accepted formats: JPG, PNG",
+      "submit_btn": "Submit for validation"
+    },
+    "forgot_password": {
+      "title": "Forgot password",
+      "subtitle": "Enter your email address to receive a reset link.",
+      "email_placeholder": "Your email",
+      "submit_btn": "Send link"
+    },
+    "worker_profile": {
+      "contact_btn": "Contact",
+      "favorite": "Favorites",
+      "notify_me": "Notify me when back",
+      "report": "Report",
+      "body_type": "Body type:",
+      "about": "About",
+      "reviews": "Reviews"
+    },
+    "reset_password": {
+      "title": "New password",
+      "subtitle": "Set your new login password.",
+      "new_password_placeholder": "New password",
+      "confirm_password_placeholder": "Confirm password",
+      "password_mismatch": "Passwords do not match.",
+      "update_btn": "Update",
+      "invalid_token": "The reset token is missing or invalid.",
+      "retry_btn": "Request again",
+      "success_msg": "Your password has been successfully updated.",
+      "back_home_btn": "Back to home"
+    },
+    "profile_management": {
+      "warning_title": "Your profile is currently invisible",
+      "warning_subtitle": "As long as this essential information is missing, your ad will remain invisible.",
+      "tabs": {
+        "profile": "Profile",
+        "media": "Media",
+        "account": "Account"
+      },
+      "form": {
+        "display_name": "Display name",
+        "display_name_placeholder": "Your username",
+        "short_desc": "Short description (Max. 45 characters)",
+        "short_desc_placeholder": "Ex: Travel enthusiast ✨",
+        "description_placeholder": "Describe your profile, your specialties...",
+        "phone_placeholder": "Ex: +33 6 12 34 56 78",
+        "body_type": "Body type",
+        "hair_color": "Hair color",
+        "eye_color": "Eye color",
+        "services_title": "Offered services * (Select at least one)"
+      },
+      "media": {
+        "drop_title": "Drag and drop your photos or videos here or",
+        "drop_click": "click to browse",
+        "format_hint": "Photos: JPG, PNG, WEBP • Videos: MP4, MOV, WEBM",
+        "add_btn": "Add your photos or videos * (At least one photo required)"
+      }
+    },
+    "admin": {
+      "tabs": {
+        "users": "Users",
+        "certifications": "Certifications",
+        "reports": "Reports",
+        "services": "Services",
+        "zones": "Zones",
+        "logs": "Audit Logs",
+        "admins": "Administration"
+      },
+      "roles": {
+        "all": "All roles",
+        "admin": "Administrator",
+        "client": "Client",
+        "worker": "Advertiser"
+      },
+      "users_tab": {
+        "search_placeholder": "Search by name, email, description, id",
+        "filter_role_placeholder": "Filter by Status",
+        "col_user": "User",
+        "col_certification": "Certification",
+        "col_certif_date": "Certification date",
+        "btn_ban": "Ban",
+        "btn_lock": "Lock",
+        "btn_revoke": "Revoke",
+        "empty_users": "No users found.",
+        "tooltip_banned": "Banned account cannot log in or be seen by visitors",
+        "tooltip_locked": "Locked account cannot perform certain actions or be seen"
+      },
+      "certif_tab": {
+        "empty_certifs": "No pending certification requests 🎉",
+        "under_review_suffix": "(🔒 In progress by another admin)",
+        "requested_on": "Requested on:",
+        "code_required": "Code required:",
+        "badge_blocked": "Blocked",
+        "badge_pending": "To verify",
+        "modal_title": "Certification Moderation",
+        "advertiser_label": "Advertiser:",
+        "expected_code_label": "Expected verification code:",
+        "other_photos_title": "2. Other profile photos (Identity Verification)",
+        "no_other_photos": "No other photos available on this profile.",
+        "frequent_reasons_label": "Frequent reasons (Optional)",
+        "frequent_reasons_placeholder": "Select a default reason...",
+        "comment_label": "Comment or reason (required to reject / request more info)",
+        "comment_placeholder": "Ex: The code on the board is blurry...",
+        "btn_approve": "Approve",
+        "btn_reject": "Request info / Reject"
+      },
+      "reports_tab": {
+        "title": "Reported Advertisers",
+        "subtitle": "Ranking of users by number of received reports.",
+        "col_advertiser": "Advertiser",
+        "col_count": "Number of reports",
+        "btn_view_requests": "View requests",
+        "empty_reports": "No reports recorded 🎉",
+        "modal_title": "Reports for",
+        "btn_ban_worker": "Ban advertiser",
+        "btn_lock_account": "Lock account",
+        "history_title": "Request / Report history:",
+        "author_label": "Author:",
+        "dismissed_suffix": "(🔒 Dismissed / Abusive)",
+        "reason_label": "Reason:",
+        "date_label": "Date:",
+        "btn_dismiss": "Dismiss"
+      },
+      "logs_tab": {
+        "moderator_label": "Moderator:",
+        "action_label": "Action:"
+      },
+      "services_tab": {
+        "title": "Services List",
+        "btn_add": "Add a service",
+        "col_name": "Service name",
+        "col_desc": "Description",
+        "empty_services": "No services found."
+      },
+      "zones_tab": {
+        "title": "Geographic Zones",
+        "btn_add_parent": "Add parent zone",
+        "col_name": "Zone name",
+        "tooltip_add_child": "Add sub-zone",
+        "empty_zones": "No zones found."
+      },
+      "admins_tab": {
+        "title": "Admin Team Management",
+        "subtitle": "Invite new moderators and manage secure access to the platform.",
+        "btn_invite": "Invite administrator",
+        "placeholder_box": "Space reserved for future administrator supervision tools."
+      },
+      "preview": {
+        "title": "Preview"
+      }
+    }
+  },
+  "fr": {
+    "common": {
+      "loading": "Chargement...",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "close": "Fermer",
+      "back": "Retour",
       "search": "Rechercher",
       "clear": "Effacer",
+      "delete": "Supprimer",
+      "edit": "Modifier",
+      "actions": "Actions",
+      "email": "Email",
+      "password": "Mot de passe",
+      "confirm_password": "Confirmer le mot de passe",
+      "birthdate": "Date de naissance",
+      "phone": "Téléphone",
+      "description": "Description",
+      "role": "Rôle",
+      "age": "Âge",
+      "years": "ans",
+      "photos": "Photos",
+      "videos": "Vidéos",
+      "optional": "(Optionnel)",
+      "banned": "Banni",
+      "locked": "Verrouillé",
+      "available": "Disponible",
+      "unavailable": "Indisponible",
+      "hidden": "Masqué",
+      "visible": "Visible",
+      "invisible": "Invisible",
+      "online": "En ligne",
+      "offline": "Hors ligne"
+    },
+    "header": {
+      "home": "Accueil",
+      "login": "Connexion",
+      "logout": "Déconnexion",
+      "account": "Mon Compte",
+      "register": "S'inscrire"
+    },
+    "filters": {
+      "placeholder_name": "Nom...",
       "filters_btn": "Filtres",
       "all_body_types": "Toutes les silhouettes",
       "all_eye_colors": "Toutes les couleurs d'yeux",
@@ -35,7 +326,6 @@
         "body_types_label": "Silhouettes préférées"
       }
     },
-    "common": { "loading": "Chargement..." },
     "account_settings": {
       "title": "Sécurité & Identifiants",
       "email_label": "Adresse Email",
@@ -44,23 +334,14 @@
       "current_password_placeholder": "Mot de passe actuel",
       "new_password_label": "Nouveau mot de passe (Optionnel)",
       "new_password_placeholder": "Minimum 6 caractères",
-      "confirm_password_label": "Confirmer le nouveau mot de passe",
-      "confirm_password_placeholder": "Répétez le mot de passe",
       "save_btn": "Enregistrer les modifications"
-    },
-    "age": {
-      "label": "Âge :",
-      "years": "ans"
     },
     "auth": {
       "login_title": "Se connecter",
       "register_title": "Créer un compte",
       "role_client": "Client",
       "role_worker": "Annonceur",
-      "email": "Email",
       "email_placeholder": "email@exemple.com",
-      "password": "Mot de passe",
-      "confirm_password": "Confirmer le mot de passe",
       "password_mismatch": "Les mots de passe ne correspondent pas",
       "login_btn": "Se connecter",
       "register_btn": "S'inscrire",
@@ -70,7 +351,6 @@
     },
     "certification": {
       "title": "Certification du profil",
-      "close": "Fermer",
       "admin_message_title": "Message de l'administration :",
       "step1_title": "Étape 1 : Notez votre code secret",
       "step1_desc": "Prenez une photo de vous (visage découvert) en tenant un support (papier, téléphone) sur lequel est clairement écrit ce code :",
@@ -83,22 +363,16 @@
       "title": "Mot de passe oublié",
       "subtitle": "Saisissez votre adresse email pour recevoir un lien de réinitialisation.",
       "email_placeholder": "Votre email",
-      "submit_btn": "Envoyer le lien",
-      "cancel_btn": "Annuler"
+      "submit_btn": "Envoyer le lien"
     },
     "worker_profile": {
-      "back": "Retour",
       "contact_btn": "Contacter",
       "favorite": "Favoris",
       "notify_me": "Me notifier son retour",
       "report": "Signaler",
       "body_type": "Silhouette :",
-      "age": "Âge :",
-      "photos": "Photos",
-      "videos": "Vidéos",
       "about": "À propos",
-      "reviews": "Avis",
-      "contact_title": "Contacter"
+      "reviews": "Avis"
     },
     "reset_password": {
       "title": "Nouveau mot de passe",
@@ -115,10 +389,6 @@
     "profile_management": {
       "warning_title": "Votre profil est actuellement invisible",
       "warning_subtitle": "Tant que ces informations essentielles ne sont pas fournies, votre annonce restera invisible.",
-      "online": "En ligne",
-      "offline": "Hors ligne",
-      "visible": "Visible",
-      "invisible": "Invisible",
       "tabs": {
         "profile": "Profil",
         "media": "Medias",
@@ -129,11 +399,8 @@
         "display_name_placeholder": "Votre pseudo",
         "short_desc": "Description courte (Max. 45 caractères)",
         "short_desc_placeholder": "Ex: Passionnée de voyages ✨",
-        "description": "Description *",
         "description_placeholder": "Décrivez votre profil, vos spécialités...",
-        "phone": "Téléphone *",
         "phone_placeholder": "Ex: +33 6 12 34 56 78",
-        "birthdate": "Date de naissance *",
         "body_type": "Silhouette",
         "hair_color": "Cheveux",
         "eye_color": "Yeux",
@@ -143,193 +410,1879 @@
         "drop_title": "Glissez-déposez vos photos ou vidéos ici ou",
         "drop_click": "cliquez pour parcourir",
         "format_hint": "Photos : JPG, PNG, WEBP • Vidéos : MP4, MOV, WEBM",
-        "add_btn": "Ajouter vos photos ou vidéos * (Au moins une photo obligatoire)",
-        "photos_title": "Photos",
-        "videos_title": "Vidéos",
-        "optional": "(Optionnel)"
+        "add_btn": "Ajouter vos photos ou vidéos * (Au moins une photo obligatoire)"
       }
-    }
-  },
-  "en": {
-    "header": { "home": "Home", "login": "Login", "logout": "Logout", "account": "My Account", "register": "Subscribe" },
-    "filters": {
-      "placeholder_name": "Name...",
-      "search": "Search",
-      "clear": "Clear",
-      "filters_btn": "Filters",
-      "all_body_types": "All body types",
-      "all_eye_colors": "All eye colors",
-      "all_hair_colors": "All hair colors",
-      "all_services": "All services",
-      "all_languages": "All languages",
-      "all_regions": "All regions",
-      "all_locations": "All locations"
     },
-    "zones": {
-      "region_label": "Region",
-      "precise_location_label": "Precise location",
-      "select_region": "Choose a region...",
-      "select_location": "Choose a location..."
-    },
-    "account": {
+    "admin": {
       "tabs": {
-        "favorites": "Favorites",
-        "settings": "Settings",
-        "account": "Account"
+        "users": "Utilisateurs",
+        "certifications": "Certifications",
+        "reports": "Signalements",
+        "services": "Services",
+        "zones": "Zones",
+        "logs": "Journal d'Audit",
+        "admins": "Administration"
       },
-      "favorites": {
-        "title": "Your favorites",
-        "empty": "You do not have any favorites yet."
+      "roles": {
+        "all": "Tous les rôles",
+        "admin": "Administrateur",
+        "client": "Client",
+        "worker": "Annonceur"
       },
-      "settings": {
-        "title": "My search preferences",
-        "body_types_label": "Preferred body types"
-      }
-    },
-    "common": { "loading": "Loading..." },
-    "account_settings": {
-      "title": "Security & Credentials",
-      "email_label": "Email Address",
-      "email_placeholder": "your@email.com",
-      "current_password_label": "Current password",
-      "current_password_placeholder": "Current password",
-      "new_password_label": "New password (Optional)",
-      "new_password_placeholder": "Minimum 6 characters",
-      "confirm_password_label": "Confirm new password",
-      "confirm_password_placeholder": "Repeat password",
-      "save_btn": "Save changes"
-    },
-    "age": {
-      "label": "Age:",
-      "years": "years"
-    },
-    "auth": {
-      "login_title": "Log in",
-      "register_title": "Create an account",
-      "role_client": "Client",
-      "role_worker": "Advertiser",
-      "email": "Email",
-      "email_placeholder": "email@example.com",
-      "password": "Password",
-      "confirm_password": "Confirm password",
-      "password_mismatch": "Passwords do not match",
-      "login_btn": "Log in",
-      "register_btn": "Register",
-      "no_account": "Don't have an account yet?",
-      "already_account": "Already have an account?",
-      "forgot_password": "Forgot password?"
-    },
-    "certification": {
-      "title": "Profile Certification",
-      "close": "Close",
-      "admin_message_title": "Admin message:",
-      "step1_title": "Step 1: Note your secret code",
-      "step1_desc": "Take a photo of yourself (uncovered face) holding a medium (paper, phone) with this code clearly written on it:",
-      "step2_title": "Step 2: Upload your photo",
-      "drop_zone_text": "Drop your photo here or click to browse",
-      "format_hint": "Accepted formats: JPG, PNG",
-      "submit_btn": "Submit for validation"
-    },
-    "forgot_password": {
-      "title": "Forgot password",
-      "subtitle": "Enter your email address to receive a reset link.",
-      "email_placeholder": "Your email",
-      "submit_btn": "Send link",
-      "cancel_btn": "Cancel"
-    },
-    "worker_profile": {
-      "back": "Back",
-      "contact_btn": "Contact",
-      "favorite": "Favorites",
-      "notify_me": "Notify me when back",
-      "report": "Report",
-      "body_type": "Body type:",
-      "age": "Age:",
-      "photos": "Photos",
-      "videos": "Videos",
-      "about": "About",
-      "reviews": "Reviews",
-      "contact_title": "Contact"
-    },
-    "reset_password": {
-      "title": "New password",
-      "subtitle": "Set your new login password.",
-      "new_password_placeholder": "New password",
-      "confirm_password_placeholder": "Confirm password",
-      "password_mismatch": "Passwords do not match.",
-      "update_btn": "Update",
-      "invalid_token": "The reset token is missing or invalid.",
-      "retry_btn": "Request again",
-      "success_msg": "Your password has been successfully updated.",
-      "back_home_btn": "Back to home"
-    },
-    "en": {
-      "profile_management": {
-        "warning_title": "Your profile is currently invisible",
-        "warning_subtitle": "As long as this essential information is missing, your ad will remain invisible.",
-        "online": "Online",
-        "offline": "Offline",
-        "visible": "Visible",
-        "invisible": "Invisible",
-        "tabs": {
-          "profile": "Profile",
-          "media": "Media",
-          "account": "Account"
-        },
-        "form": {
-          "display_name": "Display name",
-          "display_name_placeholder": "Your username",
-          "short_desc": "Short description (Max. 45 characters)",
-          "short_desc_placeholder": "Ex: Passionate traveler ✨",
-          "description": "Description *",
-          "description_placeholder": "Describe your profile, your specialties...",
-          "phone": "Phone *",
-          "phone_placeholder": "Ex: +33 6 12 34 56 78",
-          "birthdate": "Date of birth *",
-          "body_type": "Body type",
-          "hair_color": "Hair color",
-          "eye_color": "Eye color",
-          "services_title": "Offered services * (Select at least one)"
-        },
-        "media": {
-          "drop_title": "Drag and drop your photos or videos here or",
-          "drop_click": "click to browse",
-          "format_hint": "Photos: JPG, PNG, WEBP • Videos: MP4, MOV, WEBM",
-          "add_btn": "Add your photos or videos * (At least one photo required)",
-          "photos_title": "Photos",
-          "videos_title": "Videos",
-          "optional": "(Optional)"
-        }
+      "users_tab": {
+        "search_placeholder": "Rechercher par nom, email, description, id",
+        "filter_role_placeholder": "Filtrer par Statut",
+        "col_user": "Utilisateur",
+        "col_certification": "Certification",
+        "col_certif_date": "Date de certification",
+        "btn_ban": "Bannir",
+        "btn_lock": "Verrouiller",
+        "btn_revoke": "Révoquer",
+        "empty_users": "Aucun utilisateur trouvé.",
+        "tooltip_banned": "Un compte banni ne peut pas se connecter ni être vu par les visiteurs",
+        "tooltip_locked": "Un compte verrouillé ne peut pas effectuer certaines actions ni être vu"
+      },
+      "certif_tab": {
+        "empty_certifs": "Aucune demande de certification en attente 🎉",
+        "under_review_suffix": "(🔒 En cours par un autre admin)",
+        "requested_on": "Demandé le :",
+        "code_required": "Code requis :",
+        "badge_blocked": "Bloqué",
+        "badge_pending": "À vérifier",
+        "modal_title": "Modération de la certification",
+        "advertiser_label": "Annonceur :",
+        "expected_code_label": "Code de vérification attendu :",
+        "other_photos_title": "2. Autres photos du profil (Vérification d'identité)",
+        "no_other_photos": "Aucune autre photo disponible sur ce profil.",
+        "frequent_reasons_label": "Motifs fréquents (Optionnel)",
+        "frequent_reasons_placeholder": "Sélectionner un motif type...",
+        "comment_label": "Commentaire ou motif (requis pour refuser / demander plus d'infos)",
+        "comment_placeholder": "Ex: Le code sur le panneau est flou...",
+        "btn_approve": "Approuver",
+        "btn_reject": "Demander + d'infos / Refuser"
+      },
+      "reports_tab": {
+        "title": "Annonceurs signalés",
+        "subtitle": "Classement des utilisateurs par nombre de signalements reçus.",
+        "col_advertiser": "Annonceur",
+        "col_count": "Nombre de signalements",
+        "btn_view_requests": "Voir les requêtes",
+        "empty_reports": "Aucun signalement enregistré 🎉",
+        "modal_title": "Signalements pour",
+        "btn_ban_worker": "Bannir l'annonceur",
+        "btn_lock_account": "Verrouiller le compte",
+        "history_title": "Historique des requêtes / signalements :",
+        "author_label": "Auteur :",
+        "dismissed_suffix": "(🔒 Classé / Abusif)",
+        "reason_label": "Raison :",
+        "date_label": "Date :",
+        "btn_dismiss": "Classer sans suite"
+      },
+      "logs_tab": {
+        "moderator_label": "Modérateur :",
+        "action_label": "Action :"
+      },
+      "services_tab": {
+        "title": "Liste des Services",
+        "btn_add": "Ajouter un service",
+        "col_name": "Nom du service",
+        "col_desc": "Description",
+        "empty_services": "Aucun service trouvé."
+      },
+      "zones_tab": {
+        "title": "Zones Géographiques",
+        "btn_add_parent": "Ajouter une zone parente",
+        "col_name": "Nom de la zone",
+        "tooltip_add_child": "Ajouter une sous-zone",
+        "empty_zones": "Aucune zone trouvée."
+      },
+      "admins_tab": {
+        "title": "Gestion de l'équipe d'administration",
+        "subtitle": "Invitez de nouveaux modérateurs et gérez les accès sécurisés de la plateforme.",
+        "btn_invite": "Inviter un administrateur",
+        "placeholder_box": "Espace réservé aux futurs outils de supervision des administrateurs."
+      },
+      "preview": {
+        "title": "Visualisation"
       }
     }
   },
   "de": {
-    "header": { "home": "Startseite", "login": "Einloggen", "logout": "Ausloggen", "account": "Mein Konto", "register": "Abonnieren" },
-    "filters": {"placeholder_name": "Name...", "search": "Suchen", "clear": "Löschen", "filters_btn": "Filter", "all_body_types": "Alle Körpertypen", "all_eye_colors": "Alle Augenfarben", "all_hair_colors": "Alle Haarfarben", "all_services": "Alle Dienstleistungen", "all_languages": "Alle Sprachen"},
-    "common": { "loading": "Wird geladen...", "all_regions": "Alle Regionen" }
+    "common": {
+      "loading": "Laden...",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "close": "Schließen",
+      "back": "Zurück",
+      "search": "Suchen",
+      "clear": "Löschen",
+      "delete": "Löschen",
+      "edit": "Bearbeiten",
+      "actions": "Aktionen",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "confirm_password": "Passwort bestätigen",
+      "birthdate": "Geburtsdatum",
+      "phone": "Telefon",
+      "description": "Beschreibung",
+      "role": "Rolle",
+      "age": "Alter",
+      "years": "Jahre",
+      "photos": "Fotos",
+      "videos": "Videos",
+      "optional": "(Optional)",
+      "banned": "Gesperrt",
+      "locked": "Blockiert",
+      "available": "Verfügbar",
+      "unavailable": "Nicht verfügbar",
+      "hidden": "Ausgeblendet",
+      "visible": "Sichtbar",
+      "invisible": "Unsichtbar",
+      "online": "Online",
+      "offline": "Offline"
+    },
+    "header": {
+      "home": "Startseite",
+      "login": "Anmelden",
+      "logout": "Abmelden",
+      "account": "Mein Konto",
+      "register": "Registrieren"
+    },
+    "filters": {
+      "placeholder_name": "Name...",
+      "filters_btn": "Filter",
+      "all_body_types": "Alle Körpertypen",
+      "all_eye_colors": "Alle Augenfarben",
+      "all_hair_colors": "Alle Haarfarben",
+      "all_services": "Alle Dienstleistungen",
+      "all_languages": "Alle Sprachen",
+      "all_regions": "Alle Regionen",
+      "all_locations": "Alle Orte"
+    },
+    "zones": {
+      "region_label": "Region",
+      "precise_location_label": "Genauer Standort",
+      "select_region": "Region auswählen...",
+      "select_location": "Standort auswählen..."
+    },
+    "account": {
+      "tabs": {
+        "favorites": "Favoriten",
+        "settings": "Einstellungen",
+        "account": "Konto"
+      },
+      "favorites": {
+        "title": "Ihre Favoriten",
+        "empty": "Sie haben noch keine Favoriten."
+      },
+      "settings": {
+        "title": "Meine Sucheinstellungen",
+        "body_types_label": "Bevorzugte Körpertypen"
+      }
+    },
+    "account_settings": {
+      "title": "Sicherheit & Zugangsdaten",
+      "email_label": "E-Mail-Adresse",
+      "email_placeholder": "ihre@email.com",
+      "current_password_label": "Aktuelles Passwort",
+      "current_password_placeholder": "Aktuelles Passwort",
+      "new_password_label": "Neues Passwort (Optional)",
+      "new_password_placeholder": "Mindestens 6 Zeichen",
+      "save_btn": "Änderungen speichern"
+    },
+    "auth": {
+      "login_title": "Anmelden",
+      "register_title": "Konto erstellen",
+      "role_client": "Kunde",
+      "role_worker": "Inserent",
+      "email_placeholder": "email@beispiel.com",
+      "password_mismatch": "Die Passwörter stimmen nicht überein",
+      "login_btn": "Anmelden",
+      "register_btn": "Registrieren",
+      "no_account": "Noch kein Konto?",
+      "already_account": "Bereits ein Konto?",
+      "forgot_password": "Passwort vergessen?"
+    },
+    "certification": {
+      "title": "Profil-Zertifizierung",
+      "admin_message_title": "Nachricht der Administration:",
+      "step1_title": "Schritt 1: Notieren Sie Ihren Geheimcode",
+      "step1_desc": "Machen Sie ein Foto von sich (Gesicht unbedeckt) mit einem Papier oder Telefon, auf dem dieser Code gut lesbar ist:",
+      "step2_title": "Schritt 2: Foto hochladen",
+      "drop_zone_text": "Ziehen Sie Ihr Foto hierher oder klicken Sie zum Durchsuchen",
+      "format_hint": "Akzeptierte Formate: JPG, PNG",
+      "submit_btn": "Zur Überprüfung senden"
+    },
+    "forgot_password": {
+      "title": "Passwort vergessen",
+      "subtitle": "Geben Sie Ihre E-Mail-Adresse ein, um einen Link zum Zurücksetzen zu erhalten.",
+      "email_placeholder": "Ihre E-Mail",
+      "submit_btn": "Link senden"
+    },
+    "worker_profile": {
+      "contact_btn": "Kontaktieren",
+      "favorite": "Favoriten",
+      "notify_me": "Benachrichtigen, wenn zurück",
+      "report": "Melden",
+      "body_type": "Körpertyp:",
+      "about": "Über mich",
+      "reviews": "Bewertungen"
+    },
+    "reset_password": {
+      "title": "Neues Passwort",
+      "subtitle": "Legen Sie Ihr neues Passwort fest.",
+      "new_password_placeholder": "Neues Passwort",
+      "confirm_password_placeholder": "Passwort bestätigen",
+      "password_mismatch": "Die Passwörter stimmen nicht überein.",
+      "update_btn": "Aktualisieren",
+      "invalid_token": "Der Token ist ungültig oder abgelaufen.",
+      "retry_btn": "Erneut anfordern",
+      "success_msg": "Ihr Passwort wurde erfolgreich geändert.",
+      "back_home_btn": "Zurück zur Startseite"
+    },
+    "profile_management": {
+      "warning_title": "Ihr Profil ist derzeit unsichtbar",
+      "warning_subtitle": "Solange diese wichtigen Informationen fehlen, bleibt Ihre Anzeige unsichtbar.",
+      "tabs": {
+        "profile": "Profil",
+        "media": "Medien",
+        "account": "Konto"
+      },
+      "form": {
+        "display_name": "Anzeigename",
+        "display_name_placeholder": "Ihr Benutzername",
+        "short_desc": "Kurzbeschreibung (Max. 45 Zeichen)",
+        "short_desc_placeholder": "Z.B.: Reisebegeistert ✨",
+        "description_placeholder": "Beschreiben Sie Ihr Profil, Ihre Spezialitäten...",
+        "phone_placeholder": "Z.B.: +49 160 1234567",
+        "body_type": "Körpertyp",
+        "hair_color": "Haarfarbe",
+        "eye_color": "Augenfarbe",
+        "services_title": "Angebotene Dienstleistungen * (Mindestens eine auswählen)"
+      },
+      "media": {
+        "drop_title": "Ziehen Sie Fotos oder Videos hierher oder",
+        "drop_click": "klicken Sie zum Durchsuchen",
+        "format_hint": "Fotos: JPG, PNG, WEBP • Videos: MP4, MOV, WEBM",
+        "add_btn": "Fotos oder Videos hinzufügen * (Mindestens ein Foto erforderlich)"
+      }
+    },
+    "admin": {
+      "tabs": {
+        "users": "Benutzer",
+        "certifications": "Zertifizierungen",
+        "reports": "Meldungen",
+        "services": "Dienstleistungen",
+        "zones": "Zonen",
+        "logs": "Audit-Protokoll",
+        "admins": "Administration"
+      },
+      "roles": {
+        "all": "Alle Rollen",
+        "admin": "Administrator",
+        "client": "Kunde",
+        "worker": "Inserent"
+      },
+      "users_tab": {
+        "search_placeholder": "Suche nach Name, E-Mail, Beschreibung, ID",
+        "filter_role_placeholder": "Nach Status filtern",
+        "col_user": "Benutzer",
+        "col_certification": "Zertifizierung",
+        "col_certif_date": "Zertifizierungsdatum",
+        "btn_ban": "Sperren",
+        "btn_lock": "Blockieren",
+        "btn_revoke": "Widerrufen",
+        "empty_users": "Keine Benutzer gefunden.",
+        "tooltip_banned": "Ein gesperrtes Konto kann sich nicht anmelden",
+        "tooltip_locked": "Ein blockiertes Konto kann bestimmte Aktionen nicht ausführen"
+      },
+      "certif_tab": {
+        "empty_certifs": "Keine ausstehenden Zertifizierungsanfragen 🎉",
+        "under_review_suffix": "(🔒 In Bearbeitung durch einen anderen Admin)",
+        "requested_on": "Angefordert am:",
+        "code_required": "Erforderlicher Code:",
+        "badge_blocked": "Blockiert",
+        "badge_pending": "Zu prüfen",
+        "modal_title": "Zertifizierungsmoderation",
+        "advertiser_label": "Inserent:",
+        "expected_code_label": "Erwarteter Bestätigungscode:",
+        "other_photos_title": "2. Weitere Profilfotos (Identitätsprüfung)",
+        "no_other_photos": "Keine weiteren Fotos in diesem Profil vorhanden.",
+        "frequent_reasons_label": "Häufige Gründe (Optional)",
+        "frequent_reasons_placeholder": "Grund auswählen...",
+        "comment_label": "Kommentar oder Grund (Erforderlich für Ablehnung)",
+        "comment_placeholder": "Z.B.: Der Code ist unscharf...",
+        "btn_approve": "Genehmigen",
+        "btn_reject": "Infos anfordern / Ablehnen"
+      },
+      "reports_tab": {
+        "title": "Gemeldete Inserenten",
+        "subtitle": "Rangliste der Benutzer nach Anzahl der erhaltenen Meldungen.",
+        "col_advertiser": "Inserent",
+        "col_count": "Anzahl der Meldungen",
+        "btn_view_requests": "Anfragen anzeigen",
+        "empty_reports": "Keine Meldungen erfasst 🎉",
+        "modal_title": "Meldungen für",
+        "btn_ban_worker": "Inserent sperren",
+        "btn_lock_account": "Konto blockieren",
+        "history_title": "Verlauf der Meldungen:",
+        "author_label": "Autor:",
+        "dismissed_suffix": "(🔒 Abgewiesen / Missbräuchlich)",
+        "reason_label": "Grund:",
+        "date_label": "Datum:",
+        "btn_dismiss": "Abweisen"
+      },
+      "logs_tab": {
+        "moderator_label": "Moderator:",
+        "action_label": "Aktion:"
+      },
+      "services_tab": {
+        "title": "Liste der Dienstleistungen",
+        "btn_add": "Dienstleistung hinzufügen",
+        "col_name": "Name der Dienstleistung",
+        "col_desc": "Beschreibung",
+        "empty_services": "Keine Dienstleistungen gefunden."
+      },
+      "zones_tab": {
+        "title": "Geografische Zonen",
+        "btn_add_parent": "Übergeordnete Zone hinzufügen",
+        "col_name": "Name der Zone",
+        "tooltip_add_child": "Unterzone hinzufügen",
+        "empty_zones": "Keine Zonen gefunden."
+      },
+      "admins_tab": {
+        "title": "Verwaltung des Admin-Teams",
+        "subtitle": "Laden Sie neue Moderatoren ein und verwalten Sie Zugriffsrechte.",
+        "btn_invite": "Administrator einladen",
+        "placeholder_box": "Platzhalter für zukünftige Admin-Werkzeuge."
+      },
+      "preview": {
+        "title": "Vorschau"
+      }
+    }
   },
   "es": {
-    "header": { "home": "Inicio", "login": "Acceder", "logout": "Salir", "account": "Mi Cuenta", "register": "Suscribirse" },
-    "filters": { "placeholder_name": "Nombre...", "search": "Buscar", "all_regions": "Todas las regiones" }
+    "common": {
+      "loading": "Cargando...",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "close": "Cerrar",
+      "back": "Volver",
+      "search": "Buscar",
+      "clear": "Borrar",
+      "delete": "Eliminar",
+      "edit": "Editar",
+      "actions": "Acciones",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "confirm_password": "Confirmar contraseña",
+      "birthdate": "Fecha de nacimiento",
+      "phone": "Teléfono",
+      "description": "Descripción",
+      "role": "Rol",
+      "age": "Edad",
+      "years": "años",
+      "photos": "Fotos",
+      "videos": "Videos",
+      "optional": "(Opcional)",
+      "banned": "Baneado",
+      "locked": "Bloqueado",
+      "available": "Disponible",
+      "unavailable": "No disponible",
+      "hidden": "Oculto",
+      "visible": "Visible",
+      "invisible": "Invisible",
+      "online": "En línea",
+      "offline": "Desconectado"
+    },
+    "header": {
+      "home": "Inicio",
+      "login": "Iniciar sesión",
+      "logout": "Cerrar sesión",
+      "account": "Mi Cuenta",
+      "register": "Registrarse"
+    },
+    "filters": {
+      "placeholder_name": "Nombre...",
+      "filters_btn": "Filtros",
+      "all_body_types": "Todas las siluetas",
+      "all_eye_colors": "Todos los colores de ojos",
+      "all_hair_colors": "Todos los colores de pelo",
+      "all_services": "Todos los servicios",
+      "all_languages": "Todos los idiomas",
+      "all_regions": "Todas las regiones",
+      "all_locations": "Todas las ubicaciones"
+    },
+    "zones": {
+      "region_label": "Región",
+      "precise_location_label": "Ubicación precisa",
+      "select_region": "Seleccionar una región...",
+      "select_location": "Seleccionar una ubicación..."
+    },
+    "account": {
+      "tabs": {
+        "favorites": "Favoritos",
+        "settings": "Ajustes",
+        "account": "Cuenta"
+      },
+      "favorites": {
+        "title": "Tus favoritos",
+        "empty": "Aún no tienes favoritos."
+      },
+      "settings": {
+        "title": "Mis preferencias de búsqueda",
+        "body_types_label": "Siluetas preferidas"
+      }
+    },
+    "account_settings": {
+      "title": "Seguridad y Credenciales",
+      "email_label": "Correo electrónico",
+      "email_placeholder": "tu@email.com",
+      "current_password_label": "Contraseña actual",
+      "current_password_placeholder": "Contraseña actual",
+      "new_password_label": "Nueva contraseña (Opcional)",
+      "new_password_placeholder": "Mínimo 6 caracteres",
+      "save_btn": "Guardar cambios"
+    },
+    "auth": {
+      "login_title": "Iniciar sesión",
+      "register_title": "Crear una cuenta",
+      "role_client": "Cliente",
+      "role_worker": "Anunciante",
+      "email_placeholder": "email@ejemplo.com",
+      "password_mismatch": "Las contraseñas no coinciden",
+      "login_btn": "Iniciar sesión",
+      "register_btn": "Registrarse",
+      "no_account": "¿Aún no tienes cuenta?",
+      "already_account": "¿Ya tienes una cuenta?",
+      "forgot_password": "¿Olvidaste tu contraseña?"
+    },
+    "certification": {
+      "title": "Certificación del perfil",
+      "admin_message_title": "Mensaje de la administración:",
+      "step1_title": "Paso 1: Anota tu código secreto",
+      "step1_desc": "Tómate una foto (rostro descubierto) sosteniendo un papel o teléfono donde se lea claramente este código:",
+      "step2_title": "Paso 2: Envía tu foto",
+      "drop_zone_text": "Arrastra tu foto aquí o haz clic para explorar",
+      "format_hint": "Formatos aceptados: JPG, PNG",
+      "submit_btn": "Enviar para validación"
+    },
+    "forgot_password": {
+      "title": "Contraseña olvidada",
+      "subtitle": "Introduce tu correo electrónico para recibir un enlace de restablecimiento.",
+      "email_placeholder": "Tu correo electrónico",
+      "submit_btn": "Enviar enlace"
+    },
+    "worker_profile": {
+      "contact_btn": "Contactar",
+      "favorite": "Favoritos",
+      "notify_me": "Notificarme cuando vuelva",
+      "report": "Denunciar",
+      "body_type": "Silueta:",
+      "about": "Sobre mí",
+      "reviews": "Opiniones"
+    },
+    "reset_password": {
+      "title": "Nueva contraseña",
+      "subtitle": "Define tu nueva contraseña de acceso.",
+      "new_password_placeholder": "Nueva contraseña",
+      "confirm_password_placeholder": "Confirmar contraseña",
+      "password_mismatch": "Las contraseñas no coinciden.",
+      "update_btn": "Actualizar",
+      "invalid_token": "El token es inválido o ha expirado.",
+      "retry_btn": "Solicitar de nuevo",
+      "success_msg": "Tu contraseña se ha modificado con éxito.",
+      "back_home_btn": "Volver al inicio"
+    },
+    "profile_management": {
+      "warning_title": "Tu perfil es actualmente invisible",
+      "warning_subtitle": "Mientras falte esta información esencial, tu anuncio no será visible.",
+      "tabs": {
+        "profile": "Perfil",
+        "media": "Medios",
+        "account": "Cuenta"
+      },
+      "form": {
+        "display_name": "Nombre visible",
+        "display_name_placeholder": "Tu apodo",
+        "short_desc": "Descripción corta (Máx. 45 caracteres)",
+        "short_desc_placeholder": "Ej: Apasionada de los viajes ✨",
+        "description_placeholder": "Describe tu perfil, tus especialidades...",
+        "phone_placeholder": "Ej: +34 612 34 56 78",
+        "body_type": "Silueta",
+        "hair_color": "Pelo",
+        "eye_color": "Ojos",
+        "services_title": "Servicios ofrecidos * (Selecciona al menos uno)"
+      },
+      "media": {
+        "drop_title": "Arrastra tus fotos o videos aquí o",
+        "drop_click": "haz clic para explorar",
+        "format_hint": "Fotos: JPG, PNG, WEBP • Videos: MP4, MOV, WEBM",
+        "add_btn": "Añadir fotos o videos * (Al menos una foto obligatoria)"
+      }
+    },
+    "admin": {
+      "tabs": {
+        "users": "Usuarios",
+        "certifications": "Certificaciones",
+        "reports": "Denuncias",
+        "services": "Servicios",
+        "zones": "Zonas",
+        "logs": "Registro de auditoría",
+        "admins": "Administración"
+      },
+      "roles": {
+        "all": "Todos los roles",
+        "admin": "Administrador",
+        "client": "Cliente",
+        "worker": "Anunciante"
+      },
+      "users_tab": {
+        "search_placeholder": "Buscar por nombre, correo, descripción, id",
+        "filter_role_placeholder": "Filtrar por estado",
+        "col_user": "Usuario",
+        "col_certification": "Certificación",
+        "col_certif_date": "Fecha de certificación",
+        "btn_ban": "Banear",
+        "btn_lock": "Bloquear",
+        "btn_revoke": "Revocar",
+        "empty_users": "No se encontraron usuarios.",
+        "tooltip_banned": "Una cuenta baneada no puede iniciar sesión",
+        "tooltip_locked": "Una cuenta bloqueada no puede realizar ciertas acciones"
+      },
+      "certif_tab": {
+        "empty_certifs": "No hay solicitudes de certificación pendientes 🎉",
+        "under_review_suffix": "(🔒 En revisión por otro admin)",
+        "requested_on": "Solicitado el:",
+        "code_required": "Código requerido:",
+        "badge_blocked": "Bloqueado",
+        "badge_pending": "Por verificar",
+        "modal_title": "Moderación de certificación",
+        "advertiser_label": "Anunciante:",
+        "expected_code_label": "Código de verificación esperado:",
+        "other_photos_title": "2. Otras fotos del perfil (Verificación de identidad)",
+        "no_other_photos": "No hay más fotos disponibles en este perfil.",
+        "frequent_reasons_label": "Motivos frecuentes (Opcional)",
+        "frequent_reasons_placeholder": "Seleccionar un motivo...",
+        "comment_label": "Comentario o motivo (Requerido para rechazar)",
+        "comment_placeholder": "Ej: El código no se lee claramente...",
+        "btn_approve": "Aprobar",
+        "btn_reject": "Pedir más info / Rechazar"
+      },
+      "reports_tab": {
+        "title": "Anunciantes denunciados",
+        "subtitle": "Clasificación de usuarios por número de denuncias recibidas.",
+        "col_advertiser": "Anunciante",
+        "col_count": "Número de denuncias",
+        "btn_view_requests": "Ver solicitudes",
+        "empty_reports": "No hay denuncias registradas 🎉",
+        "modal_title": "Denuncias para",
+        "btn_ban_worker": "Banear anunciante",
+        "btn_lock_account": "Bloquear cuenta",
+        "history_title": "Historial de denuncias:",
+        "author_label": "Autor:",
+        "dismissed_suffix": "(🔒 Desestimado / Abusivo)",
+        "reason_label": "Razón:",
+        "date_label": "Fecha:",
+        "btn_dismiss": "Desestimar"
+      },
+      "logs_tab": {
+        "moderator_label": "Moderador:",
+        "action_label": "Acción:"
+      },
+      "services_tab": {
+        "title": "Lista de servicios",
+        "btn_add": "Añadir un servicio",
+        "col_name": "Nombre del servicio",
+        "col_desc": "Descripción",
+        "empty_services": "No se encontraron servicios."
+      },
+      "zones_tab": {
+        "title": "Zonas geográficas",
+        "btn_add_parent": "Añadir zona principal",
+        "col_name": "Nombre de la zona",
+        "tooltip_add_child": "Añadir subzona",
+        "empty_zones": "No se encontraron zonas."
+      },
+      "admins_tab": {
+        "title": "Gestión del equipo de administración",
+        "subtitle": "Invita a nuevos moderadores y gestiona los accesos.",
+        "btn_invite": "Invitar administrador",
+        "placeholder_box": "Espacio reservado para futuras herramientas de supervisión."
+      },
+      "preview": {
+        "title": "Vista previa"
+      }
+    }
   },
   "pt": {
-    "header": { "home": "Página inicial", "login": "Iniciar sessão", "logout": "Sair", "account": "A minha conta", "register": "Subscrever" },
-    "filters": { "placeholder_name": "Nome...", "search": "Pesquisar", "all_regions": "Todas as regiões" }
+    "common": {
+      "loading": "A carregar...",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "close": "Fechar",
+      "back": "Voltar",
+      "search": "Pesquisar",
+      "clear": "Limpar",
+      "delete": "Eliminar",
+      "edit": "Editar",
+      "actions": "Ações",
+      "email": "E-mail",
+      "password": "Palavra-passe",
+      "confirm_password": "Confirmar palavra-passe",
+      "birthdate": "Data de nascimento",
+      "phone": "Telefone",
+      "description": "Descrição",
+      "role": "Função",
+      "age": "Idade",
+      "years": "anos",
+      "photos": "Fotos",
+      "videos": "Vídeos",
+      "optional": "(Opcional)",
+      "banned": "Banido",
+      "locked": "Bloqueado",
+      "available": "Disponível",
+      "unavailable": "Indisponível",
+      "hidden": "Oculto",
+      "visible": "Visível",
+      "invisible": "Invisível",
+      "online": "Online",
+      "offline": "Offline"
+    },
+    "header": {
+      "home": "Início",
+      "login": "Iniciar sessão",
+      "logout": "Terminar sessão",
+      "account": "A minha conta",
+      "register": "Registar"
+    },
+    "filters": {
+      "placeholder_name": "Nome...",
+      "filters_btn": "Filtros",
+      "all_body_types": "Todas as silhuetas",
+      "all_eye_colors": "Todas as cores de olhos",
+      "all_hair_colors": "Todas as cores de cabelo",
+      "all_services": "Todos os serviços",
+      "all_languages": "Todos os idiomas",
+      "all_regions": "Todas as regiões",
+      "all_locations": "Todas as localizações"
+    },
+    "zones": {
+      "region_label": "Região",
+      "precise_location_label": "Localização precisa",
+      "select_region": "Selecionar uma região...",
+      "select_location": "Selecionar uma localização..."
+    },
+    "account": {
+      "tabs": {
+        "favorites": "Favoritos",
+        "settings": "Definições",
+        "account": "Conta"
+      },
+      "favorites": {
+        "title": "Os seus favoritos",
+        "empty": "Ainda não tem favoritos."
+      },
+      "settings": {
+        "title": "As minhas preferências de pesquisa",
+        "body_types_label": "Silhuetas preferidas"
+      }
+    },
+    "account_settings": {
+      "title": "Segurança e Credenciais",
+      "email_label": "Endereço de e-mail",
+      "email_placeholder": "seu@email.com",
+      "current_password_label": "Palavra-passe atual",
+      "current_password_placeholder": "Palavra-passe atual",
+      "new_password_label": "Nova palavra-passe (Opcional)",
+      "new_password_placeholder": "Mínimo 6 caracteres",
+      "save_btn": "Guardar alterações"
+    },
+    "auth": {
+      "login_title": "Iniciar sessão",
+      "register_title": "Criar uma conta",
+      "role_client": "Cliente",
+      "role_worker": "Anunciante",
+      "email_placeholder": "email@exemplo.com",
+      "password_mismatch": "As palavras-passe não coincidem",
+      "login_btn": "Iniciar sessão",
+      "register_btn": "Registar",
+      "no_account": "Ainda não tem conta?",
+      "already_account": "Já tem uma conta?",
+      "forgot_password": "Esqueceu-se da palavra-passe?"
+    },
+    "certification": {
+      "title": "Certificação do perfil",
+      "admin_message_title": "Mensagem da administração:",
+      "step1_title": "Passo 1: Anote o seu código secreto",
+      "step1_desc": "Tire uma foto sua (rosto descoberto) a segurar num papel ou telemóvel onde se leia claramente este código:",
+      "step2_title": "Passo 2: Envie a sua foto",
+      "drop_zone_text": "Arraste a sua foto para aqui ou clique para procurar",
+      "format_hint": "Formatos aceites: JPG, PNG",
+      "submit_btn": "Enviar para validação"
+    },
+    "forgot_password": {
+      "title": "Palavra-passe esquecida",
+      "subtitle": "Insira o seu e-mail para receber um link de reposição.",
+      "email_placeholder": "O seu e-mail",
+      "submit_btn": "Enviar link"
+    },
+    "worker_profile": {
+      "contact_btn": "Contactar",
+      "favorite": "Favoritos",
+      "notify_me": "Notificar-me quando voltar",
+      "report": "Denunciar",
+      "body_type": "Silhueta:",
+      "about": "Sobre mim",
+      "reviews": "Avaliações"
+    },
+    "reset_password": {
+      "title": "Nova palavra-passe",
+      "subtitle": "Defina a sua nova palavra-passe de acesso.",
+      "new_password_placeholder": "Nova palavra-passe",
+      "confirm_password_placeholder": "Confirmar palavra-passe",
+      "password_mismatch": "As palavras-passe não coincidem.",
+      "update_btn": "Atualizar",
+      "invalid_token": "O token é inválido ou expirou.",
+      "retry_btn": "Solicitar novamente",
+      "success_msg": "A sua palavra-passe foi alterada com sucesso.",
+      "back_home_btn": "Voltar ao início"
+    },
+    "profile_management": {
+      "warning_title": "O seu perfil está atualmente invisível",
+      "warning_subtitle": "Enquanto estas informações essenciais não forem fornecidas, o seu anúncio permanecerá invisível.",
+      "tabs": {
+        "profile": "Perfil",
+        "media": "Multimédia",
+        "account": "Conta"
+      },
+      "form": {
+        "display_name": "Nome visível",
+        "display_name_placeholder": "O seu nome de utilizador",
+        "short_desc": "Descrição curta (Máx. 45 caracteres)",
+        "short_desc_placeholder": "Ex: Apaixonada por viagens ✨",
+        "description_placeholder": "Descreva o seu perfil, as suas especialidades...",
+        "phone_placeholder": "Ex: +351 912 345 678",
+        "body_type": "Silhueta",
+        "hair_color": "Cabelo",
+        "eye_color": "Olhos",
+        "services_title": "Serviços oferecidos * (Selecione pelo menos um)"
+      },
+      "media": {
+        "drop_title": "Arraste as suas fotos ou vídeos para aqui ou",
+        "drop_click": "clique para procurar",
+        "format_hint": "Fotos: JPG, PNG, WEBP • Vídeos: MP4, MOV, WEBM",
+        "add_btn": "Adicionar fotos ou vídeos * (Pelo menos uma foto obrigatória)"
+      }
+    },
+    "admin": {
+      "tabs": {
+        "users": "Utilizadores",
+        "certifications": "Certificações",
+        "reports": "Denúncias",
+        "services": "Serviços",
+        "zones": "Zonas",
+        "logs": "Registo de auditoria",
+        "admins": "Administração"
+      },
+      "roles": {
+        "all": "Todas as funções",
+        "admin": "Administrador",
+        "client": "Cliente",
+        "worker": "Anunciante"
+      },
+      "users_tab": {
+        "search_placeholder": "Pesquisar por nome, e-mail, descrição, id",
+        "filter_role_placeholder": "Filtrar por estado",
+        "col_user": "Utilizador",
+        "col_certification": "Certificação",
+        "col_certif_date": "Data de certificação",
+        "btn_ban": "Banir",
+        "btn_lock": "Bloquear",
+        "btn_revoke": "Revogar",
+        "empty_users": "Nenhum utilizador encontrado.",
+        "tooltip_banned": "Uma conta banida não pode iniciar sessão",
+        "tooltip_locked": "Uma conta bloqueada não pode realizar certas ações"
+      },
+      "certif_tab": {
+        "empty_certifs": "Sem pedidos de certificação pendentes 🎉",
+        "under_review_suffix": "(🔒 Em revisão por outro admin)",
+        "requested_on": "Solicitado em:",
+        "code_required": "Código necessário:",
+        "badge_blocked": "Bloqueado",
+        "badge_pending": "Por verificar",
+        "modal_title": "Moderação de certificação",
+        "advertiser_label": "Anunciante:",
+        "expected_code_label": "Código de verificação esperado:",
+        "other_photos_title": "2. Outras fotos do perfil (Verificação de identidade)",
+        "no_other_photos": "Sem mais fotos disponíveis neste perfil.",
+        "frequent_reasons_label": "Motivos frequentes (Opcional)",
+        "frequent_reasons_placeholder": "Selecionar motivo...",
+        "comment_label": "Comentário ou motivo (Obrigatório para recusar)",
+        "comment_placeholder": "Ex: O código está desfocado...",
+        "btn_approve": "Aprovar",
+        "btn_reject": "Pedir mais informações / Recusar"
+      },
+      "reports_tab": {
+        "title": "Anunciantes denunciados",
+        "subtitle": "Classificação de utilizadores pelo número de denúncias recebidas.",
+        "col_advertiser": "Anunciante",
+        "col_count": "Número de denúncias",
+        "btn_view_requests": "Ver pedidos",
+        "empty_reports": "Nenhuma denúncia registada 🎉",
+        "modal_title": "Denúncias para",
+        "btn_ban_worker": "Banir anunciante",
+        "btn_lock_account": "Bloquear conta",
+        "history_title": "Histórico de denúncias:",
+        "author_label": "Autor:",
+        "dismissed_suffix": "(🔒 Arquivado / Abusivo)",
+        "reason_label": "Razão:",
+        "date_label": "Data:",
+        "btn_dismiss": "Arquivar"
+      },
+      "logs_tab": {
+        "moderator_label": "Moderador:",
+        "action_label": "Ação:"
+      },
+      "services_tab": {
+        "title": "Lista de serviços",
+        "btn_add": "Adicionar serviço",
+        "col_name": "Nome do serviço",
+        "col_desc": "Descrição",
+        "empty_services": "Nenhum serviço encontrado."
+      },
+      "zones_tab": {
+        "title": "Zonas geográficas",
+        "btn_add_parent": "Adicionar zona principal",
+        "col_name": "Nome da zona",
+        "tooltip_add_child": "Adicionar subzona",
+        "empty_zones": "Nenhuma zona encontrada."
+      },
+      "admins_tab": {
+        "title": "Gestão da equipa de administração",
+        "subtitle": "Convide novos moderadores e gira os acessos.",
+        "btn_invite": "Convidar administrador",
+        "placeholder_box": "Espaço reservado para futuras ferramentas de supervisão."
+      },
+      "preview": {
+        "title": "Visualização"
+      }
+    }
   },
   "it": {
-    "header": { "home": "Home", "login": "Accedi", "logout": "Esci", "account": "Il mio account", "register": "Iscriviti" },
-    "filters": { "placeholder_name": "Nome...", "search": "Cerca", "all_regions": "Tutte le regioni" }
+    "common": {
+      "loading": "Caricamento...",
+      "save": "Salva",
+      "cancel": "Annulla",
+      "close": "Chiudi",
+      "back": "Indietro",
+      "search": "Cerca",
+      "clear": "Cancella",
+      "delete": "Elimina",
+      "edit": "Modifica",
+      "actions": "Azioni",
+      "email": "E-mail",
+      "password": "Password",
+      "confirm_password": "Conferma password",
+      "birthdate": "Data di nascita",
+      "phone": "Telefono",
+      "description": "Descrizione",
+      "role": "Ruolo",
+      "age": "Età",
+      "years": "anni",
+      "photos": "Foto",
+      "videos": "Video",
+      "optional": "(Opzionale)",
+      "banned": "Bannato",
+      "locked": "Bloccato",
+      "available": "Disponibile",
+      "unavailable": "Non disponibile",
+      "hidden": "Nascosto",
+      "visible": "Visibile",
+      "invisible": "Invisibile",
+      "online": "Online",
+      "offline": "Offline"
+    },
+    "header": {
+      "home": "Home",
+      "login": "Accedi",
+      "logout": "Disconnettiti",
+      "account": "Il mio conto",
+      "register": "Registrati"
+    },
+    "filters": {
+      "placeholder_name": "Nome...",
+      "filters_btn": "Filtri",
+      "all_body_types": "Tutte le corporature",
+      "all_eye_colors": "Tutti i colori di occhi",
+      "all_hair_colors": "Tutti i colori di capelli",
+      "all_services": "Tutti i servizi",
+      "all_languages": "Tutte le lingue",
+      "all_regions": "Tutte le regioni",
+      "all_locations": "Tutte le località"
+    },
+    "zones": {
+      "region_label": "Regione",
+      "precise_location_label": "Posizione precisa",
+      "select_region": "Seleziona una regione...",
+      "select_location": "Seleziona una località..."
+    },
+    "account": {
+      "tabs": {
+        "favorites": "Preferiti",
+        "settings": "Impostazioni",
+        "account": "Account"
+      },
+      "favorites": {
+        "title": "I tuoi preferiti",
+        "empty": "Non hai ancora nessun preferito."
+      },
+      "settings": {
+        "title": "Le mie preferenze di ricerca",
+        "body_types_label": "Corporature preferite"
+      }
+    },
+    "account_settings": {
+      "title": "Sicurezza e Credenziali",
+      "email_label": "Indirizzo E-mail",
+      "email_placeholder": "tua@email.com",
+      "current_password_label": "Password attuale",
+      "current_password_placeholder": "Password attuale",
+      "new_password_label": "Nuova password (Opzionale)",
+      "new_password_placeholder": "Minimo 6 caratteri",
+      "save_btn": "Salva modifiche"
+    },
+    "auth": {
+      "login_title": "Accedi",
+      "register_title": "Crea un account",
+      "role_client": "Cliente",
+      "role_worker": "Inserzionista",
+      "email_placeholder": "email@esempio.com",
+      "password_mismatch": "Le password non corrispondono",
+      "login_btn": "Accedi",
+      "register_btn": "Registrati",
+      "no_account": "Non hai ancora un account?",
+      "already_account": "Hai già un account?",
+      "forgot_password": "Password dimenticata?"
+    },
+    "certification": {
+      "title": "Certificazione del profilo",
+      "admin_message_title": "Messaggio dall'amministrazione:",
+      "step1_title": "Passo 1: Annota il tuo codice segreto",
+      "step1_desc": "Scattati una foto (viso scoperto) tenendo un foglio o un telefono su cui sia chiaramente leggibile questo codice:",
+      "step2_title": "Passo 2: Invia la tua foto",
+      "drop_zone_text": "Trascina la tua foto qui o clicca per sfogliare",
+      "format_hint": "Formati accettati: JPG, PNG",
+      "submit_btn": "Invia per la convalida"
+    },
+    "forgot_password": {
+      "title": "Password dimenticata",
+      "subtitle": "Inserisci il tuo indirizzo e-mail per ricevere un link di ripristino.",
+      "email_placeholder": "La tua e-mail",
+      "submit_btn": "Invia link"
+    },
+    "worker_profile": {
+      "contact_btn": "Contatta",
+      "favorite": "Preferiti",
+      "notify_me": "Avvisami quando torna",
+      "report": "Segnala",
+      "body_type": "Corporatura:",
+      "about": "Informazioni",
+      "reviews": "Recensioni"
+    },
+    "reset_password": {
+      "title": "Nuova password",
+      "subtitle": "Imposta la tua nuova password di accesso.",
+      "new_password_placeholder": "Nuova password",
+      "confirm_password_placeholder": "Conferma password",
+      "password_mismatch": "Le password non corrispondono.",
+      "update_btn": "Aggiorna",
+      "invalid_token": "Il token non è valido o è scaduto.",
+      "retry_btn": "Richiedi di nuovo",
+      "success_msg": "La tua password è stata modificata con successo.",
+      "back_home_btn": "Torna alla pagina iniziale"
+    },
+    "profile_management": {
+      "warning_title": "Il tuo profilo è attualmente invisibile",
+      "warning_subtitle": "Finché non fornisci queste informazioni essenziali, il tuo annuncio rimarrà invisibile.",
+      "tabs": {
+        "profile": "Profilo",
+        "media": "Media",
+        "account": "Account"
+      },
+      "form": {
+        "display_name": "Nome visualizzato",
+        "display_name_placeholder": "Il tuo nickname",
+        "short_desc": "Breve descrizione (Max. 45 caratteri)",
+        "short_desc_placeholder": "Es: Appassionata di viaggi ✨",
+        "description_placeholder": "Descrivi il tuo profilo, le tue specialità...",
+        "phone_placeholder": "Es: +39 312 345 6789",
+        "body_type": "Corporatura",
+        "hair_color": "Capelli",
+        "eye_color": "Occhi",
+        "services_title": "Servizi offerti * (Selezionane almeno uno)"
+      },
+      "media": {
+        "drop_title": "Trascina le tue foto o i tuoi video qui o",
+        "drop_click": "clicca per sfogliare",
+        "format_hint": "Foto: JPG, PNG, WEBP • Video: MP4, MOV, WEBM",
+        "add_btn": "Aggiungi foto o video * (Almeno una foto obbligatoria)"
+      }
+    },
+    "admin": {
+      "tabs": {
+        "users": "Utenti",
+        "certifications": "Certificazioni",
+        "reports": "Segnalazioni",
+        "services": "Servizi",
+        "zones": "Zone",
+        "logs": "Registro di audit",
+        "admins": "Amministrazione"
+      },
+      "roles": {
+        "all": "Tutti i ruoli",
+        "admin": "Amministratore",
+        "client": "Cliente",
+        "worker": "Inserzionista"
+      },
+      "users_tab": {
+        "search_placeholder": "Cerca per nome, e-mail, descrizione, id",
+        "filter_role_placeholder": "Filtra per stato",
+        "col_user": "Utente",
+        "col_certification": "Certificazione",
+        "col_certif_date": "Data di certificazione",
+        "btn_ban": "Banna",
+        "btn_lock": "Blocca",
+        "btn_revoke": "Revoca",
+        "empty_users": "Nessun utente trovato.",
+        "tooltip_banned": "Un account bannato non può accedere",
+        "tooltip_locked": "Un account bloccato non può eseguire determinate azioni"
+      },
+      "certif_tab": {
+        "empty_certifs": "Nessuna richiesta di certificazione in attesa 🎉",
+        "under_review_suffix": "(🔒 In corso da parte di un altro admin)",
+        "requested_on": "Richiesto il:",
+        "code_required": "Codice richiesto:",
+        "badge_blocked": "Bloccato",
+        "badge_pending": "Da verificare",
+        "modal_title": "Moderazione certificazione",
+        "advertiser_label": "Inserzionista:",
+        "expected_code_label": "Codice di verifica atteso:",
+        "other_photos_title": "2. Altre foto del profilo (Verifica d'identità)",
+        "no_other_photos": "Nessun'altra foto disponibile su questo profilo.",
+        "frequent_reasons_label": "Motivi frequenti (Opzionale)",
+        "frequent_reasons_placeholder": "Seleziona un motivo...",
+        "comment_label": "Commento o motivo (Richiesto per rifiutare)",
+        "comment_placeholder": "Es: Il codice sulla foto non è chiaro...",
+        "btn_approve": "Approva",
+        "btn_reject": "Richiedi info / Rifiuta"
+      },
+      "reports_tab": {
+        "title": "Inserzionisti segnalati",
+        "subtitle": "Classifica degli utenti per numero di segnalazioni ricevute.",
+        "col_advertiser": "Inserzionista",
+        "col_count": "Numero di segnalazioni",
+        "btn_view_requests": "Vedi richieste",
+        "empty_reports": "Nessuna segnalazione registrata 🎉",
+        "modal_title": "Segnalazioni per",
+        "btn_ban_worker": "Banna inserzionista",
+        "btn_lock_account": "Blocca account",
+        "history_title": "Cronologia delle segnalazioni:",
+        "author_label": "Autore:",
+        "dismissed_suffix": "(🔒 Archiviato / Abusivo)",
+        "reason_label": "Motivo:",
+        "date_label": "Data:",
+        "btn_dismiss": "Archivia"
+      },
+      "logs_tab": {
+        "moderator_label": "Moderatore:",
+        "action_label": "Azione:"
+      },
+      "services_tab": {
+        "title": "Elenco dei servizi",
+        "btn_add": "Aggiungi un servizio",
+        "col_name": "Nome del servizio",
+        "col_desc": "Descrizione",
+        "empty_services": "Nessun servizio trovato."
+      },
+      "zones_tab": {
+        "title": "Zone geografiche",
+        "btn_add_parent": "Aggiungi zona principale",
+        "col_name": "Nome della zona",
+        "tooltip_add_child": "Aggiungi sottozona",
+        "empty_zones": "Nessuna zona trovata."
+      },
+      "admins_tab": {
+        "title": "Gestione del team di amministrazione",
+        "subtitle": "Invita nuovi moderatori e gestisci gli accessi.",
+        "btn_invite": "Invita amministratore",
+        "placeholder_box": "Spazio riservato ai futuri strumenti di supervisione."
+      },
+      "preview": {
+        "title": "Anteprima"
+      }
+    }
   },
   "ru": {
-    "header": { "home": "Главная", "login": "Войти", "logout": "Выйти", "account": "Мой аккаунт", "register": "Подписаться"},
-    "filters": { "placeholder_name": "Имя...", "search": "Поиск", "all_regions": "Все регионы" }
+    "common": {
+      "loading": "Загрузка...",
+      "save": "Сохранить",
+      "cancel": "Отмена",
+      "close": "Закрыть",
+      "back": "Назад",
+      "search": "Поиск",
+      "clear": "Очистить",
+      "delete": "Удалить",
+      "edit": "Редактировать",
+      "actions": "Действия",
+      "email": "Электронная почта",
+      "password": "Пароль",
+      "confirm_password": "Подтвердите пароль",
+      "birthdate": "Дата рождения",
+      "phone": "Телефон",
+      "description": "Описание",
+      "role": "Роль",
+      "age": "Возраст",
+      "years": "лет",
+      "photos": "Фотографии",
+      "videos": "Видео",
+      "optional": "(Опционально)",
+      "banned": "Заблокирован",
+      "locked": "Заморожен",
+      "available": "Доступен",
+      "unavailable": "Недоступен",
+      "hidden": "Скрыт",
+      "visible": "Виден",
+      "invisible": "Невидим",
+      "online": "В сети",
+      "offline": "Не в сети"
+    },
+    "header": {
+      "home": "Главная",
+      "login": "Войти",
+      "logout": "Выйти",
+      "account": "Мой аккаунт",
+      "register": "Регистрация"
+    },
+    "filters": {
+      "placeholder_name": "Имя...",
+      "filters_btn": "Фильтры",
+      "all_body_types": "Все типы фигуры",
+      "all_eye_colors": "Все цвета глаз",
+      "all_hair_colors": "Все цвета волос",
+      "all_services": "Все услуги",
+      "all_languages": "Все языки",
+      "all_regions": "Все регионы",
+      "all_locations": "Все локации"
+    },
+    "zones": {
+      "region_label": "Регион",
+      "precise_location_label": "Точное местоположение",
+      "select_region": "Выберите регион...",
+      "select_location": "Выберите местоположение..."
+    },
+    "account": {
+      "tabs": {
+        "favorites": "Избранное",
+        "settings": "Настройки",
+        "account": "Аккаунт"
+      },
+      "favorites": {
+        "title": "Ваше избранное",
+        "empty": "У вас пока нет избранных профилей."
+      },
+      "settings": {
+        "title": "Мои настройки поиска",
+        "body_types_label": "Предпочитаемые типы фигуры"
+      }
+    },
+    "account_settings": {
+      "title": "Безопасность и данные",
+      "email_label": "Адрес электронной почты",
+      "email_placeholder": "your@email.com",
+      "current_password_label": "Текущий пароль",
+      "current_password_placeholder": "Текущий пароль",
+      "new_password_label": "Новый пароль (Опционально)",
+      "new_password_placeholder": "Минимум 6 символов",
+      "save_btn": "Сохранить изменения"
+    },
+    "auth": {
+      "login_title": "Вход в систему",
+      "register_title": "Создать аккаунт",
+      "role_client": "Клиент",
+      "role_worker": "Рекламодатель",
+      "email_placeholder": "email@example.com",
+      "password_mismatch": "Пароли не совпадают",
+      "login_btn": "Войти",
+      "register_btn": "Зарегистрироваться",
+      "no_account": "Еще нет аккаунта?",
+      "already_account": "Уже есть аккаунт?",
+      "forgot_password": "Забыли пароль?"
+    },
+    "certification": {
+      "title": "Сертификация профиля",
+      "admin_message_title": "Сообщение от администрации:",
+      "step1_title": "Шаг 1: Запишите ваш секретный код",
+      "step1_desc": "Сделайте свое фото (с открытым лицом), держа бумагу или телефон с четко написанным кодом:",
+      "step2_title": "Шаг 2: Загрузите фото",
+      "drop_zone_text": "Перетащите фото сюда или нажмите для выбора",
+      "format_hint": "Поддерживаемые форматы: JPG, PNG",
+      "submit_btn": "Отправить на проверку"
+    },
+    "forgot_password": {
+      "title": "Забыли пароль",
+      "subtitle": "Введите ваш email для получения ссылки на сброс пароля.",
+      "email_placeholder": "Ваш email",
+      "submit_btn": "Отправить ссылку"
+    },
+    "worker_profile": {
+      "contact_btn": "Связаться",
+      "favorite": "В избранное",
+      "notify_me": "Уведомить о возвращении",
+      "report": "Пожаловаться",
+      "body_type": "Тип фигуры:",
+      "about": "О себе",
+      "reviews": "Отзывы"
+    },
+    "reset_password": {
+      "title": "Новый пароль",
+      "subtitle": "Установите новый пароль для входа.",
+      "new_password_placeholder": "Новый пароль",
+      "confirm_password_placeholder": "Подтвердите пароль",
+      "password_mismatch": "Пароли не совпадают.",
+      "update_btn": "Обновить",
+      "invalid_token": "Токен недействителен или просрочен.",
+      "retry_btn": "Запросить снова",
+      "success_msg": "Ваш пароль успешно изменен.",
+      "back_home_btn": "На главную"
+    },
+    "profile_management": {
+      "warning_title": "Ваш профиль сейчас невидим",
+      "warning_subtitle": "Пока эта важная информация не заполнена, ваше объявление останется скрытым.",
+      "tabs": {
+        "profile": "Профиль",
+        "media": "Медиа",
+        "account": "Аккаунт"
+      },
+      "form": {
+        "display_name": "Отображаемое имя",
+        "display_name_placeholder": "Ваш псевдоним",
+        "short_desc": "Краткое описание (Макс. 45 символов)",
+        "short_desc_placeholder": "Например: Люблю путешествия ✨",
+        "description_placeholder": "Опишите ваш профиль, ваши особенности...",
+        "phone_placeholder": "Например: +7 912 345 6789",
+        "body_type": "Тип фигуры",
+        "hair_color": "Цвет волос",
+        "eye_color": "Цвет глаз",
+        "services_title": "Предлагаемые услуги * (Выберите хотя бы одну)"
+      },
+      "media": {
+        "drop_title": "Перетащите фото или видео сюда или",
+        "drop_click": "нажмите для обзора",
+        "format_hint": "Фото: JPG, PNG, WEBP • Видео: MP4, MOV, WEBM",
+        "add_btn": "Добавить фото или видео * (Обязательно хотя бы одно фото)"
+      }
+    },
+    "admin": {
+      "tabs": {
+        "users": "Пользователи",
+        "certifications": "Сертификации",
+        "reports": "Жалобы",
+        "services": "Услуги",
+        "zones": "Зоны",
+        "logs": "Журнал аудита",
+        "admins": "Администрирование"
+      },
+      "roles": {
+        "all": "Все роли",
+        "admin": "Администратор",
+        "client": "Клиент",
+        "worker": "Рекламодатель"
+      },
+      "users_tab": {
+        "search_placeholder": "Поиск по имени, email, описанию, ID",
+        "filter_role_placeholder": "Фильтр по статусу",
+        "col_user": "Пользователь",
+        "col_certification": "Сертификация",
+        "col_certif_date": "Дата сертификации",
+        "btn_ban": "Заблокировать",
+        "btn_lock": "Заморозить",
+        "btn_revoke": "Отозвать",
+        "empty_users": "Пользователи не найдены.",
+        "tooltip_banned": "Заблокированный аккаунт не может войти в систему",
+        "tooltip_locked": "Замороженный аккаунт ограничен в действиях"
+      },
+      "certif_tab": {
+        "empty_certifs": "Нет ожидающих запросов на сертификацию 🎉",
+        "under_review_suffix": "(🔒 Проверяется другим админом)",
+        "requested_on": "Запрошено:",
+        "code_required": "Требуемый код:",
+        "badge_blocked": "Заблокировано",
+        "badge_pending": "На проверке",
+        "modal_title": "Модерация сертификации",
+        "advertiser_label": "Рекламодатель:",
+        "expected_code_label": "Ожидаемый код проверки:",
+        "other_photos_title": "2. Другие фото профиля (Проверка личности)",
+        "no_other_photos": "В этом профиле нет других фотографий.",
+        "frequent_reasons_label": "Частые причины (Опционально)",
+        "frequent_reasons_placeholder": "Выберите причину...",
+        "comment_label": "Комментарий или причина (Обязательно при отказе)",
+        "comment_placeholder": "Например: Код на фото нечитаем...",
+        "btn_approve": "Одобрить",
+        "btn_reject": "Запросить доп. инфо / Отклонить"
+      },
+      "reports_tab": {
+        "title": "Рекламодатели с жалобами",
+        "subtitle": "Рейтинг пользователей по количеству полученных жалоб.",
+        "col_advertiser": "Рекламодатель",
+        "col_count": "Количество жалоб",
+        "btn_view_requests": "Просмотреть жалобы",
+        "empty_reports": "Зарегистрированных жалоб нет 🎉",
+        "modal_title": "Жалобы на",
+        "btn_ban_worker": "Заблокировать рекламодателя",
+        "btn_lock_account": "Заморозить аккаунт",
+        "history_title": "История жалоб:",
+        "author_label": "Автор:",
+        "dismissed_suffix": "(🔒 Отклонено / Ложная)",
+        "reason_label": "Причина:",
+        "date_label": "Дата:",
+        "btn_dismiss": "Отклонить жалобу"
+      },
+      "logs_tab": {
+        "moderator_label": "Модератор:",
+        "action_label": "Действие:"
+      },
+      "services_tab": {
+        "title": "Список услуг",
+        "btn_add": "Добавить услугу",
+        "col_name": "Название услуги",
+        "col_desc": "Описание",
+        "empty_services": "Услуги не найдены."
+      },
+      "zones_tab": {
+        "title": "Географические зоны",
+        "btn_add_parent": "Добавить родительскую зону",
+        "col_name": "Название зоны",
+        "tooltip_add_child": "Добавить подзону",
+        "empty_zones": "Зоны не найдены."
+      },
+      "admins_tab": {
+        "title": "Управление командой администраторов",
+        "subtitle": "Приглашайте новых модераторов и управляйте доступами.",
+        "btn_invite": "Пригласить администратора",
+        "placeholder_box": "Резервное место для будущих инструментов модерации."
+      },
+      "preview": {
+        "title": "Просмотр"
+      }
+    }
   },
   "ua": {
-    "header": { "home": "Головна", "login": "Увійти", "logout": "Вийти", "account": "Мій аккаунт", "register": "Підписатися" },
-    "filters": { "placeholder_name": "Ім'я...", "search": "Пошук", "all_regions": "Всі регіони" }
+    "common": {
+      "loading": "Завантаження...",
+      "save": "Зберегти",
+      "cancel": "Скасувати",
+      "close": "Закрити",
+      "back": "Назад",
+      "search": "Пошук",
+      "clear": "Очистити",
+      "delete": "Видалити",
+      "edit": "Редагувати",
+      "actions": "Дії",
+      "email": "Електронна пошта",
+      "password": "Пароль",
+      "confirm_password": "Підтвердіть пароль",
+      "birthdate": "Дата народження",
+      "phone": "Телефон",
+      "description": "Опис",
+      "role": "Роль",
+      "age": "Вік",
+      "years": "років",
+      "photos": "Фотографії",
+      "videos": "Відео",
+      "optional": "(Опціонально)",
+      "banned": "Заблокований",
+      "locked": "Заморожений",
+      "available": "Доступний",
+      "unavailable": "Недоступний",
+      "hidden": "Схований",
+      "visible": "Видимий",
+      "invisible": "Невидимий",
+      "online": "В мережі",
+      "offline": "Поза мережею"
+    },
+    "header": {
+      "home": "Головна",
+      "login": "Увійти",
+      "logout": "Вийти",
+      "account": "Мій акаунт",
+      "register": "Реєстрація"
+    },
+    "filters": {
+      "placeholder_name": "Ім'я...",
+      "filters_btn": "Фільтри",
+      "all_body_types": "Усі типи фігури",
+      "all_eye_colors": "Усі кольори очей",
+      "all_hair_colors": "Усі кольори волосся",
+      "all_services": "Усі послуги",
+      "all_languages": "Усі мови",
+      "all_regions": "Усі регіони",
+      "all_locations": "Усі локації"
+    },
+    "zones": {
+      "region_label": "Регіон",
+      "precise_location_label": "Точне місцерозташування",
+      "select_region": "Оберіть регіон...",
+      "select_location": "Оберіть місцерозташування..."
+    },
+    "account": {
+      "tabs": {
+        "favorites": "Обране",
+        "settings": "Налаштування",
+        "account": "Акаунт"
+      },
+      "favorites": {
+        "title": "Ваше обране",
+        "empty": "У вас поки немає обраних профілів."
+      },
+      "settings": {
+        "title": "Мої налаштування пошуку",
+        "body_types_label": "Бажані типи фігури"
+      }
+    },
+    "account_settings": {
+      "title": "Безпека та дані",
+      "email_label": "Адреса електронної пошти",
+      "email_placeholder": "your@email.com",
+      "current_password_label": "Поточний пароль",
+      "current_password_placeholder": "Поточний пароль",
+      "new_password_label": "Новий пароль (Опціонально)",
+      "new_password_placeholder": "Мінімум 6 символів",
+      "save_btn": "Зберегти зміни"
+    },
+    "auth": {
+      "login_title": "Вхід у систему",
+      "register_title": "Створити акаунт",
+      "role_client": "Клієнт",
+      "role_worker": "Рекламодавець",
+      "email_placeholder": "email@example.com",
+      "password_mismatch": "Паролі не збігаються",
+      "login_btn": "Увійти",
+      "register_btn": "Зареєструватися",
+      "no_account": "Ще немає акаунту?",
+      "already_account": "Вже є акаунт?",
+      "forgot_password": "Забули пароль?"
+    },
+    "certification": {
+      "title": "Сертифікація профілю",
+      "admin_message_title": "Повідомлення від адміністрації:",
+      "step1_title": "Крок 1: Запишіть ваш секретний код",
+      "step1_desc": "Зробіть своє фото (з відкритим обличчям), тримаючи папір або телефон з чітко написаним кодом:",
+      "step2_title": "Крок 2: Завантажте фото",
+      "drop_zone_text": "Перетягніть фото сюди або натисніть для вибору",
+      "format_hint": "Підтримувані формати: JPG, PNG",
+      "submit_btn": "Надіслати на перевірку"
+    },
+    "forgot_password": {
+      "title": "Забули пароль",
+      "subtitle": "Введіть ваш email для отримання посилання на скидання пароля.",
+      "email_placeholder": "Ваш email",
+      "submit_btn": "Надіслати посилання"
+    },
+    "worker_profile": {
+      "contact_btn": "Зв'язатися",
+      "favorite": "До обраного",
+      "notify_me": "Повідомити про повернення",
+      "report": "Поскаржитися",
+      "body_type": "Тип фігури:",
+      "about": "Про себе",
+      "reviews": "Відгуки"
+    },
+    "reset_password": {
+      "title": "Новий пароль",
+      "subtitle": "Встановіть новий пароль для входу.",
+      "new_password_placeholder": "Новий пароль",
+      "confirm_password_placeholder": "Підтвердіть пароль",
+      "password_mismatch": "Паролі не збігаються.",
+      "update_btn": "Оновити",
+      "invalid_token": "Токен недійсний або прострочений.",
+      "retry_btn": "Запросити знову",
+      "success_msg": "Ваш пароль успішно змінено.",
+      "back_home_btn": "На головну"
+    },
+    "profile_management": {
+      "warning_title": "Ваш профіль наразі невидимий",
+      "warning_subtitle": "Поки ця важлива інформація не заповнена, ваше оголошення залишатиметься прихованим.",
+      "tabs": {
+        "profile": "Профіль",
+        "media": "Медіа",
+        "account": "Акаунт"
+      },
+      "form": {
+        "display_name": "Ім'я для відображення",
+        "display_name_placeholder": "Ваш псевдонім",
+        "short_desc": "Короткий опис (Макс. 45 символів)",
+        "short_desc_placeholder": "Наприклад: Люблю подорожі ✨",
+        "description_placeholder": "Опишіть ваш профіль, ваші особливості...",
+        "phone_placeholder": "Наприклад: +380 67 123 4567",
+        "body_type": "Тип фігури",
+        "hair_color": "Колір волосся",
+        "eye_color": "Колір очей",
+        "services_title": "Пропоновані послуги * (Оберіть хоча б одну)"
+      },
+      "media": {
+        "drop_title": "Перетягніть фото або відео сюди або",
+        "drop_click": "натисніть для огляду",
+        "format_hint": "Фото: JPG, PNG, WEBP • Відео: MP4, MOV, WEBM",
+        "add_btn": "Додати фото або відео * (Обов'язково хоча б одне фото)"
+      }
+    },
+    "admin": {
+      "tabs": {
+        "users": "Користувачі",
+        "certifications": "Сертифікації",
+        "reports": "Скарги",
+        "services": "Послуги",
+        "zones": "Зони",
+        "logs": "Журнал аудиту",
+        "admins": "Адміністрування"
+      },
+      "roles": {
+        "all": "Усі ролі",
+        "admin": "Адміністратор",
+        "client": "Клієнт",
+        "worker": "Рекламодавець"
+      },
+      "users_tab": {
+        "search_placeholder": "Пошук за ім'ям, email, описом, ID",
+        "filter_role_placeholder": "Фільтр за статусом",
+        "col_user": "Користувач",
+        "col_certification": "Сертифікація",
+        "col_certif_date": "Дата сертифікації",
+        "btn_ban": "Заблокувати",
+        "btn_lock": "Заморозити",
+        "btn_revoke": "Окликати",
+        "empty_users": "Користувачів не знайдено.",
+        "tooltip_banned": "Заблокований акаунт не може увійти до системи",
+        "tooltip_locked": "Заморожений акаунт обмежений у діях"
+      },
+      "certif_tab": {
+        "empty_certifs": "Немає очікуваних запитів на сертифікацію 🎉",
+        "under_review_suffix": "(🔒 Перевіряється іншим адміном)",
+        "requested_on": "Запрошено:",
+        "code_required": "Необхідний код:",
+        "badge_blocked": "Заблоковано",
+        "badge_pending": "На перевірці",
+        "modal_title": "Модерація сертифікації",
+        "advertiser_label": "Рекламодавець:",
+        "expected_code_label": "Очікуваний код перевірки:",
+        "other_photos_title": "2. Інші фото профілю (Перевірка особи)",
+        "no_other_photos": "У цьому профілі немає інших фотографій.",
+        "frequent_reasons_label": "Часті причини (Опціонально)",
+        "frequent_reasons_placeholder": "Оберіть причину...",
+        "comment_label": "Коментар або причина (Обов'язково при відмові)",
+        "comment_placeholder": "Наприклад: Код на фото нечитабельний...",
+        "btn_approve": "Схвалити",
+        "btn_reject": "Запросити додаткову інформацію / Відхилити"
+      },
+      "reports_tab": {
+        "title": "Рекламодавці зі скаргами",
+        "subtitle": "Рейтинг користувачів за кількістю отриманих скарг.",
+        "col_advertiser": "Рекламодавець",
+        "col_count": "Кількість скарг",
+        "btn_view_requests": "Переглянути скарги",
+        "empty_reports": "Зареєстрованих скарг немає 🎉",
+        "modal_title": "Скарги на",
+        "btn_ban_worker": "Заблокувати рекламодавця",
+        "btn_lock_account": "Заморозити акаунт",
+        "history_title": "Історія скарг:",
+        "author_label": "Автор:",
+        "dismissed_suffix": "(🔒 Відхилено / Необґрунтована)",
+        "reason_label": "Причина:",
+        "date_label": "Дата:",
+        "btn_dismiss": "Відхилити скаргу"
+      },
+      "logs_tab": {
+        "moderator_label": "Модератор:",
+        "action_label": "Дія:"
+      },
+      "services_tab": {
+        "title": "Список послуг",
+        "btn_add": "Додати послугу",
+        "col_name": "Назва послуги",
+        "col_desc": "Опис",
+        "empty_services": "Послуг не знайдено."
+      },
+      "zones_tab": {
+        "title": "Географічні зони",
+        "btn_add_parent": "Додати батьківську зону",
+        "col_name": "Назва зони",
+        "tooltip_add_child": "Додати підзону",
+        "empty_zones": "Зон не знайдено."
+      },
+      "admins_tab": {
+        "title": "Управління командою адміністраторів",
+        "subtitle": "Запрошуйте нових модераторів та керуйте доступами.",
+        "btn_invite": "Запросити адміністратора",
+        "placeholder_box": "Резервне місце для майбутніх інструментів модерації."
+      },
+      "preview": {
+        "title": "Перегляд"
+      }
+    }
   },
   "ar": {
-    "header": { "home": "الرئيسية", "login": "تسجيل الدخول", "logout": "تسجيل الخروج", "account": "حسابي", "register": "اشترك" },
-    "filters": {"placeholder_name": "الاسم...", "search": "بحث", "all_regions": "جميع المناطق", "clear": "مسح", "filters_btn": "عوامل التصفية", "all_body_types": "جميع أنواع الأجسام", "all_eye_colors": "جميع ألوان العيون", "all_hair_colors": "جميع ألوان الشعر", "all_services": "جميع الخدمات", "all_languages": "جميع اللغات"}
+    "common": {
+      "loading": "جاري التحميل...",
+      "save": "حفظ",
+      "cancel": "إلغاء",
+      "close": "إغلاق",
+      "back": "رجوع",
+      "search": "بحث",
+      "clear": "مسح",
+      "delete": "حذف",
+      "edit": "تعديل",
+      "actions": "الإجراءات",
+      "email": "البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "confirm_password": "تأكيد كلمة المرور",
+      "birthdate": "تاريخ الميلاد",
+      "phone": "الهاتف",
+      "description": "الوصف",
+      "role": "الدور",
+      "age": "العمر",
+      "years": "سنوات",
+      "photos": "الصور",
+      "videos": "مقاطع الفيديو",
+      "optional": "(اختياري)",
+      "banned": "محظور",
+      "locked": "مغلق",
+      "available": "متاح",
+      "unavailable": "غير متاح",
+      "hidden": "مخفي",
+      "visible": "مرئي",
+      "invisible": "غير مرئي",
+      "online": "متصل",
+      "offline": "غير متصل"
+    },
+    "header": {
+      "home": "الصفحة الرئيسية",
+      "login": "تسجيل الدخول",
+      "logout": "تسجيل الخروج",
+      "account": "حسابي",
+      "register": "التسجيل"
+    },
+    "filters": {
+      "placeholder_name": "الاسم...",
+      "filters_btn": "عوامل التصفية",
+      "all_body_types": "جميع أنواع الأجسام",
+      "all_eye_colors": "جميع ألوان العيون",
+      "all_hair_colors": "جميع ألوان الشعر",
+      "all_services": "جميع الخدمات",
+      "all_languages": "جميع اللغات",
+      "all_regions": "جميع المناطق",
+      "all_locations": "جميع المواقع"
+    },
+    "zones": {
+      "region_label": "المنطقة",
+      "precise_location_label": "الموقع الدقيق",
+      "select_region": "اختر منطقة...",
+      "select_location": "اختر موقعًا..."
+    },
+    "account": {
+      "tabs": {
+        "favorites": "المفضلة",
+        "settings": "الإعدادات",
+        "account": "الحساب"
+      },
+      "favorites": {
+        "title": "المفضلة لديك",
+        "empty": "ليس لديك أي مفضلة حتى الآن."
+      },
+      "settings": {
+        "title": "تفضيلات البحث الخاصة بي",
+        "body_types_label": "أنواع الأجسام المفضلة"
+      }
+    },
+    "account_settings": {
+      "title": "الأمان وبيانات الاعتماد",
+      "email_label": "عنوان البريد الإلكتروني",
+      "email_placeholder": "your@email.com",
+      "current_password_label": "كلمة المرور الحالية",
+      "current_password_placeholder": "كلمة المرور الحالية",
+      "new_password_label": "كلمة المرور الجديدة (اختياري)",
+      "new_password_placeholder": "6 أحرف على الأقل",
+      "save_btn": "حفظ التغييرات"
+    },
+    "auth": {
+      "login_title": "تسجيل الدخول",
+      "register_title": "إنشاء حساب",
+      "role_client": "عميل",
+      "role_worker": "معلن",
+      "email_placeholder": "email@example.com",
+      "password_mismatch": "كلمات المرور غير متطابقة",
+      "login_btn": "تسجيل الدخول",
+      "register_btn": "التسجيل",
+      "no_account": "ليس لديك حساب بعد؟",
+      "already_account": "هل لديك حساب بالفعل؟",
+      "forgot_password": "هل نسيت كلمة المرور؟"
+    },
+    "certification": {
+      "title": "شهادة الملف الشخصي",
+      "admin_message_title": "رسالة من المسؤول:",
+      "step1_title": "الخطوة 1: اكتب الرمز السري الخاص بك",
+      "step1_desc": "التقط صورة لنفسك (بوجه مكشوف) وأنت تحمل ورقة أو هاتفًا يظهر عليه هذا الرمز بوضوح:",
+      "step2_title": "الخطوة 2: قم بتحميل صورتك",
+      "drop_zone_text": "اسحب صورتك وأسقطها هنا أو انقر للتصفح",
+      "format_hint": "التنسيقات المقبولة: JPG, PNG",
+      "submit_btn": "إرسال للتحقق"
+    },
+    "forgot_password": {
+      "title": "نسيت كلمة المرور",
+      "subtitle": "أدخل عنوان بريدك الإلكتروني لتلقي رابط إعادة تعيين كلمة المرور.",
+      "email_placeholder": "بريدك الإلكتروني",
+      "submit_btn": "إرسال الرابط"
+    },
+    "worker_profile": {
+      "contact_btn": "اتصل بنا",
+      "favorite": "المفضلة",
+      "notify_me": "أعلمني عند العودة",
+      "report": "الإبلاغ",
+      "body_type": "نوع الجسم:",
+      "about": "نبذة",
+      "reviews": "التعليقات"
+    },
+    "reset_password": {
+      "title": "كلمة مرور جديدة",
+      "subtitle": "اضبط كلمة مرور تسجيل الدخول الجديدة.",
+      "new_password_placeholder": "كلمة المرور الجديدة",
+      "confirm_password_placeholder": "تأكيد كلمة المرور",
+      "password_mismatch": "كلمتا المرور غير متطابقتين.",
+      "update_btn": "تحديث",
+      "invalid_token": "رمز إعادة التعيين مفقود أو غير صالح.",
+      "retry_btn": "أعد الطلب",
+      "success_msg": "تم تحديث كلمة مرورك بنجاح.",
+      "back_home_btn": "العودة إلى الصفحة الرئيسية"
+    },
+    "profile_management": {
+      "warning_title": "ملفك الشخصي غير مرئي حاليًا",
+      "warning_subtitle": "ما دامت هذه المعلومات الأساسية غير موجودة, فسيظل إعلانك غير مرئي.",
+      "tabs": {
+        "profile": "الملف الشخصي",
+        "media": "الوسائط",
+        "account": "الحساب"
+      },
+      "form": {
+        "display_name": "الاسم المعروض",
+        "display_name_placeholder": "اسم المستخدم الخاص بك",
+        "short_desc": "وصف موجز (45 حرفًا كحد أقصى)",
+        "short_desc_placeholder": "مثال: عاشق السفر ✨",
+        "description_placeholder": "صف ملفك الشخصي وتخصصاتك...",
+        "phone_placeholder": "مثال: +33 6 12 34 56 78",
+        "body_type": "نوع الجسم",
+        "hair_color": "لون الشعر",
+        "eye_color": "لون العين",
+        "services_title": "الخدمات المقدمة * (اختر خدمة واحدة على الأقل)"
+      },
+      "media": {
+        "drop_title": "اسحب صورك أو مقاطع الفيديو الخاصة بك وأسقطها هنا أو",
+        "drop_click": "انقر للتصفح",
+        "format_hint": "الصور: JPG, PNG, WEBP • مقاطع الفيديو: MP4, MOV, WEBM",
+        "add_btn": "أضف صورك أو مقاطع الفيديو * (يلزم إضافة صورة واحدة على الأقل)"
+      }
+    },
+    "admin": {
+      "tabs": {
+        "users": "المستخدمون",
+        "certifications": "الشهادات",
+        "reports": "التقارير",
+        "services": "الخدمات",
+        "zones": "المناطق",
+        "logs": "سجلات التدقيق",
+        "admins": "الإدارة"
+      },
+      "roles": {
+        "all": "جميع الأدوار",
+        "admin": "المسؤول",
+        "client": "العميل",
+        "worker": "المعلن"
+      },
+      "users_tab": {
+        "search_placeholder": "البحث حسب الاسم, البريد الإلكتروني, الوصف, المعرّف",
+        "filter_role_placeholder": "التصفية حسب الحالة",
+        "col_user": "المستخدم",
+        "col_certification": "الشهادة",
+        "col_certif_date": "تاريخ الشهادة",
+        "btn_ban": "حظر",
+        "btn_lock": "قفل",
+        "btn_revoke": "إلغاء",
+        "empty_users": "لم يتم العثور على أي مستخدمين.",
+        "tooltip_banned": "الحساب المحظور لا يمكنه تسجيل الدخول ولا يمكن للزوار رؤيته",
+        "tooltip_locked": "الحساب المقفل لا يمكنه تنفيذ إجراءات معينة ولا يمكن رؤيته"
+      },
+      "certif_tab": {
+        "empty_certifs": "لا توجد طلبات اعتماد معلقة 🎉",
+        "under_review_suffix": "( 🔒 قيد المراجعة من قبل مسؤول آخر)",
+        "requested_on": "تاريخ الطلب:",
+        "code_required": "الرمز المطلوب:",
+        "badge_blocked": "محظور",
+        "badge_pending": "للتحقق",
+        "modal_title": "مراجعة التصديق",
+        "advertiser_label": "المعلن:",
+        "expected_code_label": "رمز التحقق المتوقع:",
+        "other_photos_title": "2. صور الملف الشخصي الأخرى (التحقق من الهوية)",
+        "no_other_photos": "لا توجد صور أخرى متاحة في هذا الملف الشخصي.",
+        "frequent_reasons_label": "الأسباب الشائعة (اختياري)",
+        "frequent_reasons_placeholder": "اختر سببًا افتراضيًا...",
+        "comment_label": "تعليق أو سبب (مطلوب للرفض / طلب مزيد من المعلومات)",
+        "comment_placeholder": "مثال: الرمز الموجود على السبورة غير واضح...",
+        "btn_approve": "الموافقة",
+        "btn_reject": "طلب معلومات / الرفض"
+      },
+      "reports_tab": {
+        "title": "المعلنين المبلغ عنهم",
+        "subtitle": "تصنيف المستخدمين حسب عدد البلاغات المستلمة.",
+        "col_advertiser": "المعلن",
+        "col_count": "عدد البلاغات",
+        "btn_view_requests": "عرض الطلبات",
+        "empty_reports": "لم يتم تسجيل أي بلاغات 🎉",
+        "modal_title": "البلاغات المتعلقة بـ",
+        "btn_ban_worker": "حظر المعلن",
+        "btn_lock_account": "قفل الحساب",
+        "history_title": "سجل الطلبات / البلاغات:",
+        "author_label": "المُبلغ:",
+        "dismissed_suffix": "(🔒 تم رفضه / مسيء)",
+        "reason_label": "السبب:",
+        "date_label": "التاريخ:",
+        "btn_dismiss": "رفض"
+      },
+      "logs_tab": {
+        "moderator_label": "المشرف:",
+        "action_label": "الإجراء:"
+      },
+      "services_tab": {
+        "title": "قائمة الخدمات",
+        "btn_add": "إضافة خدمة",
+        "col_name": "اسم الخدمة",
+        "col_desc": "الوصف",
+        "empty_services": "لم يتم العثور على أي خدمات."
+      },
+      "zones_tab": {
+        "title": "المناطق الجغرافية",
+        "btn_add_parent": "إضافة منطقة أم",
+        "col_name": "اسم المنطقة",
+        "tooltip_add_child": "إضافة منطقة فرعية",
+        "empty_zones": "لم يتم العثور على أي مناطق."
+      },
+      "admins_tab": {
+        "title": "إدارة فريق الإدارة",
+        "subtitle": "دعوة مشرفين جدد وإدارة الوصول الآمن إلى المنصة.",
+        "btn_invite": "دعوة مسؤول",
+        "placeholder_box": "مساحة مخصصة لأدوات الإشراف المستقبلية للمسؤولين."
+      },
+      "preview": {
+        "title": "معاينة"
+      }
+    }
   }
 }

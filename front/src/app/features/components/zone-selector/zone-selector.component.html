@@ -21,7 +21,7 @@
     </ion-item>
   </div>
 
-  <!-- SÉLECTION DE LA VILLE (DÉSACTIVÉE TANT QU'AUCUN PARENT N'EST CHOISI) -->
+  <!-- SÉLECTION DE LA VILLE -->
   <div class="zone-col" [class.disabled-col]="!parentZoneId">
     <ion-item lines="none" [class.filter-input-item]="isFilterBanner" [class.venus-input]="!isFilterBanner" [disabled]="!parentZoneId">
       <ion-icon *ngIf="showIcons" name="business-outline" slot="start" class="filter-icon"></ion-icon>

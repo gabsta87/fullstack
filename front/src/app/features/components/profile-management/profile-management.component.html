@@ -44,7 +44,7 @@
                           size="small"
                           (click)="toggleAvailable(!me.available)">
                 <ion-icon [name]="me.available ? 'chevron-down-circle-outline' : 'close-circle-outline'" slot="start"></ion-icon>
-                {{ me.available ? t.profile_management?.online : t.profile_management?.offline }}
+                {{ me.available ? t.common?.online : t.common?.offline }}
               </ion-button>
 
               <ion-button [color]="!me.hidden ? 'success' : 'medium'"
@@ -52,7 +52,7 @@
                           size="small"
                           (click)="toggleVisible(!me.hidden)">
                 <ion-icon [name]="!me.hidden ? 'eye-outline' : 'eye-off-outline'" slot="start"></ion-icon>
-                {{ !me.hidden ? t.profile_management?.visible : t.profile_management?.invisible }}
+                {{ !me.hidden ? t.common?.visible : t.common?.invisible }}
               </ion-button>
 
               <!-- Pastille de Certification Dynamique -->
@@ -135,7 +135,7 @@
               <!-- Description -->
               <ion-col size="12">
                 <ion-item lines="none" class="description-container" [class.invalid-item]="isFieldMissing('description', me)">
-                  <ion-label position="stacked">{{ t.profile_management?.form?.description }}</ion-label>
+                  <ion-label position="stacked">{{ t.common?.description }} *</ion-label>
                   <ion-textarea [(ngModel)]="profileForm.description"
                                 [debounce]="500"
                                 [autoGrow]="true"
@@ -171,7 +171,7 @@
               <!-- Téléphone -->
               <ion-col size="6" size-md="6">
                 <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('phone', me)">
-                  <ion-label position="stacked">{{ t.profile_management?.form?.phone }}</ion-label>
+                  <ion-label position="stacked">{{ t.common?.phone }} *</ion-label>
                   <ion-input type="tel"
                              [(ngModel)]="profileForm.phone"
                              [debounce]="500"
@@ -183,7 +183,7 @@
               <!-- Date de Naissance -->
               <ion-col size="6" size-md="6">
                 <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('birthday', me)">
-                  <ion-label position="stacked">{{ t.profile_management?.form?.birthdate }}</ion-label>
+                  <ion-label position="stacked">{{ t.common?.birthdate }} *</ion-label>
                   <ion-input type="date"
                              [(ngModel)]="profileForm.birthdate"
                              (ionInput)="updateProfileField('birthdate', $event.detail.value)">
@@ -268,7 +268,7 @@
 
           <!-- Galerie Photos -->
           <div class="media-section-title">
-            <h3>{{ t.profile_management?.media?.photos_title }} <span class="required-asterisk">*</span></h3>
+            <h3>{{ t.common?.photos }} <span class="required-asterisk">*</span></h3>
           </div>
           <ion-grid class="ion-no-padding ion-padding-horizontal">
             <ion-row>
@@ -303,7 +303,7 @@
 
           <!-- Galerie Vidéos -->
           <div class="media-section-title ion-margin-top">
-            <h3>{{ t.profile_management?.media?.videos_title }} <span class="optional-text">{{ t.profile_management?.media?.optional }}</span></h3>
+            <h3>{{ t.common?.videos }} <span class="optional-text">{{ t.common?.optional }}</span></h3>
           </div>
           <ion-grid class="ion-no-padding ion-padding-horizontal">
             <ion-row>

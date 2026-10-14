@@ -8,7 +8,7 @@
 
         <ion-col size="12" size-md="6">
           <ion-item lines="none" class="venus-input">
-            <ion-label position="stacked">{{ t.account_settings?.email_label }}</ion-label>
+            <ion-label position="stacked">{{ t.account_settings?.email_label || t.common?.email }}</ion-label>
             <ion-input type="email" name="email" [(ngModel)]="form.email" [required]="true" [placeholder]="t.account_settings?.email_placeholder"></ion-input>
           </ion-item>
         </ion-col>
@@ -32,7 +32,7 @@
 
         <ion-col size="12" size-md="6">
           <ion-item lines="none" class="venus-input">
-            <ion-label position="stacked">{{ t.account_settings?.confirm_password_label }}</ion-label>
+            <ion-label position="stacked">{{ t.common?.confirm_password }}</ion-label>
             <ion-input type="password" name="confirmPassword" [(ngModel)]="form.confirmPassword" [placeholder]="t.account_settings?.confirm_password_placeholder"></ion-input>
           </ion-item>
         </ion-col>
@@ -47,7 +47,7 @@
         <ion-col size="12" class="ion-text-end ion-margin-top">
           <ion-button type="submit" [disabled]="isSaving" class="save-settings-btn">
             <ion-spinner name="crescent" slot="start" *ngIf="isSaving"></ion-spinner>
-            {{ t.account_settings?.save_btn }}
+            {{ t.account_settings?.save_btn || t.common?.save }}
           </ion-button>
         </ion-col>
 
