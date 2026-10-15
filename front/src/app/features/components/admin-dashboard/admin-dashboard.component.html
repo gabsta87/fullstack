@@ -34,15 +34,15 @@
   <ion-content class="ion-padding content-with-bottom-spacing">
     <!-- ONGLET 1 : UTILISATEURS (Table PrimeNG) -->
     <div *ngIf="currentTab === 'users'">
-      <div class="admin-toolbar ion-margin-bottom" style="display: flex; gap: 15px; flex-wrap: wrap;">
-        <span class="p-input-icon-left" style="flex: 1; min-width: 250px;">
+      <div class="admin-toolbar ion-margin-bottom admin-flex-toolbar">
+        <span class="p-input-icon-left search-input-wrapper">
           <i class="pi pi-search"></i>
           <input
             pInputText
             type="text"
             (input)="dt.filterGlobal($any($event.target).value, 'contains')"
             [placeholder]="t.admin?.users_tab?.search_placeholder"
-            style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;" />
+            class="global-search-input" />
         </span>
 
         <p-select
@@ -76,7 +76,7 @@
             <th pSortableColumn="hidden">{{ t.common?.hidden }}<p-sortIcon field="hidden"></p-sortIcon></th>
             <th>{{ t.admin?.users_tab?.col_certification }}</th>
             <th pSortableColumn="certifiedAt">{{ t.admin?.users_tab?.col_certif_date }}<p-sortIcon field="certifiedAt"></p-sortIcon></th>
-            <th style="text-align: center; width: 70px;">{{ t.common?.actions }}</th>
+            <th class="col-center-width-70">{{ t.common?.actions }}</th>
           </tr>
         </ng-template>
 
@@ -84,14 +84,14 @@
           <tr>
             <!-- Pseudo cliquable pour consulter le profil -->
             <td>
-              <a (click)="viewProfile(user)" style="cursor: pointer; color: var(--ion-color-primary, #c8956c); text-decoration: underline; font-weight: bold;">
+              <a (click)="viewProfile(user)" class="clickable-username">
                 {{ user.username }}
               </a>
             </td>
 
             <!-- Email cliquable avec mailto -->
             <td>
-              <a [href]="'mailto:' + user.email" style="color: inherit; text-decoration: none;" title="Envoyer un e-mail">
+              <a [href]="'mailto:' + user.email" class="mailto-link" title="Envoyer un e-mail">
                 {{ user.email }}
               </a>
             </td>
@@ -109,7 +109,7 @@
                           [color]="user.banned ? 'danger' : 'medium'"
                           (click)="banUser(user, user.banned)"
                           [title]="t.admin?.users_tab?.tooltip_banned"
-                          style="text-transform: none; font-size: 0.75rem; height: 28px;">
+                          class="admin-action-btn">
                 {{ user.banned ? t.common?.banned : t.admin?.users_tab?.btn_ban }}
               </ion-button>
             </td>
@@ -121,32 +121,32 @@
                           [color]="user.locked ? 'warning' : 'medium'"
                           (click)="setLocked(user, !user.locked)"
                           [title]="t.admin?.users_tab?.tooltip_locked"
-                          style="text-transform: none; font-size: 0.75rem; height: 28px;">
+                          class="admin-action-btn">
                 {{ user.locked ? t.common?.locked : t.admin?.users_tab?.btn_lock }}
               </ion-button>
             </td>
 
-            <td style="text-align: center;">
+            <td class="ion-text-center">
               {{ user.available ? t.common?.available : t.common?.unavailable }}
             </td>
 
             <td>
-              <span *ngIf="user.hidden" style="color: var(--text-muted); font-size: 0.85rem; font-weight: 500;">
+              <span *ngIf="user.hidden" class="hidden-user-label">
                 {{ t.common?.hidden }}
               </span>
             </td>
 
-            <!-- Certification et option de révocation -->
+            <!-- Certification et option de révocation (Harmonisé) -->
             <td>
-              <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+              <div class="certif-cell-wrapper">
                 <span>{{ user.certificationStatus || '' }}</span>
                 <ion-button *ngIf="user.certificationStatus === 'CERTIFIED'"
                             size="small"
-                            fill="clear"
+                            fill="outline"
                             color="danger"
                             (click)="revokeCertification(user)"
                             [title]="t.admin?.users_tab?.btn_revoke"
-                            style="font-size: 0.7rem; height: 24px; padding: 0;">
+                            class="admin-action-btn">
                   {{ t.admin?.users_tab?.btn_revoke }}
                 </ion-button>
               </div>
@@ -154,7 +154,7 @@
 
             <td>{{ user.certifiedAt | date:'yyyy-MM-dd' || '' }}</td>
 
-            <td style="text-align: center;">
+            <td class="ion-text-center">
               <ion-button size="small" fill="clear" color="danger" (click)="deleteUser(user)" [title]="t.common?.delete">
                 <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
               </ion-button>
@@ -164,7 +164,7 @@
 
         <ng-template pTemplate="emptymessage">
           <tr>
-            <td colspan="12" style="text-align: center; padding: 20px;">{{ t.admin?.users_tab?.empty_users }}</td>
+            <td colspan="12" class="ion-text-center ion-padding">{{ t.admin?.users_tab?.empty_users }}</td>
           </tr>
         </ng-template>
       </p-table>
@@ -178,20 +178,18 @@
           <p>{{ t.admin?.certif_tab?.empty_certifs }}</p>
         </div>
 
-        <!-- Lignes très fines style tableau épuré -->
         <ion-list *ngIf="requests.length > 0" lines="full">
           <ion-item
             *ngFor="let req of requests"
             [button]="!req.underReview"
             (click)="!req.underReview && openCertificationModal(req)"
-            [style.opacity]="req.underReview ? '0.5' : '1'"
-            [style.background]="req.underReview ? '#f8f9fa' : 'transparent'"
-            style="cursor: pointer;">
+            [class.under-review-item]="req.underReview"
+            class="certif-item-row">
 
             <ion-label>
               <h2>
                 <strong>{{ req.workerUsername }}</strong>
-                <span *ngIf="req.underReview" style="color: #e03131; font-size: 0.85em; margin-left: 10px;">
+                <span *ngIf="req.underReview" class="under-review-badge-text">
                   {{ t.admin?.certif_tab?.under_review_suffix }}
                 </span>
               </h2>
@@ -221,35 +219,34 @@
 
         <ion-content class="ion-padding" *ngIf="selectedWorkerDetails">
           <h3>{{ t.admin?.certif_tab?.advertiser_label }} {{ selectedWorkerDetails.username }}</h3>
-          <p><strong>{{ t.admin?.certif_tab?.expected_code_label }}</strong> <span style="font-size: 1.2em; color: var(--ion-color-primary);">{{ selectedWorkerDetails.certificationRequest?.verificationCode }}</span></p>
+          <p><strong>{{ t.admin?.certif_tab?.expected_code_label }}</strong> <span class="expected-code-highlight">{{ selectedWorkerDetails.certificationRequest?.verificationCode }}</span></p>
 
-          <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;" />
+          <hr class="modal-divider" />
 
           <!-- Photo de certification -->
-          <div class="image-verification-box ion-margin-bottom" style="text-align: center; background: #f9f9f9; padding: 10px; border-radius: 8px;">
+          <div class="image-verification-box ion-margin-bottom">
             <img [src]="selectedWorkerDetails.certificationRequest?.certificationPhotoUrl"
                  (click)="openImagePreview(selectedWorkerDetails.certificationRequest?.certificationPhotoUrl ?? '', certificationPreviewList)"
-                 style="max-height: 300px; border-radius: 6px; object-fit: contain; cursor: pointer;"
+                 class="certif-preview-img"
                  alt="Photo de certification" />
           </div>
 
           <!-- Autres photos du profil -->
           <h4>{{ t.admin?.certif_tab?.other_photos_title }}</h4>
-          <div *ngIf="selectedWorkerDetails.photos && selectedWorkerDetails.photos.length > 0" style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px;">
+          <div *ngIf="selectedWorkerDetails.photos && selectedWorkerDetails.photos.length > 0" class="other-photos-container">
             <img *ngFor="let p of selectedWorkerDetails.photos"
                  [src]="p.mainThumbUrl"
                  (click)="openImagePreview(p.mainThumbUrl, certificationPreviewList)"
-                 style="height: 100px; width: 100px; object-fit: cover; border-radius: 6px; border: 1px solid #ccc; cursor: pointer;"
+                 class="other-thumb-img"
                  alt="Photo annonceur" />
           </div>
-          <p *ngIf="!selectedWorkerDetails.photos || selectedWorkerDetails.photos.length === 0" style="color: #777; font-style: italic;">
+          <p *ngIf="!selectedWorkerDetails.photos || selectedWorkerDetails.photos.length === 0" class="no-photos-text">
             {{ t.admin?.certif_tab?.no_other_photos }}
           </p>
 
-          <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;" />
+          <hr class="modal-divider" />
 
           <div class="ion-margin-bottom">
-            <!-- Menu déroulant pour les motifs fréquents -->
             <ion-item class="ion-margin-bottom">
               <ion-select [label]="t.admin?.certif_tab?.frequent_reasons_label"
                           labelPlacement="stacked"
@@ -263,7 +260,6 @@
               </ion-select>
             </ion-item>
 
-            <!-- Champ de texte modifiable -->
             <ion-item>
               <ion-input [(ngModel)]="adminComment"
                          [label]="t.admin?.certif_tab?.comment_label"
@@ -274,12 +270,11 @@
             </ion-item>
           </div>
 
-          <!-- Boutons d'action -->
-          <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <ion-button expand="block" color="success" style="flex: 1;" (click)="submitCertificationReview(true)">
+          <div class="modal-actions-flex">
+            <ion-button expand="block" color="success" class="action-flex-btn" (click)="submitCertificationReview(true)">
               {{ t.admin?.certif_tab?.btn_approve }}
             </ion-button>
-            <ion-button [disabled]="adminComment == ''" expand="block" color="warning" style="flex: 1;" (click)="submitCertificationReview(false)">
+            <ion-button [disabled]="adminComment == ''" expand="block" color="warning" class="action-flex-btn" (click)="submitCertificationReview(false)">
               {{ t.admin?.certif_tab?.btn_reject }}
             </ion-button>
           </div>
@@ -288,7 +283,7 @@
       </ng-template>
     </ion-modal>
 
-    <!-- LIGHTBOX / MODALE DE ZOOM D'IMAGE TYPE GALERIE -->
+    <!-- LIGHTBOX / MODALE DE ZOOM D'IMAGE -->
     <ion-modal class="image-preview-modal" [isOpen]="activePreviewUrl !== null" (didDismiss)="closeImagePreview()">
       <ng-template>
         <ion-header>
@@ -300,19 +295,17 @@
           </ion-toolbar>
         </ion-header>
 
-        <ion-content class="ion-padding" style="background: black; --background: black; height: 100%;">
-          <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-
+        <ion-content class="ion-padding lightbox-content-bg">
+          <div class="lightbox-wrapper">
             <ion-button *ngIf="previewImagesList.length > 1" fill="clear" color="light" class="lightbox-nav-button left-nav" (click)="prevPreviewImage()">
               <ion-icon name="chevron-back-outline" size="large"></ion-icon>
             </ion-button>
 
-            <img [src]="activePreviewUrl" style="max-width: 75vw; max-height: 85vh; object-fit: contain; z-index: 5;" />
+            <img [src]="activePreviewUrl" class="lightbox-main-img" />
 
             <ion-button *ngIf="previewImagesList.length > 1" fill="clear" color="light" class="lightbox-nav-button right-nav" (click)="nextPreviewImage()">
               <ion-icon name="chevron-forward-outline" size="large"></ion-icon>
             </ion-button>
-
           </div>
         </ion-content>
       </ng-template>
@@ -320,9 +313,9 @@
 
     <!-- ONGLET 3 : SIGNALEMENTS -->
     <div *ngIf="currentTab === 'reports'">
-      <div style="margin-bottom: 15px;">
+      <div class="reports-header-margin">
         <h2>{{ t.admin?.reports_tab?.title }}</h2>
-        <p style="color: var(--text-muted); font-size: 0.9rem;">{{ t.admin?.reports_tab?.subtitle }}</p>
+        <p class="reports-subtitle">{{ t.admin?.reports_tab?.subtitle }}</p>
       </div>
 
       <p-table [value]="(reportsSummary$ | async) || []" styleClass="p-datatable-gridlines p-datatable-sm" [tableStyle]="{'min-width': '50rem'}">
@@ -331,7 +324,7 @@
             <th pSortableColumn="workerUsername">{{ t.admin?.reports_tab?.col_advertiser }} <p-sortIcon field="workerUsername"></p-sortIcon></th>
             <th>{{ t.common?.email }}</th>
             <th pSortableColumn="reportCount">{{ t.admin?.reports_tab?.col_count }} <p-sortIcon field="reportCount"></p-sortIcon></th>
-            <th style="text-align: center;">{{ t.common?.actions }}</th>
+            <th class="ion-text-center">{{ t.common?.actions }}</th>
           </tr>
         </ng-template>
 
@@ -342,7 +335,7 @@
             <td>
               <p-tag [value]="item.reportCount + ' ' + (t.admin?.reports_tab?.col_count || 'signalement(s)')" severity="danger"></p-tag>
             </td>
-            <td style="text-align: center;">
+            <td class="ion-text-center">
               <ion-button size="small" color="primary" (click)="openReportsModal(item)">
                 {{ t.admin?.reports_tab?.btn_view_requests }}
               </ion-button>
@@ -352,13 +345,13 @@
 
         <ng-template pTemplate="emptymessage">
           <tr>
-            <td colspan="4" style="text-align: center; padding: 20px;">{{ t.admin?.reports_tab?.empty_reports }}</td>
+            <td colspan="4" class="ion-text-center ion-padding">{{ t.admin?.reports_tab?.empty_reports }}</td>
           </tr>
         </ng-template>
       </p-table>
     </div>
 
-    <!-- MODALE DE CONSULTATION DES SIGNALEMENTS D'UN UTILISATEUR -->
+    <!-- MODALE DE CONSULTATION DES SIGNALEMENTS -->
     <ion-modal [isOpen]="isReportsModalOpen" (didDismiss)="closeReportsModal()">
       <ng-template>
         <ion-header>
@@ -371,7 +364,7 @@
         </ion-header>
 
         <ion-content class="ion-padding" *ngIf="selectedReportWorker">
-          <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+          <div class="reports-modal-actions">
             <ion-button color="danger" size="small" (click)="banUser(selectedReportWorker.workerId, false)">
               {{ t.admin?.reports_tab?.btn_ban_worker }}
             </ion-button>
@@ -383,20 +376,18 @@
           <h3>{{ t.admin?.reports_tab?.history_title }}</h3>
           <ion-list lines="full">
             <ion-item *ngFor="let rep of selectedReportWorker.reports"
-                      [style.opacity]="rep.reportStatus === 'DISMISSED' ? '0.4' : '1'"
-                      [style.background]="rep.reportStatus === 'DISMISSED' ? '#f1f3f5' : 'transparent'">
+                      [class.dismissed-report-item]="rep.reportStatus === 'DISMISSED'">
               <ion-label>
                 <p>
                   <strong>{{ t.admin?.reports_tab?.author_label }}</strong> {{ rep.authorEmail }}
-                  <span *ngIf="rep.reportStatus === 'DISMISSED'" style="color: #e03131; font-weight: bold; margin-left: 10px;">
+                  <span *ngIf="rep.reportStatus === 'DISMISSED'" class="dismissed-badge-text">
                     {{ t.admin?.reports_tab?.dismissed_suffix }}
                   </span>
                 </p>
-                <p><strong>{{ t.admin?.reports_tab?.reason_label }}</strong> <span [style.text-decoration]="rep.reportStatus === 'DISMISSED' ? 'line-through' : 'none'">{{ rep.reason }}</span></p>
-                <p><small style="color: gray;">{{ t.admin?.reports_tab?.date_label }} {{ rep.createdAt | date:'dd/MM/yyyy HH:mm' }}</small></p>
+                <p><strong>{{ t.admin?.reports_tab?.reason_label }}</strong> <span [class.strike-reason]="rep.reportStatus === 'DISMISSED'">{{ rep.reason }}</span></p>
+                <p><small class="report-date-text">{{ t.admin?.reports_tab?.date_label }} {{ rep.createdAt | date:'dd/MM/yyyy HH:mm' }}</small></p>
               </ion-label>
 
-              <!-- Bouton pour classer un signalement actif -->
               <ion-button *ngIf="rep.reportStatus === 'PENDING'"
                           slot="end"
                           size="small"
@@ -412,7 +403,7 @@
 
     <!-- ONGLET 4 : SERVICES -->
     <div *ngIf="currentTab === 'services'">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+      <div class="tab-header-flex">
         <h2>{{ t.admin?.services_tab?.title }}</h2>
         <ion-button color="primary" size="small" (click)="openServiceModal()">
           <ion-icon slot="start" name="add-outline"></ion-icon>
@@ -425,24 +416,21 @@
           <tr>
             <th>{{ t.admin?.services_tab?.col_name }}</th>
             <th>{{ t.admin?.services_tab?.col_desc }}</th>
-            <th style="text-align: center; width: 140px;">{{ t.common?.actions }}</th>
+            <th class="ion-text-center width-140">{{ t.common?.actions }}</th>
           </tr>
         </ng-template>
 
         <ng-template pTemplate="body" let-service>
           <tr>
             <td>
-              <span style="font-weight: 500;">{{ service.name }}</span>
+              <span class="font-weight-500">{{ service.name }}</span>
             </td>
             <td>{{ service.description || '—' }}</td>
 
-            <td style="text-align: center; white-space: nowrap;">
-              <!-- Bouton Modifier -->
+            <td class="ion-text-center nowrap-cell">
               <ion-button size="small" fill="clear" color="medium" (click)="editServiceModal(service)" [title]="t.common?.edit">
                 <ion-icon name="pencil-outline" slot="icon-only"></ion-icon>
               </ion-button>
-
-              <!-- Bouton Supprimer -->
               <ion-button size="small" fill="clear" color="danger" (click)="deleteService(service.id)" [title]="t.common?.delete">
                 <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
               </ion-button>
@@ -452,7 +440,7 @@
 
         <ng-template pTemplate="emptymessage">
           <tr>
-            <td colspan="3" style="text-align: center; padding: 20px;">{{ t.admin?.services_tab?.empty_services }}</td>
+            <td colspan="3" class="ion-text-center ion-padding">{{ t.admin?.services_tab?.empty_services }}</td>
           </tr>
         </ng-template>
       </p-table>
@@ -460,9 +448,8 @@
 
     <!-- ONGLET 5 : ZONES GÉOGRAPHIQUES -->
     <div *ngIf="currentTab === 'zones'">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+      <div class="tab-header-flex">
         <h2>{{ t.admin?.zones_tab?.title }}</h2>
-        <!-- Bouton pour ajouter une zone parente racine -->
         <ion-button color="primary" size="small" (click)="openZoneModal(null)">
           <ion-icon slot="start" name="add-outline"></ion-icon>
           {{ t.admin?.zones_tab?.btn_add_parent }}
@@ -473,33 +460,26 @@
         <ng-template pTemplate="header">
           <tr>
             <th>{{ t.admin?.zones_tab?.col_name }}</th>
-            <th style="text-align: center; width: 160px;">{{ t.common?.actions }}</th>
+            <th class="ion-text-center width-160">{{ t.common?.actions }}</th>
           </tr>
         </ng-template>
 
         <ng-template pTemplate="body" let-zone>
           <tr [ngClass]="{'parent-zone-row': zone.level === 0}">
-
-            <!-- Nom avec indentation dynamique -->
             <td [style.padding-left.px]="15 + (zone.level * 25)">
-              <span *ngIf="zone.level > 0" style="color: #999; margin-right: 6px;">└─</span>
-              <span [style.font-weight]="zone.level === 0 ? 'bold' : 'normal'">
+              <span *ngIf="zone.level > 0" class="zone-sub-arrow">└─</span>
+              <span [class.zone-parent-bold]="zone.level === 0">
                 {{ zone.name }}
               </span>
             </td>
 
-            <td style="text-align: center; white-space: nowrap;">
-              <!-- Bouton Ajouter une sous-zone (visible uniquement sur les parents de niveau 0) -->
+            <td class="ion-text-center nowrap-cell">
               <ion-button size="small" fill="clear" color="primary" (click)="openZoneModal(zone.id)" *ngIf="zone.level === 0" [title]="t.admin?.zones_tab?.tooltip_add_child">
                 <ion-icon name="add-outline" slot="icon-only"></ion-icon>
               </ion-button>
-
-              <!-- Bouton Modifier le nom -->
               <ion-button size="small" fill="clear" color="medium" (click)="editZoneName(zone)" [title]="t.common?.edit">
                 <ion-icon name="pencil-outline" slot="icon-only"></ion-icon>
               </ion-button>
-
-              <!-- Bouton Supprimer -->
               <ion-button size="small" fill="clear" color="danger" (click)="deleteZone(zone.id)" [title]="t.common?.delete">
                 <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
               </ion-button>
@@ -508,7 +488,7 @@
         </ng-template>
 
         <ng-template pTemplate="emptymessage">
-          <tr><td colspan="2" style="text-align: center; padding: 20px;">{{ t.admin?.zones_tab?.empty_zones }}</td></tr>
+          <tr><td colspan="2" class="ion-text-center ion-padding">{{ t.admin?.zones_tab?.empty_zones }}</td></tr>
         </ng-template>
       </p-table>
     </div>
@@ -529,10 +509,10 @@
 
     <!-- ONGLET 7 : ADMINISTRATION / ÉQUIPE -->
     <div *ngIf="currentTab === 'admins'">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <div class="tab-header-flex ion-margin-bottom">
         <div>
           <h2>{{ t.admin?.admins_tab?.title }}</h2>
-          <p style="color: var(--text-mid, #6b6560); font-size: 0.9rem; margin: 4px 0 0 0;">
+          <p class="admin-subtitle-text">
             {{ t.admin?.admins_tab?.subtitle }}
           </p>
         </div>
@@ -542,13 +522,12 @@
         </ion-button>
       </div>
 
-      <!-- Grille de présentation -->
       <ion-grid class="ion-no-padding">
         <ion-row>
           <ion-col size="12">
-            <div style="background: var(--surface-card, #f0ece7); border: 1px dashed var(--border-dashed, #d4c8be); border-radius: 12px; padding: 30px; text-align: center;">
-              <ion-icon name="shield-checkmark-outline" style="font-size: 2.5rem; color: var(--accent, #c8956c); margin-bottom: 10px;"></ion-icon>
-              <p style="margin: 0; font-weight: 500; color: var(--text-dark, #332d29);">
+            <div class="admin-placeholder-box">
+              <ion-icon name="shield-checkmark-outline" class="admin-shield-icon"></ion-icon>
+              <p class="admin-placeholder-p">
                 {{ t.admin?.admins_tab?.placeholder_box }}
               </p>
             </div>
