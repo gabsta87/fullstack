@@ -5,7 +5,7 @@ import {IonBadge, IonCard, IonCardContent, IonIcon, IonRippleEffect} from '@ioni
 import {WorkerService} from '../../services/worker.service';
 import {WorkerMinimalProfile} from "../../models/user.model";
 import {addIcons} from "ionicons";
-import {personCircleOutline, shieldCheckmarkOutline} from "ionicons/icons";
+import {personCircleOutline, shieldCheckmark} from "ionicons/icons";
 import {LanguageManagerService} from "../../services/language-manager.service";
 
 @Component({
@@ -28,7 +28,7 @@ export class WorkerCardComponent implements OnDestroy {
     protected languageService : LanguageManagerService,
   ) {
     addIcons({
-      personCircleOutline, shieldCheckmarkOutline
+      personCircleOutline, shieldCheckmark
     });
   }
 
