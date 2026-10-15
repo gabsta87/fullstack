@@ -13,7 +13,7 @@ import {addIcons} from "ionicons";
 import {
   addCircleOutline, camera, cloudUploadOutline, move, star, starOutline, trashOutline,timeOutline, cameraOutline,
   warningOutline, shieldCheckmarkOutline, shieldOutline, chevronDownCircleOutline, closeCircleOutline, eyeOffOutline,
-  eyeOutline
+  eyeOutline, mailOutline
 } from 'ionicons/icons';
 import {AccountSettingsComponent} from "../account-settings/account-settings.component";
 import {GeographicZone} from "../../models/filter.model";
@@ -59,7 +59,7 @@ export class ProfileManagementComponent implements OnInit {
     addIcons({
       addCircleOutline, trashOutline, move, camera, warningOutline, star, starOutline, cloudUploadOutline,
       shieldCheckmarkOutline, shieldOutline, chevronDownCircleOutline, closeCircleOutline, timeOutline,cameraOutline,
-      eyeOutline, eyeOffOutline
+      eyeOutline, eyeOffOutline, mailOutline
     });
   }
 
@@ -192,14 +192,14 @@ export class ProfileManagementComponent implements OnInit {
    * - Orange (7 à 8 mois) : Très proche de l'expiration
    * - Rouge (> 8 mois ou non certifié) : Expiré / Invalide
    */
-  getCertificationBadge(me: WorkerPrivateProfile): {
-      color: string;
-      label: string;          // Tooltip complet
-      buttonText: string;     // Texte court affiché sur le bouton
-      icon: string;
+  getCertificationBadge(me: WorkerPrivateProfile, t: any): {
+    color: string;
+    label: string;
+    buttonText: string;
+    icon: string;
     isCert: boolean;
     hasNotification: boolean;
-    isDisabled: boolean;    // Pour bloquer le clic si besoin
+    isDisabled: boolean;
   } {
     const status = me.certificationRequest?.status;
 
@@ -207,8 +207,8 @@ export class ProfileManagementComponent implements OnInit {
     if (status === CertificationStatus.PENDING_PHOTO || !status || status === CertificationStatus.NOT_CERTIFIED) {
       return {
         color: 'tertiary',
-        label: 'Cliquez pour demander la certification de votre profil',
-        buttonText: 'Demander certification',
+        label: t.certification?.title || 'Certification du profil',
+        buttonText: t.certification?.title || 'Certifier',
         icon: 'camera-outline',
         isCert: false,
         hasNotification: false,
@@ -219,11 +219,9 @@ export class ProfileManagementComponent implements OnInit {
     // 2. Correction requise par l'admin OU Rejeté
     if (status === CertificationStatus.NEEDS_REVISION || status === CertificationStatus.REJECTED) {
       return {
-        color: 'danger', // On met en rouge pour bien signifier qu'une action corrective est requise
-        label: me.adminCertificationFeedback
-          ? `Refusé / Correction demandée : ${me.adminCertificationFeedback}. Cliquez pour modifier.`
-          : 'Votre photo a été refusée ou nécessite une correction. Cliquez pour refaire une demande.',
-        buttonText: 'Refaire certification',
+        color: 'danger',
+        label: me.adminCertificationFeedback ? `Refusé : ${me.adminCertificationFeedback}` : 'Correction requise.',
+        buttonText: t.certification?.title || 'Certifier',
         icon: 'alert-circle-outline',
         isCert: false,
         hasNotification: true,
@@ -235,16 +233,16 @@ export class ProfileManagementComponent implements OnInit {
     if (status === CertificationStatus.PENDING_APPROVAL) {
       return {
         color: 'medium',
-        label: 'Demande en cours d\'examen par l\'administration',
-        buttonText: 'En attente',
+        label: 'En attente de validation',
+        buttonText: t.admin?.certif_tab?.badge_pending || 'En attente',
         icon: 'time-outline',
         isCert: false,
         hasNotification: false,
-        isDisabled: true // 👈 Désactive le bouton
+        isDisabled: true
       };
     }
 
-    // 4. Si certifié (avec gestion des délais d'expiration si tu veux garder tes couleurs)
+    // 4. Si certifié
     if (status === CertificationStatus.CERTIFIED) {
       const certifiedDate = new Date(me.certifiedAt!).getTime();
       const currentTime = new Date().getTime();
@@ -252,19 +250,18 @@ export class ProfileManagementComponent implements OnInit {
       const diffInMonths = diffInDays / 30.44;
 
       if (diffInMonths > 8) {
-        return { color: 'danger', label: 'Certification expirée. Renouveler.', buttonText: 'Renouveler', icon: 'camera-outline', isCert: false, hasNotification: false, isDisabled: false };
+        return { color: 'danger', label: 'Certification expirée', buttonText: t.certification?.title || 'Certifier', icon: 'camera-outline', isCert: false, hasNotification: false, isDisabled: false };
       } else if (diffInMonths >= 6) {
-        return { color: 'warning', label: 'Votre certification expire bientôt.', buttonText: 'Certifié (Expire)', icon: 'shield-outline', isCert: true, hasNotification: false, isDisabled: false };
+        return { color: 'warning', label: 'Expire bientôt', buttonText: 'Certifié (Expire)', icon: 'shield-outline', isCert: true, hasNotification: false, isDisabled: false };
       } else {
-        return { color: 'success', label: 'Profil certifié et à jour', buttonText: 'Certifié', icon: 'shield-checkmark-outline', isCert: true, hasNotification: false, isDisabled: true };
+        return { color: 'success', label: 'Profil certifié', buttonText: 'Certifié', icon: 'shield-checkmark-outline', isCert: true, hasNotification: false, isDisabled: true };
       }
     }
 
-    // Fallback par défaut
     return {
       color: 'danger',
-      label: 'Demander la certification',
-      buttonText: 'Certifier',
+      label: 'Certification',
+      buttonText: t.certification?.title || 'Certifier',
       icon: 'shield-outline',
       isCert: false,
       hasNotification: false,

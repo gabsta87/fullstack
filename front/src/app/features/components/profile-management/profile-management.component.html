@@ -58,18 +58,24 @@
               <!-- Pastille de Certification Dynamique -->
               <ion-button
                 *ngIf="currentUser$ | async as me"
-                [color]="getCertificationBadge(me).color"
-                [disabled]="getCertificationBadge(me).isDisabled"
+                [color]="getCertificationBadge(me, t).color"
+                [disabled]="getCertificationBadge(me, t).isDisabled"
                 class="status-badge"
                 size="small"
-                [title]="getCertificationBadge(me).label"
+                [title]="getCertificationBadge(me, t).label"
                 (click)="openCertificationModal(me)">
 
-                <ion-icon [name]="getCertificationBadge(me).icon" slot="start"></ion-icon>
+                <ion-icon [name]="getCertificationBadge(me, t).icon" slot="start"></ion-icon>
 
-                {{ getCertificationBadge(me).buttonText }}
+                {{ getCertificationBadge(me, t).buttonText }}
 
-                <ion-badge *ngIf="getCertificationBadge(me).hasNotification" color="danger" class="notification-dot"></ion-badge>
+                <ion-badge *ngIf="getCertificationBadge(me, t).hasNotification" color="danger" class="notification-dot"></ion-badge>
+              </ion-button>
+
+              <!-- Bouton Contact Admin -->
+              <ion-button size="small" class="status-badge" color="tertiary" [href]="'mailto:support@venus-app.com'">
+                {{ t.admin?.tabs?.admins ? 'Contact Admin' : 'Contact us' }}
+                <ion-icon name="mail-outline" slot="start"></ion-icon>
               </ion-button>
             </div>
 

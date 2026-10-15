@@ -5,9 +5,8 @@ import languageData from '../../../assets/lang/data.json';
 @Injectable({
   providedIn: 'root'
 })
-export class LanguageManagerService { // 👈 Export nommé standard pour Angular
+export class LanguageManagerService {
 
-  // Contient l'objet de mots traduits pour la langue active
   public currentLanguage$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   public currentLanguageFlag = 'assets/flags/fr.png';
   public currentCode = 'FR';
