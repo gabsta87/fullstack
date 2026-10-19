@@ -299,7 +299,7 @@
               <ion-col size="12">
                 <div class="services-container" [class.invalid-container]="isFieldMissing('services', me)">
                   <ion-grid class="services-grid">
-                    <ion-label>{{ t.profile_management?.form?.services_title }}</ion-label>
+                    <ion-label class="section-box-title">{{ t.profile_management?.form?.services_title }}</ion-label>
                     <ion-row>
                       <ion-col *ngFor="let service of allServices">
                         <ion-checkbox

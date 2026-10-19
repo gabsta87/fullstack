@@ -93,19 +93,19 @@
   }
 }
 
+.section-box-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-dark, #332d29);
+  margin-bottom: 12px;
+  display: block;
+}
+
 .languages-container {
   border: 1px solid var(--border-color, #e0e0e0);
   border-radius: 12px;
   padding: 16px;
   background: var(--surface-card, #ffffff);
-
-  .section-box-title {
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: var(--text-dark, #332d29);
-    margin-bottom: 12px;
-    display: block;
-  }
 
   .selected-languages-chips {
     display: flex;
@@ -115,6 +115,8 @@
     .language-chip {
       height: 36px;
       padding: 0 10px;
+      color:var(--text-dark, #332d29);
+      background: var(--background-light, #f9f9f9);
 
       .chip-flag {
         width: 18px;
@@ -142,6 +144,7 @@
   .input-compact {
     --padding-start: 10px;
     --min-height: 42px;
+    background: var(--background-light, #f9f9f9);
   }
 }
 
