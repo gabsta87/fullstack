@@ -11,6 +11,11 @@ export interface LoginResponse {
   user: BaseUser;
 }
 
+export interface SpokenLanguage {
+  language: string; // Correspond à l'enum Language (ex: 'FR', 'EN', etc.)
+  level: number;    // Entre 1 et 4
+}
+
 export const CertificationStatus = {
   NOT_CERTIFIED: 'NOT_CERTIFIED',
   PENDING_PHOTO: 'PENDING_PHOTO',

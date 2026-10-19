@@ -226,6 +226,75 @@
             </ion-row>
 
             <ion-row>
+              <!-- Langues Parlées -->
+              <ion-col size="12">
+                <div class="languages-container">
+                  <ion-grid class="ion-no-padding">
+
+                    <ion-label class="section-box-title">
+                      {{ t.profile_management?.form?.languages_title || 'Langues maîtrisées' }}
+                    </ion-label>
+
+                    <!-- Liste des langues déjà sélectionnées (Chips) -->
+                    <div class="selected-languages-chips ion-margin-bottom" *ngIf="profileLanguages && profileLanguages.length > 0">
+                      <ion-chip *ngFor="let item of profileLanguages; let i = index" color="primary" class="language-chip">
+                        <img [src]="languageService.getLanguageMeta(item.language).flag" [alt]="item.language" class="chip-flag" />
+                        <ion-label>
+                          <strong>{{ languageService.getLanguageMeta(item.language).label }}</strong>
+                          <span class="chip-level">• {{ languageService.getMasteryLabel(item.level, t) }}</span>
+                        </ion-label>
+                        <ion-icon name="close-circle" (click)="removeLanguage(i)"></ion-icon>
+                      </ion-chip>
+                    </div>
+
+                    <p *ngIf="!profileLanguages || profileLanguages.length === 0" class="empty-languages-hint">
+                      {{ t.profile_management?.form?.no_languages || 'Aucune langue ajoutée pour le moment.' }}
+                    </p>
+
+                    <!-- Formulaire rapide pour ajouter une langue -->
+                    <ion-row class="add-language-row ion-align-items-center">
+                      <ion-col size="12" size-sm="5">
+                        <ion-item lines="none" class="venus-input input-compact">
+                          <ion-select [(ngModel)]="newLangCode"
+                                      [placeholder]="t.profile_management?.form?.select_language || 'Choisir une langue'"
+                                      interface="popover">
+                            <ion-select-option *ngFor="let lang of languageService.availableLanguages"
+                                               [value]="lang.code"
+                                               [disabled]="isLanguageAlreadyAdded(lang.code)">
+                              {{ lang.label }}
+                            </ion-select-option>
+                          </ion-select>
+                        </ion-item>
+                      </ion-col>
+
+                      <ion-col size="12" size-sm="5">
+                        <ion-item lines="none" class="venus-input input-compact">
+                          <ion-select [(ngModel)]="newLangLevel"
+                                      [placeholder]="t.profile_management?.form?.select_level || 'Niveau de maîtrise'"
+                                      interface="popover">
+                            <ion-select-option *ngFor="let lvl of languageService.MASTERY_LEVELS" [value]="lvl.value">
+                              {{ languageService.getMasteryLabel(lvl.value, t) }}
+                            </ion-select-option>
+                          </ion-select>
+                        </ion-item>
+                      </ion-col>
+
+                      <ion-col size="12" size-sm="2" class="ion-text-end">
+                        <ion-button expand="block"
+                                    color="primary"
+                                    [disabled]="!newLangCode || !newLangLevel"
+                                    (click)="addLanguage()">
+                          <ion-icon name="add-outline" slot="icon-only"></ion-icon>
+                        </ion-button>
+                      </ion-col>
+                    </ion-row>
+
+                  </ion-grid>
+                </div>
+              </ion-col>
+            </ion-row>
+
+            <ion-row>
               <!-- Services -->
               <ion-col size="12">
                 <div class="services-container" [class.invalid-container]="isFieldMissing('services', me)">
@@ -243,8 +312,8 @@
                   </ion-grid>
                 </div>
               </ion-col>
-
             </ion-row>
+
           </ion-grid>
         </div>
 

@@ -1,6 +1,6 @@
 import { PhotoItem, Comment, VideoItem } from "./items.model";
 import { GeographicZone, GeographicZoneWithParent } from "./filter.model";
-import { CertificationRequest } from "./common.model";
+import {CertificationRequest, SpokenLanguage} from "./common.model";
 
 export type UserRole = 'WORKER' | 'CLIENT' | 'ADMIN' | 'SUPER_ADMIN';
 export type LanguageCode = 'EN' | 'FR' | 'IT' | 'DE' | 'ES';
@@ -43,6 +43,7 @@ export interface WorkerPublicFullProfile extends WorkerMinimalProfile {
   videos: VideoItem[];
   languages: string[];
   comments : Comment[];
+  spokenLanguages: SpokenLanguage[];
 }
 
 // Correspond à WorkerFullProfileDTO (Profil privé du worker connecté)
@@ -53,6 +54,7 @@ export interface WorkerPrivateProfile extends WorkerPublicFullProfile {
   lastRefreshed?: string;
   expirationDate?: string;
   hidden : boolean;
+  spokenLanguages: SpokenLanguage[];
 }
 
 // ==========================================

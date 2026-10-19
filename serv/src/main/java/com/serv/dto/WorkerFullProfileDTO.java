@@ -32,7 +32,8 @@ public record WorkerFullProfileDTO(
         String        verificationCode,
         Boolean       isCertified,
         CertificationRequestDTO certificationRequest,
-        String        lastRefreshed
+        String        lastRefreshed,
+        List<SpokenLanguageDTO> spokenLanguages
 ) {
     public static WorkerFullProfileDTO from(Worker w) {
         String mainThumb = w.getMainPhoto() != null
@@ -67,7 +68,8 @@ public record WorkerFullProfileDTO(
                 w.getVerificationCode(),
                 w.isCertified(),
                 w.getLastCertificationRequest() != null ?CertificationRequestDTO.from(w.getLastCertificationRequest()) : null,
-                w.getLastRefreshed() != null ? w.getLastRefreshed().toString() : null
+                w.getLastRefreshed() != null ? w.getLastRefreshed().toString() : null,
+                w.getSpokenLanguages().stream().map(SpokenLanguageDTO::from).toList()
         );
     }
 }

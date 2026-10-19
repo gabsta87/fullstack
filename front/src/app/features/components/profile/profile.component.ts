@@ -3,6 +3,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {
+  IonBadge,
   IonButton, IonButtons, IonChip, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonModal, IonToolbar,
 } from '@ionic/angular/standalone';
 import {addIcons} from 'ionicons';
@@ -27,7 +28,7 @@ import {LanguageManagerService} from "../../services/language-manager.service";
   standalone: true,
   imports: [
     CommonModule, FormsModule, IonContent, IonHeader, IonToolbar, IonButtons,
-    IonButton, IonIcon, IonList, IonItem, IonLabel, IonChip, HeaderComponent, IonModal,
+    IonButton, IonIcon, IonList, IonItem, IonLabel, IonChip, HeaderComponent, IonModal, IonBadge,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

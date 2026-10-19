@@ -130,4 +130,16 @@ export class WorkerAccountService {
     this.accountSubject.next(updatedAccount);
     return updatedAccount;
   }
+
+  async updateSpokenLanguages(profileLanguages: { language: string; level: number }[]) {
+    console.log("updateSpokenLanguages");
+    console.log(profileLanguages);
+
+    const payload = { languages: profileLanguages };
+    const updatedAccount: WorkerPrivateProfile = await firstValueFrom(
+      this.http.post<WorkerPrivateProfile>(`${this.base}/spoken-languages`, payload)
+    );
+    this.accountSubject.next(updatedAccount);
+    return updatedAccount;
+  }
 }

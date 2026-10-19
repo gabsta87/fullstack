@@ -93,6 +93,58 @@
   }
 }
 
+.languages-container {
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--surface-card, #ffffff);
+
+  .section-box-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-dark, #332d29);
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .selected-languages-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    .language-chip {
+      height: 36px;
+      padding: 0 10px;
+
+      .chip-flag {
+        width: 18px;
+        height: 14px;
+        object-fit: cover;
+        border-radius: 2px;
+        margin-right: 6px;
+      }
+
+      .chip-level {
+        font-weight: normal;
+        opacity: 0.85;
+        font-size: 0.8rem;
+      }
+    }
+  }
+
+  .empty-languages-hint {
+    font-size: 0.85rem;
+    color: var(--text-muted, #888);
+    font-style: italic;
+    margin-bottom: 12px;
+  }
+
+  .input-compact {
+    --padding-start: 10px;
+    --min-height: 42px;
+  }
+}
+
 // ── CHAMPS DE FORMULAIRE UNIFORMES ─────────────────────────
 .venus-input, .description-container {
   border-radius: var(--radius-sm);

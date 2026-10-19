@@ -13,6 +13,13 @@ export class LanguageManagerService {
 
   private readonly STORAGE_KEY = 'site_lang';
 
+  public MASTERY_LEVELS = [
+    { value: 1, labelKey: 'beginner', defaultLabel: 'Beginner' },
+    { value: 2, labelKey: 'intermediate', defaultLabel: 'Intermediate' },
+    { value: 3, labelKey: 'good', defaultLabel: 'Good' },
+    { value: 4, labelKey: 'native', defaultLabel: 'Native' }
+  ];
+
   // Liste des langues supportées
   public availableLanguages = [
     { code: 'FR', label: 'Français', flag: '/assets/flags/france.svg' },
@@ -49,5 +56,22 @@ export class LanguageManagerService {
 
     // Sauvegarde dans le cache
     localStorage.setItem(this.STORAGE_KEY, lang.code);
+  }
+
+  getLanguageMeta(code: string) {
+    return this.availableLanguages.find(l => l.code === code) || {
+      code,
+      label: code,
+      flag: '/assets/flags/france.svg'
+    };
+  }
+
+  getMasteryLabel(level: number, t?: any): string {
+    const item = this.MASTERY_LEVELS.find(m => m.value === level);
+    if (!item) return '';
+    if (t?.common?.mastery_levels) {
+      return t.common.mastery_levels[item.labelKey] || item.defaultLabel;
+    }
+    return item.defaultLabel;
   }
 }

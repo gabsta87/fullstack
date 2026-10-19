@@ -13,7 +13,7 @@ import {addIcons} from "ionicons";
 import {
   addCircleOutline, camera, cloudUploadOutline, move, star, starOutline, trashOutline,timeOutline, cameraOutline,
   warningOutline, shieldCheckmarkOutline, shieldOutline, chevronDownCircleOutline, closeCircleOutline, eyeOffOutline,
-  eyeOutline, mailOutline
+  eyeOutline, mailOutline, closeCircle, addOutline
 } from 'ionicons/icons';
 import {AccountSettingsComponent} from "../account-settings/account-settings.component";
 import {GeographicZone} from "../../models/filter.model";
@@ -52,6 +52,10 @@ export class ProfileManagementComponent implements OnInit {
   draggedIndex: number | null = null;
   isZoneActive: boolean = false;
 
+  profileLanguages: { language: string; level: number }[] = [];
+  newLangCode: string | null = null;
+  newLangLevel: number | null = null;
+
   constructor(private accountService: WorkerAccountService,
               private route : ActivatedRoute,
               private modalController: ModalController,
@@ -59,7 +63,7 @@ export class ProfileManagementComponent implements OnInit {
     addIcons({
       addCircleOutline, trashOutline, move, camera, warningOutline, star, starOutline, cloudUploadOutline,
       shieldCheckmarkOutline, shieldOutline, chevronDownCircleOutline, closeCircleOutline, timeOutline,cameraOutline,
-      eyeOutline, eyeOffOutline, mailOutline
+      eyeOutline, eyeOffOutline, mailOutline, closeCircle, addOutline
     });
   }
 
@@ -91,6 +95,10 @@ export class ProfileManagementComponent implements OnInit {
               : `${environment.apiBase}${photo.mainThumbUrl}`
           };
         });
+
+        if (user && user.spokenLanguages) {
+          this.profileLanguages = [...user.spokenLanguages];
+        }
 
         if (this.childZoneId) {
           const parentZone = this.allLocations.find(parent =>
@@ -311,6 +319,43 @@ export class ProfileManagementComponent implements OnInit {
       } catch (err) {
         console.error("Erreur lors de l'envoi de la photo de certification", err);
       }
+    }
+  }
+
+  // Languages
+
+  isLanguageAlreadyAdded(code: string): boolean {
+    return this.profileLanguages.some(l => l.language === code);
+  }
+
+  async addLanguage() {
+    if (!this.newLangCode || !this.newLangLevel) return;
+
+    const newItem = {
+      language: this.newLangCode,
+      level: this.newLangLevel
+    };
+
+    this.profileLanguages.push(newItem);
+    this.newLangCode = null;
+    this.newLangLevel = null;
+
+    await this.saveLanguages();
+  }
+
+// Suppression d'une langue
+  async removeLanguage(index: number) {
+    this.profileLanguages.splice(index, 1);
+    await this.saveLanguages();
+  }
+
+// Appel Backend
+  private async saveLanguages() {
+    try {
+      // Appel du service HTTP correspondant à ta route POST /spoken-languages
+      await this.accountService.updateSpokenLanguages(this.profileLanguages);
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde des langues', error);
     }
   }
 
