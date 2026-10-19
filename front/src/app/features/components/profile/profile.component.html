@@ -42,9 +42,9 @@
             </ion-button>
           </div>
 
-          <div class="profile-card ion-margin-top" *ngIf="worker.spokenLanguages && worker.spokenLanguages.length > 0">
+          <div class="profile-card" *ngIf="worker.spokenLanguages && worker.spokenLanguages.length > 0">
 
-            <ion-list lines="full" class="languages-spoken-list">
+            <ion-list lines="none" class="languages-spoken-list">
               <ion-item *ngFor="let l of worker.spokenLanguages" class="language-item">
                 <!-- Drapeau -->
                 <img slot="start"
