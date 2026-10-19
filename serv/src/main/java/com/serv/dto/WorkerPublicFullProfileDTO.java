@@ -4,6 +4,7 @@ import com.serv.database.entities.Service;
 import com.serv.database.entities.Worker;
 import com.serv.database.entities.WorkerLanguage;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -57,7 +58,10 @@ public record WorkerPublicFullProfileDTO(
                 w.getSpokenLanguages().stream().map(WorkerLanguage::toString).toList(),
                 w.getCertifiedAt() != null ? w.getCertifiedAt().toString() : null,
                 w.getComments() != null ? w.getComments().stream().map(CommentDTO::from).toList() : List.of(),
-                w.getSpokenLanguages().stream().map(SpokenLanguageDTO::from).toList()
+                w.getSpokenLanguages().stream()
+                        .map(SpokenLanguageDTO::from)
+                        .sorted(Comparator.comparingInt(SpokenLanguageDTO::level).reversed())
+                        .toList()
         );
     }
 }

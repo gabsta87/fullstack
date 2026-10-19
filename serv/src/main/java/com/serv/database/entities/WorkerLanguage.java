@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class WorkerLanguage {
 
+    @EqualsAndHashCode.Include
     @Enumerated(EnumType.STRING)
     @Column(name = "language", nullable = false)
     private Language language;

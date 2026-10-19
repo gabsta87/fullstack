@@ -405,22 +405,15 @@ public class AccountControllerWorker {
             @RequestBody @Valid UpdateWorkerLanguage request,
             Worker workerArg) {
 
-        System.out.println("updateSpokenLanguages :" + request.languages() + " for worker " + workerArg.getUsername());
-
-        // 1. On recharge le worker par son ID pour l'attacher à la session Hibernate courante
         Worker managedWorker = workerRepository.findById(workerArg.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker introuvable."));
 
-        // 2. Transforme les DTOs en Set d'objets Embeddable
         Set<WorkerLanguage> newLanguages = request.languages().stream()
                 .map(dto -> new WorkerLanguage(dto.language(), dto.level()))
                 .collect(Collectors.toSet());
 
-        // 3. Modifie la collection sur l'entité gérée (managed)
-        managedWorker.getSpokenLanguages().clear();
-        managedWorker.getSpokenLanguages().addAll(newLanguages);
+        managedWorker.setSpokenLanguages(newLanguages);
 
-        // 4. Sauvegarde
         Worker savedWorker = workerRepository.save(managedWorker);
         return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
     }

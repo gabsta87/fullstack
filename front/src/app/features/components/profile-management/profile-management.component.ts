@@ -351,12 +351,7 @@ export class ProfileManagementComponent implements OnInit {
 
 // Appel Backend
   private async saveLanguages() {
-    try {
-      // Appel du service HTTP correspondant à ta route POST /spoken-languages
-      await this.accountService.updateSpokenLanguages(this.profileLanguages);
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde des langues', error);
-    }
+    await this.accountService.updateSpokenLanguages(this.profileLanguages);
   }
 
   // ── Value modification ─────────────────────────────────────────────────────────
