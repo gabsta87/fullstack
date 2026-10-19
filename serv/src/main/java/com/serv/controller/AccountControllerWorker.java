@@ -4,9 +4,13 @@ import com.serv.common.*;
 import com.serv.database.entities.*;
 import com.serv.database.repositories.*;
 import com.serv.dto.WorkerFullProfileDTO;
+import com.serv.requests.AccountData;
+import com.serv.requests.UpdateWorkerProfile;
+import com.serv.requests.UpdateWorkerLanguage;
 import com.serv.service.MailService;
 import com.serv.service.MediaStorageService;
 import com.serv.service.SseStreamService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +53,7 @@ public class AccountControllerWorker {
     }
 
     @PatchMapping("/data")
-    public ResponseEntity<?> updateWorkerSettings(@RequestBody Requests.AccountDataRequest req,
+    public ResponseEntity<?> updateWorkerSettings(@RequestBody AccountData req,
                                                   Worker worker) {
 
         if (req.username() != null) worker.setUsername(req.username());
@@ -152,7 +156,7 @@ public class AccountControllerWorker {
 
     /** PATCH /account/profile */
     @PatchMapping("/profile")
-    public ResponseEntity<?> updateProfile(@RequestBody Requests.WorkerProfileUpdateRequest req,
+    public ResponseEntity<?> updateProfile(@RequestBody UpdateWorkerProfile req,
                                            Worker workerArg) {
         Worker worker = getWorkerWithPhotos(workerArg);
         System.out.println("updateProfile :" + req.username() + " with value "+req);
@@ -391,6 +395,27 @@ public class AccountControllerWorker {
         WorkerFullProfileDTO updatedDto = WorkerFullProfileDTO.from(savedWorker);
 
         return ResponseEntity.ok(updatedDto);
+    }
+
+    // Spoken languages
+
+    @Transactional
+    @PostMapping("/spoken-languages")
+    public ResponseEntity<WorkerFullProfileDTO> updateSpokenLanguages(
+            @RequestBody @Valid UpdateWorkerLanguage request,
+            Worker workerArg) {
+
+        // Transforme les DTOs en Set d'objets Embeddable
+        Set<WorkerLanguage> newLanguages = request.languages().stream()
+                .map(dto -> new WorkerLanguage(dto.language(), dto.level()))
+                .collect(Collectors.toSet());
+
+        // Remplace proprement le contenu de la collection sans rompre la référence JPA
+        workerArg.getSpokenLanguages().clear();
+        workerArg.getSpokenLanguages().addAll(newLanguages);
+
+        Worker savedWorker = workerRepository.save(workerArg);
+        return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
     }
 
     // Utility method

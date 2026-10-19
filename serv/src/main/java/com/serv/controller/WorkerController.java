@@ -1,9 +1,9 @@
 package com.serv.controller;
 
-import com.serv.common.Requests;
 import com.serv.database.repositories.WorkerRepository;
 import com.serv.dto.WorkerMinimalProfileDTO;
 import com.serv.dto.WorkerPublicFullProfileDTO;
+import com.serv.requests.WorkersFilters;
 import com.serv.service.WorkerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +32,7 @@ public class WorkerController {
     private final WorkerService    galleryService;
 
     @GetMapping
-    public ResponseEntity<List<WorkerMinimalProfileDTO>> getGallery(Requests.WorkerSearchRequest req) {
+    public ResponseEntity<List<WorkerMinimalProfileDTO>> getGallery(WorkersFilters req) {
         Map<String, Object> allFilters = new HashMap<>();
 
         System.out.println("Request received with filters : " + req);

@@ -1,7 +1,6 @@
 package com.serv.controller;
 
 import com.serv.common.ReportStatus;
-import com.serv.common.Requests;
 import com.serv.database.entities.Client;
 import com.serv.database.entities.Email;
 import com.serv.database.entities.Report;
@@ -12,6 +11,7 @@ import com.serv.database.repositories.WorkerRepository;
 import com.serv.dto.ClientDTO;
 import com.serv.dto.GalleryFiltersDTO;
 import com.serv.dto.ReportDTO;
+import com.serv.requests.AccountData;
 import com.serv.service.WorkerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -45,7 +45,7 @@ public class AccountControllerClient {
 
     @PatchMapping("/data")
     @Transactional
-    public ResponseEntity<?> updateClientSettings(@RequestBody Requests.AccountDataRequest req, Client clientArg) {
+    public ResponseEntity<?> updateClientSettings(@RequestBody AccountData req, Client clientArg) {
         Client client = clientRepository.findById(clientArg.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client introuvable"));
 
@@ -107,7 +107,7 @@ public class AccountControllerClient {
 
     @PostMapping("/report-account")
     @Transactional
-    public ResponseEntity<?> reportWorker(@RequestBody Requests.ReportRequest body, Client clientArg){
+    public ResponseEntity<?> reportWorker(@RequestBody com.serv.requests.Report body, Client clientArg){
         System.out.println("Report request received");
         Client c = clientRepository.findById(clientArg.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client introuvable"));

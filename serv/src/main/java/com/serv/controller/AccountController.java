@@ -1,10 +1,10 @@
 package com.serv.controller;
 
-import com.serv.common.Requests;
 import com.serv.configuration.JwtProvider;
 import com.serv.database.entities.*;
 import com.serv.database.repositories.UserRepository;
 import com.serv.dto.*;
+import com.serv.requests.AccountData;
 import com.serv.service.SseStreamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -51,7 +51,7 @@ public class AccountController {
      */
     @PatchMapping("/data")
     @Transactional
-    public ResponseEntity<?> updateSettings(@RequestBody Requests.AccountDataRequest req,
+    public ResponseEntity<?> updateSettings(@RequestBody AccountData req,
                                             VenusUser user) {
         // 1. Mise à jour des champs communs
         if (req.username() != null) user.setUsername(req.username());

@@ -1,6 +1,5 @@
 package com.serv.controller;
 
-import com.serv.common.Requests;
 import com.serv.configuration.JwtProvider;
 import com.serv.database.entities.*;
 import com.serv.database.repositories.ClientRepository;
@@ -8,6 +7,9 @@ import com.serv.database.repositories.PasswordResetTokenRepository;
 import com.serv.database.repositories.UserRepository;
 import com.serv.database.repositories.WorkerRepository;
 import com.serv.dto.VenusUserDTO;
+import com.serv.requests.Login;
+import com.serv.requests.LoginResponse;
+import com.serv.requests.Register;
 import com.serv.service.AuthService;
 import com.serv.service.PasswordResetService;
 import jakarta.servlet.http.HttpSession;
@@ -39,7 +41,7 @@ public class AuthController {
     // ── Login / Logout ────────────────────────────────────────────────────────
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Requests.LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@RequestBody Login loginRequest) {
         VenusUser user = authService.verifyCredentials(loginRequest.email(), loginRequest.password());
 
         if (user == null) {
@@ -52,7 +54,7 @@ public class AuthController {
 
         String jwtToken = jwtProvider.generateToken(user);
 
-        return ResponseEntity.ok(new Requests.LoginResponse(jwtToken, VenusUserDTO.from(user)));
+        return ResponseEntity.ok(new LoginResponse(jwtToken, VenusUserDTO.from(user)));
     }
 
     @PostMapping("/logout")
@@ -83,7 +85,7 @@ public class AuthController {
     // ── Registration ──────────────────────────────────────────────────────────
 
     @PostMapping("/register/client")
-    public ResponseEntity<String> registerClient(@RequestBody Requests.RegisterRequest req) {
+    public ResponseEntity<String> registerClient(@RequestBody Register req) {
         if(! Email.isValid(req.email()))
             return ResponseEntity.badRequest().body("Invalid email format.");
 
@@ -101,7 +103,7 @@ public class AuthController {
     }
 
     @PostMapping("/register/worker")
-    public ResponseEntity<String> registerWorker(@RequestBody Requests.RegisterRequest req) {
+    public ResponseEntity<String> registerWorker(@RequestBody Register req) {
         if(! Email.isValid(req.email()))
             return ResponseEntity.badRequest().body("Invalid email format.");
 

@@ -2,10 +2,10 @@ package com.serv.controller;
 
 import com.serv.common.CertificationStatus;
 import com.serv.common.ReportStatus;
-import com.serv.common.Requests;
 import com.serv.database.entities.*;
 import com.serv.database.repositories.*;
 import com.serv.dto.*;
+import com.serv.requests.admin.*;
 import com.serv.service.PasswordResetService;
 import com.serv.service.SseStreamService;
 import com.serv.service.UserCleanupService;
@@ -102,7 +102,7 @@ public class AdminController {
 
     @PostMapping("/profiles/{id}/status")
     @Transactional
-    public ResponseEntity<?> updateWorkerStatus(@PathVariable UUID id, @RequestBody Requests.AdminUpdateStatusRequest req, Admin admin) {
+    public ResponseEntity<?> updateWorkerStatus(@PathVariable UUID id, @RequestBody UpdateWorkerStatus req, Admin admin) {
         System.out.println("updateWorkerStatus: " + id + " " + req.locked() + " " + req.banned());
         VenusUser targetUser = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found"));
@@ -126,7 +126,7 @@ public class AdminController {
 
     @PostMapping("/profiles/update-days")
     @Transactional
-    public ResponseEntity<?> updateDays(@RequestBody Requests.AdminUpdateDaysRequest req, Admin admin) {
+    public ResponseEntity<?> updateDays(@RequestBody UpdateWorkerDays req, Admin admin) {
         Worker targetWorker = workerRepository.findById(UUID.fromString(req.workerId()))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found"));
 
@@ -285,7 +285,7 @@ public class AdminController {
      */
     @PostMapping("/service")
     @Transactional
-    public ResponseEntity<?> saveOrUpdateService(@RequestBody Requests.ServiceRequest service, Admin admin) {
+    public ResponseEntity<?> saveOrUpdateService(@RequestBody UpdateService service, Admin admin) {
 
         boolean isUpdate = service.id() != null;
 
@@ -355,7 +355,7 @@ public class AdminController {
 
     @PostMapping("/legal")
     @Transactional
-    public ResponseEntity<?> updateLegalText(@RequestBody Requests.LegalTextUpdateRequest req, Admin admin) {
+    public ResponseEntity<?> updateLegalText(@RequestBody UpdateLegalText req, Admin admin) {
         LegalText legal = new LegalText();
         legal.setName(req.key());
         legal.setContent(req.content());
@@ -427,7 +427,7 @@ public class AdminController {
 
     @PostMapping("/region")
     @Transactional
-    public ResponseEntity<List<GeographicZoneWithParentDTO>> updateRegion(Admin admin, @RequestBody Requests.RegionRequest region){
+    public ResponseEntity<List<GeographicZoneWithParentDTO>> updateRegion(Admin admin, @RequestBody UpdateRegion region){
         GeographicZone savedZone;
         if(region.id() == null){
             // Create new Region
@@ -571,7 +571,7 @@ public class AdminController {
     // ── ADMINS INVITATIONS ────────────────────────────────────
     @PostMapping("/invite")
     @Transactional
-    public ResponseEntity<?> inviteAdmin(@RequestBody Requests.AdminInviteRequest req, Admin admin) {
+    public ResponseEntity<?> inviteAdmin(@RequestBody AdminInvitation req, Admin admin) {
         Email email;
 
         if (req.email() == null || req.email().isBlank()) {

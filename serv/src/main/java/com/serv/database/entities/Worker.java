@@ -117,10 +117,10 @@ public class Worker extends VenusUser {
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
-            name = "workers_languages", // Nom de ta nouvelle table de jointure
+            name = "workers_languages",
             joinColumns = @JoinColumn(name = "worker_id")
     )
-    private Collection<WorkerLanguage> spokenLanguages = new ArrayList<>();
+    private Set<WorkerLanguage> spokenLanguages = new HashSet<>();
 
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
