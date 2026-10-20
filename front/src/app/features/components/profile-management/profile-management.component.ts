@@ -4,7 +4,7 @@ import {IonicModule} from "@ionic/angular";
 import {FormsModule} from "@angular/forms";
 import {HeaderComponent} from "../header/header.component";
 import {filter, firstValueFrom, map, Observable} from "rxjs";
-import {BODY_TYPE_LABELS, EYE_COLOR_LABELS, HAIR_COLOR_LABELS, PhotoItem, VideoItem} from "../../models/items.model";
+import {BODY_TYPES_LIST, EYES_COLOR_LIST, HAIR_COLOR_LIST, PhotoItem, VideoItem} from "../../models/items.model";
 import {ActivatedRoute} from "@angular/router";
 import {WorkerPrivateProfile, WorkerProfileUpdate} from "../../models/user.model";
 import {WorkerAccountService} from "../../services/worker-account.service";
@@ -558,9 +558,9 @@ export class ProfileManagementComponent implements OnInit {
     );
   }
 
-  protected readonly BODY_TYPE_LABELS = BODY_TYPE_LABELS;
-  protected readonly HAIR_COLOR_LABELS = HAIR_COLOR_LABELS;
-  protected readonly EYE_COLOR_LABELS = EYE_COLOR_LABELS;
   protected readonly environment = environment;
   protected readonly isNaN = isNaN;
+  protected readonly BODY_TYPES_LIST = BODY_TYPES_LIST;
+  protected readonly HAIR_COLOR_LIST = HAIR_COLOR_LIST;
+  protected readonly EYES_COLOR_LIST = EYES_COLOR_LIST;
 }

@@ -74,4 +74,45 @@ export class LanguageManagerService {
     }
     return item.defaultLabel;
   }
+
+  // Récupérer le libellé traduit d'un BodyType
+  getBodyTypeLabel(key: string, t: any): string {
+    if (!key) return '';
+    const map: Record<string, string> = {
+      SLIM: t?.common?.body_types?.slim || 'Slim',
+      ATHLETIC: t?.common?.body_types?.athletic || 'Athletic',
+      AVERAGE: t?.common?.body_types?.average || 'Average',
+      CURVY: t?.common?.body_types?.curvy || 'Curvy',
+      ROUND: t?.common?.body_types?.round || 'Round'
+    };
+    return map[key] || key;
+  }
+
+// Récupérer le libellé traduit d'une couleur d'yeux
+  getEyeColorLabel(key: string, t: any): string {
+    if (!key) return '';
+    const map: Record<string, string> = {
+      BROWN: t?.common?.eye_colors?.brown || 'Brown',
+      HAZEL: t?.common?.eye_colors?.hazel || 'Hazel',
+      GREEN: t?.common?.eye_colors?.green || 'Green',
+      BLUE: t?.common?.eye_colors?.blue || 'Blue',
+      GREY: t?.common?.eye_colors?.grey || 'Grey'
+    };
+    return map[key] || key;
+  }
+
+// Récupérer le libellé traduit d'une couleur de cheveux
+  getHairColorLabel(key: string, t: any): string {
+    if (!key) return '';
+    const map: Record<string, string> = {
+      BLACK: t?.common?.hair_colors?.black || 'Black',
+      BROWN: t?.common?.hair_colors?.brown || 'Brown',
+      FAIR: t?.common?.hair_colors?.fair || 'Fair',
+      GINGER: t?.common?.hair_colors?.ginger || 'Ginger',
+      BLOND: t?.common?.hair_colors?.blond || 'Blond',
+      GREY: t?.common?.hair_colors?.grey || 'Grey',
+      COLORED: t?.common?.hair_colors?.colored || 'Colored'
+    };
+    return map[key] || key;
+  }
 }

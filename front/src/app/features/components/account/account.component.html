@@ -62,7 +62,7 @@
                             [outline]="!selectionStates.bodyType[b]"
                             [color]="selectionStates.bodyType[b] ? 'primary' : 'medium'"
                             (click)="selectionStates.bodyType[b] = !selectionStates.bodyType[b]">
-                    <ion-label>{{ bodyTypeLabels[b] || b }}</ion-label>
+                    <ion-label>{{ languageService.getBodyTypeLabel(b, t) }}</ion-label>
                     <ion-icon name="checkmark-circle" *ngIf="selectionStates.bodyType[b]"></ion-icon>
                   </ion-chip>
                 </div>

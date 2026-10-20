@@ -1,6 +1,7 @@
 <app-header></app-header>
 
-<ion-content class="pm-main-container content-with-bottom-spacing" *ngIf="languageService.currentLanguage$ | async as t">
+<ion-content class="pm-main-container content-with-bottom-spacing"
+             *ngIf="languageService.currentLanguage$ | async as t">
 
   <div class="pm-wrapper" *ngIf="currentUser$ | async as me">
 
@@ -24,7 +25,7 @@
             <ion-avatar>
               <img [src]="me.mainThumbUrl
               ? (me.mainThumbUrl.startsWith('http') ? me.mainThumbUrl : environment.apiBase + me.mainThumbUrl)
-              : 'assets/default-avatar.png'" />
+              : 'assets/default-avatar.png'"/>
             </ion-avatar>
             <ion-fab-button size="small" class="edit-photo-btn">
               <ion-icon name="camera"></ion-icon>
@@ -43,7 +44,8 @@
                           class="status-badge"
                           size="small"
                           (click)="toggleAvailable(!me.available)">
-                <ion-icon [name]="me.available ? 'chevron-down-circle-outline' : 'close-circle-outline'" slot="start"></ion-icon>
+                <ion-icon [name]="me.available ? 'chevron-down-circle-outline' : 'close-circle-outline'"
+                          slot="start"></ion-icon>
                 {{ me.available ? t.common?.online : t.common?.offline }}
               </ion-button>
 
@@ -69,7 +71,8 @@
 
                 {{ getCertificationBadge(me, t).buttonText }}
 
-                <ion-badge *ngIf="getCertificationBadge(me, t).hasNotification" color="danger" class="notification-dot"></ion-badge>
+                <ion-badge *ngIf="getCertificationBadge(me, t).hasNotification" color="danger"
+                           class="notification-dot"></ion-badge>
               </ion-button>
 
               <!-- Bouton Contact Admin -->
@@ -89,15 +92,18 @@
     <ion-toolbar class="segment-toolbar">
       <ion-segment [(ngModel)]="activeTab" mode="md">
         <ion-segment-button value="profile">
-          <ion-label [class.tab-error]="isFieldMissing('username', me) || isFieldMissing('description', me) || isFieldMissing('geographicZoneId', me) || isFieldMissing('phone', me) || isFieldMissing('birthday', me) || isFieldMissing('services', me)">
+          <ion-label
+            [class.tab-error]="isFieldMissing('username', me) || isFieldMissing('description', me) || isFieldMissing('geographicZoneId', me) || isFieldMissing('phone', me) || isFieldMissing('birthday', me) || isFieldMissing('services', me)">
             {{ t.profile_management?.tabs?.profile }}
           </ion-label>
         </ion-segment-button>
         <ion-segment-button value="photos">
-          <ion-label [class.tab-error]="isFieldMissing('photos', me)">{{ t.profile_management?.tabs?.media }}</ion-label>
+          <ion-label [class.tab-error]="isFieldMissing('photos', me)">{{ t.profile_management?.tabs?.media }}
+          </ion-label>
         </ion-segment-button>
         <ion-segment-button value="settings">
-          <ion-label [class.tab-error]="isFieldMissing('email', me)">{{ t.profile_management?.tabs?.account }}</ion-label>
+          <ion-label [class.tab-error]="isFieldMissing('email', me)">{{ t.profile_management?.tabs?.account }}
+          </ion-label>
         </ion-segment-button>
       </ion-segment>
     </ion-toolbar>
@@ -140,7 +146,8 @@
             <ion-row>
               <!-- Description -->
               <ion-col size="12">
-                <ion-item lines="none" class="description-container" [class.invalid-item]="isFieldMissing('description', me)">
+                <ion-item lines="none" class="description-container"
+                          [class.invalid-item]="isFieldMissing('description', me)">
                   <ion-label position="stacked">{{ t.common?.description }} *</ion-label>
                   <ion-textarea [(ngModel)]="profileForm.description"
                                 [debounce]="500"
@@ -199,27 +206,47 @@
             </ion-row>
 
             <ion-row>
-              <!-- Silhouette, Cheveux, Yeux -->
+              <!-- Silhouette -->
               <ion-col size="12" size-md="4">
                 <ion-item lines="none" class="venus-input">
-                  <ion-select [label]="t.profile_management?.form?.body_type" label-placement="stacked" interface="popover" [(ngModel)]="profileForm.bodyType" (ionChange)="updateProfileField('bodyType', $event.detail.value)">
-                    <ion-select-option *ngFor="let type of BODY_TYPE_LABELS | keyvalue" [value]="type.key">{{ type.value }}</ion-select-option>
+                  <ion-select [label]="t.profile_management?.form?.body_type"
+                              label-placement="stacked"
+                              interface="popover"
+                              [(ngModel)]="profileForm.bodyType"
+                              (ionChange)="updateProfileField('bodyType', $event.detail.value)">
+                    <ion-select-option *ngFor="let key of BODY_TYPES_LIST" [value]="key">
+                      {{ languageService.getBodyTypeLabel(key, t) }}
+                    </ion-select-option>
                   </ion-select>
                 </ion-item>
               </ion-col>
 
+              <!-- Cheveux -->
               <ion-col size="12" size-md="4">
                 <ion-item lines="none" class="venus-input">
-                  <ion-select [label]="t.profile_management?.form?.hair_color" label-placement="stacked" interface="popover" [(ngModel)]="profileForm.hairColor" (ionChange)="updateProfileField('hairColor', $event.detail.value)">
-                    <ion-select-option *ngFor="let type of HAIR_COLOR_LABELS | keyvalue" [value]="type.key">{{ type.value }}</ion-select-option>
+                  <ion-select [label]="t.profile_management?.form?.hair_color"
+                              label-placement="stacked"
+                              interface="popover"
+                              [(ngModel)]="profileForm.hairColor"
+                              (ionChange)="updateProfileField('hairColor', $event.detail.value)">
+                    <ion-select-option *ngFor="let key of HAIR_COLOR_LIST" [value]="key">
+                      {{ languageService.getHairColorLabel(key, t) }}
+                    </ion-select-option>
                   </ion-select>
                 </ion-item>
               </ion-col>
 
+              <!-- Yeux -->
               <ion-col size="12" size-md="4">
                 <ion-item lines="none" class="venus-input">
-                  <ion-select [label]="t.profile_management?.form?.eye_color" label-placement="stacked" interface="popover" [(ngModel)]="profileForm.eyeColor" (ionChange)="updateProfileField('eyeColor', $event.detail.value)">
-                    <ion-select-option *ngFor="let type of EYE_COLOR_LABELS | keyvalue" [value]="type.key">{{ type.value }}</ion-select-option>
+                  <ion-select [label]="t.profile_management?.form?.eye_color"
+                              label-placement="stacked"
+                              interface="popover"
+                              [(ngModel)]="profileForm.eyeColor"
+                              (ionChange)="updateProfileField('eyeColor', $event.detail.value)">
+                    <ion-select-option *ngFor="let key of EYES_COLOR_LIST" [value]="key">
+                      {{ languageService.getEyeColorLabel(key, t) }}
+                    </ion-select-option>
                   </ion-select>
                 </ion-item>
               </ion-col>
@@ -232,13 +259,16 @@
                   <ion-grid class="ion-no-padding">
 
                     <ion-label class="section-box-title">
-                      {{ t.profile_management?.form?.languages_title || 'Langues maîtrisées' }}
+                      {{ t.profile_management?.form?.languages_title || 'Known languages' }}
                     </ion-label>
 
                     <!-- Liste des langues déjà sélectionnées (Chips) -->
-                    <div class="selected-languages-chips ion-margin-bottom" *ngIf="profileLanguages && profileLanguages.length > 0">
-                      <ion-chip *ngFor="let item of profileLanguages; let i = index" color="primary" class="language-chip">
-                        <img [src]="languageService.getLanguageMeta(item.language).flag" [alt]="item.language" class="chip-flag" />
+                    <div class="selected-languages-chips ion-margin-bottom"
+                         *ngIf="profileLanguages && profileLanguages.length > 0">
+                      <ion-chip *ngFor="let item of profileLanguages; let i = index" color="primary"
+                                class="language-chip">
+                        <img [src]="languageService.getLanguageMeta(item.language).flag" [alt]="item.language"
+                             class="chip-flag"/>
                         <ion-label>
                           <strong>{{ languageService.getLanguageMeta(item.language).label }}</strong>
                           <span class="chip-level">• {{ languageService.getMasteryLabel(item.level, t) }}</span>
@@ -321,7 +351,9 @@
         <div *ngIf="activeTab === 'photos'" class="fade-in">
 
           <div class="drop-zone-container">
-            <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/jpeg, image/png, image/webp, video/mp4, video/quicktime, video/webm" multiple style="display: none">
+            <input type="file" #fileInput (change)="onFileSelected($event)"
+                   accept="image/jpeg, image/png, image/webp, video/mp4, video/quicktime, video/webm" multiple
+                   style="display: none">
 
             <div class="drop-zone"
                  (dragover)="onZoneDragOver($event)"
@@ -331,11 +363,13 @@
                  (click)="fileInput.click()">
 
               <ion-icon name="cloud-upload-outline" size="large" color="primary"></ion-icon>
-              <p>{{ t.profile_management?.media?.drop_title }} <strong>{{ t.profile_management?.media?.drop_click }}</strong></p>
+              <p>{{ t.profile_management?.media?.drop_title }}
+                <strong>{{ t.profile_management?.media?.drop_click }}</strong></p>
               <p class="format-hint">{{ t.profile_management?.media?.format_hint }}</p>
             </div>
 
-            <ion-button expand="block" (click)="fileInput.click()" [color]="isFieldMissing('photos', me) ? 'danger' : 'primary'" class="ion-margin">
+            <ion-button expand="block" (click)="fileInput.click()"
+                        [color]="isFieldMissing('photos', me) ? 'danger' : 'primary'" class="ion-margin">
               <ion-icon slot="start" name="add-circle-outline"></ion-icon>
               {{ t.profile_management?.media?.add_btn }}
             </ion-button>
@@ -347,7 +381,8 @@
           </div>
           <ion-grid class="ion-no-padding ion-padding-horizontal">
             <ion-row>
-              <ion-col size="4" size-md="3" *ngFor="let photo of (photos$ | async); let i = index" class="ion-padding-tiny photo-col">
+              <ion-col size="4" size-md="3" *ngFor="let photo of (photos$ | async); let i = index"
+                       class="ion-padding-tiny photo-col">
                 <div class="gallery-item"
                      draggable="true"
                      (dragstart)="onDragStart(i)"
@@ -356,14 +391,16 @@
                      (dragend)="onDragEnd()"
                      [class.drag-over]="dragOverIndex === i">
 
-                  <img [src]="photo.mainThumbUrl" class="gallery-img" />
+                  <img [src]="photo.mainThumbUrl" class="gallery-img"/>
 
                   <div class="gallery-actions-overlay">
-                    <ion-button [color]="photo.isMain ? 'warning' : 'light'" fill="clear" size="small" (click)="setMain(photo); $event.stopPropagation();">
+                    <ion-button [color]="photo.isMain ? 'warning' : 'light'" fill="clear" size="small"
+                                (click)="setMain(photo); $event.stopPropagation();">
                       <ion-icon [name]="photo.isMain ? 'star' : 'star-outline'" slot="icon-only"></ion-icon>
                     </ion-button>
 
-                    <ion-button color="danger" fill="clear" size="small" (click)="deletePhoto(photo); $event.stopPropagation();">
+                    <ion-button color="danger" fill="clear" size="small"
+                                (click)="deletePhoto(photo); $event.stopPropagation();">
                       <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
                     </ion-button>
 
@@ -382,12 +419,14 @@
           </div>
           <ion-grid class="ion-no-padding ion-padding-horizontal">
             <ion-row>
-              <ion-col size="4" size-md="3" *ngFor="let video of videos$ | async; let i = index" class="ion-padding-tiny photo-col">
+              <ion-col size="4" size-md="3" *ngFor="let video of videos$ | async; let i = index"
+                       class="ion-padding-tiny photo-col">
                 <div class="gallery-item video-gallery-item">
                   <video [src]="video.url" class="gallery-img" controls preload="metadata"></video>
 
                   <div class="gallery-actions-overlay">
-                    <ion-button color="danger" fill="clear" size="small" (click)="deleteVideo(video); $event.stopPropagation();">
+                    <ion-button color="danger" fill="clear" size="small"
+                                (click)="deleteVideo(video); $event.stopPropagation();">
                       <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
                     </ion-button>
                   </div>

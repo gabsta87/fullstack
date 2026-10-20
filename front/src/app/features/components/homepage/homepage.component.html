@@ -1,6 +1,6 @@
 <app-header></app-header>
 
-<ion-content class="main-content content-with-bottom-spacing" [scrollEvents]="true" (ionScroll)="onScroll($event)" *ngIf="langService.currentLanguage$ | async as t">
+<ion-content class="main-content content-with-bottom-spacing" [scrollEvents]="true" (ionScroll)="onScroll($event)" *ngIf="languageService.currentLanguage$ | async as t">
   <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
@@ -57,7 +57,9 @@
               <ion-item lines="none" class="filter-input-item">
                 <ion-select aria-label="Silhouette" interface="popover" [(ngModel)]="filters.bodyType" (ionChange)="loadPage(true)" [placeholder]="t.filters?.all_body_types">
                   <ion-select-option [value]="null">{{ t.filters?.all_body_types }}</ion-select-option>
-                  <ion-select-option *ngFor="let type of BODY_TYPE_LABELS | keyvalue" [value]="type.key">{{ type.value }}</ion-select-option>
+                  <ion-select-option *ngFor="let key of BODY_TYPES_LIST" [value]="key">
+                    {{ languageService.getBodyTypeLabel(key, t) }}
+                  </ion-select-option>
                 </ion-select>
               </ion-item>
             </ion-col>
@@ -66,7 +68,9 @@
               <ion-item lines="none" class="filter-input-item">
                 <ion-select aria-label="Yeux" interface="popover" [(ngModel)]="filters.eyeColor" (ionChange)="loadPage(true)" [placeholder]="t.filters?.all_eye_colors">
                   <ion-select-option [value]="null">{{ t.filters?.all_eye_colors }}</ion-select-option>
-                  <ion-select-option *ngFor="let eye of EYE_COLOR_LABELS | keyvalue" [value]="eye.key">{{ eye.value }}</ion-select-option>
+                  <ion-select-option *ngFor="let key of EYES_COLOR_LIST" [value]="key">
+                    {{ languageService.getEyeColorLabel(key, t) }}
+                  </ion-select-option>
                 </ion-select>
               </ion-item>
             </ion-col>
@@ -75,7 +79,9 @@
               <ion-item lines="none" class="filter-input-item">
                 <ion-select aria-label="Cheveux" interface="popover" [(ngModel)]="filters.hairColor" (ionChange)="loadPage(true)" [placeholder]="t.filters?.all_hair_colors">
                   <ion-select-option [value]="null">{{ t.filters?.all_hair_colors }}</ion-select-option>
-                  <ion-select-option *ngFor="let hair of HAIR_COLOR_LABELS | keyvalue" [value]="hair.key">{{ hair.value }}</ion-select-option>
+                  <ion-select-option *ngFor="let key of HAIR_COLOR_LIST" [value]="key">
+                    {{ languageService.getHairColorLabel(key, t) }}
+                  </ion-select-option>
                 </ion-select>
               </ion-item>
             </ion-col>
@@ -93,7 +99,9 @@
             <ion-col size="12" size-sm="4">
               <ion-item lines="none" class="filter-input-item">
                 <ion-select aria-label="Langues" interface="popover" [multiple]="true" [(ngModel)]="filters.languages" (ionChange)="loadPage(true)" [placeholder]="t.filters?.all_languages">
-                  <ion-select-option *ngFor="let lang of availableLanguages" [value]="lang">{{ lang }}</ion-select-option>
+                  <ion-select-option *ngFor="let lang of languageService.availableLanguages" [value]="lang.code">
+                    {{ lang.label }}
+                  </ion-select-option>
                 </ion-select>
               </ion-item>
             </ion-col>

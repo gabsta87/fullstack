@@ -22,11 +22,6 @@ import {closeOutline, locationOutline, optionsOutline, personOutline, arrowUpOut
 import {HeaderComponent} from "../header/header.component";
 import {WorkerCardComponent} from "../worker-card/worker-card.component";
 import {AgeRangeSelectorComponent} from "../age-range-selector/age-range-selector.component";
-import {
-  BODY_TYPE_LABELS,
-  EYE_COLOR_LABELS,
-  HAIR_COLOR_LABELS,
-} from "../../models/items.model";
 import {WorkerMinimalProfile} from "../../models/user.model";
 import {GalleryFilters, GeographicZone} from "../../models/filter.model";
 import {WorkerService} from "../../services/worker.service";
@@ -39,6 +34,7 @@ import {ClientAccountService} from "../../services/client-account.service";
 import {AsyncPipe, KeyValuePipe, NgForOf, NgIf} from "@angular/common";
 import {Service} from "../../models/common.model";
 import {LanguageManagerService} from "../../services/language-manager.service";
+import {BODY_TYPES_LIST, EYES_COLOR_LIST, HAIR_COLOR_LIST} from "../../models/items.model";
 
 @Component({
   selector: 'app-homepage',
@@ -77,11 +73,6 @@ export class HomepageComponent implements OnInit {
   @ViewChild(IonContent, { static: false }) content!: IonContent;
   @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
 
-  readonly BODY_TYPE_LABELS = BODY_TYPE_LABELS;
-  readonly EYE_COLOR_LABELS = EYE_COLOR_LABELS;
-  readonly HAIR_COLOR_LABELS = HAIR_COLOR_LABELS;
-  readonly availableLanguages = ['EN', 'FR', 'IT', 'DE', 'ES'];
-
   showMoreFilters = false;
   isLoading = false;
   noMoreData = false;
@@ -105,7 +96,7 @@ export class HomepageComponent implements OnInit {
     private authService: AuthService,
     private stateService: GalleryStateService,
     private clientAccountService: ClientAccountService,
-    protected langService: LanguageManagerService
+    protected languageService: LanguageManagerService
   ) {
     addIcons({ optionsOutline, closeOutline, locationOutline, personOutline, sparklesOutline, arrowUpOutline });
   }
@@ -311,4 +302,8 @@ export class HomepageComponent implements OnInit {
   toggleMoreFilters() { this.showMoreFilters = !this.showMoreFilters; }
   onIonInfinite(event: any): void { this.loadPage(false, event); }
   onRefresh(event: any): void { this.loadPage(true); setTimeout(() => event.target.complete(), 800); }
+
+  protected readonly BODY_TYPES_LIST = BODY_TYPES_LIST;
+  protected readonly EYES_COLOR_LIST = EYES_COLOR_LIST;
+  protected readonly HAIR_COLOR_LIST = HAIR_COLOR_LIST;
 }

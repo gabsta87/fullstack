@@ -3,8 +3,7 @@ import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {IonicModule} from '@ionic/angular';
 import {ClientAccountService} from '../../services/client-account.service';
-import {WorkerService} from '../../services/worker.service';
-import {BODY_TYPE_LABELS, BODY_TYPES_LIST,} from '../../models/items.model';
+import { BODY_TYPES_LIST} from '../../models/items.model';
 import {WorkerCardComponent} from '../worker-card/worker-card.component';
 import {HeaderComponent} from '../header/header.component';
 import {Observable} from "rxjs";
@@ -31,7 +30,6 @@ export class AccountComponent implements OnInit {
 
   locations!:GeographicZone[] ;
   readonly bodyTypesList = BODY_TYPES_LIST;
-  readonly bodyTypeLabels = BODY_TYPE_LABELS;
   availableServices: string[] | undefined;
   selectedZoneId: number | undefined = undefined;
 

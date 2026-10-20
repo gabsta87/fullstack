@@ -31,7 +31,30 @@
       "visible": "Visible",
       "invisible": "Invisible",
       "online": "Online",
-      "offline": "Offline"
+      "offline": "Offline",
+      "body_types": {
+        "slim": "Slim",
+        "athletic": "Athletic",
+        "average": "Average",
+        "curvy": "Curvy",
+        "round": "Round"
+      },
+      "eye_colors": {
+        "brown": "Brown",
+        "blue": "Blue",
+        "green": "Green",
+        "hazel": "Hazel",
+        "gray": "Gray"
+      },
+      "hair_colors": {
+        "black": "Black",
+        "brown": "Brown",
+        "blond": "Blond",
+        "fair": "Fair",
+        "grey": "Grey",
+        "ginger": "Ginger",
+        "colored": "Colored"
+      }
     },
     "header": {
       "home": "Home",
@@ -97,9 +120,9 @@
     },
     "certification": {
       "title": "Profile Certification",
-      "admin_message_title": "Admin message:",
+      "admin_message_title": "Admin message",
       "step1_title": "Step 1: Write down your secret code",
-      "step1_desc": "Take a photo of yourself (uncovered face) holding a paper or phone clearly displaying this code:",
+      "step1_desc": "Take a photo of yourself (uncovered face) holding a paper or phone clearly displaying this code",
       "step2_title": "Step 2: Upload your photo",
       "drop_zone_text": "Drag and drop your photo here or click to browse",
       "format_hint": "Accepted formats: JPG, PNG",
@@ -116,7 +139,7 @@
       "favorite": "Favorites",
       "notify_me": "Notify me when back",
       "report": "Report",
-      "body_type": "Body type:",
+      "body_type": "Body type",
       "about": "About",
       "reviews": "Reviews"
     },
@@ -150,7 +173,11 @@
         "body_type": "Body type",
         "hair_color": "Hair color",
         "eye_color": "Eye color",
-        "services_title": "Offered services * (Select at least one)"
+        "services_title": "Offered services * (Select at least one)",
+        "languages_title": "Known languages",
+        "no_languages": "No languages added yet",
+        "select_language": "Select a language",
+        "select_level": "Proficiency level"
       },
       "media": {
         "drop_title": "Drag and drop your photos or videos here or",
@@ -191,13 +218,13 @@
       "certif_tab": {
         "empty_certifs": "No pending certification requests 🎉",
         "under_review_suffix": "(🔒 In progress by another admin)",
-        "requested_on": "Requested on:",
-        "code_required": "Code required:",
+        "requested_on": "Requested on",
+        "code_required": "Code required",
         "badge_blocked": "Blocked",
         "badge_pending": "To verify",
         "modal_title": "Certification Moderation",
-        "advertiser_label": "Advertiser:",
-        "expected_code_label": "Expected verification code:",
+        "advertiser_label": "Advertiser",
+        "expected_code_label": "Expected verification code",
         "other_photos_title": "2. Other profile photos (Identity Verification)",
         "no_other_photos": "No other photos available on this profile.",
         "frequent_reasons_label": "Frequent reasons (Optional)",
@@ -217,16 +244,16 @@
         "modal_title": "Reports for",
         "btn_ban_worker": "Ban advertiser",
         "btn_lock_account": "Lock account",
-        "history_title": "Request / Report history:",
-        "author_label": "Author:",
+        "history_title": "Request / Report history",
+        "author_label": "Author",
         "dismissed_suffix": "(🔒 Dismissed / Abusive)",
-        "reason_label": "Reason:",
-        "date_label": "Date:",
+        "reason_label": "Reason",
+        "date_label": "Date",
         "btn_dismiss": "Dismiss"
       },
       "logs_tab": {
-        "moderator_label": "Moderator:",
-        "action_label": "Action:"
+        "moderator_label": "Moderator",
+        "action_label": "Action"
       },
       "services_tab": {
         "title": "Services List",
@@ -285,7 +312,30 @@
       "visible": "Visible",
       "invisible": "Invisible",
       "online": "En ligne",
-      "offline": "Hors ligne"
+      "offline": "Hors ligne",
+      "body_types" : {
+        "slim" : "Mince",
+        "athletic" : "Athlétique",
+        "average" : "Moyenne",
+        "curvy" : "Féminine",
+        "round" : "Ronde"
+      },
+      "eye_colors": {
+        "brown": "Marron",
+        "blue": "Bleu",
+        "green": "Vert",
+        "hazel": "Noisette",
+        "gray": "Gris"
+      },
+      "hair_colors": {
+        "black": "Noir",
+        "brown": "Brun",
+        "blond": "Blond",
+        "fair": "Clair",
+        "grey": "Gris",
+        "ginger": "Roux",
+        "colored": "Teint"
+      }
     },
     "header": {
       "home": "Accueil",
@@ -351,9 +401,9 @@
     },
     "certification": {
       "title": "Certification du profil",
-      "admin_message_title": "Message de l'administration :",
+      "admin_message_title": "Message de l'administration ",
       "step1_title": "Étape 1 : Notez votre code secret",
-      "step1_desc": "Prenez une photo de vous (visage découvert) en tenant un support (papier, téléphone) sur lequel est clairement écrit ce code :",
+      "step1_desc": "Prenez une photo de vous (visage découvert) en tenant un support (papier, téléphone) sur lequel est clairement écrit ce code ",
       "step2_title": "Étape 2 : Envoyez votre photo",
       "drop_zone_text": "Glissez votre photo ici ou cliquez pour parcourir",
       "format_hint": "Formats acceptés : JPG, PNG",
@@ -370,7 +420,7 @@
       "favorite": "Favoris",
       "notify_me": "Me notifier son retour",
       "report": "Signaler",
-      "body_type": "Silhouette :",
+      "body_type": "Silhouette",
       "about": "À propos",
       "reviews": "Avis"
     },
@@ -404,7 +454,11 @@
         "body_type": "Silhouette",
         "hair_color": "Cheveux",
         "eye_color": "Yeux",
-        "services_title": "Services proposés * (Sélectionnez-en au moins un)"
+        "services_title": "Services proposés * (Sélectionnez-en au moins un)",
+        "languages_title": "Langues maîtrisées",
+        "no_languages": "Aucune langue ajoutée pour le moment",
+        "select_language": "Choisir une langue",
+        "select_level": "Niveau de maîtrise"
       },
       "media": {
         "drop_title": "Glissez-déposez vos photos ou vidéos ici ou",
@@ -445,13 +499,13 @@
       "certif_tab": {
         "empty_certifs": "Aucune demande de certification en attente 🎉",
         "under_review_suffix": "(🔒 En cours par un autre admin)",
-        "requested_on": "Demandé le :",
-        "code_required": "Code requis :",
+        "requested_on": "Demandé le ",
+        "code_required": "Code requis ",
         "badge_blocked": "Bloqué",
         "badge_pending": "À vérifier",
         "modal_title": "Modération de la certification",
-        "advertiser_label": "Annonceur :",
-        "expected_code_label": "Code de vérification attendu :",
+        "advertiser_label": "Annonceur ",
+        "expected_code_label": "Code de vérification attendu ",
         "other_photos_title": "2. Autres photos du profil (Vérification d'identité)",
         "no_other_photos": "Aucune autre photo disponible sur ce profil.",
         "frequent_reasons_label": "Motifs fréquents (Optionnel)",
@@ -471,16 +525,16 @@
         "modal_title": "Signalements pour",
         "btn_ban_worker": "Bannir l'annonceur",
         "btn_lock_account": "Verrouiller le compte",
-        "history_title": "Historique des requêtes / signalements :",
-        "author_label": "Auteur :",
+        "history_title": "Historique des requêtes / signalements ",
+        "author_label": "Auteur ",
         "dismissed_suffix": "(🔒 Classé / Abusif)",
-        "reason_label": "Raison :",
-        "date_label": "Date :",
+        "reason_label": "Raison ",
+        "date_label": "Date ",
         "btn_dismiss": "Classer sans suite"
       },
       "logs_tab": {
-        "moderator_label": "Modérateur :",
-        "action_label": "Action :"
+        "moderator_label": "Modérateur ",
+        "action_label": "Action "
       },
       "services_tab": {
         "title": "Liste des Services",
@@ -539,7 +593,30 @@
       "visible": "Sichtbar",
       "invisible": "Unsichtbar",
       "online": "Online",
-      "offline": "Offline"
+      "offline": "Offline",
+      "body_types": {
+        "slim": "Schlank",
+        "athletic": "Athletisch",
+        "average": "Durchschnittlich",
+        "curvy": "Kurvig",
+        "round": "Rund"
+      },
+      "eye_colors": {
+        "brown": "Braun",
+        "blue": "Blau",
+        "green": "Grün",
+        "hazel": "Haselnussbraun",
+        "gray": "Grau"
+      },
+      "hair_colors": {
+        "black": "Schwarz",
+        "brown": "Braun",
+        "blond": "Blond",
+        "fair": "Hell",
+        "grey": "Grau",
+        "ginger": "Rot",
+        "colored": "Gefärbt"
+      }
     },
     "header": {
       "home": "Startseite",
@@ -605,9 +682,9 @@
     },
     "certification": {
       "title": "Profil-Zertifizierung",
-      "admin_message_title": "Nachricht der Administration:",
+      "admin_message_title": "Nachricht der Administration",
       "step1_title": "Schritt 1: Notieren Sie Ihren Geheimcode",
-      "step1_desc": "Machen Sie ein Foto von sich (Gesicht unbedeckt) mit einem Papier oder Telefon, auf dem dieser Code gut lesbar ist:",
+      "step1_desc": "Machen Sie ein Foto von sich (Gesicht unbedeckt) mit einem Papier oder Telefon, auf dem dieser Code gut lesbar ist",
       "step2_title": "Schritt 2: Foto hochladen",
       "drop_zone_text": "Ziehen Sie Ihr Foto hierher oder klicken Sie zum Durchsuchen",
       "format_hint": "Akzeptierte Formate: JPG, PNG",
@@ -624,7 +701,7 @@
       "favorite": "Favoriten",
       "notify_me": "Benachrichtigen, wenn zurück",
       "report": "Melden",
-      "body_type": "Körpertyp:",
+      "body_type": "Körpertyp",
       "about": "Über mich",
       "reviews": "Bewertungen"
     },
@@ -658,7 +735,11 @@
         "body_type": "Körpertyp",
         "hair_color": "Haarfarbe",
         "eye_color": "Augenfarbe",
-        "services_title": "Angebotene Dienstleistungen * (Mindestens eine auswählen)"
+        "services_title": "Angebotene Dienstleistungen * (Mindestens eine auswählen)",
+        "languages_title": "Beherrschte Sprachen",
+        "no_languages": "Derzeit sind keine Sprachen hinzugefügt",
+        "select_language": "Sprache auswählen",
+        "select_level": "Beherrschungsgrad"
       },
       "media": {
         "drop_title": "Ziehen Sie Fotos oder Videos hierher oder",
@@ -699,13 +780,13 @@
       "certif_tab": {
         "empty_certifs": "Keine ausstehenden Zertifizierungsanfragen 🎉",
         "under_review_suffix": "(🔒 In Bearbeitung durch einen anderen Admin)",
-        "requested_on": "Angefordert am:",
-        "code_required": "Erforderlicher Code:",
+        "requested_on": "Angefordert am",
+        "code_required": "Erforderlicher Code",
         "badge_blocked": "Blockiert",
         "badge_pending": "Zu prüfen",
         "modal_title": "Zertifizierungsmoderation",
-        "advertiser_label": "Inserent:",
-        "expected_code_label": "Erwarteter Bestätigungscode:",
+        "advertiser_label": "Inserent",
+        "expected_code_label": "Erwarteter Bestätigungscode",
         "other_photos_title": "2. Weitere Profilfotos (Identitätsprüfung)",
         "no_other_photos": "Keine weiteren Fotos in diesem Profil vorhanden.",
         "frequent_reasons_label": "Häufige Gründe (Optional)",
@@ -725,16 +806,16 @@
         "modal_title": "Meldungen für",
         "btn_ban_worker": "Inserent sperren",
         "btn_lock_account": "Konto blockieren",
-        "history_title": "Verlauf der Meldungen:",
-        "author_label": "Autor:",
+        "history_title": "Verlauf der Meldungen",
+        "author_label": "Autor",
         "dismissed_suffix": "(🔒 Abgewiesen / Missbräuchlich)",
-        "reason_label": "Grund:",
-        "date_label": "Datum:",
+        "reason_label": "Grund",
+        "date_label": "Datum",
         "btn_dismiss": "Abweisen"
       },
       "logs_tab": {
-        "moderator_label": "Moderator:",
-        "action_label": "Aktion:"
+        "moderator_label": "Moderator",
+        "action_label": "Aktion"
       },
       "services_tab": {
         "title": "Liste der Dienstleistungen",
@@ -793,7 +874,30 @@
       "visible": "Visible",
       "invisible": "Invisible",
       "online": "En línea",
-      "offline": "Desconectado"
+      "offline": "Desconectado",
+      "body_types": {
+        "slim": "Delgado",
+        "athletic": "Atlético",
+        "average": "Normal",
+        "curvy": "Con curvas",
+        "round": "Redondeado"
+      },
+      "eye_colors": {
+        "brown": "Marrón",
+        "blue": "Azul",
+        "green": "Verde",
+        "hazel": "Avellana",
+        "gray": "Gris"
+      },
+      "hair_colors": {
+        "black": "Negro",
+        "brown": "Castaño",
+        "blond": "Rubio",
+        "fair": "Claro",
+        "grey": "Gris",
+        "ginger": "Pelirrojo",
+        "colored": "Teñido"
+      }
     },
     "header": {
       "home": "Inicio",
@@ -859,9 +963,9 @@
     },
     "certification": {
       "title": "Certificación del perfil",
-      "admin_message_title": "Mensaje de la administración:",
+      "admin_message_title": "Mensaje de la administración",
       "step1_title": "Paso 1: Anota tu código secreto",
-      "step1_desc": "Tómate una foto (rostro descubierto) sosteniendo un papel o teléfono donde se lea claramente este código:",
+      "step1_desc": "Tómate una foto (rostro descubierto) sosteniendo un papel o teléfono donde se lea claramente este código",
       "step2_title": "Paso 2: Envía tu foto",
       "drop_zone_text": "Arrastra tu foto aquí o haz clic para explorar",
       "format_hint": "Formatos aceptados: JPG, PNG",
@@ -878,7 +982,7 @@
       "favorite": "Favoritos",
       "notify_me": "Notificarme cuando vuelva",
       "report": "Denunciar",
-      "body_type": "Silueta:",
+      "body_type": "Silueta",
       "about": "Sobre mí",
       "reviews": "Opiniones"
     },
@@ -912,7 +1016,11 @@
         "body_type": "Silueta",
         "hair_color": "Pelo",
         "eye_color": "Ojos",
-        "services_title": "Servicios ofrecidos * (Selecciona al menos uno)"
+        "services_title": "Servicios ofrecidos * (Selecciona al menos uno)",
+        "languages_title": "Idiomas hablados",
+        "no_languages": "No se ha añadido ningún idioma por el momento",
+        "select_language": "Elige un idioma",
+        "select_level": "Nivel de dominio"
       },
       "media": {
         "drop_title": "Arrastra tus fotos o videos aquí o",
@@ -953,13 +1061,13 @@
       "certif_tab": {
         "empty_certifs": "No hay solicitudes de certificación pendientes 🎉",
         "under_review_suffix": "(🔒 En revisión por otro admin)",
-        "requested_on": "Solicitado el:",
-        "code_required": "Código requerido:",
+        "requested_on": "Solicitado el",
+        "code_required": "Código requerido",
         "badge_blocked": "Bloqueado",
         "badge_pending": "Por verificar",
         "modal_title": "Moderación de certificación",
-        "advertiser_label": "Anunciante:",
-        "expected_code_label": "Código de verificación esperado:",
+        "advertiser_label": "Anunciante",
+        "expected_code_label": "Código de verificación esperado",
         "other_photos_title": "2. Otras fotos del perfil (Verificación de identidad)",
         "no_other_photos": "No hay más fotos disponibles en este perfil.",
         "frequent_reasons_label": "Motivos frecuentes (Opcional)",
@@ -979,16 +1087,16 @@
         "modal_title": "Denuncias para",
         "btn_ban_worker": "Banear anunciante",
         "btn_lock_account": "Bloquear cuenta",
-        "history_title": "Historial de denuncias:",
-        "author_label": "Autor:",
+        "history_title": "Historial de denuncias",
+        "author_label": "Autor",
         "dismissed_suffix": "(🔒 Desestimado / Abusivo)",
-        "reason_label": "Razón:",
-        "date_label": "Fecha:",
+        "reason_label": "Razón",
+        "date_label": "Fecha",
         "btn_dismiss": "Desestimar"
       },
       "logs_tab": {
-        "moderator_label": "Moderador:",
-        "action_label": "Acción:"
+        "moderator_label": "Moderador",
+        "action_label": "Acción"
       },
       "services_tab": {
         "title": "Lista de servicios",
@@ -1047,7 +1155,30 @@
       "visible": "Visível",
       "invisible": "Invisível",
       "online": "Online",
-      "offline": "Offline"
+      "offline": "Offline",
+      "body_types": {
+        "slim": "Slim",
+        "athletic": "Atlético",
+        "average": "Médio",
+        "curvy": "Curvilíneo",
+        "round": "Redondo"
+      },
+      "eye_colors": {
+        "brown": "Castanho",
+        "blue": "Azul",
+        "green": "Verde",
+        "hazel": "Castanho-claro",
+        "gray": "Cinzento"
+      },
+      "hair_colors": {
+        "black": "Preto",
+        "brown": "Castanho",
+        "blond": "Loiro",
+        "fair": "Claro",
+        "grey": "Cinzento",
+        "ginger": "Ruivo",
+        "colored": "Pintado"
+      }
     },
     "header": {
       "home": "Início",
@@ -1113,9 +1244,9 @@
     },
     "certification": {
       "title": "Certificação do perfil",
-      "admin_message_title": "Mensagem da administração:",
+      "admin_message_title": "Mensagem da administração",
       "step1_title": "Passo 1: Anote o seu código secreto",
-      "step1_desc": "Tire uma foto sua (rosto descoberto) a segurar num papel ou telemóvel onde se leia claramente este código:",
+      "step1_desc": "Tire uma foto sua (rosto descoberto) a segurar num papel ou telemóvel onde se leia claramente este código",
       "step2_title": "Passo 2: Envie a sua foto",
       "drop_zone_text": "Arraste a sua foto para aqui ou clique para procurar",
       "format_hint": "Formatos aceites: JPG, PNG",
@@ -1132,7 +1263,7 @@
       "favorite": "Favoritos",
       "notify_me": "Notificar-me quando voltar",
       "report": "Denunciar",
-      "body_type": "Silhueta:",
+      "body_type": "Silhueta",
       "about": "Sobre mim",
       "reviews": "Avaliações"
     },
@@ -1166,7 +1297,11 @@
         "body_type": "Silhueta",
         "hair_color": "Cabelo",
         "eye_color": "Olhos",
-        "services_title": "Serviços oferecidos * (Selecione pelo menos um)"
+        "services_title": "Serviços oferecidos * (Selecione pelo menos um)",
+        "languages_title": "Idiomas dominados",
+        "no_languages": "Ainda não foi adicionado nenhum idioma",
+        "select_language": "Escolher um idioma",
+        "select_level": "Nível de domínio"
       },
       "media": {
         "drop_title": "Arraste as suas fotos ou vídeos para aqui ou",
@@ -1207,13 +1342,13 @@
       "certif_tab": {
         "empty_certifs": "Sem pedidos de certificação pendentes 🎉",
         "under_review_suffix": "(🔒 Em revisão por outro admin)",
-        "requested_on": "Solicitado em:",
-        "code_required": "Código necessário:",
+        "requested_on": "Solicitado em",
+        "code_required": "Código necessário",
         "badge_blocked": "Bloqueado",
         "badge_pending": "Por verificar",
         "modal_title": "Moderação de certificação",
-        "advertiser_label": "Anunciante:",
-        "expected_code_label": "Código de verificação esperado:",
+        "advertiser_label": "Anunciante",
+        "expected_code_label": "Código de verificação esperado",
         "other_photos_title": "2. Outras fotos do perfil (Verificação de identidade)",
         "no_other_photos": "Sem mais fotos disponíveis neste perfil.",
         "frequent_reasons_label": "Motivos frequentes (Opcional)",
@@ -1233,16 +1368,16 @@
         "modal_title": "Denúncias para",
         "btn_ban_worker": "Banir anunciante",
         "btn_lock_account": "Bloquear conta",
-        "history_title": "Histórico de denúncias:",
-        "author_label": "Autor:",
+        "history_title": "Histórico de denúncias",
+        "author_label": "Autor",
         "dismissed_suffix": "(🔒 Arquivado / Abusivo)",
-        "reason_label": "Razão:",
-        "date_label": "Data:",
+        "reason_label": "Razão",
+        "date_label": "Data",
         "btn_dismiss": "Arquivar"
       },
       "logs_tab": {
-        "moderator_label": "Moderador:",
-        "action_label": "Ação:"
+        "moderator_label": "Moderador",
+        "action_label": "Ação"
       },
       "services_tab": {
         "title": "Lista de serviços",
@@ -1301,7 +1436,30 @@
       "visible": "Visibile",
       "invisible": "Invisibile",
       "online": "Online",
-      "offline": "Offline"
+      "offline": "Offline",
+      "body_types": {
+        "slim": "Magro",
+        "athletic": "Athletico",
+        "average": "Medio",
+        "curvy": "Formoso",
+        "round": "Rotondo"
+      },
+      "eye_colors": {
+        "brown": "Marrone",
+        "blue": "Blu",
+        "green": "Verde",
+        "hazel": "Nocciola",
+        "gray": "Grigio"
+      },
+      "hair_colors": {
+        "black": "Nero",
+        "brown": "Castano",
+        "blond": "Biondo",
+        "fair": "Chiaro",
+        "grey": "Grigio",
+        "ginger": "Rosso",
+        "colored": "Tinto"
+      }
     },
     "header": {
       "home": "Home",
@@ -1367,9 +1525,9 @@
     },
     "certification": {
       "title": "Certificazione del profilo",
-      "admin_message_title": "Messaggio dall'amministrazione:",
+      "admin_message_title": "Messaggio dall'amministrazione",
       "step1_title": "Passo 1: Annota il tuo codice segreto",
-      "step1_desc": "Scattati una foto (viso scoperto) tenendo un foglio o un telefono su cui sia chiaramente leggibile questo codice:",
+      "step1_desc": "Scattati una foto (viso scoperto) tenendo un foglio o un telefono su cui sia chiaramente leggibile questo codice",
       "step2_title": "Passo 2: Invia la tua foto",
       "drop_zone_text": "Trascina la tua foto qui o clicca per sfogliare",
       "format_hint": "Formati accettati: JPG, PNG",
@@ -1386,7 +1544,7 @@
       "favorite": "Preferiti",
       "notify_me": "Avvisami quando torna",
       "report": "Segnala",
-      "body_type": "Corporatura:",
+      "body_type": "Corporatura",
       "about": "Informazioni",
       "reviews": "Recensioni"
     },
@@ -1420,7 +1578,11 @@
         "body_type": "Corporatura",
         "hair_color": "Capelli",
         "eye_color": "Occhi",
-        "services_title": "Servizi offerti * (Selezionane almeno uno)"
+        "services_title": "Servizi offerti * (Selezionane almeno uno)",
+        "languages_title": "Lingue parlate",
+        "no_languages": "Nessuna lingua aggiunta per il momento",
+        "select_language": "Scegli una lingua",
+        "select_level": "Livello di conoscenza"
       },
       "media": {
         "drop_title": "Trascina le tue foto o i tuoi video qui o",
@@ -1461,13 +1623,13 @@
       "certif_tab": {
         "empty_certifs": "Nessuna richiesta di certificazione in attesa 🎉",
         "under_review_suffix": "(🔒 In corso da parte di un altro admin)",
-        "requested_on": "Richiesto il:",
-        "code_required": "Codice richiesto:",
+        "requested_on": "Richiesto il",
+        "code_required": "Codice richiesto",
         "badge_blocked": "Bloccato",
         "badge_pending": "Da verificare",
         "modal_title": "Moderazione certificazione",
-        "advertiser_label": "Inserzionista:",
-        "expected_code_label": "Codice di verifica atteso:",
+        "advertiser_label": "Inserzionista",
+        "expected_code_label": "Codice di verifica atteso",
         "other_photos_title": "2. Altre foto del profilo (Verifica d'identità)",
         "no_other_photos": "Nessun'altra foto disponibile su questo profilo.",
         "frequent_reasons_label": "Motivi frequenti (Opzionale)",
@@ -1487,16 +1649,16 @@
         "modal_title": "Segnalazioni per",
         "btn_ban_worker": "Banna inserzionista",
         "btn_lock_account": "Blocca account",
-        "history_title": "Cronologia delle segnalazioni:",
-        "author_label": "Autore:",
+        "history_title": "Cronologia delle segnalazioni",
+        "author_label": "Autore",
         "dismissed_suffix": "(🔒 Archiviato / Abusivo)",
-        "reason_label": "Motivo:",
-        "date_label": "Data:",
+        "reason_label": "Motivo",
+        "date_label": "Data",
         "btn_dismiss": "Archivia"
       },
       "logs_tab": {
-        "moderator_label": "Moderatore:",
-        "action_label": "Azione:"
+        "moderator_label": "Moderatore",
+        "action_label": "Azione"
       },
       "services_tab": {
         "title": "Elenco dei servizi",
@@ -1555,7 +1717,30 @@
       "visible": "Виден",
       "invisible": "Невидим",
       "online": "В сети",
-      "offline": "Не в сети"
+      "offline": "Не в сети",
+      "body_types": {
+        "slim": "Стройная",
+        "athletic": "Атлетическая",
+        "average": "Средняя",
+        "curvy": "С пышными формами",
+        "round": "Круглая"
+      },
+      "eye_colors": {
+        "brown": "Brown",
+        "blue": "Blue",
+        "green": "Green",
+        "hazel": "Hazel",
+        "gray": "Gray"
+      },
+      "hair_colors": {
+        "black": "Чёрный",
+        "brown": "Коричневый",
+        "blond": "Блондин",
+        "fair": "Светлый",
+        "grey": "Седой",
+        "ginger": "Рыжий",
+        "colored": "Окрашенный"
+      }
     },
     "header": {
       "home": "Главная",
@@ -1621,9 +1806,9 @@
     },
     "certification": {
       "title": "Сертификация профиля",
-      "admin_message_title": "Сообщение от администрации:",
+      "admin_message_title": "Сообщение от администрации",
       "step1_title": "Шаг 1: Запишите ваш секретный код",
-      "step1_desc": "Сделайте свое фото (с открытым лицом), держа бумагу или телефон с четко написанным кодом:",
+      "step1_desc": "Сделайте свое фото (с открытым лицом), держа бумагу или телефон с четко написанным кодом",
       "step2_title": "Шаг 2: Загрузите фото",
       "drop_zone_text": "Перетащите фото сюда или нажмите для выбора",
       "format_hint": "Поддерживаемые форматы: JPG, PNG",
@@ -1640,7 +1825,7 @@
       "favorite": "В избранное",
       "notify_me": "Уведомить о возвращении",
       "report": "Пожаловаться",
-      "body_type": "Тип фигуры:",
+      "body_type": "Тип фигуры",
       "about": "О себе",
       "reviews": "Отзывы"
     },
@@ -1674,7 +1859,11 @@
         "body_type": "Тип фигуры",
         "hair_color": "Цвет волос",
         "eye_color": "Цвет глаз",
-        "services_title": "Предлагаемые услуги * (Выберите хотя бы одну)"
+        "services_title": "Предлагаемые услуги * (Выберите хотя бы одну)",
+        "languages_title": "Владение языками",
+        "no_languages": "Пока не добавлено ни одного языка",
+        "select_language": "Выбрать язык",
+        "select_level": "Уровень владения"
       },
       "media": {
         "drop_title": "Перетащите фото или видео сюда или",
@@ -1715,13 +1904,13 @@
       "certif_tab": {
         "empty_certifs": "Нет ожидающих запросов на сертификацию 🎉",
         "under_review_suffix": "(🔒 Проверяется другим админом)",
-        "requested_on": "Запрошено:",
-        "code_required": "Требуемый код:",
+        "requested_on": "Запрошено",
+        "code_required": "Требуемый код",
         "badge_blocked": "Заблокировано",
         "badge_pending": "На проверке",
         "modal_title": "Модерация сертификации",
-        "advertiser_label": "Рекламодатель:",
-        "expected_code_label": "Ожидаемый код проверки:",
+        "advertiser_label": "Рекламодатель",
+        "expected_code_label": "Ожидаемый код проверки",
         "other_photos_title": "2. Другие фото профиля (Проверка личности)",
         "no_other_photos": "В этом профиле нет других фотографий.",
         "frequent_reasons_label": "Частые причины (Опционально)",
@@ -1741,16 +1930,16 @@
         "modal_title": "Жалобы на",
         "btn_ban_worker": "Заблокировать рекламодателя",
         "btn_lock_account": "Заморозить аккаунт",
-        "history_title": "История жалоб:",
-        "author_label": "Автор:",
+        "history_title": "История жалоб",
+        "author_label": "Автор",
         "dismissed_suffix": "(🔒 Отклонено / Ложная)",
-        "reason_label": "Причина:",
-        "date_label": "Дата:",
+        "reason_label": "Причина",
+        "date_label": "Дата",
         "btn_dismiss": "Отклонить жалобу"
       },
       "logs_tab": {
-        "moderator_label": "Модератор:",
-        "action_label": "Действие:"
+        "moderator_label": "Модератор",
+        "action_label": "Действие"
       },
       "services_tab": {
         "title": "Список услуг",
@@ -1809,7 +1998,30 @@
       "visible": "Видимий",
       "invisible": "Невидимий",
       "online": "В мережі",
-      "offline": "Поза мережею"
+      "offline": "Поза мережею",
+      "body_types": {
+        "slim": "Струнка",
+        "athletic": "Атлетична",
+        "average": "Середня",
+        "curvy": "Пишні форми",
+        "round": "Кругла"
+      },
+      "eye_colors": {
+        "brown": "Карий",
+        "blue": "Блакитний",
+        "green": "Зелений",
+        "hazel": "Горіховий",
+        "gray": "Сірий"
+      },
+      "hair_colors": {
+        "black": "Чорний",
+        "brown": "Коричневий",
+        "blond": "Блондин",
+        "fair": "Світлий",
+        "grey": "Сірий",
+        "ginger": "Рудий",
+        "colored": "Фарбований"
+      }
     },
     "header": {
       "home": "Головна",
@@ -1875,9 +2087,9 @@
     },
     "certification": {
       "title": "Сертифікація профілю",
-      "admin_message_title": "Повідомлення від адміністрації:",
+      "admin_message_title": "Повідомлення від адміністрації",
       "step1_title": "Крок 1: Запишіть ваш секретний код",
-      "step1_desc": "Зробіть своє фото (з відкритим обличчям), тримаючи папір або телефон з чітко написаним кодом:",
+      "step1_desc": "Зробіть своє фото (з відкритим обличчям), тримаючи папір або телефон з чітко написаним кодом",
       "step2_title": "Крок 2: Завантажте фото",
       "drop_zone_text": "Перетягніть фото сюди або натисніть для вибору",
       "format_hint": "Підтримувані формати: JPG, PNG",
@@ -1894,7 +2106,7 @@
       "favorite": "До обраного",
       "notify_me": "Повідомити про повернення",
       "report": "Поскаржитися",
-      "body_type": "Тип фігури:",
+      "body_type": "Тип фігури",
       "about": "Про себе",
       "reviews": "Відгуки"
     },
@@ -1928,7 +2140,11 @@
         "body_type": "Тип фігури",
         "hair_color": "Колір волосся",
         "eye_color": "Колір очей",
-        "services_title": "Пропоновані послуги * (Оберіть хоча б одну)"
+        "services_title": "Пропоновані послуги * (Оберіть хоча б одну)",
+        "languages_title": "Мови, якими володієте",
+        "no_languages": "Наразі жодної мови не додано",
+        "select_language": "Виберіть мову",
+        "select_level": "Рівень володіння"
       },
       "media": {
         "drop_title": "Перетягніть фото або відео сюди або",
@@ -1969,13 +2185,13 @@
       "certif_tab": {
         "empty_certifs": "Немає очікуваних запитів на сертифікацію 🎉",
         "under_review_suffix": "(🔒 Перевіряється іншим адміном)",
-        "requested_on": "Запрошено:",
-        "code_required": "Необхідний код:",
+        "requested_on": "Запрошено",
+        "code_required": "Необхідний код",
         "badge_blocked": "Заблоковано",
         "badge_pending": "На перевірці",
         "modal_title": "Модерація сертифікації",
-        "advertiser_label": "Рекламодавець:",
-        "expected_code_label": "Очікуваний код перевірки:",
+        "advertiser_label": "Рекламодавець",
+        "expected_code_label": "Очікуваний код перевірки",
         "other_photos_title": "2. Інші фото профілю (Перевірка особи)",
         "no_other_photos": "У цьому профілі немає інших фотографій.",
         "frequent_reasons_label": "Часті причини (Опціонально)",
@@ -1995,16 +2211,16 @@
         "modal_title": "Скарги на",
         "btn_ban_worker": "Заблокувати рекламодавця",
         "btn_lock_account": "Заморозити акаунт",
-        "history_title": "Історія скарг:",
-        "author_label": "Автор:",
+        "history_title": "Історія скарг",
+        "author_label": "Автор",
         "dismissed_suffix": "(🔒 Відхилено / Необґрунтована)",
-        "reason_label": "Причина:",
-        "date_label": "Дата:",
+        "reason_label": "Причина",
+        "date_label": "Дата",
         "btn_dismiss": "Відхилити скаргу"
       },
       "logs_tab": {
-        "moderator_label": "Модератор:",
-        "action_label": "Дія:"
+        "moderator_label": "Модератор",
+        "action_label": "Дія"
       },
       "services_tab": {
         "title": "Список послуг",
@@ -2063,7 +2279,30 @@
       "visible": "مرئي",
       "invisible": "غير مرئي",
       "online": "متصل",
-      "offline": "غير متصل"
+      "offline": "غير متصل",
+      "body_types": {
+        "slim": "نحيف",
+        "athletic": "رياضي",
+        "average": "متوسط",
+        "curvy": "ممتلئ",
+        "round": "مستدير"
+      },
+      "eye_colors": {
+        "brown": "بني",
+        "blue": "أزرق",
+        "green": "أخضر",
+        "hazel": "بندقي",
+        "gray": "رمادي"
+      },
+      "hair_colors": {
+        "black": "أسود",
+        "brown": "بني",
+        "blond": "أشقر",
+        "fair": "فاتح",
+        "grey": "رمادي",
+        "ginger": "أحمر",
+        "colored": "ملون"
+      }
     },
     "header": {
       "home": "الصفحة الرئيسية",
@@ -2129,9 +2368,9 @@
     },
     "certification": {
       "title": "شهادة الملف الشخصي",
-      "admin_message_title": "رسالة من المسؤول:",
+      "admin_message_title": "رسالة من المسؤول",
       "step1_title": "الخطوة 1: اكتب الرمز السري الخاص بك",
-      "step1_desc": "التقط صورة لنفسك (بوجه مكشوف) وأنت تحمل ورقة أو هاتفًا يظهر عليه هذا الرمز بوضوح:",
+      "step1_desc": "التقط صورة لنفسك (بوجه مكشوف) وأنت تحمل ورقة أو هاتفًا يظهر عليه هذا الرمز بوضوح",
       "step2_title": "الخطوة 2: قم بتحميل صورتك",
       "drop_zone_text": "اسحب صورتك وأسقطها هنا أو انقر للتصفح",
       "format_hint": "التنسيقات المقبولة: JPG, PNG",
@@ -2148,7 +2387,7 @@
       "favorite": "المفضلة",
       "notify_me": "أعلمني عند العودة",
       "report": "الإبلاغ",
-      "body_type": "نوع الجسم:",
+      "body_type": "نوع الجسم",
       "about": "نبذة",
       "reviews": "التعليقات"
     },
@@ -2182,7 +2421,11 @@
         "body_type": "نوع الجسم",
         "hair_color": "لون الشعر",
         "eye_color": "لون العين",
-        "services_title": "الخدمات المقدمة * (اختر خدمة واحدة على الأقل)"
+        "services_title": "الخدمات المقدمة * (اختر خدمة واحدة على الأقل)",
+        "languages_title": "اللغات التي يتحدثها ",
+        "no_languages": "لم تتم إضافة أي لغة حتى الآن",
+        "select_language": "اختر لغة",
+        "select_level": "مستوى إتقان"
       },
       "media": {
         "drop_title": "اسحب صورك أو مقاطع الفيديو الخاصة بك وأسقطها هنا أو",
@@ -2223,13 +2466,13 @@
       "certif_tab": {
         "empty_certifs": "لا توجد طلبات اعتماد معلقة 🎉",
         "under_review_suffix": "( 🔒 قيد المراجعة من قبل مسؤول آخر)",
-        "requested_on": "تاريخ الطلب:",
-        "code_required": "الرمز المطلوب:",
+        "requested_on": "تاريخ الطلب",
+        "code_required": "الرمز المطلوب",
         "badge_blocked": "محظور",
         "badge_pending": "للتحقق",
         "modal_title": "مراجعة التصديق",
-        "advertiser_label": "المعلن:",
-        "expected_code_label": "رمز التحقق المتوقع:",
+        "advertiser_label": "المعلن",
+        "expected_code_label": "رمز التحقق المتوقع",
         "other_photos_title": "2. صور الملف الشخصي الأخرى (التحقق من الهوية)",
         "no_other_photos": "لا توجد صور أخرى متاحة في هذا الملف الشخصي.",
         "frequent_reasons_label": "الأسباب الشائعة (اختياري)",
@@ -2249,16 +2492,16 @@
         "modal_title": "البلاغات المتعلقة بـ",
         "btn_ban_worker": "حظر المعلن",
         "btn_lock_account": "قفل الحساب",
-        "history_title": "سجل الطلبات / البلاغات:",
-        "author_label": "المُبلغ:",
+        "history_title": "سجل الطلبات / البلاغات",
+        "author_label": "المُبلغ",
         "dismissed_suffix": "(🔒 تم رفضه / مسيء)",
-        "reason_label": "السبب:",
-        "date_label": "التاريخ:",
+        "reason_label": "السبب",
+        "date_label": "التاريخ",
         "btn_dismiss": "رفض"
       },
       "logs_tab": {
-        "moderator_label": "المشرف:",
-        "action_label": "الإجراء:"
+        "moderator_label": "المشرف",
+        "action_label": "الإجراء"
       },
       "services_tab": {
         "title": "قائمة الخدمات",

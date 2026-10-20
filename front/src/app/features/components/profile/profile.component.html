@@ -67,12 +67,36 @@
 
           <div class="profile-card">
             <ion-list lines="none">
-              <ion-item>
-                <ion-icon name="body-outline" slot="start"></ion-icon>
-                <ion-label>{{ t.worker_profile?.body_type }} {{ worker.bodyType }}</ion-label>
+              <!-- Silhouette / Body Type -->
+              <ion-item *ngIf="worker.bodyType">
+<!--                <ion-icon name="body-outline" slot="start"></ion-icon>-->
+                <ion-label>
+                  {{ t.worker_profile?.body_type || 'Silhouette' }}:
+                  {{ languageService.getBodyTypeLabel(worker.bodyType, t) }}
+                </ion-label>
               </ion-item>
+
+              <!-- Couleur des Yeux -->
+              <ion-item *ngIf="worker.eyeColor">
+<!--                <ion-icon name="eye-outline" slot="start"></ion-icon>-->
+                <ion-label>
+                  {{ t.worker_profile?.eye_color || 'Yeux' }}:
+                  {{ languageService.getEyeColorLabel(worker.eyeColor, t) }}
+                </ion-label>
+              </ion-item>
+
+              <!-- Couleur des Cheveux -->
+              <ion-item *ngIf="worker.hairColor">
+<!--                <ion-icon name="color-palette-outline" slot="start"></ion-icon>-->
+                <ion-label>
+                  {{ t.worker_profile?.hair_color || 'Cheveux' }}:
+                  {{ languageService.getHairColorLabel(worker.hairColor, t) }}
+                </ion-label>
+              </ion-item>
+
+              <!-- Âge -->
               <ion-item>
-                <ion-icon name="woman-outline" slot="start"></ion-icon>
+<!--                <ion-icon name="woman-outline" slot="start"></ion-icon>-->
                 <ion-label>{{ t.common?.age }}: {{ worker.age }} {{ t.common?.years }}</ion-label>
               </ion-item>
             </ion-list>
