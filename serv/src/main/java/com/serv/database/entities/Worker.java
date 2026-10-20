@@ -215,11 +215,18 @@ public class Worker extends VenusUser {
 
     public void addSpokenLanguage(WorkerLanguage language) {this.spokenLanguages.add(language);}
 
-    public void removeSpokenLanguage(WorkerLanguage language) {this.spokenLanguages.remove(language);}
-
     public void setActive(boolean active) {
         this.isAvailable = active;
         this.hasBeenActiveToday = active;
+    }
+
+    public void clearCertification() {
+        CertificationRequest request = this.getLastCertificationRequest();
+        if (request != null) {
+            request.setStatus(CertificationStatus.NOT_CERTIFIED);
+        }
+        this.setCertifiedAt(null);
+        this.setVerificationCode(null);
     }
 
     public void setShortDescription(String shortDescription) {

@@ -21,7 +21,7 @@
   p {
     margin: 0;
     font-size: 0.9rem;
-    color: var(--text);
+    color: type-of(var(--text)) var(--text);
   }
 }
 
@@ -61,7 +61,7 @@
   .drop-zone {
     border: 2px dashed var(--border-dashed);
     border-radius: var(--radius-md);
-    padding: 20px;
+    padding: 24px;
     text-align: center;
     background: var(--surface);
     cursor: pointer;
@@ -78,4 +78,40 @@
       color: var(--text-muted);
     }
   }
+
+  .image-preview-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    margin-bottom: 16px;
+
+    .certification-preview-img {
+      max-width: 100%;
+      max-height: 250px;
+      object-fit: contain;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+  }
+
+  .preview-helper-text {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 16px;
+  }
+}
+
+// 💡 Style global ou classe utilitaire pour élargir la modale
+// (À passer dans le cssClass du modalController lors de l'ouverture)
+host.ion-page {
+  --width: 600px;
+  --max-width: 90vw;
+  --height: 70vh;
+  --border-radius: 16px;
 }

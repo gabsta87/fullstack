@@ -246,6 +246,7 @@ public class AccountControllerWorker {
     @PostMapping("/media")
     public ResponseEntity<WorkerFullProfileDTO> uploadMedia(@RequestParam("files") List<MultipartFile> files, Worker workerArg) {
         Worker worker = getWorkerWithPhotos(workerArg);
+        boolean mediaAdded = false;
 
         for (MultipartFile file : files) {
             try {
@@ -258,10 +259,12 @@ public class AccountControllerWorker {
                     }
                     worker.addPhoto(photo);
                     photoRepository.save(photo);
+                    mediaAdded = true;
                 } else if (contentType != null && contentType.startsWith("video")) {
                     Video video = mediaStorageService.saveVideo(file, worker);
                     worker.addVideo(video);
                     videoRepository.save(video);
+                    mediaAdded = true;
                 }
             } catch (IOException e) {
                 System.out.println("Error uploading media "+ file.getName()+" . CAUSE : " + e.getMessage());
@@ -269,9 +272,22 @@ public class AccountControllerWorker {
             }
         }
 
+        if (mediaAdded) {
+            worker.clearCertification();
+
+            CertificationRequest lastRequest = worker.getLastCertificationRequest();
+            if (lastRequest != null) {
+                certificationRequestRepository.save(lastRequest);
+            }
+        }
+
         this.setWorkerProfileCompleteness(worker);
 
         Worker savedWorker = workerRepository.save(worker);
+
+        if (mediaAdded) {
+            sseStreamService.emitEvent(savedWorker.getId(), "account-update", WorkerFullProfileDTO.from(savedWorker));
+        }
 
         return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
     }

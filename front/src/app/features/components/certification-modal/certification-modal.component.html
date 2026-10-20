@@ -29,19 +29,37 @@
       </div>
     </div>
 
-    <!-- 📤 Espace d'upload de la photo -->
+    <!-- 📤 Espace d'upload ou Aperçu de la photo -->
     <div class="upload-section">
       <h3>{{ t.certification?.step2_title }}</h3>
 
-      <div class="drop-zone" (click)="fileInput.click()">
-        <ion-icon name="cloud-upload-outline" size="large"></ion-icon>
-        <p>{{ selectedFile ? selectedFile.name : t.certification?.drop_zone_text }}</p>
-        <span class="format-hint">{{ t.certification?.format_hint }}</span>
-        <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;" />
+      <!-- Si une image est sélectionnée ou existe déjà : Affichage de l'aperçu -->
+      <div *ngIf="previewUrl; else dropZoneTemplate" class="image-preview-container">
+        <img [src]="previewUrl" alt="Aperçu certification" class="certification-preview-img" />
+        <ion-button fill="outline" color="medium" size="small" (click)="fileInput.click()">
+          <ion-icon name="refresh-outline" slot="start"></ion-icon>
+          {{ t.certification?.change_photo_btn || 'Changer la photo' }}
+        </ion-button>
       </div>
 
+      <!-- Sinon : Zone de dépôt classique -->
+      <ng-template #dropZoneTemplate>
+        <div class="drop-zone" (click)="fileInput.click()">
+          <ion-icon name="cloud-upload-outline" size="large"></ion-icon>
+          <p>{{ t.certification?.drop_zone_text }}</p>
+          <span class="format-hint">{{ t.certification?.format_hint }}</span>
+        </div>
+      </ng-template>
+
+      <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;" />
+
+      <!-- Texte additionnel via le service de langues (à adapter dans tes JSON) -->
+      <p class="preview-helper-text" *ngIf="previewUrl">
+        {{ t.certification?.preview_helper_text }}
+      </p>
+
       <!-- Bouton d'envoi final -->
-      <ion-button expand="block" color="primary" [disabled]="!selectedFile" (click)="submitCertificationPhoto()">
+      <ion-button expand="block" color="primary" [disabled]="!selectedFile && !existingPhotoUrl" (click)="submitCertificationPhoto()" class="ion-margin-top">
         <ion-icon name="send-outline" slot="start"></ion-icon>
         {{ t.certification?.submit_btn }}
       </ion-button>

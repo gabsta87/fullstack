@@ -126,7 +126,8 @@
       "step2_title": "Step 2: Upload your photo",
       "drop_zone_text": "Drag and drop your photo here or click to browse",
       "format_hint": "Accepted formats: JPG, PNG",
-      "submit_btn": "Submit for validation"
+      "submit_btn": "Submit for validation",
+      "preview_helper_text": "Once you've obtained certification, if you add new photos or videos, you'll need to go through the certification process again. Be sure to upload all your photos to the site before requesting certification."
     },
     "forgot_password": {
       "title": "Forgot password",
@@ -317,7 +318,7 @@
         "slim" : "Mince",
         "athletic" : "Athlétique",
         "average" : "Moyenne",
-        "curvy" : "Féminine",
+        "curvy" : "Voluptueuse",
         "round" : "Ronde"
       },
       "eye_colors": {
@@ -407,7 +408,8 @@
       "step2_title": "Étape 2 : Envoyez votre photo",
       "drop_zone_text": "Glissez votre photo ici ou cliquez pour parcourir",
       "format_hint": "Formats acceptés : JPG, PNG",
-      "submit_btn": "Envoyer pour validation"
+      "submit_btn": "Envoyer pour validation",
+      "preview_helper_text": "Une fois la certification obtenue, si vous ajoutez de nouvelles photos ou vidéos, vous devrez refaire la certification. Pensez à bien mettre sur le site toutes vos photos avant de demander une certification"
     },
     "forgot_password": {
       "title": "Mot de passe oublié",
@@ -688,7 +690,8 @@
       "step2_title": "Schritt 2: Foto hochladen",
       "drop_zone_text": "Ziehen Sie Ihr Foto hierher oder klicken Sie zum Durchsuchen",
       "format_hint": "Akzeptierte Formate: JPG, PNG",
-      "submit_btn": "Zur Überprüfung senden"
+      "submit_btn": "Zur Überprüfung senden",
+      "preview_helper_text":"Sobald Sie die Zertifizierung erhalten haben, müssen Sie den Zertifizierungsprozess erneut durchlaufen, wenn Sie neue Fotos oder Videos hinzufügen. Denken Sie daran, alle Ihre Fotos auf der Website hochzuladen, bevor Sie eine Zertifizierung beantragen."
     },
     "forgot_password": {
       "title": "Passwort vergessen",
@@ -969,7 +972,8 @@
       "step2_title": "Paso 2: Envía tu foto",
       "drop_zone_text": "Arrastra tu foto aquí o haz clic para explorar",
       "format_hint": "Formatos aceptados: JPG, PNG",
-      "submit_btn": "Enviar para validación"
+      "submit_btn": "Enviar para validación",
+      "preview_helper_text": "Una vez obtenida la certificación, si añades nuevas fotos o vídeos, tendrás que volver a solicitarla. Asegúrate de subir todas tus fotos a la página web antes de solicitar la certificación."
     },
     "forgot_password": {
       "title": "Contraseña olvidada",
@@ -1250,7 +1254,8 @@
       "step2_title": "Passo 2: Envie a sua foto",
       "drop_zone_text": "Arraste a sua foto para aqui ou clique para procurar",
       "format_hint": "Formatos aceites: JPG, PNG",
-      "submit_btn": "Enviar para validação"
+      "submit_btn": "Enviar para validação",
+      "preview_helper_text": "Depois de obter a certificação, se adicionar novas fotografias ou vídeos, terá de repetir o processo de certificação. Lembre-se de publicar todas as suas fotografias no site antes de solicitar a certificação."
     },
     "forgot_password": {
       "title": "Palavra-passe esquecida",
@@ -1531,7 +1536,8 @@
       "step2_title": "Passo 2: Invia la tua foto",
       "drop_zone_text": "Trascina la tua foto qui o clicca per sfogliare",
       "format_hint": "Formati accettati: JPG, PNG",
-      "submit_btn": "Invia per la convalida"
+      "submit_btn": "Invia per la convalida",
+      "preview_helper_text": "Una volta ottenuta la certificazione, se aggiungete nuove foto o video, dovrete ripetere la procedura di certificazione. Ricordatevi di caricare tutte le vostre foto sul sito prima di richiedere la certificazione."
     },
     "forgot_password": {
       "title": "Password dimenticata",
@@ -1812,7 +1818,8 @@
       "step2_title": "Шаг 2: Загрузите фото",
       "drop_zone_text": "Перетащите фото сюда или нажмите для выбора",
       "format_hint": "Поддерживаемые форматы: JPG, PNG",
-      "submit_btn": "Отправить на проверку"
+      "submit_btn": "Отправить на проверку",
+      "preview_helper_text": "После получения сертификации, если вы добавите новые фотографии или видео, вам придётся пройти сертификацию заново. Не забудьте разместить на сайте все свои фотографии, прежде чем подавать заявку на сертификацию."
     },
     "forgot_password": {
       "title": "Забыли пароль",
@@ -2093,7 +2100,8 @@
       "step2_title": "Крок 2: Завантажте фото",
       "drop_zone_text": "Перетягніть фото сюди або натисніть для вибору",
       "format_hint": "Підтримувані формати: JPG, PNG",
-      "submit_btn": "Надіслати на перевірку"
+      "submit_btn": "Надіслати на перевірку",
+      "preview_helper_text": "Після отримання сертифікації, якщо ви додасте нові фотографії або відео, вам доведеться пройти сертифікацію заново. Не забудьте завантажити на сайт усі свої фотографії, перш ніж подавати заявку на сертифікацію."
     },
     "forgot_password": {
       "title": "Забули пароль",
@@ -2374,7 +2382,8 @@
       "step2_title": "الخطوة 2: قم بتحميل صورتك",
       "drop_zone_text": "اسحب صورتك وأسقطها هنا أو انقر للتصفح",
       "format_hint": "التنسيقات المقبولة: JPG, PNG",
-      "submit_btn": "إرسال للتحقق"
+      "submit_btn": "إرسال للتحقق",
+      "preview_helper_text": "بمجرد الحصول على الشهادة، إذا أضفت صورًا أو مقاطع فيديو جديدة، فسيتعين عليك إعادة إجراء عملية التصديق. تذكر أن تنشر جميع صورك على الموقع قبل التقدم بطلب للحصول على الشهادة."
     },
     "forgot_password": {
       "title": "نسيت كلمة المرور",

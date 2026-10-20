@@ -258,24 +258,19 @@ public class AdminController {
         Worker worker = workerRepository.findById(dto.workerId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found"));
 
-        CertificationRequest request = worker.getLastCertificationRequest();
+        worker.clearCertification();
 
-        request.setStatus(CertificationStatus.NOT_CERTIFIED);
-
-        CertificationRequest saved = certificationRequestRepository.save(request);
-
-        worker.setCertifiedAt(null);
-        worker.setVerificationCode(null);
+        CertificationRequest savedRequest = certificationRequestRepository.save(worker.getLastCertificationRequest());
         workerRepository.save(worker);
 
         logAdminAction(admin, "CERTIFICATION_REVOKED", worker, "Certification revoked for worker " + worker.getEmail()+ " for reason: " + dto.reason());
 
-        sseStreamService.broadcastAdminEvent("CERTIFICATION_UPDATED", saved.getId());
+        sseStreamService.broadcastAdminEvent("CERTIFICATION_UPDATED", savedRequest.getId());
 
         WorkerFullProfileDTO workerDto = WorkerFullProfileDTO.from(worker);
         sseStreamService.emitEvent(worker.getId(), "account-update", workerDto);
 
-        return ResponseEntity.ok(CertificationRequestDTO.from(saved));
+        return ResponseEntity.ok(CertificationRequestDTO.from(savedRequest));
     }
 
     // ── GESTION DES SERVICES ────────────────────────
