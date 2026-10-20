@@ -62,7 +62,6 @@ import {BODY_TYPES_LIST, EYES_COLOR_LIST, HAIR_COLOR_LIST} from "../../models/it
     IonInfiniteScrollContent,
     AgeRangeSelectorComponent,
     NgForOf,
-    KeyValuePipe,
     NgIf,
     IonFab,
     IonFabButton,
