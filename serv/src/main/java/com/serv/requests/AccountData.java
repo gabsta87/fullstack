@@ -1,6 +1,8 @@
 package com.serv.requests;
 
-public record AccountData(String username,
-                          String email,
-                          String password) {
-}
+public record AccountData(
+        String username,
+        String email,
+        String password,
+        String oldPassword
+) {}
