@@ -52,32 +52,6 @@ public class AccountControllerWorker {
         return ResponseEntity.ok(WorkerFullProfileDTO.from(managedWorker));
     }
 
-    @PatchMapping("/data")
-    public ResponseEntity<?> updateWorkerSettings(@RequestBody AccountData req,
-                                                  Worker worker) {
-
-        if (req.username() != null) worker.setUsername(req.username());
-        if (req.email() != null) worker.setEmail(new Email(req.email()));
-
-        if (req.password() != null && !req.password().isBlank()) {
-            if (req.oldPassword() == null || req.oldPassword().isBlank()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(Map.of("error", "Old password is required for password change."));
-            }
-
-            if (!worker.checkPassword(req.oldPassword())) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(Map.of("error", "Wrong old password. Please try again."));
-            }
-
-            worker.setPassword(req.password());
-        }
-
-        Worker saved = workerRepository.save(worker);
-
-        return ResponseEntity.ok(WorkerFullProfileDTO.from(saved));
-    }
-
     @Transactional
     @GetMapping("/request-certification")
     public ResponseEntity<?> requestCertification(Worker workerArg) {

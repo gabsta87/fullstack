@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/account")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -28,48 +30,51 @@ public class AccountController {
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter stream(@RequestParam("token") String token) {
         try {
-            // 1. Extraction de l'email contenu dans le sujet du JWT
             String email = jwtProvider.extractEmail(token);
 
-            // 2. Recherche de l'utilisateur en BDD grâce à cet email
             VenusUser user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Utilisateur introuvable."));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unknown user."));
 
-            // 3. On passe l'UUID technique au SseStreamService pour l'enregistrement du flux
             return sseStreamService.createStream(user.getId());
-
         } catch (Exception e) {
-            // 🔥 TRÈS IMPORTANT : Si le token est expiré ou invalide, on renvoie un 401.
-            // Cela va déclencher le bloc "EventSource.CLOSED" côté Angular pour déconnecter proprement l'utilisateur.
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token invalide ou expiré.", e);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired token.", e);
         }
     }
 
     /**
      * PATCH /account/data
-     * Update username, email, or password — works for both roles.
+     * Update username, email, or password — works for all roles.
      */
     @PatchMapping("/data")
     @Transactional
     public ResponseEntity<?> updateSettings(@RequestBody AccountData req,
                                             VenusUser user) {
-        // 1. Mise à jour des champs communs
         if (req.username() != null) user.setUsername(req.username());
         if (req.email() != null) user.setEmail(new Email(req.email()));
-        if (req.password() != null) user.setPassword(req.password());
+
+        if (req.password() != null && !req.password().isBlank()) {
+            if (req.oldPassword() == null || req.oldPassword().isBlank()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "Old password is required for password change."));
+            }
+
+            if (!user.checkPassword(req.oldPassword())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("error", "Wrong old password. Please try again."));
+            }
+
+            user.setPassword(req.password());
+        }
 
         VenusUser patchedUser = userRepository.save(user);
 
-        // 2. Détection dynamique du type pour envoyer le BON DTO complet
         Object dtoToSend = switch (patchedUser) {
-            case Client client -> ClientDTO.from(client); // Contient les favoris !
-
-            case Worker worker -> WorkerFullProfileDTO.from(worker); // Contient la galerie, les services, etc.
-
-            case Admin admin -> AdminDTO.from(admin);
-            default -> VenusUserDTO.from(patchedUser); // Cas de secours
-
+            case Client client -> ClientDTO.from(client);
+            case Worker worker -> WorkerFullProfileDTO.from(worker);
+            case Admin admin   -> AdminDTO.from(admin);
+            default            -> VenusUserDTO.from(patchedUser);
         };
+
         return ResponseEntity.ok(dtoToSend);
     }
 }
