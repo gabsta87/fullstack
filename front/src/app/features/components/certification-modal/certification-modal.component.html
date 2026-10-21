@@ -54,8 +54,8 @@
       <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;" />
 
       <!-- Texte additionnel via le service de langues (à adapter dans tes JSON) -->
-      <p class="preview-helper-text" *ngIf="previewUrl">
-        {{ t.certification?.preview_helper_text }}
+      <p class="preview-helper-text">
+        {{ t.certification?.preview_helper_text}}
       </p>
 
       <!-- Bouton d'envoi final -->
