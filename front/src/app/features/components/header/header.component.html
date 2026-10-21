@@ -9,15 +9,15 @@
     </ion-buttons>
 
     <ion-buttons slot="end">
-      <!-- 🎯 Le déclencheur DOIT rester permanent dans le DOM pour que le popover fonctionne -->
-      <ion-button id="lang-selector-trigger">
+      <!-- 💡 On passe l'événement $event au clic -->
+      <ion-button (click)="openLangPopover($event)">
         <img [src]="langService.currentLanguageFlag" class="header-flag-icon" alt="Langue active" />
         <ion-text class="ion-hide-sm-down" style="margin-left: 5px; font-size: 14px;">
           {{ langService.currentCode }}
         </ion-text>
       </ion-button>
 
-      <!-- Le reste des boutons qui dépendent des traductions -->
+      <!-- Le reste des boutons (inchangé) -->
       <ng-container *ngIf="langService.currentLanguage$ | async as t">
         <ng-container *ngIf="!(authService.isAuthenticated$ | async)">
           <ion-button (click)="openAuth('login')" fill="clear" class="nav-link-btn">
@@ -51,8 +51,8 @@
   </ion-toolbar>
 </ion-header>
 
-<!-- Popover de choix de la langue (relié au bouton permanent ci-dessus) -->
-<ion-popover trigger="lang-selector-trigger" [dismissOnSelect]="true" side="bottom" alignment="end">
+<!-- 💡 On ajoute une référence #langPopover et on retire le trigger="..." -->
+<ion-popover #langPopover [dismissOnSelect]="true" side="bottom" alignment="end">
   <ng-template>
     <ion-content>
       <ion-list lines="none" class="lang-popover-list">

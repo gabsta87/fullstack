@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {Router, RouterLink} from "@angular/router";
 import {AuthService} from "../../services/auth.service";
 import {CommonModule} from "@angular/common";
@@ -8,6 +8,7 @@ import {firstValueFrom} from "rxjs";
 import {addIcons} from "ionicons";
 import {buildOutline, logInOutline, logOutOutline, personCircleOutline} from "ionicons/icons";
 import {LanguageManagerService} from "../../services/language-manager.service";
+import {IonPopover} from "@ionic/angular/standalone";
 
 @Component({
   selector: 'app-header',
@@ -17,6 +18,8 @@ import {LanguageManagerService} from "../../services/language-manager.service";
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent {
+
+  @ViewChild('langPopover') langPopover!: IonPopover;
 
   constructor(
     public authService: AuthService,
@@ -60,5 +63,11 @@ export class HeaderComponent {
 
   changeLanguage(langCode: string) {
     this.langService.changeLanguageTo(langCode);
+    this.langPopover.dismiss();
+  }
+
+  async openLangPopover(event: Event) {
+    this.langPopover.event = event;
+    await this.langPopover.present();
   }
 }
