@@ -23,8 +23,8 @@
             <p class="location"><ion-icon name="location-outline"></ion-icon> {{ worker.geographicZone?.name }}</p>
           </div>
 
-          <div class="profile-card actions-card">
-            <ion-button expand="block" color="primary" (click)="openContactModal()">{{ t.worker_profile?.contact_btn }}</ion-button>
+          <div class="profile-card actions-card" *ngIf="worker.available || isClient">
+            <ion-button *ngIf="worker.available" expand="block" color="primary" (click)="openContactModal()">{{ t.worker_profile?.contact_btn }}</ion-button>
 
             <ion-button *ngIf="isClient" expand="block" fill="outline" color="medium" (click)="toggleFavorite()">
               <ion-icon slot="start" [name]="isFavorite ? 'heart' : 'heart-outline'" [color]="isFavorite ? 'danger' : ''"></ion-icon>
