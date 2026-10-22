@@ -1,19 +1,28 @@
 URGENT
+unavailable profiles : hide phone and contact info
+
+validation de compte par email
 boutons pour contacter l'équipe par email
+Section commentaires
 Test and adapt on mobile
 
 find a way to mix sorting order on gallery (maybe paying refresh, or cooldown refresh)
   certified first, then by refresh date
 
+mise en place des tests
+
+référencement par google
+mise en ligne - infomaniak
+système de paiement
+
 SECONDARY
-test if worker can see certification update live (thanks to ssestream updates)
+debug : worker can't see certification update live (thanks to ssestream updates)
 test if admins can see modifications of other admins live (thanks to ssestream updates)
 
 modifier le guard sur profile pour ne pas permettre d'accéder à un profil banni (sauf pour les admins)
 admins should see all required fields for each profile in the table (to see if there is a validity issue)
 favorite profiles should be shown as favorites on the homepage
-unavailable profiles : hide phone and contact info
-secure certification request (if certified, button is disabled, but no other security)
+secure certification request (if certified, button is disabled, but no other security on backend for now)
 
 FUTURE
 Alerte (par email) quand un profil arrive dans la ville souhaitée

@@ -1,16 +1,13 @@
 PRIORITY
 
-réfléchir sur la possibilité de modifier les variables d'application depuis le site web en tant qu'administrateur
 
+
+réfléchir sur la possibilité de modifier les variables d'application depuis le site web en tant qu'administrateur
 
 video upload
     compress video /limit size
     upload video to the storage
     generate a thumbnail
-
-Multi-lang
-    Generate a translation file for each language (DE, FR, EN, ES, IT, RU, UA, Arabian)
-    Translate the app by charging in the pages all phrases from the translation file
 
 worker/user profile
     change password/email (Secured by requesting the old password)
