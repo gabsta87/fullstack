@@ -11,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -52,8 +53,18 @@ public abstract class VenusUser {
     @ToString.Exclude
     private GeographicZone geographicZone;
 
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt;
+
     @Column(name = "user_type", insertable = false, updatable = false)
     private String userType;
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = Instant.now();
+        }
+    }
 
     private static final BCryptPasswordEncoder ENCODER = new BCryptPasswordEncoder();
 
