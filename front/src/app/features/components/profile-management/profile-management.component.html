@@ -438,14 +438,7 @@
 
         <!-- ONGLET COMPTE -->
         <div *ngIf="activeTab === 'settings'" class="fade-in">
-          <account-settings
-            [initialEmail]="me.email ? me.email : ''"
-            [isWorker]="true"
-            [subscriptionLabel]="subscriptionLabel$ | async"
-            [subscriptionColor]="subscriptionColor$ | async"
-            (onSaveSettings)="handleSettingsSave($event)"
-            (onManageSubscription)="handleSubscriptionClick()">
-          </account-settings>
+          <account-settings [initialEmail]="me.email ? me.email : ''"></account-settings>
         </div>
 
       </ion-card-content>

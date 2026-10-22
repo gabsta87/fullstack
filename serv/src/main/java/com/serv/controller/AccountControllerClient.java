@@ -43,19 +43,6 @@ public class AccountControllerClient {
         return ResponseEntity.ok(ClientDTO.from(managedClient));
     }
 
-    @PatchMapping("/data")
-    @Transactional
-    public ResponseEntity<?> updateClientSettings(@RequestBody AccountData req, Client clientArg) {
-        Client client = clientRepository.findById(clientArg.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client introuvable"));
-
-        if (req.username() != null) client.setUsername(req.username());
-        if (req.email() != null) client.setEmail(new Email(req.email()));
-
-        Client saved = clientRepository.save(client);
-        return ResponseEntity.ok(ClientDTO.from(saved)); // 👈 Réponse HTTP directe, propre et synchrone
-    }
-
     @GetMapping("/favorites")
     @Transactional(readOnly = true)
     public ResponseEntity<?> getFavorites(Client clientArg) {

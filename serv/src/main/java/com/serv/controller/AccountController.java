@@ -55,7 +55,7 @@ public class AccountController {
         if (req.password() != null && !req.password().isBlank()) {
             if (req.oldPassword() == null || req.oldPassword().isBlank()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(Map.of("error", "Old password is required for password change."));
+                        .body(Map.of("error", "Old password is required for email/password change."));
             }
 
             if (!user.checkPassword(req.oldPassword())) {

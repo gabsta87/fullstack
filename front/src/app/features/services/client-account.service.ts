@@ -35,10 +35,6 @@ export class ClientAccountService {
     return this.accountSubject.asObservable();
   }
 
-  async updateSettings(data: ClientProfile): Promise<any> {
-    return await firstValueFrom(this.http.patch(`${this.base}/data`, data));
-  }
-
   async addFavorite(workerId: string): Promise<any> {
     const updatedClient = await firstValueFrom(this.http.post<ClientProfile>(`${this.base}/favorites/${workerId}`, {}));
     this.updateCache(updatedClient);

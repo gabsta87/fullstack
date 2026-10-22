@@ -16,6 +16,7 @@ import {ZoneSelectorComponent} from "../zone-selector/zone-selector.component";
 import { addIcons } from 'ionicons';
 import { heartDislikeOutline, checkmarkCircle } from 'ionicons/icons';
 import {LanguageManagerService} from "../../services/language-manager.service";
+import {AccountService} from "../../services/account-service";
 
 @Component({
   selector: 'app-account',
@@ -29,7 +30,6 @@ export class AccountComponent implements OnInit {
   activeTab: 'favorites' | 'settings' | 'account' = 'favorites';
 
   locations!:GeographicZone[] ;
-  readonly bodyTypesList = BODY_TYPES_LIST;
   availableServices: string[] | undefined;
   selectedZoneId: number | undefined = undefined;
 
@@ -39,12 +39,13 @@ export class AccountComponent implements OnInit {
   };
 
   constructor(
-    private accountService: ClientAccountService,
+    private clientAccountService: ClientAccountService,
+    private accountService: AccountService,
     protected languageService: LanguageManagerService,
     private route : ActivatedRoute,
   ) {
     addIcons({ heartDislikeOutline, checkmarkCircle });
-    this.currentUser$ = this.accountService.getCurrentAccount().pipe(
+    this.currentUser$ = this.clientAccountService.getCurrentAccount().pipe(
       tap(user => {
         if (user) {
           this.selectedZoneId = user.geographicZone ? user.geographicZone.id : -1;

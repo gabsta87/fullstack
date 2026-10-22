@@ -23,6 +23,7 @@ import {CertificationStatus, Service} from "../../models/common.model";
 import {ModalController} from "@ionic/angular/standalone";
 import {CertificationModalComponent} from "../certification-modal/certification-modal.component";
 import {LanguageManagerService} from "../../services/language-manager.service";
+import {AccountService} from "../../services/account-service";
 
 @Component({
   selector: 'app-profile-management',
@@ -56,7 +57,8 @@ export class ProfileManagementComponent implements OnInit {
   newLangCode: string | null = null;
   newLangLevel: number | null = null;
 
-  constructor(private accountService: WorkerAccountService,
+  constructor(private workerAccountService: WorkerAccountService,
+              private accountService : AccountService,
               private route : ActivatedRoute,
               private modalController: ModalController,
               protected languageService: LanguageManagerService) {
@@ -74,10 +76,10 @@ export class ProfileManagementComponent implements OnInit {
       this.allLocations = data['locations'] || [];
     });
 
-    await firstValueFrom(this.accountService.getCurrentAccount());
+    await firstValueFrom(this.workerAccountService.getCurrentAccount());
 
     // 2. Flux unique pour l'UI & Synchronisation automatique du formulaire
-    this.currentUser$ = this.accountService.listenToMyAccount().pipe(
+    this.currentUser$ = this.workerAccountService.listenToMyAccount().pipe(
       filter((user): user is WorkerPrivateProfile => user !== null),
       tap(user => {
         // Gestion des zones et du formulaire (reste inchangé)
@@ -284,7 +286,7 @@ export class ProfileManagementComponent implements OnInit {
   async openCertificationModal(me: WorkerPrivateProfile) {
     try {
       if (!me.certificationRequest?.verificationCode || me.certificationRequest?.status === CertificationStatus.NOT_CERTIFIED) {
-        await this.accountService.requestCertification();
+        await this.workerAccountService.requestCertification();
       }
 
       await this.presentModal(me);
@@ -315,7 +317,7 @@ export class ProfileManagementComponent implements OnInit {
 
       try {
         // On délègue l'appel au service. Le service émettra la nouvelle version du profil.
-        await this.accountService.uploadCertificationPhoto(formData);
+        await this.workerAccountService.uploadCertificationPhoto(formData);
       } catch (err) {
         console.error("Erreur lors de l'envoi de la photo de certification", err);
       }
@@ -351,7 +353,7 @@ export class ProfileManagementComponent implements OnInit {
 
 // Appel Backend
   private async saveLanguages() {
-    await this.accountService.updateSpokenLanguages(this.profileLanguages);
+    await this.workerAccountService.updateSpokenLanguages(this.profileLanguages);
   }
 
   // ── Value modification ─────────────────────────────────────────────────────────
@@ -369,15 +371,15 @@ export class ProfileManagementComponent implements OnInit {
     }
 
     console.log("Services à envoyer au serveur:", updatedServices);
-    await this.accountService.updateServices(updatedServices);
+    await this.workerAccountService.updateServices(updatedServices);
   }
 
   async toggleAvailable(currentAvailability: boolean) {
-    await this.accountService.setAvailability(currentAvailability);
+    await this.workerAccountService.setAvailability(currentAvailability);
   }
 
   async toggleVisible(currentVisibility: boolean){
-    await this.accountService.setVisibility(currentVisibility);
+    await this.workerAccountService.setVisibility(currentVisibility);
   }
 
   async updateProfileField(field: keyof WorkerProfileUpdate, value: any) {
@@ -387,7 +389,7 @@ export class ProfileManagementComponent implements OnInit {
 
     console.log(`Envoi au serveur pour [${field}] :`, value);
     try {
-      await this.accountService.updateProfile({ [field]: value });
+      await this.workerAccountService.updateProfile({ [field]: value });
       this.lastServerState[field] = value;
     } catch (error) {
       console.error(`Échec de la mise à jour pour ${field}`, error);
@@ -439,19 +441,19 @@ export class ProfileManagementComponent implements OnInit {
       }
     }
 
-    await this.accountService.uploadMedia(fileList);
+    await this.workerAccountService.uploadMedia(fileList);
   }
 
   async setMain(photo: PhotoItem) {
-    await this.accountService.setMainPhoto(photo.id);
+    await this.workerAccountService.setMainPhoto(photo.id);
   }
 
   async deletePhoto(photo: PhotoItem) {
-    await this.accountService.deletePhoto(photo.id);
+    await this.workerAccountService.deletePhoto(photo.id);
   }
 
   async deleteVideo(video: VideoItem){
-    await this.accountService.deleteVideo(video.id);
+    await this.workerAccountService.deleteVideo(video.id);
   }
 
   // DRAG AND DROP REORDER
@@ -482,7 +484,7 @@ export class ProfileManagementComponent implements OnInit {
     const orderedIds = this.photos.map(p => p.id);
 
     try {
-      await this.accountService.reorderPhotos(orderedIds);
+      await this.workerAccountService.reorderPhotos(orderedIds);
     } catch (error) {
       console.error("Erreur lors de la sauvegarde de l'ordre des photos", error);
     }
@@ -499,7 +501,7 @@ export class ProfileManagementComponent implements OnInit {
     const { payload, setLoading, setSuccess, setError } = event;
 
     try {
-      await this.accountService.updateProfileData(payload);
+      await this.accountService.updateSettings(payload);
       setSuccess('Vos paramètres de compte ont été mis à jour avec succès.');
     } catch (err: any) {
       setError(err?.error?.message || 'Une erreur est survenue lors de la mise à jour.');

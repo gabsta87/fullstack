@@ -55,14 +55,6 @@ export class WorkerAccountService {
     return updatedAccount;
   }
 
-  async updateProfileData(payload: any): Promise<WorkerPrivateProfile> {
-    const updatedAccount = await firstValueFrom(
-      this.http.patch<WorkerPrivateProfile>(`${this.base}/data`, payload)
-    );
-    this.accountSubject.next(updatedAccount);
-    return updatedAccount;
-  }
-
   async updateProfile(data: WorkerProfileUpdate): Promise<WorkerPrivateProfile> {
     const updatedAccount = await firstValueFrom(
       this.http.patch<WorkerPrivateProfile>(`${this.base}/profile`, data)
