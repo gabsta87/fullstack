@@ -37,7 +37,7 @@
             </ion-button>
           </ng-container>
 
-          <ion-button (click)="openAccount()" fill="clear" class="nav-link-btn">
+          <ion-button *ngIf="!authService.isAdmin" (click)="openAccount()" fill="clear" class="nav-link-btn">
             <ion-icon name="person-circle-outline" slot="start"></ion-icon>
             {{ t.header?.account }}
           </ion-button>
