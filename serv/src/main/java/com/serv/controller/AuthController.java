@@ -110,9 +110,7 @@ public class AuthController {
         if (userRepository.findByEmail(req.email()).isPresent())
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Email already taken.");
 
-        // TODO check email
-
-        // TODO check password
+        // TODO check email by sending an email
 
         Worker worker = new Worker(new Email(req.email()), req.password());
         worker.setBanned(false);
