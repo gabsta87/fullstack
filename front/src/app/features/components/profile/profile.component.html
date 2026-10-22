@@ -18,7 +18,7 @@
 
         <aside class="sidebar">
           <div class="profile-card">
-            <img [src]="worker.mainThumbUrl" alt="Avatar" class="avatar-img">
+            <img [src]="worker.mainThumbUrl ? worker.mainThumbUrl : 'assets/images/test_profile_placeholder.jpg'" alt="Avatar" class="avatar-img">
             <h2>{{ worker.username }}</h2>
             <p class="location"><ion-icon name="location-outline"></ion-icon> {{ worker.geographicZone?.name }}</p>
           </div>
@@ -111,7 +111,7 @@
             <div class="gallery-grid">
               <img *ngFor="let p of worker.photos"
                    class="media-item"
-                   [src]="p.mainThumbUrl"
+                   [src]="worker.mainThumbUrl ? worker.mainThumbUrl : 'assets/images/test_profile_placeholder.jpg'"
                    (click)="openMedia(p)">
             </div>
           </div>

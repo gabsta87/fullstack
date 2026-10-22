@@ -391,7 +391,7 @@
                      (dragend)="onDragEnd()"
                      [class.drag-over]="dragOverIndex === i">
 
-                  <img [src]="photo.mainThumbUrl" class="gallery-img"/>
+                  <img [src]="photo.mainThumbUrl ? photo.mainThumbUrl : 'assets/images/test_profile_placeholder.jpg'" class="gallery-img"/>
 
                   <div class="gallery-actions-overlay">
                     <ion-button [color]="photo.isMain ? 'warning' : 'light'" fill="clear" size="small"

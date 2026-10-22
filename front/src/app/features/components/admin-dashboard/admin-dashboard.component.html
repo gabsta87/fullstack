@@ -235,7 +235,7 @@
           <h4>{{ t.admin?.certif_tab?.other_photos_title }}</h4>
           <div *ngIf="selectedWorkerDetails.photos && selectedWorkerDetails.photos.length > 0" class="other-photos-container">
             <img *ngFor="let p of selectedWorkerDetails.photos"
-                 [src]="p.mainThumbUrl"
+                 [src]="p.mainThumbUrl ? p.mainThumbUrl : 'assets/images/test_profile_placeholder.jpg'"
                  (click)="openImagePreview(p.mainThumbUrl, certificationPreviewList)"
                  class="other-thumb-img"
                  alt="Photo annonceur" />

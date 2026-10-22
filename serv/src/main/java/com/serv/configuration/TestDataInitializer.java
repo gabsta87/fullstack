@@ -184,8 +184,7 @@ public class TestDataInitializer implements ApplicationRunner {
 
         Worker w = new Worker(username, new Email(email), encodedPassword);
 
-        // Paramètres standards
-        w.setUsername(displayName); // Utilise le set de nom approprié selon ton modèle
+        w.setUsername(displayName);
         w.setAvailable(available);
         w.setLastRefreshed(lastRefreshed);
         w.setGeographicZone(zone);
@@ -198,26 +197,9 @@ public class TestDataInitializer implements ApplicationRunner {
         w.setGalleryPositionPriority(0);
         w.addSpokenLanguage(new WorkerLanguage(Language.EN, 3));
         w.setExpired(false);
-
-        // 🎯 Intégration de tes nouvelles propriétés d'abonnement
         w.setRemainingDaysCredit(remainingDays);
-
-        // Si le crédit attribué est supérieur à 0 et qu'il est disponible, active-le
-        // (La méthode setActive déclenchera automatiquement le hasBeenActiveToday interne !)
         w.setActive(remainingDays > 0 && available);
 
-        workerRepository.save(w);
-
-        // Default photo for testing purposes
-        String placeholderPhoto = "test_profile_placeholder.jpg";
-        Photo main = new Photo();
-        main.setWorker(w);
-        main.setSortOrder(0);
-        main.setUrl(mediaBase + "/originals/test/" + placeholderPhoto);
-        main.setMainThumbUrl(mediaBase + "/thumbs/main/test/" + placeholderPhoto);
-
-        photoRepository.save(main);
-        w.setMainPhoto(main);
         workerRepository.save(w);
     }
 
