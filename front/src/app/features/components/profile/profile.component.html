@@ -18,16 +18,23 @@
 
         <aside class="sidebar">
           <div class="profile-card">
-            <img [src]="worker.mainThumbUrl ? worker.mainThumbUrl : 'assets/images/test_profile_placeholder.jpg'" alt="Avatar" class="avatar-img">
+            <img [src]="worker.mainThumbUrl ? worker.mainThumbUrl : 'assets/images/test_profile_placeholder.jpg'"
+                 alt="Avatar" class="avatar-img">
             <h2>{{ worker.username }}</h2>
-            <p class="location"><ion-icon name="location-outline"></ion-icon> {{ worker.geographicZone?.name }}</p>
+            <p class="location">
+              <ion-icon name="location-outline"></ion-icon>
+              {{ worker.geographicZone?.name }}
+            </p>
           </div>
 
           <div class="profile-card actions-card" *ngIf="worker.available || isClient">
-            <ion-button *ngIf="worker.available" expand="block" color="primary" (click)="openContactModal()">{{ t.worker_profile?.contact_btn }}</ion-button>
+            <ion-button *ngIf="worker.available" expand="block" color="primary"
+                        (click)="openContactModal()">{{ t.worker_profile?.contact_btn }}
+            </ion-button>
 
             <ion-button *ngIf="isClient" expand="block" fill="outline" color="medium" (click)="toggleFavorite()">
-              <ion-icon slot="start" [name]="isFavorite ? 'heart' : 'heart-outline'" [color]="isFavorite ? 'danger' : ''"></ion-icon>
+              <ion-icon slot="start" [name]="isFavorite ? 'heart' : 'heart-outline'"
+                        [color]="isFavorite ? 'danger' : ''"></ion-icon>
               {{ t.worker_profile?.favorite }}
             </ion-button>
 
@@ -50,7 +57,7 @@
                 <img slot="start"
                      [src]="languageService.getLanguageMeta(l.language).flag"
                      [alt]="l.language"
-                     class="language-flag-icon" />
+                     class="language-flag-icon"/>
 
                 <!-- Nom de la langue -->
                 <ion-label>
@@ -69,7 +76,7 @@
             <ion-list lines="none">
               <!-- Silhouette / Body Type -->
               <ion-item *ngIf="worker.bodyType">
-<!--                <ion-icon name="body-outline" slot="start"></ion-icon>-->
+                <!--                <ion-icon name="body-outline" slot="start"></ion-icon>-->
                 <ion-label>
                   {{ t.worker_profile?.body_type || 'Silhouette' }}:
                   {{ languageService.getBodyTypeLabel(worker.bodyType, t) }}
@@ -78,7 +85,7 @@
 
               <!-- Couleur des Yeux -->
               <ion-item *ngIf="worker.eyeColor">
-<!--                <ion-icon name="eye-outline" slot="start"></ion-icon>-->
+                <!--                <ion-icon name="eye-outline" slot="start"></ion-icon>-->
                 <ion-label>
                   {{ t.worker_profile?.eye_color || 'Yeux' }}:
                   {{ languageService.getEyeColorLabel(worker.eyeColor, t) }}
@@ -87,7 +94,7 @@
 
               <!-- Couleur des Cheveux -->
               <ion-item *ngIf="worker.hairColor">
-<!--                <ion-icon name="color-palette-outline" slot="start"></ion-icon>-->
+                <!--                <ion-icon name="color-palette-outline" slot="start"></ion-icon>-->
                 <ion-label>
                   {{ t.worker_profile?.hair_color || 'Cheveux' }}:
                   {{ languageService.getHairColorLabel(worker.hairColor, t) }}
@@ -96,7 +103,7 @@
 
               <!-- Âge -->
               <ion-item>
-<!--                <ion-icon name="woman-outline" slot="start"></ion-icon>-->
+                <!--                <ion-icon name="woman-outline" slot="start"></ion-icon>-->
                 <ion-label>{{ t.common?.age }}: {{ worker.age }} {{ t.common?.years }}</ion-label>
               </ion-item>
             </ion-list>
@@ -138,8 +145,59 @@
             </div>
           </div>
 
-          <div *ngIf="worker.comments" class="profile-card ion-margin-top">
-            <h3>{{ t.worker_profile?.reviews }} ({{ worker.comments.length }})</h3>
+          <!-- Section Avis / Commentaires -->
+          <div class="profile-card ion-margin-top">
+            <h3>{{ t.worker_profile?.reviews || 'Avis' }} ({{ worker.comments?.length || 0 }})</h3>
+
+            <!-- Formulaire de dépôt / modification de commentaire -->
+            <div *ngIf="isClient" class="ion-margin-bottom"
+                 style="border-bottom: 1px solid var(--border, #e8e4df); padding-bottom: 16px;">
+              <ion-item lines="none" class="venus-input"
+                        style="border: 1px solid var(--border, #e8e4df); border-radius: 8px; margin-bottom: 10px;">
+                <ion-textarea
+                  [(ngModel)]="newCommentText"
+                  [placeholder]="t.worker_profile?.write_review_placeholder || 'Rédigez ou modifiez votre avis...'"
+                  [rows]="3"
+                  auto-grow="true">
+                </ion-textarea>
+              </ion-item>
+              <div class="ion-text-end">
+                <ion-button size="small" [disabled]="isSubmittingReview || !newCommentText.trim()"
+                            (click)="submitReview()">
+                  <ion-spinner name="crescent" slot="start" *ngIf="isSubmittingReview"></ion-spinner>
+                  {{ (newCommentText && worker.comments && hasMyComment()) ? (t.common?.update || 'Mettre à jour') : (t.common?.publish || 'Publier') }}
+                </ion-button>
+              </div>
+            </div>
+
+            <!-- Liste des commentaires -->
+            <div *ngIf="worker.comments && worker.comments.length > 0; else noComments" class="comments-list">
+              <div *ngFor="let comment of worker.comments"
+                   style="padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.04);">
+                <div
+                  style="display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 0.9rem; margin-bottom: 4px;">
+                  <div>
+                    <span>{{ comment.authorUsername }}</span>
+                    <!-- Petit badge optionnel "Votre avis" pour l'auteur connecté -->
+                    <ion-badge *ngIf="comment.authorId === authService.getUser()?.id" color="light"
+                               style="margin-left: 6px; font-size: 0.7rem;">
+                      Votre avis
+                    </ion-badge>
+                  </div>
+                  <span style="font-weight: normal; font-size: 0.8rem; color: var(--text-muted, #8c7d75);">
+          {{ comment.date | date:'shortDate' }}
+        </span>
+                </div>
+                <p
+                  style="margin: 0; font-size: 0.95rem; color: var(--text-dark, #332d29); white-space: pre-line;">{{ comment.content }}</p>
+              </div>
+            </div>
+
+            <ng-template #noComments>
+              <p class="faded" style="font-size: 0.9rem; font-style: italic; margin-top: 10px;">
+                {{ t.worker_profile?.no_reviews || 'Aucun avis pour le moment.' }}
+              </p>
+            </ng-template>
           </div>
         </main>
 
@@ -182,8 +240,10 @@
                       class="fullscreen-media"/>
 
                     <!-- Flèches de navigation -->
-                    <ion-icon (click)="slidePrev()" class="gallerySideButton left" name="chevron-back-outline"></ion-icon>
-                    <ion-icon (click)="slideNext()" class="gallerySideButton right" name="chevron-forward-outline"></ion-icon>
+                    <ion-icon (click)="slidePrev()" class="gallerySideButton left"
+                              name="chevron-back-outline"></ion-icon>
+                    <ion-icon (click)="slideNext()" class="gallerySideButton right"
+                              name="chevron-forward-outline"></ion-icon>
                   </div>
                 </swiper-slide>
 

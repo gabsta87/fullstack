@@ -3,11 +3,14 @@ package com.serv.database.entities;
 import com.serv.common.TablesNames;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.Date;
 
 @Data
 @Entity
+@NoArgsConstructor
 @Table(name = TablesNames.COMMENTS)
 public class Comment {
     @Id
@@ -19,12 +22,22 @@ public class Comment {
     private String content;
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false)
-    private Client user;
+    private Client author;
     @Basic(optional = false)
     @Column(nullable = false)
-    private Date date;
+    private Instant date;
     @ManyToOne
     @JoinColumn(name = "worker_id")
     private Worker worker;
 
+    public Comment(Client author, Worker target, String content) {
+        this.author = author;
+        this.worker = target;
+        this.content = content;
+        this.date = Instant.now();
+    }
+
+    public void refreshDate() {
+        this.date = Instant.now();
+    }
 }

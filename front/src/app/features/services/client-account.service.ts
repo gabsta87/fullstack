@@ -54,4 +54,8 @@ export class ClientAccountService {
   async reportAccount(reason: string, workerId: string): Promise<any> {
     return await firstValueFrom(this.http.post(`${this.base}/report-account`, {reason, workerId}));
   }
+
+  async postComment(workerId: string, content: string): Promise<any> {
+    return await firstValueFrom(this.http.post(`${this.base}/comment`, { workerId, content }));
+  }
 }

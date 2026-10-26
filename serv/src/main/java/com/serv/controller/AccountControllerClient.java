@@ -1,17 +1,16 @@
 package com.serv.controller;
 
 import com.serv.common.ReportStatus;
-import com.serv.database.entities.Client;
-import com.serv.database.entities.Email;
-import com.serv.database.entities.Report;
-import com.serv.database.entities.Worker;
+import com.serv.database.entities.*;
 import com.serv.database.repositories.ClientRepository;
+import com.serv.database.repositories.CommentRepository;
 import com.serv.database.repositories.ReportRepository;
 import com.serv.database.repositories.WorkerRepository;
 import com.serv.dto.ClientDTO;
+import com.serv.dto.CommentDTO;
 import com.serv.dto.GalleryFiltersDTO;
 import com.serv.dto.ReportDTO;
-import com.serv.requests.AccountData;
+import com.serv.requests.CommentRequest;
 import com.serv.service.WorkerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,6 +33,7 @@ public class AccountControllerClient {
     private final WorkerService galleryService;
     private final ClientRepository clientRepository;
     private final ReportRepository reportRepository;
+    private final CommentRepository commentRepository;
 
     @GetMapping("/me")
     @Transactional(readOnly = true)
@@ -95,15 +95,13 @@ public class AccountControllerClient {
     @PostMapping("/report-account")
     @Transactional
     public ResponseEntity<?> reportWorker(@RequestBody com.serv.requests.Report body, Client clientArg){
-        System.out.println("Report request received");
         Client c = clientRepository.findById(clientArg.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client introuvable"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
 
         Worker w = workerRepository.findById(UUID.fromString(body.workerId())).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker introuvable")
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Targeted announcer not found")
         );
 
-        System.out.println("Report worker "+w.getUsername()+" by client "+c.getUsername()+" with reason "+body.reason());
         Report r = reportRepository.findByWorkerAndAuthor(w, c).orElse(null);
         if(r == null){
             r = new Report(w, c, body.reason());
@@ -116,6 +114,31 @@ public class AccountControllerClient {
         }
 
         return ResponseEntity.ok(ReportDTO.from(r));
+    }
+
+    @PostMapping("/comment")
+    @Transactional
+    public ResponseEntity<?> writeComment(@RequestBody CommentRequest body, Client clientArg) {
+        Client c = clientRepository.findById(clientArg.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
+
+        Worker w = workerRepository.findById(UUID.fromString(body.workerId())).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Targeted announcer not found")
+        );
+
+        Comment comm = commentRepository.findByAuthorAndWorker(c, w).orElse(null);
+
+        if(comm == null){
+            // New comment
+            comm = new Comment(c,w,body.content());
+            commentRepository.save(comm);
+        }else{
+            // Edit comment
+            comm.setContent(body.content());
+            comm.refreshDate();
+            commentRepository.save(comm);
+        }
+        return ResponseEntity.ok(CommentDTO.from(comm));
     }
 
 }

@@ -4,22 +4,49 @@ import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {
   IonBadge,
-  IonButton, IonButtons, IonChip, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonModal, IonToolbar,
+  IonButton,
+  IonButtons,
+  IonChip,
+  IonContent,
+  IonHeader,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonModal,
+  IonSpinner,
+  IonTextarea,
+  IonToolbar,
 } from '@ionic/angular/standalone';
 import {addIcons} from 'ionicons';
 import {
-  bodyOutline, calendarOutline, callOutline, chevronBackOutline, chevronForwardOutline, closeOutline, heart, heartOutline,
-  locationOutline, logoWhatsapp, notifications, notificationsOutline, personOutline, playCircleOutline, timeOutline,
-  warningOutline, womanOutline, alertCircleOutline
+  alertCircleOutline,
+  bodyOutline,
+  calendarOutline,
+  callOutline,
+  chevronBackOutline,
+  chevronForwardOutline,
+  closeOutline,
+  heart,
+  heartOutline,
+  locationOutline,
+  logoWhatsapp,
+  notifications,
+  notificationsOutline,
+  personOutline,
+  playCircleOutline,
+  timeOutline,
+  warningOutline,
+  womanOutline
 } from 'ionicons/icons';
-import {PhotoItem, Comment, VideoItem} from '../../models/items.model';
+import {Comment, PhotoItem, VideoItem} from '../../models/items.model';
 import {WorkerPublicFullProfile} from "../../models/user.model";
 import {HeaderComponent} from "../header/header.component";
 import {ClientAccountService} from "../../services/client-account.service";
 import {AuthService} from "../../services/auth.service";
-import {Subscription} from "rxjs";
 import {Service} from "../../models/common.model";
 import {LanguageManagerService} from "../../services/language-manager.service";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-profile',
@@ -28,7 +55,7 @@ import {LanguageManagerService} from "../../services/language-manager.service";
   standalone: true,
   imports: [
     CommonModule, FormsModule, IonContent, IonHeader, IonToolbar, IonButtons,
-    IonButton, IonIcon, IonList, IonItem, IonLabel, IonChip, HeaderComponent, IonModal, IonBadge,
+    IonButton, IonIcon, IonList, IonItem, IonLabel, IonChip, HeaderComponent, IonModal, IonBadge, IonTextarea, IonSpinner,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
@@ -48,15 +75,14 @@ export class ProfileComponent implements OnInit, OnDestroy {
   isImageOpen    = false;
   isContactOpen  = false;
 
-  selectedPhotoIndex = 0;
   private clientAccountSub?: Subscription;
 
-  newReview = { rating: 0, text: '' };
-  starRange = [1, 2, 3, 4, 5];
+  newCommentText: string = '';
+  isSubmittingReview: boolean = false;
 
   constructor(private route: ActivatedRoute,
               private clientAccountService: ClientAccountService,
-              private authService : AuthService,
+              protected authService : AuthService,
               private router: Router,
               protected languageService : LanguageManagerService
   ) {
@@ -82,6 +108,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
     const currentUser = this.authService.getUser();
     this.isClient = currentUser?.role === 'CLIENT';
+
+    if (this.worker && this.worker.comments) {
+      this.sortAndPrepareComments(currentUser?.id);
+    }
 
     if (this.isClient && this.worker) {
       this.clientAccountSub = this.clientAccountService.listenToMyAccount().subscribe({
@@ -215,21 +245,67 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   // ── Reviews ───────────────────────────────────────────────────────────────
 
-  // submitReview(): void {
-  //   if (!this.worker || !this.newReview.text || !this.newReview.rating) return;
-  //   const r: Review = {
-  //     author: 'Vous',
-  //     date:   new Date().toISOString(),
-  //     text:   this.newReview.text,
-  //   };
-  //   this.worker.reviews.unshift(r);
-  //   this.newReview = { rating: 0, text: '' };
-  //   // TODO: ReviewService.post(this.worker.id, r)
-  // }
+  async submitReview(): Promise<void> {
+    if (!this.worker || !this.newCommentText.trim() || !this.isClient) return;
 
-  ratingFill(s: number, rating: number): string {
-    return s <= rating ? '#c8956c' : '#e8e4df';
+    this.isSubmittingReview = true;
+    try {
+      const savedComment: Comment = await this.clientAccountService.postComment(this.worker.id, this.newCommentText);
+
+      if (!this.worker.comments) {
+        this.worker.comments = [];
+      }
+
+      const currentUser = this.authService.getUser();
+      const existingIndex = this.worker.comments.findIndex(c => c.authorId === currentUser?.id);
+
+      if (existingIndex >= 0) {
+        // Édition d'un commentaire existant
+        this.worker.comments[existingIndex] = savedComment;
+      } else {
+        // Nouveau commentaire
+        this.worker.comments.unshift(savedComment);
+      }
+
+      // Ré-appliquer le tri et s'assurer que le commentaire reste en haut
+      this.sortAndPrepareComments(currentUser?.id);
+
+    } catch (err) {
+      console.error("Erreur lors de l'envoi du commentaire :", err);
+      alert("Impossible d'enregistrer le commentaire.");
+    } finally {
+      this.isSubmittingReview = false;
+    }
   }
+
+  /**
+   * Trie les commentaires :
+   * 1. Le commentaire du client connecté tout en haut.
+   * 2. Les autres commentaires triés du plus récent au plus ancien.
+   * 3. PRÉ-REMPLIT le champ de texte si le client a déjà rédigé un commentaire.
+   */
+  private sortAndPrepareComments(currentUserId?: string): void {
+    if (!this.worker || !this.worker.comments) return;
+
+    // Tri par date décroissante (plus récent d'abord)
+    this.worker.comments.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    if (currentUserId) {
+      const myComment = this.worker.comments.find(c => c.authorId === currentUserId);
+      if (myComment) {
+        // Pré-remplir le champ de modification avec l'avis existant
+        this.newCommentText = myComment.content;
+
+        // Retirer son commentaire de la liste globale puis le placer tout en haut
+        this.worker.comments = [
+          myComment,
+          ...this.worker.comments.filter(c => c.authorId !== currentUserId)
+        ];
+      }
+    }
+  }
+
+  hasMyComment(): boolean { return this.worker?.comments?.some(c => c.authorId === this.authService.getUser()?.id) ?? false; }
 
   ngOnDestroy(): void {
     document.body.style.overflow = '';

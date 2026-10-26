@@ -142,7 +142,8 @@
       "report": "Report",
       "body_type": "Body type",
       "about": "About",
-      "reviews": "Reviews"
+      "reviews": "Reviews",
+      "no_reviews": "No reviews yet."
     },
     "reset_password": {
       "title": "New password",
@@ -424,7 +425,8 @@
       "report": "Signaler",
       "body_type": "Silhouette",
       "about": "À propos",
-      "reviews": "Avis"
+      "reviews": "Avis",
+      "no_reviews": "Aucun avis pour le moment"
     },
     "reset_password": {
       "title": "Nouveau mot de passe",
@@ -706,7 +708,8 @@
       "report": "Melden",
       "body_type": "Körpertyp",
       "about": "Über mich",
-      "reviews": "Bewertungen"
+      "reviews": "Bewertungen",
+      "no_reviews": "Noch keine Bewertungen"
     },
     "reset_password": {
       "title": "Neues Passwort",
@@ -988,7 +991,8 @@
       "report": "Denunciar",
       "body_type": "Silueta",
       "about": "Sobre mí",
-      "reviews": "Opiniones"
+      "reviews": "Opiniones",
+      "no_reviews": "Aún no hay opiniones"
     },
     "reset_password": {
       "title": "Nueva contraseña",
@@ -1270,7 +1274,8 @@
       "report": "Denunciar",
       "body_type": "Silhueta",
       "about": "Sobre mim",
-      "reviews": "Avaliações"
+      "reviews": "Avaliações",
+      "no_reviews": "Ainda não há comentários"
     },
     "reset_password": {
       "title": "Nova palavra-passe",
@@ -1552,7 +1557,8 @@
       "report": "Segnala",
       "body_type": "Corporatura",
       "about": "Informazioni",
-      "reviews": "Recensioni"
+      "reviews": "Recensioni",
+      "no_reviews": "Ancora nessuna recensione"
     },
     "reset_password": {
       "title": "Nuova password",
@@ -1834,7 +1840,8 @@
       "report": "Пожаловаться",
       "body_type": "Тип фигуры",
       "about": "О себе",
-      "reviews": "Отзывы"
+      "reviews": "Отзывы",
+      "no_reviews": "Отзывов пока нет"
     },
     "reset_password": {
       "title": "Новый пароль",
@@ -2116,7 +2123,8 @@
       "report": "Поскаржитися",
       "body_type": "Тип фігури",
       "about": "Про себе",
-      "reviews": "Відгуки"
+      "reviews": "Відгуки",
+      "no_reviews": "Відгуків ще немає"
     },
     "reset_password": {
       "title": "Новий пароль",
@@ -2398,7 +2406,8 @@
       "report": "الإبلاغ",
       "body_type": "نوع الجسم",
       "about": "نبذة",
-      "reviews": "التعليقات"
+      "reviews": "التعليقات",
+      "no_reviews": "لا توجد تقييمات حتى الآن"
     },
     "reset_password": {
       "title": "كلمة مرور جديدة",

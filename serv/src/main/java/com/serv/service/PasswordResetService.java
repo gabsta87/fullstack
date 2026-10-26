@@ -47,7 +47,7 @@ public class PasswordResetService {
                 + "<p>Bonjour,</p>"
                 + "<p>" + introContext + "</p>"
                 + "<p style='margin: 20px 0;'>"
-                + "  <a href='" + resetUrl + "' style='background-color: #3880ff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; display: inline-block;'>"
+                + "  <a href='" + resetUrl + "' style='background-color: #3880ff; color: white; padding: 10px 20px; content-decoration: none; border-radius: 4px; display: inline-block;'>"
                 + "    Configurer mon mot de passe"
                 + "  </a>"
                 + "</p>"
