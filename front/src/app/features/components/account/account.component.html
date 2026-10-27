@@ -7,6 +7,10 @@
         <ion-segment-button value="favorites">
           <ion-label>{{ t.account?.tabs?.favorites }}</ion-label>
         </ion-segment-button>
+
+        <ion-segment-button value="comments">
+          <ion-label>{{ t.account?.tabs?.comments || 'Mes Commentaires' }}</ion-label>
+        </ion-segment-button>
 <!--        <ion-segment-button value="settings">-->
 <!--          <ion-label>{{ t.account?.tabs?.settings }}</ion-label>-->
 <!--        </ion-segment-button>-->
@@ -35,6 +39,78 @@
           <ion-icon name="heart-dislike-outline"></ion-icon>
           <p>{{ t.account?.favorites?.empty }}</p>
         </div>
+      </div>
+
+      <!-- ONGLET MES COMMENTAIRES -->
+      <div *ngIf="activeTab === 'comments'" class="fade-in ion-padding">
+        <div class="section-header">
+          <h2>{{ t.account?.comments?.title || 'Mes Commentaires' }} ({{ user.reviews?.length || 0 }})</h2>
+        </div>
+
+        <div *ngIf="user.reviews && user.reviews.length > 0; else emptyComments" class="comments-container">
+          <ion-card *ngFor="let comment of user.reviews" class="comment-card ion-margin-bottom">
+            <ion-card-header style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <ion-card-title style="font-size: 1.1rem; font-weight: 600;">
+                  {{ comment.authorUsername }}
+                </ion-card-title>
+                <ion-card-subtitle style="font-size: 0.8rem; color: var(--text-muted, #8c7d75);">
+                  {{ comment.date | date:'shortDate' }}
+                </ion-card-subtitle>
+              </div>
+
+              <!-- Action : Visiter le profil -->
+              <ion-button fill="clear" size="small" (click)="navigateToWorker(comment.workerId)">
+                <ion-icon name="open-outline" slot="start"></ion-icon>
+                Voir profil
+              </ion-button>
+            </ion-card-header>
+
+            <ion-card-content>
+              <!-- Mode Édition en ligne -->
+              <div *ngIf="editingCommentId === comment.id; else readOnlyComment">
+                <ion-item lines="none" class="venus-input" style="border: 1px solid var(--border, #e8e4df); border-radius: 8px; margin-bottom: 10px;">
+                  <ion-textarea [(ngModel)]="editingCommentText" [rows]="3" auto-grow="true"></ion-textarea>
+                </ion-item>
+
+                <div class="ion-text-end" style="display: flex; justify-content: flex-end; gap: 8px;">
+                  <ion-button size="small" fill="outline" color="medium" (click)="cancelEditComment()">
+                    Annuler
+                  </ion-button>
+                  <ion-button size="small" [disabled]="isSavingComment || !editingCommentText.trim()" (click)="saveComment(comment)">
+                    <ion-spinner name="crescent" slot="start" *ngIf="isSavingComment"></ion-spinner>
+                    Enregistrer
+                  </ion-button>
+                </div>
+              </div>
+
+              <!-- Mode Lecture seule -->
+              <ng-template #readOnlyComment>
+                <p style="margin: 0; font-size: 0.95rem; color: var(--text-dark, #332d29); white-space: pre-line;">
+                  {{ comment.content }}
+                </p>
+
+                <div class="ion-text-end ion-margin-top" style="display: flex; justify-content: flex-end; gap: 8px;">
+                  <ion-button fill="clear" color="primary" size="small" (click)="startEditComment(comment)">
+                    <ion-icon name="create-outline" slot="start"></ion-icon>
+                    Modifier
+                  </ion-button>
+                  <ion-button fill="clear" color="danger" size="small" (click)="deleteComment(comment.id, user)">
+                    <ion-icon name="trash-outline" slot="start"></ion-icon>
+                    Supprimer
+                  </ion-button>
+                </div>
+              </ng-template>
+            </ion-card-content>
+          </ion-card>
+        </div>
+
+        <ng-template #emptyComments>
+          <div class="empty-favorites">
+            <ion-icon name="chatbubbles-outline"></ion-icon>
+            <p>{{ t.account?.comments?.empty || 'Vous n\'avez posté aucun commentaire pour le moment.' }}</p>
+          </div>
+        </ng-template>
       </div>
 
       <!-- ONGLET RÉGLAGES -->

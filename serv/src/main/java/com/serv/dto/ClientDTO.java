@@ -9,7 +9,8 @@ public record ClientDTO(
         String role,
         String email,
         List<WorkerMinimalProfileDTO> favorites,
-        GeographicZoneWithChildrenDTO geographicZone
+        GeographicZoneWithChildrenDTO geographicZone,
+        List<CommentDTO> reviews
 ) {
     public static ClientDTO from(com.serv.database.entities.Client c) {
         return new ClientDTO(
@@ -24,7 +25,12 @@ public record ClientDTO(
                         new ArrayList<>(),
                 c.getGeographicZone() != null ?
                         GeographicZoneWithChildrenDTO.from(c.getGeographicZone()) :
-                        null
+                        null,
+                c.getComments() != null ?
+                        c.getComments().stream()
+                        .map(CommentDTO::from)
+                        .toList() :
+                        new ArrayList<>()
         );
     }
 }

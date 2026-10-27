@@ -107,7 +107,6 @@ public class AccountControllerClient {
             r = new Report(w, c, body.reason());
             reportRepository.save(r);
         }else if(r.getStatus() == ReportStatus.PENDING){
-            r = reportRepository.findByWorkerAndAuthor(w, c).get();
             r.setReason(body.reason());
         }else{
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Account already reported");
@@ -139,6 +138,27 @@ public class AccountControllerClient {
             commentRepository.save(comm);
         }
         return ResponseEntity.ok(CommentDTO.from(comm));
+    }
+
+    @DeleteMapping("/comment/{commentId}")
+    @Transactional
+    public ResponseEntity<?> deleteComment(@PathVariable Long commentId, Client clientArg) {
+        Comment comm = commentRepository.findById(commentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Commentaire introuvable"));
+
+        if (comm.getAuthor() == null || !comm.getAuthor().getId().equals(clientArg.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not authorized");
+        }
+
+        clientArg.removeComment(comm);
+
+        if (comm.getWorker() != null) {
+            comm.getWorker().removeComment(comm);
+        }
+
+        commentRepository.delete(comm);
+
+        return ResponseEntity.ok(ClientDTO.from(clientArg));
     }
 
 }

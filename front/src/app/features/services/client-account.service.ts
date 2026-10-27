@@ -58,4 +58,8 @@ export class ClientAccountService {
   async postComment(workerId: string, content: string): Promise<any> {
     return await firstValueFrom(this.http.post(`${this.base}/comment`, { workerId, content }));
   }
+
+  async deleteComment(commentId: number): Promise<void> {
+    await firstValueFrom(this.http.delete(`${this.base}/comment/${commentId}`));
+  }
 }

@@ -33,7 +33,8 @@ public record WorkerFullProfileDTO(
         Boolean       isCertified,
         CertificationRequestDTO certificationRequest,
         String        lastRefreshed,
-        List<SpokenLanguageDTO> spokenLanguages
+        List<SpokenLanguageDTO> spokenLanguages,
+        List<CommentDTO> reviews
 ) {
     public static WorkerFullProfileDTO from(Worker w) {
         String mainThumb = w.getMainPhoto() != null
@@ -69,7 +70,8 @@ public record WorkerFullProfileDTO(
                 w.isCertified(),
                 w.getLastCertificationRequest() != null ?CertificationRequestDTO.from(w.getLastCertificationRequest()) : null,
                 w.getLastRefreshed() != null ? w.getLastRefreshed().toString() : null,
-                w.getSpokenLanguages().stream().map(SpokenLanguageDTO::from).toList()
+                w.getSpokenLanguages().stream().map(SpokenLanguageDTO::from).toList(),
+                w.getComments().stream().map(CommentDTO::from).toList()
         );
     }
 }

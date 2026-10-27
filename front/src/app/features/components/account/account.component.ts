@@ -3,48 +3,47 @@ import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {IonicModule} from '@ionic/angular';
 import {ClientAccountService} from '../../services/client-account.service';
-import { BODY_TYPES_LIST} from '../../models/items.model';
 import {WorkerCardComponent} from '../worker-card/worker-card.component';
 import {HeaderComponent} from '../header/header.component';
 import {Observable} from "rxjs";
 import {ClientProfile} from "../../models/user.model";
 import {AccountSettingsComponent} from "../account-settings/account-settings.component";
 import {GeographicZone} from "../../models/filter.model";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {tap} from "rxjs/operators";
 import {ZoneSelectorComponent} from "../zone-selector/zone-selector.component";
 import { addIcons } from 'ionicons';
-import { heartDislikeOutline, checkmarkCircle } from 'ionicons/icons';
+import { heartDislikeOutline, checkmarkCircle, chatbubblesOutline, trashOutline, createOutline, openOutline } from 'ionicons/icons';
 import {LanguageManagerService} from "../../services/language-manager.service";
 import {AccountService} from "../../services/account-service";
+import {Comment} from "../../models/items.model";
 
 @Component({
   selector: 'app-account',
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, WorkerCardComponent, HeaderComponent, AccountSettingsComponent, ZoneSelectorComponent],
+  imports: [CommonModule, FormsModule, IonicModule, WorkerCardComponent, HeaderComponent, AccountSettingsComponent],
   templateUrl: './account.component.html',
   styleUrls: ['./account.component.scss']
 })
 export class AccountComponent implements OnInit {
   currentUser$: Observable<ClientProfile>;
-  activeTab: 'favorites' | 'settings' | 'account' = 'favorites';
+  activeTab: 'favorites' | 'settings' | 'comments' | 'account' = 'favorites';
 
   locations!:GeographicZone[] ;
   availableServices: string[] | undefined;
   selectedZoneId: number | undefined = undefined;
-
-  selectionStates = {
-    bodyType: {} as Record<string, boolean>,
-    services: {} as Record<string, boolean>
-  };
+  editingCommentId: number | null = null;
+  editingCommentText: string = '';
+  isSavingComment: boolean = false;
 
   constructor(
     private clientAccountService: ClientAccountService,
     private accountService: AccountService,
     protected languageService: LanguageManagerService,
     private route : ActivatedRoute,
+    private router: Router
   ) {
-    addIcons({ heartDislikeOutline, checkmarkCircle });
+    addIcons({ heartDislikeOutline, checkmarkCircle,chatbubblesOutline, trashOutline, createOutline, openOutline });
     this.currentUser$ = this.clientAccountService.getCurrentAccount().pipe(
       tap(user => {
         if (user) {
@@ -59,10 +58,6 @@ export class AccountComponent implements OnInit {
       this.availableServices = data['services'] || [];
       this.locations = data['locations'] || [];
     });
-  }
-
-  setTab(tab: 'account' | 'favorites' | 'settings') {
-    this.activeTab = tab;
   }
 
   updateLocation() {
@@ -93,6 +88,60 @@ export class AccountComponent implements OnInit {
       setError(err?.error?.message || 'Une erreur est survenue lors de la mise à jour.');
     } finally {
       setLoading(false);
+    }
+  }
+
+  // Navigation vers le profil de l'annonceur
+  navigateToWorker(workerId: string): void {
+    this.router.navigate(['/profile'], {
+      queryParams: { id: workerId },
+      state: { from: this.router.url }
+    });
+  }
+
+  // Lancer l'édition d'un commentaire
+  startEditComment(comment: Comment): void {
+    this.editingCommentId = comment.id;
+    this.editingCommentText = comment.content;
+  }
+
+  cancelEditComment(): void {
+    this.editingCommentId = null;
+    this.editingCommentText = '';
+  }
+
+  // Sauvegarder la modification d'un commentaire
+  async saveComment(comment: Comment): Promise<void> {
+    if (!this.editingCommentText.trim()) return;
+    this.isSavingComment = true;
+
+    try {
+      await this.clientAccountService.postComment(comment.workerId, this.editingCommentText);
+
+      // Mise à jour locale
+      comment.content = this.editingCommentText;
+      comment.date = new Date().toISOString();
+
+      this.cancelEditComment();
+    } catch (err) {
+      console.error("Erreur lors de la modification du commentaire", err);
+      alert("Erreur lors de la mise à jour.");
+    } finally {
+      this.isSavingComment = false;
+    }
+  }
+
+  // Supprimer un commentaire
+  async deleteComment(commentId: number, user: ClientProfile): Promise<void> {
+    if (!confirm("Voulez-vous vraiment supprimer ce commentaire ?")) return;
+
+    try {
+      await this.clientAccountService.deleteComment(commentId);
+      // Retrait local pour mise à jour synchrone sans rechargement
+      user.reviews = user.reviews.filter(c => c.id !== commentId);
+    } catch (err) {
+      console.error("Erreur lors de la suppression", err);
+      alert("Impossible de supprimer le commentaire.");
     }
   }
 }

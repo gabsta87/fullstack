@@ -229,6 +229,11 @@ public class Worker extends VenusUser {
         this.setVerificationCode(null);
     }
 
+    public void removeComment(Comment comment) {
+        this.comments.remove(comment);
+        comment.setWorker(null);
+    }
+
     public void setShortDescription(String shortDescription) {
         if (shortDescription != null && shortDescription.length() > 45) {
             // Tronque automatiquement et ajoute une ellipse si le texte dépasse

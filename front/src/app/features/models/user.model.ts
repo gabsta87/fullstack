@@ -55,6 +55,7 @@ export interface WorkerPrivateProfile extends WorkerPublicFullProfile {
   expirationDate?: string;
   hidden : boolean;
   spokenLanguages: SpokenLanguage[];
+  reviews: Comment[];
 }
 
 // ==========================================
@@ -64,6 +65,7 @@ export interface WorkerPrivateProfile extends WorkerPublicFullProfile {
 // Correspond à ClientDTO
 export interface ClientProfile extends BaseUser {
   favorites: WorkerMinimalProfile[];
+  reviews: Comment[];
 }
 
 // Correspond à AdminDTO

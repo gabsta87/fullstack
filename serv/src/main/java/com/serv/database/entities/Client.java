@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 @Data
@@ -52,35 +53,19 @@ public class Client extends VenusUser {
     private Integer preferredMinAge;
     private Integer preferredMaxAge;
 
+    @OneToMany(mappedBy = "author", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Collection<Comment> comments = new ArrayList<>();
+
     public Client(Email email, String password) {
         super(email, password, null);
     }
 
-    public void addPreferredService(Service service) {
-        this.preferredServices.add(service);
-    }
-
-    public void removePreferredService(Service service) {
-        this.preferredServices.remove(service);
-    }
-
-    public void addFavorite(Worker worker) {
-        this.favorites.add(worker);
-    }
-
-    public void removeFavorite(Worker worker) {
-        this.favorites.remove(worker);
-    }
-
-    public void addPreferredLanguage(Language language) {
-        this.preferredLanguages.add(language);
-    }
-
-    public void removePreferredLanguage(Language language) {
-        this.preferredLanguages.remove(language);
-    }
-
     public UserRole getRole(){
         return UserRole.CLIENT;
+    }
+
+    public void removeComment(Comment comment) {
+        this.comments.remove(comment);
+        comment.setAuthor(null);
     }
 }
