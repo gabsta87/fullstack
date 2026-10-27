@@ -563,6 +563,31 @@ public class AdminController {
         return ResponseEntity.ok(AdminWorkerReportDTO.ReportDetailDTO.from(report));
     }
 
+    // Gestion des commentaires
+
+
+    @DeleteMapping("/comment/{commentId}")
+    @Transactional
+    public ResponseEntity<?> deleteCommentByAdmin(@PathVariable Long commentId, Admin admin) {
+        Comment comm = commentRepository.findById(commentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found"));
+
+        Client author = comm.getAuthor();
+
+        if(author != null){
+            author.removeComment(comm);
+        }
+
+        if (comm.getWorker() != null) {
+            comm.getWorker().removeComment(comm);
+        }
+
+        commentRepository.delete(comm);
+        logAdminAction(admin, "COMMENT_DELETED", commentId, "Comment from "+author.getEmail()+" deleted by admin");
+
+        return ResponseEntity.ok(ClientDTO.from(author));
+    }
+
     // ── ADMINS INVITATIONS ────────────────────────────────────
     @PostMapping("/invite")
     @Transactional

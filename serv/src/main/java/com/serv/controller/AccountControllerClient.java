@@ -144,7 +144,7 @@ public class AccountControllerClient {
     @Transactional
     public ResponseEntity<?> deleteComment(@PathVariable Long commentId, Client clientArg) {
         Comment comm = commentRepository.findById(commentId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Commentaire introuvable"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found"));
 
         if (comm.getAuthor() == null || !comm.getAuthor().getId().equals(clientArg.getId())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not authorized");
