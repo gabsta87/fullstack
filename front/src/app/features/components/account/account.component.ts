@@ -81,17 +81,15 @@ export class AccountComponent implements OnInit {
     const { payload, setLoading, setSuccess, setError } = event;
 
     try {
-      // Appel de votre service API existant pour modifier les identifiants
-      await this.accountService.updateSettings(payload); // Ajustez selon votre nom de méthode de service actuel
-      setSuccess('Vos paramètres de compte ont été mis à jour avec succès.');
+      await this.accountService.updateSettings(payload);
+      setSuccess('Account updated successfully');
     } catch (err: any) {
-      setError(err?.error?.message || 'Une erreur est survenue lors de la mise à jour.');
+      setError(err?.error?.message || 'An error occured while updating');
     } finally {
       setLoading(false);
     }
   }
 
-  // Navigation vers le profil de l'annonceur
   navigateToWorker(workerId: string): void {
     this.router.navigate(['/profile'], {
       queryParams: { id: workerId },
@@ -99,7 +97,6 @@ export class AccountComponent implements OnInit {
     });
   }
 
-  // Lancer l'édition d'un commentaire
   startEditComment(comment: Comment): void {
     this.editingCommentId = comment.id;
     this.editingCommentText = comment.content;
@@ -110,7 +107,6 @@ export class AccountComponent implements OnInit {
     this.editingCommentText = '';
   }
 
-  // Sauvegarder la modification d'un commentaire
   async saveComment(comment: Comment): Promise<void> {
     if (!this.editingCommentText.trim()) return;
     this.isSavingComment = true;
@@ -131,7 +127,6 @@ export class AccountComponent implements OnInit {
     }
   }
 
-  // Supprimer un commentaire
   async deleteComment(commentId: number, user: ClientProfile): Promise<void> {
     if (!confirm("Voulez-vous vraiment supprimer ce commentaire ?")) return;
 

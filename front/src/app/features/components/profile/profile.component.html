@@ -147,7 +147,7 @@
 
           <!-- Section Avis / Commentaires -->
           <div class="profile-card ion-margin-top">
-            <h3>{{ t.worker_profile?.reviews || 'Avis' }} ({{ worker.comments?.length || 0 }})</h3>
+            <h3>{{ t.worker_profile?.reviews || 'Reviews' }} ({{ worker.comments.length || 0 }})</h3>
 
             <!-- Formulaire de dépôt / modification de commentaire -->
             <div *ngIf="isClient" class="ion-margin-bottom"
@@ -165,7 +165,7 @@
                 <ion-button size="small" [disabled]="isSubmittingReview || !newCommentText.trim()"
                             (click)="submitReview()">
                   <ion-spinner name="crescent" slot="start" *ngIf="isSubmittingReview"></ion-spinner>
-                  {{ (newCommentText && worker.comments && hasMyComment()) ? (t.common?.update || 'Mettre à jour') : (t.common?.publish || 'Publier') }}
+                  {{ (newCommentText && worker.comments && hasMyComment()) ? (t.common?.update || 'Update') : (t.common?.publish || 'Publish') }}
                 </ion-button>
               </div>
             </div>

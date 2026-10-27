@@ -9,7 +9,7 @@
         </ion-segment-button>
 
         <ion-segment-button value="comments">
-          <ion-label>{{ t.account?.tabs?.comments || 'Mes Commentaires' }}</ion-label>
+          <ion-label>{{ t.account?.tabs?.comments || 'My comments' }}</ion-label>
         </ion-segment-button>
 <!--        <ion-segment-button value="settings">-->
 <!--          <ion-label>{{ t.account?.tabs?.settings }}</ion-label>-->
@@ -44,7 +44,7 @@
       <!-- ONGLET MES COMMENTAIRES -->
       <div *ngIf="activeTab === 'comments'" class="fade-in ion-padding">
         <div class="section-header">
-          <h2>{{ t.account?.comments?.title || 'Mes Commentaires' }} ({{ user.reviews?.length || 0 }})</h2>
+          <h2>{{ t.account?.comments?.title || 'My comments' }} ({{ user.reviews.length || 0 }})</h2>
         </div>
 
         <div *ngIf="user.reviews && user.reviews.length > 0; else emptyComments" class="comments-container">
