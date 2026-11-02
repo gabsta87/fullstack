@@ -84,7 +84,8 @@
       "tabs": {
         "favorites": "Favorites",
         "settings": "Settings",
-        "account": "Account"
+        "account": "Account",
+        "comments": "My comments"
       },
       "favorites": {
         "title": "Your favorites",
@@ -367,7 +368,8 @@
       "tabs": {
         "favorites": "Favoris",
         "settings": "Réglages",
-        "account": "Compte"
+        "account": "Compte",
+        "comments": "Mes commentaires"
       },
       "favorites": {
         "title": "Vos favoris",
@@ -650,7 +652,8 @@
       "tabs": {
         "favorites": "Favoriten",
         "settings": "Einstellungen",
-        "account": "Konto"
+        "account": "Konto",
+        "comments": "meine Kommentare"
       },
       "favorites": {
         "title": "Ihre Favoriten",
@@ -933,7 +936,8 @@
       "tabs": {
         "favorites": "Favoritos",
         "settings": "Ajustes",
-        "account": "Cuenta"
+        "account": "Cuenta",
+        "comments": "mis comentarios"
       },
       "favorites": {
         "title": "Tus favoritos",
@@ -1216,7 +1220,8 @@
       "tabs": {
         "favorites": "Favoritos",
         "settings": "Definições",
-        "account": "Conta"
+        "account": "Conta",
+        "comments": "os meus comentários"
       },
       "favorites": {
         "title": "Os seus favoritos",
@@ -1499,7 +1504,8 @@
       "tabs": {
         "favorites": "Preferiti",
         "settings": "Impostazioni",
-        "account": "Account"
+        "account": "Account",
+        "comments": "I miei commenti"
       },
       "favorites": {
         "title": "I tuoi preferiti",
@@ -1782,7 +1788,8 @@
       "tabs": {
         "favorites": "Избранное",
         "settings": "Настройки",
-        "account": "Аккаунт"
+        "account": "Аккаунт",
+        "comments": "мои комментарии"
       },
       "favorites": {
         "title": "Ваше избранное",
@@ -2065,7 +2072,8 @@
       "tabs": {
         "favorites": "Обране",
         "settings": "Налаштування",
-        "account": "Акаунт"
+        "account": "Акаунт",
+        "comments": "мої коментарі"
       },
       "favorites": {
         "title": "Ваше обране",
@@ -2348,7 +2356,8 @@
       "tabs": {
         "favorites": "المفضلة",
         "settings": "الإعدادات",
-        "account": "الحساب"
+        "account": "الحساب",
+        "comments": "تعليقاتي"
       },
       "favorites": {
         "title": "المفضلة لديك",

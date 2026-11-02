@@ -2,7 +2,6 @@ URGENT
 
 validation de compte par email
 boutons pour contacter l'équipe par email
-Section commentaires
 Test and adapt on mobile
 
 find a way to mix sorting order on gallery (maybe paying refresh, or cooldown refresh)
@@ -48,3 +47,10 @@ UI
 ADVERTISEMENT
   clients can pay small fee to remove ads (2 chf per month)
   workers can pay small fee to remove ads (2 chf per month)
+
+
+data.json
+
+DELETE
+  account.favorites.title
+

@@ -24,6 +24,16 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 1px;
+
+      min-width: auto;
+      padding: 0 12px;
+
+      ion-label {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin: 0 4px;
+      }
     }
   }
 }

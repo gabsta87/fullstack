@@ -5,11 +5,11 @@
     <ion-toolbar class="segment-toolbar">
       <ion-segment [(ngModel)]="activeTab" mode="md">
         <ion-segment-button value="favorites">
-          <ion-label>{{ t.account?.tabs?.favorites }}</ion-label>
+          <ion-label>{{ t.account?.tabs?.favorites }} ({{user.favorites.length}}) </ion-label>
         </ion-segment-button>
 
         <ion-segment-button value="comments">
-          <ion-label>{{ t.account?.tabs?.comments || 'My comments' }}</ion-label>
+          <ion-label>{{ t.account?.tabs?.comments || 'My comments' }} ({{user.reviews.length}})</ion-label>
         </ion-segment-button>
 <!--        <ion-segment-button value="settings">-->
 <!--          <ion-label>{{ t.account?.tabs?.settings }}</ion-label>-->
@@ -24,9 +24,6 @@
 
       <!-- ONGLET FAVORIS -->
       <div *ngIf="activeTab === 'favorites' && user.favorites" class="fade-in ion-padding">
-        <div class="section-header">
-          <h2>{{ t.account?.favorites?.title }} ({{ user.favorites.length }})</h2>
-        </div>
 
         <ion-row>
           <ion-col size="6" size-sm="4" size-md="3" size-lg="2.4" size-xl="2"
