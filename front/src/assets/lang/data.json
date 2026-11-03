@@ -32,6 +32,7 @@
       "invisible": "Invisible",
       "online": "Online",
       "offline": "Offline",
+      "contact_us": "Contact us",
       "body_types": {
         "slim": "Slim",
         "athletic": "Athletic",
@@ -316,6 +317,7 @@
       "invisible": "Invisible",
       "online": "En ligne",
       "offline": "Hors ligne",
+      "contact_us": "Nous contacter",
       "body_types" : {
         "slim" : "Mince",
         "athletic" : "Athlétique",
@@ -600,6 +602,7 @@
       "invisible": "Unsichtbar",
       "online": "Online",
       "offline": "Offline",
+      "contact_us": "Kontaktieren Sie uns",
       "body_types": {
         "slim": "Schlank",
         "athletic": "Athletisch",
@@ -884,6 +887,7 @@
       "invisible": "Invisible",
       "online": "En línea",
       "offline": "Desconectado",
+      "contact_us": "Contactar con nosotros",
       "body_types": {
         "slim": "Delgado",
         "athletic": "Atlético",
@@ -1168,8 +1172,9 @@
       "invisible": "Invisível",
       "online": "Online",
       "offline": "Offline",
+      "contact_us": "Contacte-nos",
       "body_types": {
-        "slim": "Slim",
+        "slim": "Esguio",
         "athletic": "Atlético",
         "average": "Médio",
         "curvy": "Curvilíneo",
@@ -1452,6 +1457,7 @@
       "invisible": "Invisibile",
       "online": "Online",
       "offline": "Offline",
+      "contact_us": "Contattarci",
       "body_types": {
         "slim": "Magro",
         "athletic": "Athletico",
@@ -1736,6 +1742,7 @@
       "invisible": "Невидим",
       "online": "В сети",
       "offline": "Не в сети",
+      "contact_us": "Связаться с нами",
       "body_types": {
         "slim": "Стройная",
         "athletic": "Атлетическая",
@@ -2020,6 +2027,7 @@
       "invisible": "Невидимий",
       "online": "В мережі",
       "offline": "Поза мережею",
+      "contact_us": "Зв’яжіться з нами",
       "body_types": {
         "slim": "Струнка",
         "athletic": "Атлетична",
@@ -2304,6 +2312,7 @@
       "invisible": "غير مرئي",
       "online": "متصل",
       "offline": "غير متصل",
+      "contact_us": "اتصل بنا",
       "body_types": {
         "slim": "نحيف",
         "athletic": "رياضي",

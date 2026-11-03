@@ -74,12 +74,6 @@
                 <ion-badge *ngIf="getCertificationBadge(me, t).hasNotification" color="danger"
                            class="notification-dot"></ion-badge>
               </ion-button>
-
-              <!-- Bouton Contact Admin -->
-              <ion-button size="small" class="status-badge" color="tertiary" [href]="'mailto:support@venus-app.com'">
-                {{ t.admin?.tabs?.admins ? 'Contact Admin' : 'Contact us' }}
-                <ion-icon name="mail-outline" slot="start"></ion-icon>
-              </ion-button>
             </div>
 
           </div>

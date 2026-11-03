@@ -6,9 +6,10 @@ import {IonicModule, ModalController} from "@ionic/angular";
 import {AuthModalComponent} from "../auth-modal/auth-modal.component";
 import {firstValueFrom} from "rxjs";
 import {addIcons} from "ionicons";
-import {buildOutline, logInOutline, logOutOutline, personCircleOutline} from "ionicons/icons";
+import {buildOutline, logInOutline, logOutOutline, personCircleOutline, mailOutline} from "ionicons/icons";
 import {LanguageManagerService} from "../../services/language-manager.service";
 import {IonPopover} from "@ionic/angular/standalone";
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: 'app-header',
@@ -21,6 +22,8 @@ export class HeaderComponent {
 
   @ViewChild('langPopover') langPopover!: IonPopover;
 
+  supportEmail = environment.supportEmail;
+
   constructor(
     public authService: AuthService,
     private router: Router,
@@ -28,7 +31,7 @@ export class HeaderComponent {
     public langService: LanguageManagerService
   ) {
     addIcons({
-      personCircleOutline, logOutOutline, logInOutline, buildOutline
+      personCircleOutline, logOutOutline, logInOutline, buildOutline, mailOutline
     });
   }
 

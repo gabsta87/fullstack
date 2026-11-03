@@ -9,7 +9,17 @@
     </ion-buttons>
 
     <ion-buttons slot="end">
-      <!-- 💡 On passe l'événement $event au clic -->
+      <!-- 💡 Bouton de contact visible uniquement pour les personnes enregistrées -->
+      <ng-container *ngIf="(authService.isAuthenticated$ | async)">
+        <ng-container *ngIf="langService.currentLanguage$ | async as t">
+          <ion-button [href]="'mailto:' + supportEmail" fill="clear" class="nav-link-btn">
+            <ion-icon name="mail-outline" slot="start"></ion-icon>
+            {{ t.common?.contact_us }}
+          </ion-button>
+        </ng-container>
+      </ng-container>
+
+      <!-- Sélecteur de langue -->
       <ion-button (click)="openLangPopover($event)">
         <img [src]="langService.currentLanguageFlag" class="header-flag-icon" alt="Langue active" />
         <ion-text class="ion-hide-sm-down" style="margin-left: 5px; font-size: 14px;">
@@ -17,7 +27,7 @@
         </ion-text>
       </ion-button>
 
-      <!-- Le reste des boutons (inchangé) -->
+      <!-- Le reste des boutons (authentification) -->
       <ng-container *ngIf="langService.currentLanguage$ | async as t">
         <ng-container *ngIf="!(authService.isAuthenticated$ | async)">
           <ion-button (click)="openAuth('login')" fill="clear" class="nav-link-btn">
@@ -51,7 +61,7 @@
   </ion-toolbar>
 </ion-header>
 
-<!-- 💡 On ajoute une référence #langPopover et on retire le trigger="..." -->
+<!-- Popover de langue -->
 <ion-popover #langPopover [dismissOnSelect]="true" side="bottom" alignment="end">
   <ng-template>
     <ion-content>
