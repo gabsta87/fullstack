@@ -105,7 +105,12 @@
       "current_password_placeholder": "Current password",
       "new_password_label": "New password (Optional)",
       "new_password_placeholder": "Minimum 6 characters",
-      "save_btn": "Save changes"
+      "confirm_password_placeholder": "Confirm new password",
+      "save_btn": "Save changes",
+      "email_change_title": "Email Address Change",
+      "email_change_message": "Warning: Changing your email will temporarily lock your account. A verification link will be sent to your new address.",
+      "confirm_btn": "Confirm & Change",
+      "success_update": "Your account settings have been updated successfully."
     },
     "auth": {
       "login_title": "Log in",
@@ -384,13 +389,18 @@
     },
     "account_settings": {
       "title": "Sécurité & Identifiants",
-      "email_label": "Adresse Email",
+      "email_label": "Adresse e-mail",
       "email_placeholder": "votre@email.com",
       "current_password_label": "Mot de passe actuel",
       "current_password_placeholder": "Mot de passe actuel",
       "new_password_label": "Nouveau mot de passe (Optionnel)",
-      "new_password_placeholder": "Minimum 6 caractères",
-      "save_btn": "Enregistrer les modifications"
+      "new_password_placeholder": "6 caractères minimum",
+      "confirm_password_placeholder": "Confirmer le nouveau mot de passe",
+      "save_btn": "Enregistrer les modifications",
+      "email_change_title": "Changement d'adresse e-mail",
+      "email_change_message": "Attention : Modifier votre e-mail verrouillera temporairement votre compte. Un lien de validation sera envoyé à votre nouvelle adresse.",
+      "confirm_btn": "Confirmer et modifier",
+      "success_update": "Vos paramètres de compte ont été mis à jour avec succès."
     },
     "auth": {
       "login_title": "Se connecter",

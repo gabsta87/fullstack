@@ -1,7 +1,7 @@
 <ng-container *ngIf="languageService.currentLanguage$ | async as t">
   <h3 class="section-title">{{ t.account_settings?.title }}</h3>
 
-  <form (ngSubmit)="submitForm()">
+  <form (ngSubmit)="submitForm(t)">
     <ion-grid class="ion-no-padding">
 
       <ion-row>
