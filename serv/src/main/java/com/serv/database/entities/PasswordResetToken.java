@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -15,7 +16,7 @@ public class PasswordResetToken {
     public PasswordResetToken(UUID token, VenusUser user) {
         this.user = user;
         this.id = token;
-        expiryDate = LocalDateTime.now().plusDays(1);
+        expiryDate = Instant.now().plusSeconds(3600*24);
     }
 
     @Id
@@ -25,6 +26,9 @@ public class PasswordResetToken {
     @JoinColumn(nullable = false)
     private VenusUser user;
 
-    private LocalDateTime expiryDate;
+    private Instant expiryDate;
 
+    public boolean isExpired() {
+        return Instant.now().isAfter(this.expiryDate);
+    }
 }

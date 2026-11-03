@@ -2,26 +2,25 @@ package com.serv.controller;
 
 import com.serv.configuration.JwtProvider;
 import com.serv.database.entities.*;
-import com.serv.database.repositories.ClientRepository;
-import com.serv.database.repositories.PasswordResetTokenRepository;
-import com.serv.database.repositories.UserRepository;
-import com.serv.database.repositories.WorkerRepository;
+import com.serv.database.repositories.*;
 import com.serv.dto.VenusUserDTO;
 import com.serv.requests.Login;
 import com.serv.requests.LoginResponse;
 import com.serv.requests.Register;
 import com.serv.service.AuthService;
+import com.serv.service.EmailVerificationService;
 import com.serv.service.PasswordResetService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,10 +32,17 @@ public class AuthController {
     private final UserRepository   userRepository;
     private final ClientRepository clientRepository;
     private final WorkerRepository workerRepository;
-    private final PasswordResetService passwordResetService;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final VerificationTokenRepository verificationTokenRepository;
+
+    private final PasswordResetService passwordResetService;
+    private final EmailVerificationService verificationTokenService;
+
     private final AuthService authService;
     private final JwtProvider jwtProvider;
+
+    @Value("${app.registration.email-verification-required:true}")
+    private boolean emailVerificationRequired;
 
     // ── Login / Logout ────────────────────────────────────────────────────────
 
@@ -85,39 +91,87 @@ public class AuthController {
     // ── Registration ──────────────────────────────────────────────────────────
 
     @PostMapping("/register/client")
+    @Transactional
     public ResponseEntity<String> registerClient(@RequestBody Register req) {
-        if(! Email.isValid(req.email()))
+        if (!Email.isValid(req.email()))
             return ResponseEntity.badRequest().body("Invalid email format.");
 
         if (userRepository.findByEmail(req.email()).isPresent())
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Email already taken.");
 
-        // TODO check email
-
-        // TODO check password
-
         Client client = new Client(new Email(req.email()), req.password());
-        client.setLocked(false);
+
+        if (emailVerificationRequired) {
+            client.setLocked(true);
+            // Génère le token et envoie l'e-mail de validation
+            String activationUrl = verificationTokenService.createTokenAndSendEmail(client);
+            System.out.println("Activation URL for client: " + activationUrl);
+        } else {
+            client.setLocked(false);
+        }
+
         clientRepository.save(client);
-        return ResponseEntity.ok().build();
+
+        String message = emailVerificationRequired
+                ? "Registration successful. Please check your email to activate your account."
+                : "Registration successful.";
+
+        return ResponseEntity.ok(message);
     }
 
     @PostMapping("/register/worker")
+    @Transactional
     public ResponseEntity<String> registerWorker(@RequestBody Register req) {
-        if(! Email.isValid(req.email()))
+        if (!Email.isValid(req.email()))
             return ResponseEntity.badRequest().body("Invalid email format.");
 
         if (userRepository.findByEmail(req.email()).isPresent())
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Email already taken.");
 
-        // TODO check email by sending an email
-
         Worker worker = new Worker(new Email(req.email()), req.password());
         worker.setBanned(false);
-        worker.setLocked(false);
         worker.setExpired(false);
+
+        if (emailVerificationRequired) {
+            worker.setLocked(true);
+            // Génère le token et envoie l'e-mail de validation
+            String activationUrl = verificationTokenService.createTokenAndSendEmail(worker);
+            System.out.println("Activation URL for worker: " + activationUrl);
+        } else {
+            worker.setLocked(false);
+        }
+
         workerRepository.save(worker);
-        return ResponseEntity.ok().build();
+
+        String message = emailVerificationRequired
+                ? "Registration successful. Please check your email to activate your account."
+                : "Registration successful.";
+
+        return ResponseEntity.ok(message);
+    }
+
+    @GetMapping("/verify-email")
+    @Transactional
+    public ResponseEntity<String> verifyEmail(@RequestParam String token) {
+        // 1. Rechercher le token en base
+        VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token"));
+
+        // 2. Vérifier si le token a expiré
+        if (verificationToken.isExpired()) {
+            verificationTokenRepository.delete(verificationToken);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Link has expired.");
+        }
+
+        // 3. Récupérer l'utilisateur associé et le déverrouiller
+        VenusUser user = verificationToken.getUser();
+        user.setLocked(false);
+        userRepository.save(user);
+
+        // 4. Nettoyer TOUS les tokens de cet utilisateur (ce qui supprime aussi celui qui vient d'être utilisé)
+        verificationTokenRepository.deleteByUser(user);
+
+        return ResponseEntity.ok("Account activated successfully. You can now log in.");
     }
 
     // ── Password reset ────────────────────────────────────────────────────────
@@ -152,7 +206,7 @@ public class AuthController {
 
         PasswordResetToken resetToken = tokenOpt.get();
 
-        if (resetToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+        if (resetToken.isExpired()) {
             passwordResetTokenRepository.delete(resetToken); // clean up expired token
             return ResponseEntity.badRequest().body("Token expired.");
         }
