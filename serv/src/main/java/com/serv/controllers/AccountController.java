@@ -1,4 +1,4 @@
-package com.serv.controller;
+package com.serv.controllers;
 
 import com.serv.configuration.JwtProvider;
 import com.serv.database.entities.*;
@@ -17,8 +17,6 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.Map;
-
-import static org.springframework.util.ClassUtils.isPresent;
 
 @RestController
 @RequestMapping("/account")

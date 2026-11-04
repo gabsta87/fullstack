@@ -1,4 +1,4 @@
-package com.serv.controller;
+package com.serv.controllers;
 
 import com.serv.common.CertificationStatus;
 import com.serv.common.ReportStatus;

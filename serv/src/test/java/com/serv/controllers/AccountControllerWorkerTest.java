@@ -2,12 +2,10 @@ package com.serv.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serv.common.Language;
-import com.serv.controller.AccountControllerWorker;
 import com.serv.database.entities.Email;
 import com.serv.database.entities.Worker;
 import com.serv.database.repositories.*;
 import com.serv.dto.SpokenLanguageDTO;
-import com.serv.requests.AccountData;
 import com.serv.requests.UpdateWorkerLanguage;
 import com.serv.service.MailService;
 import com.serv.service.MediaStorageService;
@@ -86,27 +84,7 @@ class AccountControllerWorkerTest {
                 .andExpect(jsonPath("$.username").value("TestWorker"));
     }
 
-    // ── 2. TESTS DES MISES À JOUR DES PARAMÈTRES (/account/worker/data) ────
-
-    @Test
-    @WithMockUser(roles = "WORKER")
-    @DisplayName("PATCH /account/worker/data - Mise à jour réussie des données")
-    void updateWorkerSettings_Success() throws Exception {
-        AccountData updateData = new AccountData("UpdatedName", "newemail@venus.com", null, null);
-
-        when(workerRepository.save(any(Worker.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        mockMvc.perform(patch("/account/worker/data")
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateData)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("UpdatedName"));
-
-        verify(workerRepository, times(1)).save(any(Worker.class));
-    }
-
-    // ── 3. TEST DE LA GESTION DES LANGUES PARLÉES ──────────────────────────
+    // ── 2. TEST DE LA GESTION DES LANGUES PARLÉES ──────────────────────────
 
     @Test
     @WithMockUser(roles = "WORKER")
@@ -128,7 +106,7 @@ class AccountControllerWorkerTest {
         verify(workerRepository, times(1)).save(any(Worker.class));
     }
 
-    // ── 4. TEST DE VISIBILITÉ DU PROFIL ────────────────────────────────────
+    // ── 3. TEST DE VISIBILITÉ DU PROFIL ────────────────────────────────────
 
     @Test
     @WithMockUser(roles = "WORKER")
@@ -147,5 +125,37 @@ class AccountControllerWorkerTest {
                 .andExpect(jsonPath("$.hidden").value(true));
 
         verify(workerRepository, times(1)).save(any(Worker.class));
+    }
+
+    // 🛡️ CAS LIMITE : Tentative de supprimer une photo inexistante ou appartenant à un autre (404 Not Found)
+    @Test
+    @WithMockUser(roles = "WORKER")
+    @DisplayName("DELETE /account/worker/photos/{photoId} - Retourne 404 si la photo n'existe pas")
+    void deletePhoto_NotFound() throws Exception {
+        UUID fakePhotoId = UUID.randomUUID();
+        when(workerRepository.findByIdWithPhotos(any())).thenReturn(Optional.of(mockWorker));
+        when(photoRepository.findById(fakePhotoId)).thenReturn(Optional.empty());
+
+        mockMvc.perform(delete("/account/worker/photos/" + fakePhotoId)
+                        .with(csrf()))
+                .andExpect(status().isNotFound());
+    }
+
+    // 🛡️ CAS LIMITE : Tentative de modification des langues avec un worker introuvable (404 Not Found)
+    @Test
+    @WithMockUser(roles = "WORKER")
+    @DisplayName("POST /account/worker/spoken-languages - Retourne 404 si le worker n'est pas trouvé")
+    void updateSpokenLanguages_WorkerNotFound() throws Exception {
+        UpdateWorkerLanguage languageRequest = new UpdateWorkerLanguage(
+                List.of(new SpokenLanguageDTO(Language.FR, 4))
+        );
+
+        when(workerRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+
+        mockMvc.perform(post("/account/worker/spoken-languages")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(languageRequest)))
+                .andExpect(status().isNotFound());
     }
 }

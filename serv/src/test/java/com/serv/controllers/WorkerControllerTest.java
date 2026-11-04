@@ -1,6 +1,5 @@
 package com.serv.controllers;
 
-import com.serv.controller.WorkerController;
 import com.serv.database.repositories.WorkerRepository;
 import com.serv.service.WorkerService;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.serv.controller;
+package com.serv.controllers;
 
 import com.serv.database.entities.Media;
 import com.serv.database.entities.Photo;
@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.ArrayList;

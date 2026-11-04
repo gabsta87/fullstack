@@ -1,4 +1,4 @@
-package com.serv.controller;
+package com.serv.controllers;
 
 import com.serv.common.ReportStatus;
 import com.serv.database.entities.*;

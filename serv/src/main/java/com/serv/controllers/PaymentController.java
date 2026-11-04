@@ -1,4 +1,4 @@
-package com.serv.controller;
+package com.serv.controllers;
 
 import com.serv.common.PaymentType;
 import com.serv.database.entities.Payment;

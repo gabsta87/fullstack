@@ -1,9 +1,9 @@
 package com.serv.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.serv.controller.AdminController;
 import com.serv.database.entities.*;
 import com.serv.database.repositories.*;
+import com.serv.requests.admin.AdminInvitation;
 import com.serv.requests.admin.UpdateService;
 import com.serv.requests.admin.UpdateWorkerDays;
 import com.serv.service.PasswordResetService;
@@ -175,5 +175,34 @@ class AdminControllerTest {
 
         verify(serviceRepository, times(1)).save(any(Service.class));
         verify(sseStreamService, times(1)).broadcastAdminEvent(eq("SERVICES_UPDATED"), any());
+    }
+
+    // 🛡️ TEST DE ROBUSTESSE : Empêcher un admin de supprimer son propre compte (400 Bad Request)
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("DELETE /admin/users/{id} - Échec si l'admin tente de se supprimer lui-même")
+    void deleteUser_SelfDeletionForbidden() throws Exception {
+        // On simule que l'ID recherché est le même que celui de l'admin connecté (mockAdmin)
+        when(userRepository.findById(mockAdmin.getId())).thenReturn(Optional.of(mockAdmin));
+
+        // Note : Dans un test @WithMockUser simple, si l'argument Admin est injecté par un HandlerMethodArgumentResolver,
+        // assure-toi que le contexte mocke l'admin. Ici on cible le comportement de la règle métier.
+        mockMvc.perform(delete("/admin/users/{id}", mockAdmin.getId()))
+                .andExpect(status().isBadRequest());
+    }
+
+    // 🛡️ TEST DE ROBUSTESSE : Conflit lors de l'invitation d'un admin avec un email existant (409 Conflict)
+    @Test
+    @WithMockUser(roles = "SUPER_ADMIN")
+    @DisplayName("POST /admin/invite - Échec si l'e-mail existe déjà")
+    void inviteAdmin_EmailAlreadyExists() throws Exception {
+        AdminInvitation req = new AdminInvitation("existing@venus.com");
+
+        when(adminRepository.findByEmail(any(Email.class))).thenReturn(Optional.of(new Admin()));
+
+        mockMvc.perform(post("/admin/invite")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isConflict());
     }
 }

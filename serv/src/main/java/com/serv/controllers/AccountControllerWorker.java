@@ -1,10 +1,9 @@
-package com.serv.controller;
+package com.serv.controllers;
 
 import com.serv.common.*;
 import com.serv.database.entities.*;
 import com.serv.database.repositories.*;
 import com.serv.dto.WorkerFullProfileDTO;
-import com.serv.requests.AccountData;
 import com.serv.requests.UpdateWorkerProfile;
 import com.serv.requests.UpdateWorkerLanguage;
 import com.serv.service.MailService;

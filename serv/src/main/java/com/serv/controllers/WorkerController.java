@@ -1,4 +1,4 @@
-package com.serv.controller;
+package com.serv.controllers;
 
 import com.serv.database.repositories.WorkerRepository;
 import com.serv.dto.WorkerMinimalProfileDTO;

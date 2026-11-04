@@ -1,4 +1,4 @@
-package com.serv.controller;
+package com.serv.controllers;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
