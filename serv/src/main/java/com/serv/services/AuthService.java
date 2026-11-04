@@ -1,4 +1,4 @@
-package com.serv.service;
+package com.serv.services;
 
 import com.serv.common.UserRole;
 import com.serv.database.entities.VenusUser;

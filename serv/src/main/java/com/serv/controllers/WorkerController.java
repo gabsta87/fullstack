@@ -4,7 +4,7 @@ import com.serv.database.repositories.WorkerRepository;
 import com.serv.dto.WorkerMinimalProfileDTO;
 import com.serv.dto.WorkerPublicFullProfileDTO;
 import com.serv.requests.WorkersFilters;
-import com.serv.service.WorkerService;
+import com.serv.services.WorkerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;

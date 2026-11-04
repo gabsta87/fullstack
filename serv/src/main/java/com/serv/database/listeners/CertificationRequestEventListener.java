@@ -3,7 +3,7 @@ package com.serv.database.listeners;
 import com.serv.database.entities.CertificationRequest;
 import com.serv.database.entities.Photo;
 import com.serv.database.entities.Worker;
-import com.serv.service.MediaStorageService; // Ton service qui gère la suppression des fichiers physiques
+import com.serv.services.MediaStorageService; // Ton service qui gère la suppression des fichiers physiques
 import jakarta.persistence.PreRemove;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

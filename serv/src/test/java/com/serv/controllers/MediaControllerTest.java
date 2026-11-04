@@ -4,7 +4,7 @@ import com.serv.database.entities.Worker;
 import com.serv.database.repositories.PhotoRepository;
 import com.serv.database.repositories.VideoRepository;
 import com.serv.database.repositories.WorkerRepository;
-import com.serv.service.MediaStorageService;
+import com.serv.services.MediaStorageService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

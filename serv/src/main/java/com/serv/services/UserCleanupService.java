@@ -1,4 +1,4 @@
-package com.serv.service;
+package com.serv.services;
 
 import com.serv.database.entities.Client;
 import com.serv.database.entities.VenusUser;

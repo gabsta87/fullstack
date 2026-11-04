@@ -7,7 +7,7 @@ import com.serv.database.entities.Worker;
 import com.serv.database.repositories.PhotoRepository;
 import com.serv.database.repositories.VideoRepository;
 import com.serv.database.repositories.WorkerRepository;
-import com.serv.service.MediaStorageService;
+import com.serv.services.MediaStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

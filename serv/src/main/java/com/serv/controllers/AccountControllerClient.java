@@ -11,7 +11,7 @@ import com.serv.dto.CommentDTO;
 import com.serv.dto.GalleryFiltersDTO;
 import com.serv.dto.ReportDTO;
 import com.serv.requests.CommentRequest;
-import com.serv.service.WorkerService;
+import com.serv.services.WorkerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.serv.service;
+package com.serv.services;
 
 import com.serv.database.entities.VenusUser;
 import com.serv.database.entities.VerificationToken;

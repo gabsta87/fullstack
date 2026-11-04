@@ -1,6 +1,6 @@
 package com.serv.configuration;
 
-import com.serv.service.AuthService;
+import com.serv.services.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

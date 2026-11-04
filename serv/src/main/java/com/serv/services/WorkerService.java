@@ -1,8 +1,7 @@
-package com.serv.service;
+package com.serv.services;
 
 import com.serv.common.*;
 import com.serv.database.entities.Worker;
-import com.serv.database.repositories.PhotoRepository;
 import com.serv.database.repositories.WorkerRepository;
 import com.serv.database.repositories.filters.WorkerSpecifications;
 import com.serv.dto.WorkerMinimalProfileDTO;

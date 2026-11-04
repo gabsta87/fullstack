@@ -1,4 +1,4 @@
-package com.serv.service;
+package com.serv.services;
 
 import com.serv.database.entities.PasswordResetToken;
 import com.serv.database.entities.VenusUser;

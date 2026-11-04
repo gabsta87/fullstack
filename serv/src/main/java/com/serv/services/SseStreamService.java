@@ -1,4 +1,4 @@
-package com.serv.service;
+package com.serv.services;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronization;

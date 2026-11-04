@@ -8,7 +8,7 @@ import com.serv.database.repositories.CommentRepository;
 import com.serv.database.repositories.ReportRepository;
 import com.serv.database.repositories.WorkerRepository;
 import com.serv.requests.CommentRequest;
-import com.serv.service.WorkerService;
+import com.serv.services.WorkerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
