@@ -33,7 +33,6 @@ public class TestDataInitializer implements ApplicationRunner {
 
     private final ServiceRepository serviceRepository;
     private final WorkerRepository  workerRepository;
-    private final PhotoRepository   photoRepository;
     private final GeographicZoneRepository zoneRepository;
     private final PasswordEncoder   passwordEncoder;
 
