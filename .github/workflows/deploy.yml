@@ -7,35 +7,35 @@ on:
 jobs:
   deploy:
     runs-on: self-hosted
+    env:
+      DOCKER_API_VERSION: "1.43"
+      COMPOSE_PROJECT_NAME: venus
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
-      - name: Copy workspace to NAS persistent folder
+
+      - name: Copy project files to NAS persistent folder
         run: |
           mkdir -p /volume1/docker/venus
-          # On copie les dossiers et fichiers nécessaires en évitant .git
-          cp -r . /volume1/docker/venus/
+          cp -rf . /volume1/docker/venus/
 
       - name: Build new images
         working-directory: /volume1/docker/venus
-        run: docker-compose -p venus build --no-cache --pull
+        run: docker-compose build --no-cache --pull
 
       - name: Stop and remove old containers
         working-directory: /volume1/docker/venus
-        run: docker-compose -p venus down
+        run: docker-compose down
 
       - name: Deploy new stack
         working-directory: /volume1/docker/venus
-        env:
-          DOCKER_API_VERSION: "1.43"
-          COMPOSE_PROJECT_NAME: venus
-          DB_NAME: ${{ secrets.DB_NAME }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
         run: |
-          docker-compose -p venus up -d --remove-orphans --force-recreate
+          docker-compose up -d --remove-orphans --force-recreate
 
       - name: Cleanup old images
         run: |
