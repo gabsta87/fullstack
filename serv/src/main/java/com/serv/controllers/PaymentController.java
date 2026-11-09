@@ -27,7 +27,7 @@ import java.util.UUID;
 public class PaymentController {
 
     private final PaymentRepository paymentRepository;
-    private final WorkerRepository workerRepository; // Pour appliquer les changements de statut/boost
+    private final WorkerRepository workerRepository;
 
     @Value("${stripe.secret.key}")
     private String stripeSecretKey;
