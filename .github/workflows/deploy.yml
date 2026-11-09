@@ -21,11 +21,15 @@ jobs:
           source: "docker-compose.yml,front,serv"
           target: "/volume1/docker/venus"
 
-      - name: Execute deploy script via SSH
+      - name: Run Docker Compose via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.NAS_HOST }}
           username: ${{ secrets.NAS_USER }}
           port: ${{ secrets.NAS_PORT }}
           key: ${{ secrets.NAS_SSH_KEY }}
-          script: /volume1/docker/venus/deploy.sh
+          script: |
+            cd /volume1/docker/venus
+            docker-compose down
+            docker-compose up -d --build --remove-orphans
+            docker image prune -f
