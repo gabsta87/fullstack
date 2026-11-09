@@ -11,11 +11,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         
-      - name: Sync workspace to NAS persistent folder
+      - name: Copy workspace to NAS persistent folder
         run: |
           mkdir -p /volume1/docker/venus
-          # On copie tout le contenu du workspace vers le dossier de prod (en nettoyant les vieux fichiers si besoin)
-          rsync -av --delete --exclude='.git' ./ /volume1/docker/venus/
+          # On copie les dossiers et fichiers nécessaires en évitant .git
+          cp -r . /volume1/docker/venus/
 
       - name: Build new images
         working-directory: /volume1/docker/venus
