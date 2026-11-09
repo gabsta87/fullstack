@@ -10,19 +10,23 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        
+      - name: Copy workspace to NAS persistent folder
+        run: |
+          mkdir -p /volume1/docker/venus
+          # On copie les dossiers et fichiers nécessaires en évitant .git
+          cp -r . /volume1/docker/venus/
 
       - name: Build new images
+        working-directory: /volume1/docker/venus
         run: docker-compose -p venus build --no-cache --pull
 
       - name: Stop and remove old containers
-        run: docker-compose down
-
-      - name: Copy production config to NAS deployment folder
-        run: |
-          cp docker-compose.yml /volume1/docker/venus/
-          cp .env /volume1/docker/venus/ || true
+        working-directory: /volume1/docker/venus
+        run: docker-compose -p venus down
 
       - name: Deploy new stack
+        working-directory: /volume1/docker/venus
         env:
           DOCKER_API_VERSION: "1.43"
           COMPOSE_PROJECT_NAME: venus
@@ -31,11 +35,8 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
         run: |
-          docker-compose -p venus down
           docker-compose -p venus up -d --remove-orphans --force-recreate
-                  
+
       - name: Cleanup old images
-        env:
-          DOCKER_API_VERSION: "1.43"
         run: |
           docker image prune -f
