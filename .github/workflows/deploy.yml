@@ -19,10 +19,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Copy project files to NAS persistent folder
+      - name: Force copy project files to NAS
         run: |
-          mkdir -p /volume1/docker/venus
-          cp -rf . /volume1/docker/venus/
+          echo "Copie du docker-compose.yml..."
+          cp -f docker-compose.yml /volume1/docker/venus/docker-compose.yml
+          
+          echo "Copie du dossier front..."
+          rm -rf /volume1/docker/venus/front
+          cp -r front /volume1/docker/venus/
+          
+          echo "Copie du dossier serv..."
+          rm -rf /volume1/docker/venus/serv
+          cp -r serv /volume1/docker/venus/
+          
+          echo "Vérification des fichiers copiés :"
+          ls -la /volume1/docker/venus/
 
       - name: Build new images
         working-directory: /volume1/docker/venus
