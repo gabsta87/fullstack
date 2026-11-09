@@ -7,35 +7,46 @@ on:
 jobs:
   deploy:
     runs-on: self-hosted
+    env:
+      DOCKER_API_VERSION: "1.43"
+      COMPOSE_PROJECT_NAME: venus
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
+      DB_URL: ${{ secrets.DB_URL }}
+      DB_USER: ${{ secrets.DB_USER }}
+      MAIL_PASS: ${{ secrets.MAIL_PASS }}
+      MAIL_USER: ${{ secrets.MAIL_USER }}
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      STRIPE_PUBLIC_KEY: ${{ secrets.STRIPE_PUBLIC_KEY }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
-      - name: Copy workspace to NAS persistent folder
+
+      - name: Force copy to exact NAS host path
         run: |
-          mkdir -p /volume1/docker/venus
-          # On copie les dossiers et fichiers nécessaires en évitant .git
-          cp -r . /volume1/docker/venus/
+          echo "Copie vers le chemin cible du NAS..."
+          # On s'assure que le dossier hôte partagé reçoit bien les fichiers
+          cp -f docker-compose.yml /volume1/docker/venus/docker-compose.yml
+          cp -rf front/. /volume1/docker/venus/front/
+          cp -rf serv/. /volume1/docker/venus/serv/
+          
+          # Vérification immédiate dans le log de ce qui est présent physiquement
+          ls -la /volume1/docker/venus/
 
       - name: Build new images
         working-directory: /volume1/docker/venus
-        run: docker-compose -p venus build --no-cache --pull
+        run: docker-compose build --no-cache --pull
 
       - name: Stop and remove old containers
         working-directory: /volume1/docker/venus
-        run: docker-compose -p venus down
+        run: docker-compose down
 
       - name: Deploy new stack
         working-directory: /volume1/docker/venus
-        env:
-          DOCKER_API_VERSION: "1.43"
-          COMPOSE_PROJECT_NAME: venus
-          DB_NAME: ${{ secrets.DB_NAME }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
         run: |
-          docker-compose -p venus up -d --remove-orphans --force-recreate
+          docker-compose up -d --remove-orphans --force-recreate
 
       - name: Cleanup old images
         run: |
