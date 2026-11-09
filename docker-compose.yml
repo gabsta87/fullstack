@@ -65,7 +65,7 @@ services:
     build: ./front
     container_name: venus-frontend
     ports:
-      - "8888:80"
+      - "8888:8081"
     depends_on:
       - backend
 
