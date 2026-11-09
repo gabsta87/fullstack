@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -21,15 +21,29 @@ jobs:
           source: "docker-compose.yml,front,serv"
           target: "/volume1/docker/venus"
 
-      - name: Run Docker Compose via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.NAS_HOST }}
-          username: ${{ secrets.NAS_USER }}
-          port: ${{ secrets.NAS_PORT }}
-          key: ${{ secrets.NAS_SSH_KEY }}
-          script: |
-            cd /volume1/docker/venus
-            docker-compose down
-            docker-compose up -d --build --remove-orphans
-            docker image prune -f
+      - name: Build new images
+        working-directory: /volume1/docker/venus
+        run: docker-compose -p venus build --no-cache --pull
+
+      - name: Stop and remove old containers
+        working-directory: /volume1/docker/venus
+        run: docker-compose down
+
+      - name: Deploy new stack
+        working-directory: /volume1/docker/venus
+        env:
+          DOCKER_API_VERSION: "1.43"
+          COMPOSE_PROJECT_NAME: venus
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
+        run: |
+          docker-compose -p venus down
+          docker-compose -p venus up -d --remove-orphans --force-recreate
+
+      - name: Cleanup old images
+        env:
+          DOCKER_API_VERSION: "1.43"
+        run: |
+          docker image prune -f
