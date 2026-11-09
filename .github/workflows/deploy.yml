@@ -24,6 +24,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Debug Workspace
+        run: |
+          pwd
+          ls -la
+          echo "=== Contenu de /volume1/docker/venus avant copie ==="
+          ls -la /volume1/docker/venus/serv/
+
       - name: Force copy to exact NAS host path
         run: |
           echo "Copie vers le chemin cible du NAS..."
