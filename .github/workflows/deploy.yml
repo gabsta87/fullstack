@@ -19,20 +19,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Force copy project files to NAS
+      - name: Force copy to exact NAS host path
         run: |
-          echo "Copie du docker-compose.yml..."
+          echo "Copie vers le chemin cible du NAS..."
+          # On s'assure que le dossier hôte partagé reçoit bien les fichiers
           cp -f docker-compose.yml /volume1/docker/venus/docker-compose.yml
+          cp -rf front/. /volume1/docker/venus/front/
+          cp -rf serv/. /volume1/docker/venus/serv/
           
-          echo "Copie du dossier front..."
-          rm -rf /volume1/docker/venus/front
-          cp -r front /volume1/docker/venus/
-          
-          echo "Copie du dossier serv..."
-          rm -rf /volume1/docker/venus/serv
-          cp -r serv /volume1/docker/venus/
-          
-          echo "Vérification des fichiers copiés :"
+          # Vérification immédiate dans le log de ce qui est présent physiquement
           ls -la /volume1/docker/venus/
 
       - name: Build new images
