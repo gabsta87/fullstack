@@ -15,7 +15,7 @@ java {
 
 configurations {
 	compileOnly {
-		extendsFrom(configurations.annotationProcessor.get())
+		extendsFrom(annotationProcessor.get())
 	}
 }
 
@@ -55,6 +55,6 @@ dependencies {
 	testImplementation("com.h2database:h2")
 }
 
-//tasks.withType<Test> {
-//	useJUnitPlatform()
-//}
+tasks.withType<Test> {
+	useJUnitPlatform()
+}
