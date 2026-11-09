@@ -17,6 +17,11 @@ jobs:
       - name: Stop and remove old containers
         run: docker-compose down
 
+      - name: Copy production config to NAS deployment folder
+        run: |
+          cp docker-compose.yml /volume1/docker/venus/
+          cp .env /volume1/docker/venus/ || true
+
       - name: Deploy new stack
         env:
           DOCKER_API_VERSION: "1.43"
