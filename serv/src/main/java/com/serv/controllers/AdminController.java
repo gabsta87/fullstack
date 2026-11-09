@@ -52,7 +52,7 @@ public class AdminController {
         return sseStreamService.createAdminStream(adminArg.getId());
     }
 
-    // ── PROFILES & LOGS ──────────────────────────────────────────────────────
+    // USERS
 
     @GetMapping("/users")
     @Transactional(readOnly = true)
@@ -80,6 +80,29 @@ public class AdminController {
         return ResponseEntity.ok(userDTOs);
     }
 
+    @DeleteMapping("/users/{id}")
+    @Transactional
+    public ResponseEntity<?> deleteUser(@PathVariable UUID id, Admin admin) {
+        VenusUser userToDelete = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        // Empêcher un admin de se supprimer lui-même
+        if (userToDelete.getId().equals(admin.getId())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "An admin cannot suppress himself"));
+        }
+
+        // Appel du service de nettoyage et de suppression
+        userCleanupService.deleteUserCompletely(userToDelete);
+
+        // Audit Log
+        logAdminAction(admin, "DELETE_USER", "null", "Account deleted " + userToDelete.getEmail());
+
+        return ResponseEntity.ok(Map.of("message", "User deleted successfully"));
+    }
+
+    // WORKERS PROFILES
+
     @Transactional(readOnly = true)
     @GetMapping("/workers/{workerId}")
     public ResponseEntity<WorkerFullProfileDTO> getWorkerProfileForAdmin(@PathVariable UUID workerId) {
@@ -87,18 +110,6 @@ public class AdminController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found"));
         return ResponseEntity.ok(WorkerFullProfileDTO.from(worker));
     }
-
-    @GetMapping("/services")
-    public ResponseEntity<List<Service>> getServices(){
-        return ResponseEntity.ok(serviceRepository.findAll());
-    }
-
-    @GetMapping("/logs")
-    public ResponseEntity<List<AdminAuditLogDTO>> getAuditLogs() {
-        return ResponseEntity.ok(auditLogRepository.findAll().stream().map(AdminAuditLogDTO::from).collect(Collectors.toList()));
-    }
-
-    // Users Management
 
     @PostMapping("/profiles/{id}/status")
     @Transactional
@@ -119,7 +130,7 @@ public class AdminController {
         }
 
         VenusUser savedUser = userRepository.save(targetUser);
-        logAdminAction(admin, "UPDATE_WORKER_STATUS", targetUser, "Statuts modifiés -> " + changes.toString().trim());
+        logAdminAction(admin, "UPDATE_WORKER_STATUS", targetUser, "Profile updated -> " + changes.toString().trim());
 
         return ResponseEntity.ok(AdminUserDTO.from(savedUser));
     }
@@ -135,32 +146,11 @@ public class AdminController {
 
         Worker savedWorker = workerRepository.save(targetWorker);
 
-        logAdminAction(admin, "UPDATE_CREDIT_DAYS", targetWorker, String.format("Jours modifiés: %d -> %d | Motif: %s", oldDays, req.newDaysValue(), req.reason()));
+        logAdminAction(admin, "UPDATE_CREDIT_DAYS", targetWorker, String.format("Days modified: %d -> %d | Cause: %s", oldDays, req.newDaysValue(), req.reason()));
         return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
     }
 
-    @DeleteMapping("/users/{id}")
-    @Transactional
-    public ResponseEntity<?> deleteUser(@PathVariable UUID id, Admin admin) {
-        VenusUser userToDelete = userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-
-        // Empêcher un admin de se supprimer lui-même
-        if (userToDelete.getId().equals(admin.getId())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", "Vous ne pouvez pas supprimer votre propre compte administrateur."));
-        }
-
-        // Appel du service de nettoyage et de suppression
-        userCleanupService.deleteUserCompletely(userToDelete);
-
-        // Audit Log
-        logAdminAction(admin, "DELETE_USER", "null", "Suppression du compte " + userToDelete.getEmail());
-
-        return ResponseEntity.ok(Map.of("message", "Utilisateur supprimé avec succès"));
-    }
-
-    // Gestion des certifications
+    // CERTIFICATIONS
 
     @Transactional
     @GetMapping("/certification-requests")
@@ -273,7 +263,7 @@ public class AdminController {
         return ResponseEntity.ok(CertificationRequestDTO.from(savedRequest));
     }
 
-    // ── GESTION DES SERVICES ────────────────────────
+    // SERVICES
 
     /**
      * 🔄 SAVE OR UPDATE unique pour les services
@@ -346,7 +336,7 @@ public class AdminController {
         return ResponseEntity.ok(updatedServices);
     }
 
-    // ── GESTION DES TEXTES LÉGAUX ───────────────────────────────────
+    // LEGAL TEXTS
 
     @PostMapping("/legal")
     @Transactional
@@ -362,7 +352,7 @@ public class AdminController {
         return ResponseEntity.ok(Map.of("success", true));
     }
 
-    // ── GESTION DES RÉGIONS ───────────────────────────────────
+    // REGIONS
 
     @Transactional(readOnly = true)
     @GetMapping("/regions-flat")
@@ -470,7 +460,7 @@ public class AdminController {
         return ResponseEntity.ok(updatedZones);
     }
 
-    // ── GESTION DES COMMENTAIRES ───────────────────────────────────
+    // COMMENTS
 
     @DeleteMapping("/comments/{id}")
     @Transactional
@@ -506,7 +496,29 @@ public class AdminController {
         return ResponseEntity.ok(CommentDTO.from(comment));
     }
 
-    // ── GESTION DES SIGNALEMENTS ───────────────────────────────────
+    @DeleteMapping("/comment/{commentId}")
+    @Transactional
+    public ResponseEntity<?> deleteCommentByAdmin(@PathVariable Long commentId, Admin admin) {
+        Comment comm = commentRepository.findById(commentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found"));
+
+        Client author = comm.getAuthor();
+
+        if(author != null){
+            author.removeComment(comm);
+        }
+
+        if (comm.getWorker() != null) {
+            comm.getWorker().removeComment(comm);
+        }
+
+        commentRepository.delete(comm);
+        logAdminAction(admin, "COMMENT_DELETED", commentId, "Comment from "+author.getEmail()+" deleted by admin");
+
+        return ResponseEntity.ok(ClientDTO.from(author));
+    }
+
+    // REPORTS
 
     @GetMapping("/reports-summary")
     @Transactional(readOnly = true)
@@ -563,32 +575,8 @@ public class AdminController {
         return ResponseEntity.ok(AdminWorkerReportDTO.ReportDetailDTO.from(report));
     }
 
-    // Gestion des commentaires
+    // ADMINS INVITATIONS
 
-
-    @DeleteMapping("/comment/{commentId}")
-    @Transactional
-    public ResponseEntity<?> deleteCommentByAdmin(@PathVariable Long commentId, Admin admin) {
-        Comment comm = commentRepository.findById(commentId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found"));
-
-        Client author = comm.getAuthor();
-
-        if(author != null){
-            author.removeComment(comm);
-        }
-
-        if (comm.getWorker() != null) {
-            comm.getWorker().removeComment(comm);
-        }
-
-        commentRepository.delete(comm);
-        logAdminAction(admin, "COMMENT_DELETED", commentId, "Comment from "+author.getEmail()+" deleted by admin");
-
-        return ResponseEntity.ok(ClientDTO.from(author));
-    }
-
-    // ── ADMINS INVITATIONS ────────────────────────────────────
     @PostMapping("/invite")
     @Transactional
     public ResponseEntity<?> inviteAdmin(@RequestBody AdminInvitation req, Admin admin) {
@@ -626,7 +614,13 @@ public class AdminController {
         return ResponseEntity.ok(AdminDTO.from(newAdmin));
     }
 
-    // Encapsulation centralisée des surcharges de logs
+    // ADMIN LOGS
+
+    @GetMapping("/logs")
+    public ResponseEntity<List<AdminAuditLogDTO>> getAuditLogs() {
+        return ResponseEntity.ok(auditLogRepository.findAll().stream().map(AdminAuditLogDTO::from).collect(Collectors.toList()));
+    }
+
     private void logAdminAction(Admin admin, String actionType, Object target, String details) {
         AdminAuditLog log = new AdminAuditLog();
         log.setAdmin(admin);

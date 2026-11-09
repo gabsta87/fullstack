@@ -33,7 +33,7 @@ export class AdminService {
   );
 
   public services$: Observable<Service[]> = this.servicesRefresh$.pipe(
-    switchMap(() => this.http.get<Service[]>(`${this.apiUrl}/services`)),
+    switchMap(() => this.http.get<Service[]>(`${environment.apiBase}/common/services`)),
     shareReplay(1)
   );
 
