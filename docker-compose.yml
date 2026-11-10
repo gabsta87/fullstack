@@ -22,6 +22,7 @@ services:
 
   backend:
     build: ./serv
+    image: venus-backend:latest
     container_name: venus-backend
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&connectTimeout=30000&socketTimeout=60000&tcpKeepAlive=true

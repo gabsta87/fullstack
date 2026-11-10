@@ -21,15 +21,11 @@ jobs:
           source: "docker-compose.yml,front,serv"
           target: "/volume1/docker/venus"
 
-      - name: Build new images
-        working-directory: /volume1/docker/venus
-        run: docker-compose -p venus build --no-cache --pull
-
       - name: Stop and remove old containers
         working-directory: /volume1/docker/venus
         run: docker-compose down
 
-      - name: Deploy new stack
+      - name: Build and Deploy new stack
         working-directory: /volume1/docker/venus
         env:
           DOCKER_API_VERSION: "1.43"
@@ -39,7 +35,7 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
         run: |
-          docker-compose -p venus down
+          docker-compose -p venus build --no-cache --pull
           docker-compose -p venus up -d --remove-orphans --force-recreate
 
       - name: Cleanup old images
