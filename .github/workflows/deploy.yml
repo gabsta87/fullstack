@@ -1,3 +1,9 @@
+name: Deploy Venus Project
+
+on:
+  push:
+    branches: [ master ]
+
 jobs:
   deploy:
     runs-on: self-hosted
