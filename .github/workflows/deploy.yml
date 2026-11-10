@@ -8,22 +8,9 @@ jobs:
   deploy:
     runs-on: self-hosted
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Copy files to NAS via SCP
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.NAS_HOST }}
-          username: ${{ secrets.NAS_USER }}
-          port: ${{ secrets.NAS_PORT }}
-          key: ${{ secrets.NAS_SSH_KEY }}
-          source: "docker-compose.yml,front,serv"
-          target: "/volume1/docker/venus"
-
-      - name: Stop and remove old containers
+      - name: Git Pull latest code
         working-directory: /volume1/docker/venus
-        run: docker-compose down
+        run: git pull origin master
 
       - name: Build and Deploy new stack
         working-directory: /volume1/docker/venus
