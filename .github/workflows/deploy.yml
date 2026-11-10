@@ -9,6 +9,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Build and Deploy via Docker Compose
+        working-directory: /volume1/docker/venus
         env:
           DOCKER_API_VERSION: "1.43"
           COMPOSE_PROJECT_NAME: venus
