@@ -8,9 +8,6 @@ jobs:
   deploy:
     runs-on: self-hosted
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
-
       - name: Build and Deploy via Docker Compose
         env:
           DOCKER_API_VERSION: "1.43"
@@ -20,8 +17,7 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
         run: |
-          # Le runner exécute ceci dans son propre espace de travail temporaire
-          # Assurez-vous que le docker-compose pointe vers vos sources ou images compilées
+          cd /volume1/docker/venus
           docker-compose -p venus build --no-cache --pull
           docker-compose -p venus up -d --remove-orphans --force-recreate
 
