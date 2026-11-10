@@ -22,7 +22,6 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
         run: |
-          cd /volume1/docker/venus
           docker-compose -p venus build --no-cache --pull
           docker-compose -p venus up -d --remove-orphans --force-recreate
 
