@@ -8,7 +8,6 @@ jobs:
   deploy:
     runs-on: self-hosted
     steps:
-      
       - name: Build and Deploy via Docker Compose
         env:
           DOCKER_API_VERSION: "1.43"
@@ -20,7 +19,7 @@ jobs:
         run: |
           docker-compose -f /volume1/docker/venus/docker-compose.yml -p venus build --no-cache --pull
           docker-compose -f /volume1/docker/venus/docker-compose.yml -p venus up -d --remove-orphans --force-recreate
-      
+
       - name: Cleanup old images
         env:
           DOCKER_API_VERSION: "1.43"
