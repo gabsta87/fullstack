@@ -8,12 +8,10 @@ jobs:
   deploy:
     runs-on: self-hosted
     steps:
-      - name: Git Pull latest code
-        shell: sh
-        run: git pull origin master
+      - name: Checkout source code
+        uses: actions/checkout@v4
 
-      - name: Build and Deploy new stack
-        shell: sh
+      - name: Build and Deploy via Docker Compose
         env:
           DOCKER_API_VERSION: "1.43"
           COMPOSE_PROJECT_NAME: venus
@@ -22,6 +20,8 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
         run: |
+          # Le runner exécute ceci dans son propre espace de travail temporaire
+          # Assurez-vous que le docker-compose pointe vers vos sources ou images compilées
           docker-compose -p venus build --no-cache --pull
           docker-compose -p venus up -d --remove-orphans --force-recreate
 
