@@ -1,19 +1,11 @@
-name: Deploy Venus Project
-
-on:
-  push:
-    branches: [ master ]
-
 jobs:
   deploy:
     runs-on: self-hosted
     steps:
       - name: Git Pull latest code
-        working-directory: /volume1/docker/venus
         run: git pull origin master
 
       - name: Build and Deploy new stack
-        working-directory: /volume1/docker/venus
         env:
           DOCKER_API_VERSION: "1.43"
           COMPOSE_PROJECT_NAME: venus
