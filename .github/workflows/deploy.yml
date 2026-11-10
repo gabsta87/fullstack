@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Git Pull latest code
         shell: sh
-        run: cd /volume1/docker/venus && git pull origin master
+        run: git pull origin master
 
       - name: Build and Deploy new stack
         shell: sh
