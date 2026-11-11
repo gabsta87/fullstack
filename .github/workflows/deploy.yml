@@ -8,9 +8,21 @@ jobs:
   deploy:
     runs-on: self-hosted
     steps:
-      - name: Build and Deploy via Docker Compose
+      - name: Update sources
         env:
-          DOCKER_API_VERSION: "1.43"
+          SSH_KEY: ${{ secrets.NAS_SSH_KEY }}
+        run: |
+          KEY_FILE=$(mktemp)
+          trap 'rm -f "$KEY_FILE"' EXIT
+          printf '%s\n' "$SSH_KEY" > "$KEY_FILE"
+          chmod 600 "$KEY_FILE"
+          export GIT_SSH_COMMAND="ssh -i $KEY_FILE -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
+          cd /volume1/docker/venus
+          git config --global --add safe.directory /volume1/docker/venus
+          git pull origin master
+
+      - name: Build and Deploy
+        env:
           COMPOSE_PROJECT_NAME: venus
           DB_NAME: ${{ secrets.DB_NAME }}
           DB_USER: ${{ secrets.DB_USER }}
@@ -18,12 +30,8 @@ jobs:
           DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
         run: |
           cd /volume1/docker/venus
-          docker-compose -p venus down
-          docker-compose -p venus build --no-cache --pull
-          docker-compose -p venus up -d --remove-orphans --force-recreate
+          docker compose -p venus build --pull
+          docker compose -p venus up -d --remove-orphans
 
-      - name: Cleanup old images
-        env:
-          DOCKER_API_VERSION: "1.43"
-        run: |
-          docker image prune -f
+      - name: Cleanup
+        run: docker image prune -f
