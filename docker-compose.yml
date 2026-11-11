@@ -76,3 +76,4 @@ volumes:
 networks:
   default:
     name: venus-network
+    driver: bridge
