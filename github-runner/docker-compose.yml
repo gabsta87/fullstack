@@ -1,0 +1,15 @@
+services:
+  github-runner:
+    image: myoung34/github-runner:latest
+    container_name: github-runner
+    restart: unless-stopped
+    environment:
+      REPO_URL: https://github.com/gabsta87/fullstack
+      ACCESS_TOKEN: ...
+      RUNNER_NAME: nas-runner
+      RUNNER_WORKDIR: /volume1/docker/runner-work
+      LABELS: self-hosted
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /volume1/docker/venus:/volume1/docker/venus
+      - /volume1/docker/runner-work:/volume1/docker/runner-work
