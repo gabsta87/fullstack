@@ -73,3 +73,7 @@ services:
 volumes:
   db-data:
   media-data:
+
+networks:
+  default:
+    name: venus-network
