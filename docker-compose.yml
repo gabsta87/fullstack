@@ -74,6 +74,20 @@ services:
     depends_on:
       - backend
 
+    phpmyadmin:
+      image: phpmyadmin:latest
+      container_name: venus-phpmyadmin
+      restart: "no"
+      environment:
+        PMA_HOST: db
+        MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      ports:
+        - "8082:80"
+      depends_on:
+        - db
+      networks:
+        - default
+
 volumes:
   db-data:
   media-data:
@@ -82,3 +96,7 @@ networks:
   default:
     name: venus-network
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16
+        # this subnet is allowed in the firewall
