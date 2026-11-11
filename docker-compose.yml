@@ -15,6 +15,11 @@ services:
       timeout: 20s
       retries: 10
       start_period: 120s
+    networks:
+      default:
+        aliases:
+          - db
+          - venus-db
     deploy:
       resources:
         limits:
