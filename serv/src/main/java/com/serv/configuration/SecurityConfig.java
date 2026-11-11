@@ -120,7 +120,8 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:4200",
                 "http://nas:8888",
-                "http://venustest.synology.me"
+                "http://venustest.synology.me",
+                "https://venustest.synology.me"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
