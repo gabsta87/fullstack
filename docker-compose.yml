@@ -47,7 +47,7 @@ services:
 
       SPRING_JPA_HIBERNATE_DDL_AUTO: "none"
 
-      LOGGING_LEVEL_ROOT: "INFO"
+      LOGGING_LEVEL_ROOT: "DEBUG"
       LOGGING_LEVEL_COM_SERV: "DEBUG"
       
       SPRING_APPLICATION_JSON: '{"media.upload.base": "/var/serv-media", "media.public.url": "/media"}'
