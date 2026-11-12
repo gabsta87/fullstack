@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     environment:
       REPO_URL: https://github.com/gabsta87/fullstack
-      ACCESS_TOKEN: ghp_...
+      ACCESS_TOKEN: ${ACCESS_TOKEN}
       RUNNER_NAME: nas-runner
       RUNNER_WORKDIR: /volume1/docker/runner-work
       LABELS: self-hosted
