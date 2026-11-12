@@ -98,5 +98,5 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.21.0.0/16
+        - subnet: 172.21.1.0/24
         # this subnet is allowed in the firewall

@@ -9,7 +9,17 @@ services:
       RUNNER_NAME: nas-runner
       RUNNER_WORKDIR: /volume1/docker/runner-work
       LABELS: self-hosted
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /volume1/docker/venus:/volume1/docker/venus
       - /volume1/docker/runner-work:/volume1/docker/runner-work
+    networks:
+      default:
+        name: runner-network
+        driver: bridge
+        ipam:
+          config:
+            - subnet: 172.21.2.0/24
