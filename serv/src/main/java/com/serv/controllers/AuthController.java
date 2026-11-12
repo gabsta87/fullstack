@@ -104,6 +104,8 @@ public class AuthController {
         // Le mot de passe sera automatiquement haché par l'entité Client/VenusUser
         Client client = new Client(new Email(req.email()), req.password());
 
+        clientRepository.save(client);
+
         if (emailVerificationRequired) {
             client.setLocked(true);
             String activationUrl = verificationTokenService.createTokenAndSendEmail(client);
@@ -112,7 +114,6 @@ public class AuthController {
             client.setLocked(false);
         }
 
-        clientRepository.save(client);
 
         String message = emailVerificationRequired
                 ? "Registration successful. Please check your email to activate your account."
@@ -135,6 +136,8 @@ public class AuthController {
         worker.setBanned(false);
         worker.setExpired(false);
 
+        workerRepository.save(worker);
+
         if (emailVerificationRequired) {
             worker.setLocked(true);
             String activationUrl = verificationTokenService.createTokenAndSendEmail(worker);
@@ -142,8 +145,6 @@ public class AuthController {
         } else {
             worker.setLocked(false);
         }
-
-        workerRepository.save(worker);
 
         String message = emailVerificationRequired
                 ? "Registration successful. Please check your email to activate your account."
