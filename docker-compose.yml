@@ -77,7 +77,6 @@ services:
   phpmyadmin:
     image: phpmyadmin:latest
     container_name: venus-phpmyadmin
-    restart: "no"
     environment:
       PMA_HOST: db
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
