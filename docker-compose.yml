@@ -78,7 +78,7 @@ services:
     image: phpmyadmin:latest
     container_name: venus-phpmyadmin
     environment:
-      PMA_HOST: db
+      PMA_HOST: venus-db
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     ports:
       - "8082:80"
