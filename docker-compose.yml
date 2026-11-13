@@ -65,6 +65,8 @@ services:
       resources:
         limits:
           memory: 1.5G
+    networks:
+      - default
 
   frontend:
     build: ./front
@@ -73,6 +75,8 @@ services:
       - "8888:8081"
     depends_on:
       - backend
+    networks:
+      - default
 
   phpmyadmin:
     image: phpmyadmin:latest
