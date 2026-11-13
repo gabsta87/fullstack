@@ -6,6 +6,8 @@ USER root
 
 ENV GRADLE_OPTS="-Xmx512m -XX:MaxMetaspaceSize=384m"
 
+RUN curl -I https://plugins.gradle.org/m2/org/springframework/boot/org.springframework.boot.gradle.plugin/3.3.4/org.springframework.boot.gradle.plugin-3.3.4.pom
+
 RUN gradle bootJar --no-daemon --no-build-cache
 
 # ── Stage 2: run ──────────────────────────────────────────────────────────────
