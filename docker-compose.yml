@@ -29,6 +29,9 @@ services:
     build: ./serv
     image: venus-backend:latest
     container_name: venus-backend
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://venus-db:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&connectTimeout=30000&socketTimeout=60000&tcpKeepAlive=true
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
