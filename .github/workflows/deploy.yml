@@ -30,7 +30,7 @@ jobs:
           DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
         run: |
           cd /volume1/docker/venus
-          docker compose -p venus build --no-cache --pull
+          docker compose -p venus build --no-cache --pull --build-arg DNS_SERVER=1.1.1.1
           docker compose -p venus up -d --remove-orphans
 
       - name: Cleanup
