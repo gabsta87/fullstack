@@ -1,8 +1,9 @@
 # ── Stage 1: build the jar ────────────────────────────────────────────────────
+FROM gradle:8-jdk21 AS builder
+
 RUN echo "nameserver 1.1.1.1" > /etc/resolv.conf
 RUN echo "nameserver 8.8.8.8" >> /etc/resolv.conf
 
-FROM gradle:8-jdk21 AS builder
 WORKDIR /app
 COPY . .
 USER root
