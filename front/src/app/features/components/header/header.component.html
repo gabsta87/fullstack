@@ -14,17 +14,15 @@
         <ng-container *ngIf="langService.currentLanguage$ | async as t">
           <ion-button [href]="'mailto:' + supportEmail" fill="clear" class="nav-link-btn">
             <ion-icon name="mail-outline" slot="start"></ion-icon>
-            {{ t.common?.contact_us }}
+            <span class="btn-label">{{ t.common?.contact_us }}</span>
           </ion-button>
         </ng-container>
       </ng-container>
 
       <!-- Sélecteur de langue -->
-      <ion-button (click)="openLangPopover($event)">
+      <ion-button (click)="openLangPopover($event)" class="lang-button">
         <img [src]="langService.currentLanguageFlag" class="header-flag-icon" alt="Langue active" />
-        <ion-text class="ion-hide-sm-down" style="margin-left: 5px; font-size: 14px;">
-          {{ langService.currentCode }}
-        </ion-text>
+        <ion-text class="ion-hide-sm-down lang-code">{{ langService.currentCode }}</ion-text>
       </ion-button>
 
       <!-- Le reste des boutons (authentification) -->
@@ -32,10 +30,11 @@
         <ng-container *ngIf="!(authService.isAuthenticated$ | async)">
           <ion-button (click)="openAuth('login')" fill="clear" class="nav-link-btn">
             <ion-icon name="log-in-outline" slot="start"></ion-icon>
-            {{ t.header?.login }}
+            <span class="btn-label">{{ t.header?.login }}</span>
           </ion-button>
           <ion-button (click)="openAuth('register')" fill="solid" class="nav-cta-btn">
-            {{ t.header?.register }}
+            <ion-icon name="person-add-outline" slot="start"></ion-icon>
+            <span class="btn-label">{{ t.header?.register }}</span>
           </ion-button>
         </ng-container>
 
@@ -43,17 +42,17 @@
           <ng-container *ngIf="authService.isAdmin">
             <ion-button (click)="openAdmin()" fill="clear" class="nav-link-btn">
               <ion-icon name="build-outline" slot="start"></ion-icon>
-              {{ t.admin?.tabs?.admins || 'Administration' }}
+              <span class="btn-label">{{ t.admin?.tabs?.admins || 'Administration' }}</span>
             </ion-button>
           </ng-container>
 
           <ion-button *ngIf="!authService.isAdmin" (click)="openAccount()" fill="clear" class="nav-link-btn">
             <ion-icon name="person-circle-outline" slot="start"></ion-icon>
-            {{ t.header?.account }}
+            <span class="btn-label">{{ t.header?.account }}</span>
           </ion-button>
           <ion-button (click)="onLogout()" fill="clear" class="nav-link-btn">
             <ion-icon name="log-out-outline" slot="start"></ion-icon>
-            {{ t.header?.logout }}
+            <span class="btn-label">{{ t.header?.logout }}</span>
           </ion-button>
         </ng-container>
       </ng-container>
