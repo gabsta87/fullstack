@@ -9,7 +9,7 @@
   <div class="filter-banner-sticky">
     <div class="filter-banner">
       <ion-grid class="ion-no-padding">
-        <ion-row class="ion-align-items-center">
+        <ion-row class="ion-align-items-center filter-main-row">
 
           <ion-col size="12" size-sm="6" size-md="6" class="filter-col">
             <zone-selector
@@ -23,9 +23,8 @@
             </zone-selector>
           </ion-col>
 
-          <ion-col size="12" size-sm="3" size-md="3" class="filter-col">
-            <ion-item lines="none" class="filter-input-item">
-              <ion-icon name="person-outline" slot="start" class="filter-icon"></ion-icon>
+          <ion-col size="12" size-sm="3" size-md="3" class="filter-col name-col">
+            <ion-item lines="none" class="filter-input-item name-input-item">
               <ion-input aria-label="Nom"
                          [placeholder]="t.filters?.placeholder_name"
                          [(ngModel)]="filters.username"
@@ -35,9 +34,9 @@
             </ion-item>
           </ion-col>
 
-          <ion-col size="12" size-sm="3" size-md="3" class="filter-actions ion-text-end">
+          <ion-col size="12" size-sm="3" size-md="3" class="filter-col filter-actions ion-text-end">
             <ion-button *ngIf="hasActiveFilters()"
-                        fill="outline" class="more-filters-btn"
+                        fill="outline" class="more-filters-btn clear-btn"
                         color="medium" size="small"
                         (click)="clearFilters()">
               {{ t.common?.clear || t.filters?.clear }}
@@ -53,7 +52,7 @@
 
         <div *ngIf="showMoreFilters" class="advanced-filters-wrapper fade-in">
           <ion-row class="advanced-filters-row">
-            <ion-col size="12" size-sm="4">
+            <ion-col size="12" size-sm="4" class="filter-col">
               <ion-item lines="none" class="filter-input-item">
                 <ion-select aria-label="Silhouette" interface="popover" [(ngModel)]="filters.bodyType" (ionChange)="loadPage(true)" [placeholder]="t.filters?.all_body_types">
                   <ion-select-option [value]="null">{{ t.filters?.all_body_types }}</ion-select-option>
@@ -64,7 +63,7 @@
               </ion-item>
             </ion-col>
 
-            <ion-col size="12" size-sm="4">
+            <ion-col size="12" size-sm="4" class="filter-col">
               <ion-item lines="none" class="filter-input-item">
                 <ion-select aria-label="Yeux" interface="popover" [(ngModel)]="filters.eyeColor" (ionChange)="loadPage(true)" [placeholder]="t.filters?.all_eye_colors">
                   <ion-select-option [value]="null">{{ t.filters?.all_eye_colors }}</ion-select-option>
@@ -75,7 +74,7 @@
               </ion-item>
             </ion-col>
 
-            <ion-col size="12" size-sm="4">
+            <ion-col size="12" size-sm="4" class="filter-col">
               <ion-item lines="none" class="filter-input-item">
                 <ion-select aria-label="Cheveux" interface="popover" [(ngModel)]="filters.hairColor" (ionChange)="loadPage(true)" [placeholder]="t.filters?.all_hair_colors">
                   <ion-select-option [value]="null">{{ t.filters?.all_hair_colors }}</ion-select-option>
@@ -88,7 +87,7 @@
           </ion-row>
 
           <ion-row class="advanced-filters-row ion-margin-top">
-            <ion-col size="12" size-sm="4">
+            <ion-col size="12" size-sm="4" class="filter-col">
               <ion-item lines="none" class="filter-input-item">
                 <ion-select aria-label="Services" interface="popover" [multiple]="true" [(ngModel)]="filters.services" (ionChange)="loadPage(true)" [placeholder]="t.filters?.all_services">
                   <ion-select-option *ngFor="let service of allServices" [value]="service.name">{{ service.name }}</ion-select-option>
@@ -96,7 +95,7 @@
               </ion-item>
             </ion-col>
 
-            <ion-col size="12" size-sm="4">
+            <ion-col size="12" size-sm="4" class="filter-col">
               <ion-item lines="none" class="filter-input-item">
                 <ion-select aria-label="Langues" interface="popover" [multiple]="true" [(ngModel)]="filters.languages" (ionChange)="loadPage(true)" [placeholder]="t.filters?.all_languages">
                   <ion-select-option *ngFor="let lang of languageService.availableLanguages" [value]="lang.code">
@@ -106,7 +105,7 @@
               </ion-item>
             </ion-col>
 
-            <ion-col size="12" size-sm="4">
+            <ion-col size="12" size-sm="4" class="filter-col">
               <age-range-selector
                 class="filter-input-item"
                 [(minAge)]="filters.minAge"

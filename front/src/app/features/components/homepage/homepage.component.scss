@@ -13,12 +13,12 @@
 }
 
 /* Grille principale ajustée sur les côtés et espacement réduit entre les cartes */
-.cards-grid {
-  padding: 8px 12px !important;
-  margin: 0 !important;
+ion-grid.cards-grid {
+  padding: 8px 12px;
+  margin: 0;
 
-  .card-col {
-    padding: 6px !important; /* Réduit l'espace (gouttière) entre les cartes */
+  ion-col.card-col {
+    padding: 6px; /* Réduit l'espace (gouttière) entre les cartes */
   }
 }
 
@@ -35,23 +35,43 @@
   border: 1px solid rgba(0, 0, 0, 0.03);
 
   ion-grid {
-    padding: 0 !important;
-    margin: 0 !important;
+    padding: 0;
+    margin: 0;
   }
 
-  .filter-col, .advanced-filters-row ion-col {
+  .name-input-item {
+    display: flex;
+    align-items: center;
+    --min-height: 36px;
+    --padding-top: 0;
+    --padding-bottom: 0;
+
+    ion-input {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      min-height: 36px;
+      --padding-top: 0;
+      --padding-bottom: 0;
+    }
+  }
+
+  .filter-col,
+  .advanced-filters-row ion-col {
     padding-right: 8px;
     display: flex;
     align-items: center;
     box-sizing: border-box;
+    min-width: 0;
   }
 
-  .filter-col:last-child, .advanced-filters-row ion-col:last-child {
-    padding-right: 0 !important;
+  .filter-col:last-child,
+  .advanced-filters-row ion-col:last-child {
+    padding-right: 0;
   }
 
   .filter-actions {
-    padding-right: 0 !important;
+    padding-right: 0;
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -59,10 +79,13 @@
     height: 40px;
   }
 
-  .filter-input-item, zone-selector, age-range-selector {
+  .filter-input-item,
+  zone-selector,
+  age-range-selector {
     width: 100%;
-    height: 40px !important;
-    min-height: 40px !important;
+    min-width: 0;
+    height: 40px;
+    min-height: 40px;
     display: flex;
     align-items: center;
     box-sizing: border-box;
@@ -70,54 +93,70 @@
 
   zone-selector {
     ::ng-deep {
-      .select-item, ion-item {
-        min-height: 40px !important;
-        height: 40px !important;
+      .select-item,
+      ion-item {
+        min-height: 40px;
+        height: 40px;
+        min-width: 0;
       }
     }
   }
 
-  .filter-input-item, age-range-selector {
-    background: rgba(255, 255, 255, 0.95) !important;
-    border-radius: 8px !important;
-    border: 1px solid #e8e4df !important;
-    padding-right: 10px;
+  .filter-input-item,
+  age-range-selector {
+    --background: rgba(255, 255, 255, 0.95);
+    --padding-start: 12px;
+    --padding-end: 10px;
+    --inner-padding-end: 0;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    border: 1px solid #e8e4df;
     margin: 0;
-    box-shadow: none !important;
+    box-shadow: none;
+    overflow: hidden;
 
     ::ng-deep {
-      .item-native, .item-inner, .native-wrapper {
-        background: transparent !important;
-        border-radius: 8px !important;
-        border: none !important;
-        box-shadow: none !important;
-        min-height: 40px !important;
-        height: 40px !important;
+      .item-native,
+      .item-inner,
+      .native-wrapper {
+        background: transparent;
+        border-radius: 8px;
+        border: none;
+        box-shadow: none;
+        min-height: 40px;
+        height: 40px;
+        min-width: 0;
       }
     }
 
-    ion-select, ion-input {
+    ion-select,
+    ion-input {
       font-size: 0.9rem;
       font-weight: 500;
       width: 100%;
-      --padding-start: 4px;
+      min-width: 0;
+      text-align: left;
+      --padding-start: 0;
+      --padding-end: 0;
     }
 
     .filter-icon {
       color: #8c7d75;
       font-size: 1.1rem;
       margin-right: 6px;
+      flex-shrink: 0;
     }
   }
 
   age-range-selector {
-    padding: 0 8px;
+    padding: 0;
+
     ::ng-deep {
       ion-item {
-        --background: transparent !important;
-        background: transparent !important;
-        --border-color: transparent !important;
-        box-shadow: none !important;
+        --background: transparent;
+        background: transparent;
+        --border-color: transparent;
+        box-shadow: none;
       }
     }
   }
@@ -133,6 +172,7 @@
     --background: rgba(255, 255, 255, 0.9);
     --color: #6b5b52;
     --border-color: #e8e4df;
+    white-space: nowrap;
   }
 
   .advanced-filters-wrapper {
@@ -151,15 +191,141 @@
   }
 }
 
+// ── ADAPTATION PETITS ÉCRANS (MOBILE) ─────────────────────────────────────────
+@media (max-width: 767px) {
+  .filter-banner-sticky {
+    padding: 6px 8px;
+  }
+
+  .filter-banner {
+    padding: 8px;
+    border-radius: 8px;
+
+    ion-col.filter-col,
+    .advanced-filters-row ion-col {
+      padding-right: 0;
+      padding-left: 0;
+      flex: 0 0 100%;
+      max-width: 100%;
+      width: 100%;
+    }
+
+    .filter-main-row {
+      row-gap: 6px;
+
+      > .filter-actions {
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+
+        .clear-btn {
+          margin-right: auto;
+        }
+      }
+    }
+
+    .filter-banner-field,
+    .filter-input-item,
+    age-range-selector {
+      height: 36px;
+      min-height: 36px;
+      max-width: 100%;
+
+      ::ng-deep {
+        .item-native,
+        .item-inner,
+        .native-wrapper {
+          height: 36px;
+          min-height: 36px;
+        }
+      }
+
+      ion-select,
+      ion-input {
+        font-size: 0.85rem;
+      }
+    }
+
+    age-range-selector {
+      padding: 0;
+    }
+
+    // Régions côte à côte tant qu'il y a de la place, sinon retour à la ligne
+    zone-selector {
+      height: auto;
+      min-height: 36px;
+      max-width: 100%;
+
+      ::ng-deep {
+        & > div,
+        .zone-wrapper,
+        .selectors-row {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+          width: 100%;
+        }
+
+        .select-item,
+        ion-item {
+          flex: 1 1 140px;
+          min-width: 0;
+          max-width: 100%;
+          width: auto;
+          min-height: 36px;
+          height: 36px;
+        }
+      }
+    }
+
+    .more-filters-btn {
+      height: 36px;
+      font-size: 0.82rem;
+      --padding-start: 8px;
+      --padding-end: 8px;
+    }
+
+    .advanced-filters-wrapper {
+      margin-top: 8px;
+      padding-top: 8px;
+
+      .advanced-filters-row {
+        flex-wrap: wrap;
+        row-gap: 6px;
+
+        & + .advanced-filters-row {
+          margin-top: 6px;
+        }
+      }
+    }
+  }
+
+  ion-grid.cards-grid {
+    padding: 4px 6px;
+
+    ion-col.card-col {
+      padding: 4px;
+    }
+  }
+}
+
 .fade-in {
   animation: fadeIn 0.25s ease-out forwards;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 ion-fab {
-  bottom: 60px !important;
+  bottom: 60px;
 }
