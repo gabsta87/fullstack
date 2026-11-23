@@ -29,7 +29,6 @@ public class WorkerService {
 
         if(page < 0){
             page = 0;
-            System.out.println("Page " + page+" corrected to 0");
         }
 
         // 1. On prépare la base : Uniquement les profils non désactivés + les filtres dynamiques
@@ -48,8 +47,6 @@ public class WorkerService {
                 spec,
                 PageRequest.of(page, PAGE_SIZE, doubleSort)
         ).getContent();
-
-        System.out.println("Applying " + filters.size() + " filters : " + filters+ " to fetch " + workers.size() + " workers.");
 
         if (workers.isEmpty()) return List.of();
 
@@ -175,10 +172,8 @@ public class WorkerService {
                     predicates.add(cb.greaterThan(birthDateAttribute, targetDate));
                 }
 
-                System.out.println("Filtre Age [" + paramName + "=" + ageVal + "] appliqué avec succès.");
-
             } catch (Exception e) {
-                System.err.println("Échec de l'application du filtre d'âge pour " + paramName + ": " + e.getMessage());
+                System.err.println("Failed to apply age filtering " + paramName + ": " + e.getMessage());
                 e.printStackTrace(); // Utile pour voir les détails de l'erreur au cas où
             }
         }

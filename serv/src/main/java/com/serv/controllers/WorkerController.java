@@ -35,8 +35,6 @@ public class WorkerController {
     public ResponseEntity<List<WorkerMinimalProfileDTO>> getGallery(WorkersFilters req) {
         Map<String, Object> allFilters = new HashMap<>();
 
-        System.out.println("Request received with filters : " + req);
-
         // 1. Zone ID
         if (req.zoneId() != null && !req.zoneId().isBlank() && !req.zoneId().equalsIgnoreCase("undefined")) {
             try { allFilters.put("zoneId", Integer.parseInt(req.zoneId())); } catch (NumberFormatException ignored) {}

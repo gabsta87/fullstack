@@ -114,7 +114,6 @@ public class AdminController {
     @PostMapping("/profiles/{id}/status")
     @Transactional
     public ResponseEntity<?> updateWorkerStatus(@PathVariable UUID id, @RequestBody UpdateWorkerStatus req, Admin admin) {
-        System.out.println("updateWorkerStatus: " + id + " " + req.locked() + " " + req.banned());
         VenusUser targetUser = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found"));
 
@@ -161,7 +160,6 @@ public class AdminController {
 
         for (CertificationRequest req : requests) {
             if (req.isUnderReview() && req.getLockedAt() != null && req.getLockedAt().isBefore(expirationThreshold)) {
-                System.out.println("Freeing request " + req.getId() + " after expiration");
                 req.setUnderReview(false);
                 req.setLockedByAdmin(null);
                 req.setLockedAt(null);
@@ -275,7 +273,6 @@ public class AdminController {
         boolean isUpdate = service.id() != null;
 
         if (isUpdate) {
-            System.out.println("update");
             Service existing = serviceRepository.findById(service.id()).orElse(null);
             if (existing == null) return ResponseEntity.notFound().build();
 
@@ -287,7 +284,6 @@ public class AdminController {
 
             logAdminAction(admin, "UPDATE_SERVICE", existing, String.format("Service %s renamed to %s", oldName, existing.getName()));
         } else {
-            System.out.println("create");
             if (serviceRepository.findByName(service.name()).isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Service already exists");
             }

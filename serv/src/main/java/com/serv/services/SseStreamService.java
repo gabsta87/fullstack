@@ -99,7 +99,6 @@ public class SseStreamService {
                 try {
                     emitter.send(SseEmitter.event().name(eventName).data(data));
                 } catch (Exception e) {
-                    System.out.println("Nettoyage d'un emitter défaillant (" + e.getClass().getSimpleName() + ") pour l'utilisateur " + userId);
                     try {
                         emitter.complete();
                     } catch (Exception ignored) {}

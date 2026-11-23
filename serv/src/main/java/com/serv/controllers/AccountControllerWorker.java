@@ -146,7 +146,6 @@ public class AccountControllerWorker {
     public ResponseEntity<?> updateProfile(@RequestBody UpdateWorkerProfile req,
                                            Worker workerArg) {
         Worker worker = getWorkerWithPhotos(workerArg);
-        System.out.println("updateProfile :" + req.username() + " with value "+req);
 
         if (req.description() != null) worker.setDescription(req.description());
 
@@ -154,10 +153,7 @@ public class AccountControllerWorker {
             if (req.geographicZoneId() == -1) {
                 worker.setGeographicZone(null);
             } else {
-                geographicZoneRepository.findById(req.geographicZoneId()).ifPresent(zone -> {
-                    worker.setGeographicZone(zone);
-                    System.out.println("updateProfile zone associée : " + zone.getName());
-                });
+                geographicZoneRepository.findById(req.geographicZoneId()).ifPresent(worker::setGeographicZone);
             }
         }
 
@@ -200,7 +196,6 @@ public class AccountControllerWorker {
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .collect(Collectors.toList()));
-            System.out.println("updateProfile :" + worker.getServices());
         }
 
         this.setWorkerProfileCompleteness(worker);
@@ -213,7 +208,6 @@ public class AccountControllerWorker {
     @PatchMapping("/updateservices")
     public ResponseEntity<?> updateServices(@RequestBody List<Integer> services, Worker workerArg) {
         Worker worker = getWorkerWithPhotos(workerArg);
-        System.out.println("updateServices :" + services+" for worker "+worker.getUsername());
 
         List<Service> serviceList = services.stream()
                 .map(serviceRepository::findById)
@@ -254,7 +248,7 @@ public class AccountControllerWorker {
                     mediaAdded = true;
                 }
             } catch (IOException e) {
-                System.out.println("Error uploading media "+ file.getName()+" . CAUSE : " + e.getMessage());
+                System.err.println("Error uploading media "+ file.getName()+" . CAUSE : " + e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -290,11 +284,8 @@ public class AccountControllerWorker {
             return ResponseEntity.badRequest().build();
         }
 
-        System.out.println("Deleting photo " + photoId + " for worker " + worker.getUsername());
-
         Photo photo = photoRepository.findById(photoId).orElse(null);
         if (photo == null || photo.getWorker() == null || !photo.getWorker().getId().equals(worker.getId())) {
-            System.out.println("Photo not found or not owned by worker | Photo ID : " + photoId);
             return ResponseEntity.notFound().build();
         }
 
@@ -333,11 +324,8 @@ public class AccountControllerWorker {
             return ResponseEntity.badRequest().build();
         }
 
-        System.out.println("Deleting video " + videoId + " for worker " + worker.getUsername());
-
         Video video = videoRepository.findById(videoId).orElse(null);
         if (video == null || video.getWorker() == null || !video.getWorker().getId().equals(worker.getId())) {
-            System.out.println("Video not found or not owned by worker | Video ID : " + videoId);
             return ResponseEntity.notFound().build();
         }
 

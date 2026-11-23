@@ -23,7 +23,6 @@ public class UserCleanupService {
 
     @Transactional
     public void deleteUserCompletely(VenusUser user) {
-        System.out.println("Deleting user: " + user.getId() + " : " + user.getUsername());
         // 1. Nettoyage spécifique selon le type d'utilisateur
         if (user instanceof Client client) {
             // Vider les tables de jointure ManyToMany / OneToMany pour éviter les contraintes FK
