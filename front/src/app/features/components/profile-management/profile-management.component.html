@@ -25,7 +25,7 @@
             <ion-avatar>
               <img [src]="me.mainThumbUrl
               ? (me.mainThumbUrl.startsWith('http') ? me.mainThumbUrl : environment.apiBase + me.mainThumbUrl)
-              : 'assets/default-avatar.png'"/>
+              : 'assets/images/default-avatar.jpg'"/>
             </ion-avatar>
             <ion-fab-button size="small" class="edit-photo-btn">
               <ion-icon name="camera"></ion-icon>
@@ -385,7 +385,7 @@
                      (dragend)="onDragEnd()"
                      [class.drag-over]="dragOverIndex === i">
 
-                  <img [src]="photo.mainThumbUrl ? photo.mainThumbUrl : 'assets/images/test_profile_placeholder.jpg'" class="gallery-img"/>
+                  <img [src]="photo.mainThumbUrl ? photo.mainThumbUrl : 'assets/images/default-avatar.jpg'" class="gallery-img"/>
 
                   <div class="gallery-actions-overlay">
                     <ion-button [color]="photo.isMain ? 'warning' : 'light'" fill="clear" size="small"

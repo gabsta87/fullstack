@@ -3,7 +3,7 @@
     <ion-ripple-effect></ion-ripple-effect>
 
     <div class="wcard-photo" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
-      <img [src]="displayUrl ? displayUrl : 'assets/images/test_profile_placeholder.jpg'" [alt]="worker.username" class="wcard-img" loading="lazy" />
+      <img [src]="displayUrl ? displayUrl : 'assets/images/default-avatar.jpg'" [alt]="worker.username" class="wcard-img" loading="lazy" />
 
       <ion-badge *ngIf="!worker.available" class="online-pill" color="medium">
         {{ t.common?.unavailable }}

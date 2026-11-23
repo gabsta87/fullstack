@@ -18,7 +18,7 @@
 
         <aside class="sidebar">
           <div class="profile-card">
-            <img [src]="worker.mainThumbUrl ? worker.mainThumbUrl : 'assets/images/test_profile_placeholder.jpg'"
+            <img [src]="worker.mainThumbUrl ? worker.mainThumbUrl : 'assets/images/default-avatar.jpg'"
                  alt="Avatar" class="avatar-img">
             <h2>{{ worker.username }}</h2>
             <p class="location">
@@ -118,7 +118,7 @@
             <div class="gallery-grid">
               <img *ngFor="let p of worker.photos"
                    class="media-item"
-                   [src]="worker.mainThumbUrl ? worker.mainThumbUrl : 'assets/images/test_profile_placeholder.jpg'"
+                   [src]="worker.mainThumbUrl ? worker.mainThumbUrl : 'assets/images/default-avatar.jpg'"
                    (click)="openMedia(p)">
             </div>
           </div>
