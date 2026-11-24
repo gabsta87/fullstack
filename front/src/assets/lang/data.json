@@ -92,6 +92,11 @@
         "title": "Your favorites",
         "empty": "You have no favorites yet."
       },
+      "comments": {
+        "title": "My comments",
+        "empty": "You haven't posted any comments yet.",
+        "unknown_profile": "Deleted profile"
+      },
       "settings": {
         "title": "My search preferences",
         "body_types_label": "Preferred body types"
@@ -386,6 +391,11 @@
       "favorites": {
         "title": "Vos favoris",
         "empty": "Vous n'avez pas encore de favoris."
+      },
+      "comments": {
+        "title": "Mes commentaires",
+        "empty": "Vous n'avez posté aucun commentaire pour le moment.",
+        "unknown_profile": "Profil supprimé"
       },
       "settings": {
         "title": "Mes préférences de recherche",
@@ -682,6 +692,11 @@
         "title": "Ihre Favoriten",
         "empty": "Sie haben noch keine Favoriten."
       },
+      "comments": {
+        "title": "Meine Kommentare",
+        "empty": "Sie haben noch keine Kommentare verfasst.",
+        "unknown_profile": "Gelöschtes Profil"
+      },
       "settings": {
         "title": "Meine Sucheinstellungen",
         "body_types_label": "Bevorzugte Körpertypen"
@@ -971,6 +986,11 @@
       "favorites": {
         "title": "Tus favoritos",
         "empty": "Aún no tienes favoritos."
+      },
+      "comments": {
+        "title": "Mis comentarios",
+        "empty": "Aún no has publicado ningún comentario.",
+        "unknown_profile": "Perfil eliminado"
       },
       "settings": {
         "title": "Mis preferencias de búsqueda",
@@ -1262,6 +1282,11 @@
         "title": "Os seus favoritos",
         "empty": "Ainda não tem favoritos."
       },
+      "comments": {
+        "title": "Os meus comentários",
+        "empty": "Ainda não publicou nenhum comentário.",
+        "unknown_profile": "Perfil eliminado"
+      },
       "settings": {
         "title": "As minhas preferências de pesquisa",
         "body_types_label": "Silhuetas preferidas"
@@ -1551,6 +1576,11 @@
       "favorites": {
         "title": "I tuoi preferiti",
         "empty": "Non hai ancora nessun preferito."
+      },
+      "comments": {
+        "title": "I miei commenti",
+        "empty": "Non hai ancora pubblicato commenti.",
+        "unknown_profile": "Profilo eliminato"
       },
       "settings": {
         "title": "Le mie preferenze di ricerca",
@@ -1842,6 +1872,11 @@
         "title": "Ваше избранное",
         "empty": "У вас пока нет избранных профилей."
       },
+      "comments": {
+        "title": "Мои комментарии",
+        "empty": "Вы ещё не оставили ни одного комментария.",
+        "unknown_profile": "Профиль удалён"
+      },
       "settings": {
         "title": "Мои настройки поиска",
         "body_types_label": "Предпочитаемые типы фигуры"
@@ -2132,6 +2167,11 @@
         "title": "Ваше обране",
         "empty": "У вас поки немає обраних профілів."
       },
+      "comments": {
+        "title": "Мої коментарі",
+        "empty": "Ви ще не залишили жодного коментаря.",
+        "unknown_profile": "Профіль видалено"
+      },
       "settings": {
         "title": "Мої налаштування пошуку",
         "body_types_label": "Бажані типи фігури"
@@ -2421,6 +2461,11 @@
       "favorites": {
         "title": "المفضلة لديك",
         "empty": "ليس لديك أي مفضلة حتى الآن."
+      },
+      "comments": {
+        "title": "تعليقاتي",
+        "empty": "لم تنشر أي تعليق بعد.",
+        "unknown_profile": "ملف محذوف"
       },
       "settings": {
         "title": "تفضيلات البحث الخاصة بي",

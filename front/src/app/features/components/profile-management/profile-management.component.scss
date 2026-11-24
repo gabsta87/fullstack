@@ -210,6 +210,31 @@
         opacity: 0.85;
         font-size: 0.8rem;
       }
+
+      // Suppression : icône corbeille, rougit au survol
+      .chip-remove {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        margin: 0 -4px 0 6px;
+        padding: 0;
+        border: none;
+        border-radius: 50%;
+        background: transparent;
+        color: var(--text-muted, #8c7d75);
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s;
+
+        ion-icon { font-size: 16px; margin: 0; }
+
+        &:hover,
+        &:focus-visible {
+          background: rgba(235, 68, 90, 0.1);
+          color: var(--ion-color-danger, #eb445a);
+        }
+      }
     }
   }
 

@@ -262,7 +262,11 @@
                           <strong>{{ languageService.getLanguageMeta(item.language).label }}</strong>
                           <span class="chip-level">• {{ languageService.getMasteryLabel(item.level, t) }}</span>
                         </ion-label>
-                        <ion-icon name="close-circle" (click)="removeLanguage(i)"></ion-icon>
+                        <button type="button" class="chip-remove"
+                                [attr.aria-label]="(t.common?.delete || 'Supprimer') + ' ' + languageService.getLanguageMeta(item.language).label"
+                                (click)="removeLanguage(i)">
+                          <ion-icon name="trash-outline"></ion-icon>
+                        </button>
                       </ion-chip>
                     </div>
 

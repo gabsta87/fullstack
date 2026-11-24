@@ -41,71 +41,61 @@
       <!-- ONGLET MES COMMENTAIRES -->
       <div *ngIf="activeTab === 'comments'" class="fade-in ion-padding">
         <div class="section-header">
-          <h2>{{ t.account?.comments?.title || 'My comments' }} ({{ user.reviews.length || 0 }})</h2>
+          <h2>{{ t.account?.comments?.title }} ({{ user.reviews.length || 0 }})</h2>
         </div>
 
-        <div *ngIf="user.reviews && user.reviews.length > 0; else emptyComments" class="comments-container">
-          <ion-card *ngFor="let comment of user.reviews" class="comment-card ion-margin-bottom">
-            <ion-card-header style="display: flex; justify-content: space-between; align-items: center;">
-              <div>
-                <ion-card-title style="font-size: 1.1rem; font-weight: 600;">
-                  {{ comment.authorUsername }}
-                </ion-card-title>
-                <ion-card-subtitle style="font-size: 0.8rem; color: var(--text-muted, #8c7d75);">
-                  {{ comment.date | date:'shortDate' }}
-                </ion-card-subtitle>
+        <ul *ngIf="user.reviews && user.reviews.length > 0; else emptyComments" class="my-comments">
+          <li *ngFor="let comment of user.reviews" class="my-comment">
+
+            <!-- Profil commenté : vignette cliquable -->
+            <button type="button" class="mc-thumb" (click)="navigateToWorker(comment.workerId)"
+                    [attr.aria-label]="comment.workerUsername">
+              <img [src]="comment.workerThumbUrl || 'assets/images/default-avatar.jpg'" [alt]="comment.workerUsername" loading="lazy">
+            </button>
+
+            <div class="mc-body">
+              <div class="mc-head">
+                <button type="button" class="mc-name" (click)="navigateToWorker(comment.workerId)">
+                  {{ comment.workerUsername || t.account?.comments?.unknown_profile }}
+                </button>
+                <span class="mc-date">{{ comment.date | date:'dd.MM.yyyy' }}</span>
+
+                <div class="mc-actions" *ngIf="editingCommentId !== comment.id">
+                  <button type="button" class="mc-icon-btn" [title]="t.common?.edit" [attr.aria-label]="t.common?.edit"
+                          (click)="startEditComment(comment)">
+                    <ion-icon name="create-outline"></ion-icon>
+                  </button>
+                  <button type="button" class="mc-icon-btn danger" [title]="t.common?.delete" [attr.aria-label]="t.common?.delete"
+                          (click)="deleteComment(comment.id, user)">
+                    <ion-icon name="trash-outline"></ion-icon>
+                  </button>
+                </div>
               </div>
 
-              <!-- Action : Visiter le profil -->
-              <ion-button fill="clear" size="small" (click)="navigateToWorker(comment.workerId)">
-                <ion-icon name="open-outline" slot="start"></ion-icon>
-                Voir profil
-              </ion-button>
-            </ion-card-header>
+              <!-- Lecture -->
+              <p class="mc-text" *ngIf="editingCommentId !== comment.id">{{ comment.content }}</p>
 
-            <ion-card-content>
-              <!-- Mode Édition en ligne -->
-              <div *ngIf="editingCommentId === comment.id; else readOnlyComment">
-                <ion-item lines="none" class="venus-input" style="border: 1px solid var(--border, #e8e4df); border-radius: 8px; margin-bottom: 10px;">
-                  <ion-textarea [(ngModel)]="editingCommentText" [rows]="3" auto-grow="true"></ion-textarea>
-                </ion-item>
-
-                <div class="ion-text-end" style="display: flex; justify-content: flex-end; gap: 8px;">
+              <!-- Édition en ligne -->
+              <div class="mc-edit" *ngIf="editingCommentId === comment.id">
+                <ion-textarea class="mc-textarea" [(ngModel)]="editingCommentText" [rows]="3" [autoGrow]="true"></ion-textarea>
+                <div class="mc-edit-actions">
                   <ion-button size="small" fill="outline" color="medium" (click)="cancelEditComment()">
-                    Annuler
+                    {{ t.common?.cancel }}
                   </ion-button>
                   <ion-button size="small" [disabled]="isSavingComment || !editingCommentText.trim()" (click)="saveComment(comment)">
                     <ion-spinner name="crescent" slot="start" *ngIf="isSavingComment"></ion-spinner>
-                    Enregistrer
+                    {{ t.common?.save }}
                   </ion-button>
                 </div>
               </div>
-
-              <!-- Mode Lecture seule -->
-              <ng-template #readOnlyComment>
-                <p style="margin: 0; font-size: 0.95rem; color: var(--text-dark, #332d29); white-space: pre-line;">
-                  {{ comment.content }}
-                </p>
-
-                <div class="ion-text-end ion-margin-top" style="display: flex; justify-content: flex-end; gap: 8px;">
-                  <ion-button fill="clear" color="primary" size="small" (click)="startEditComment(comment)">
-                    <ion-icon name="create-outline" slot="start"></ion-icon>
-                    Modifier
-                  </ion-button>
-                  <ion-button fill="clear" color="danger" size="small" (click)="deleteComment(comment.id, user)">
-                    <ion-icon name="trash-outline" slot="start"></ion-icon>
-                    Supprimer
-                  </ion-button>
-                </div>
-              </ng-template>
-            </ion-card-content>
-          </ion-card>
-        </div>
+            </div>
+          </li>
+        </ul>
 
         <ng-template #emptyComments>
           <div class="empty-favorites">
             <ion-icon name="chatbubbles-outline"></ion-icon>
-            <p>{{ t.account?.comments?.empty || 'Vous n\'avez posté aucun commentaire pour le moment.' }}</p>
+            <p>{{ t.account?.comments?.empty }}</p>
           </div>
         </ng-template>
       </div>

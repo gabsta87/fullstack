@@ -29,6 +29,9 @@ export interface Comment {
   workerId: string;
   authorUsername: string;
   date: string;
+  /** Profil commenté (affiché dans « Mes commentaires » côté client) */
+  workerUsername?: string;
+  workerThumbUrl?: string;
 }
 
 export interface AdminWorkerReport{
