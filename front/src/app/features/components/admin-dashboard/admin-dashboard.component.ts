@@ -24,13 +24,12 @@ import {AdminWorkerReport} from "../../models/items.model";
 import {Router} from "@angular/router";
 import {LanguageManagerService} from "../../services/language-manager.service";
 import {HeaderComponent} from "../header/header.component";
-import {IonSegment, IonSegmentButton, IonToolbar} from "@ionic/angular/standalone";
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
   imports: [CommonModule, FormsModule, IonicModule, TableModule, InputTextModule, DropdownModule, TagModule, Select,
-    HeaderComponent, IonSegment, IonSegmentButton, IonToolbar],
+    HeaderComponent],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss']
 })
