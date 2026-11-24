@@ -17,15 +17,17 @@ import java.nio.file.Paths;
  * DEV ONLY — active when Spring profile is "dev".
  *
  * Mimics what Nginx does in production: serves files from disk under
- * the /media/** URL prefix so that media.public.base-url can point to
- * http://localhost:8080/media during local development.
+ * the /media/** URL prefix during local development.
+ * URLs stored in the database stay relative ("/media/..."), exactly as in
+ * production; the Angular dev server forwards /media to this controller
+ * (see front/proxy.conf.json).
  *
  * This controller is NEVER active in production (profile = "prod").
  * In production, Nginx handles /media/** before requests even reach Spring.
  *
  * Usage:
  *   Set spring.profiles.active=dev in your local application.properties.
- *   Set media.public.base-url=http://localhost:8080/media
+ *   Set media.public.base-url=/media (relative, same as production).
  *
  * The {*path} pattern matches any depth:
  *   /media/originals/1/abc.jpg

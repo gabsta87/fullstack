@@ -150,7 +150,11 @@
       "body_type": "Body type",
       "about": "About",
       "reviews": "Reviews",
-      "no_reviews": "No reviews yet."
+      "no_reviews": "No reviews yet.",
+      "details": "Details",
+      "languages": "Languages",
+      "eye_color": "Eyes",
+      "hair_color": "Hair"
     },
     "reset_password": {
       "title": "New password",
@@ -440,7 +444,11 @@
       "body_type": "Silhouette",
       "about": "À propos",
       "reviews": "Avis",
-      "no_reviews": "Aucun avis pour le moment"
+      "no_reviews": "Aucun avis pour le moment",
+      "details": "Détails",
+      "languages": "Langues",
+      "eye_color": "Yeux",
+      "hair_color": "Cheveux"
     },
     "reset_password": {
       "title": "Nouveau mot de passe",
@@ -725,7 +733,11 @@
       "body_type": "Körpertyp",
       "about": "Über mich",
       "reviews": "Bewertungen",
-      "no_reviews": "Noch keine Bewertungen"
+      "no_reviews": "Noch keine Bewertungen",
+      "details": "Details",
+      "languages": "Sprachen",
+      "eye_color": "Augen",
+      "hair_color": "Haare"
     },
     "reset_password": {
       "title": "Neues Passwort",
@@ -1010,7 +1022,11 @@
       "body_type": "Silueta",
       "about": "Sobre mí",
       "reviews": "Opiniones",
-      "no_reviews": "Aún no hay opiniones"
+      "no_reviews": "Aún no hay opiniones",
+      "details": "Detalles",
+      "languages": "Idiomas",
+      "eye_color": "Ojos",
+      "hair_color": "Cabello"
     },
     "reset_password": {
       "title": "Nueva contraseña",
@@ -1295,7 +1311,11 @@
       "body_type": "Silhueta",
       "about": "Sobre mim",
       "reviews": "Avaliações",
-      "no_reviews": "Ainda não há comentários"
+      "no_reviews": "Ainda não há comentários",
+      "details": "Detalhes",
+      "languages": "Idiomas",
+      "eye_color": "Olhos",
+      "hair_color": "Cabelo"
     },
     "reset_password": {
       "title": "Nova palavra-passe",

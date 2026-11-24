@@ -1,63 +1,407 @@
-// ── Variables & Setup ─────────────────────────────────────────────────────────
+// ── Page ──────────────────────────────────────────────────────────────────────
 .profile-content {
   --background: var(--bg);
 }
 
 .profile-wrap {
-  max-width: 1320px;
+  --card-gap: 16px;
+  --muted: var(--text-muted, #8c7d75);
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 24px 16px 80px;
+  padding: 12px 16px 80px;
 }
 
-.actions-card {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+// Retour : simple lien compact
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 0 12px -6px;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+
+  ion-icon { font-size: 1.1rem; }
+  &:hover { background: rgba(0, 0, 0, 0.04); }
 }
 
-.chips-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-// ── Layout (Ton design original préservé) ────────────────────────────────────
+// ── Layout ────────────────────────────────────────────────────────────────────
 .layout {
   display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 36px;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 32px;
   align-items: start;
 }
 
-@media (max-width: 900px) {
-  .layout { grid-template-columns: 1fr; }
-}
-
-// ── SIDEBAR ───────────────────────────────────────────────────────────────────
-.sidebar {
+.sidebar,
+.content-col {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  position: sticky;
-  top: 16px;
+  gap: var(--card-gap);
+  min-width: 0;
 }
 
-// Tes classes de style pour les cartes (garde les noms si tu veux)
+// ── Cartes ────────────────────────────────────────────────────────────────────
 .profile-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 16px;
+  min-width: 0;
 
-  ion-list {
-    background: transparent;
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 12px;
+    font-size: 1rem;
+    font-weight: 600;
   }
 
-  ion-item {
-    --background: transparent;
-    --padding-start: 0;
-    --inner-padding-end: 0;
+  .count {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--muted);
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    padding: 2px 8px;
   }
+}
+
+// Identité
+.hero-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  .avatar-img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: calc(var(--radius-md) - 4px);
+    display: block;
+
+    &.clickable { cursor: zoom-in; }
+  }
+
+  .worker-name {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+
+  .location {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+}
+
+// Actions
+.actions-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  ion-button {
+    margin: 0;
+    height: 40px;
+    --border-radius: 8px;
+    --box-shadow: none;
+    text-transform: none;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  .secondary-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .icon-action {
+    font-size: 0.9rem;
+    &.active { --background: rgba(0, 0, 0, 0.04); }
+  }
+}
+
+// Détails + langues
+.details-card {
+  .sub-title { margin-top: 16px; }
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 16px;
+  margin: 0;
+  font-size: 0.95rem;
+
+  dt { color: var(--muted); }
+  dd { margin: 0; font-weight: 500; text-align: right; }
+}
+
+.languages-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95rem;
+  }
+
+  .flag {
+    width: 22px;
+    height: 16px;
+    object-fit: cover;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .lang-name { flex: 1; min-width: 0; }
+
+  .mastery-badge {
+    font-size: 0.75rem;
+    color: var(--muted);
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    padding: 3px 10px;
+    white-space: nowrap;
+  }
+}
+
+// Galerie : petites vignettes cliquables
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.thumb {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+
+  img,
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover img,
+  &:hover video { transform: scale(1.04); }
+
+  .play-icon {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    transform: translate(-50%, -50%);
+    font-size: 36px;
+    color: #fff;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+    pointer-events: none;
+  }
+}
+
+// À propos
+.about-card {
+  .description {
+    margin: 0 0 12px;
+    line-height: 1.5;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
+}
+
+.chips-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.service-chip {
+  font-size: 0.85rem;
+  padding: 5px 12px;
+  border-radius: 16px;
+  background: rgba(107, 91, 82, 0.1);
+  color: #6b5b52;
+}
+
+// Avis
+.review-form {
+  padding-bottom: 16px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--border, #e8e4df);
+
+  .review-input {
+    border: 1px solid var(--border, #e8e4df);
+    border-radius: 8px;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    font-size: 0.95rem;
+  }
+
+  .review-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+
+    ion-button { margin: 0; text-transform: none; }
+  }
+}
+
+.comments-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.comment {
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+  &:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .comment-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+  }
+
+  .author { font-weight: 600; }
+
+  .mine-badge {
+    margin-left: 6px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--muted);
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    padding: 2px 6px;
+  }
+
+  .date { font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+
+  .comment-body {
+    margin: 0;
+    font-size: 0.95rem;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
+}
+
+.empty {
+  margin: 0;
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--muted);
+}
+
+// ── Tablette / mobile : une seule colonne, cartes réordonnées ─────────────────
+@media (max-width: 900px) {
+  .layout {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--card-gap);
+  }
+
+  // Les colonnes disparaissent : leurs cartes deviennent enfants directs
+  // de .layout, ce qui permet de les ordonner librement.
+  .sidebar,
+  .content-col {
+    display: contents;
+  }
+
+  .hero-card    { order: 1; }
+  .actions-card { order: 2; }
+  .media-card   { order: 3; }
+  .about-card   { order: 4; }
+  .details-card { order: 5; }
+  .reviews-card { order: 6; }
+
+  // Identité en ligne : avatar à gauche, nom à droite
+  .hero-card {
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+
+    .avatar-img {
+      width: 88px;
+      height: 88px;
+      flex-shrink: 0;
+      border-radius: 50%;
+    }
+
+    .hero-info { min-width: 0; }
+  }
+
+  // Actions : « Contacter » prend la place, les autres sont des icônes carrées
+  .actions-card {
+    flex-direction: row;
+    align-items: center;
+
+    .contact-btn { flex: 1; min-width: 0; }
+
+    .secondary-actions {
+      flex-direction: row;
+      gap: 8px;
+    }
+
+    .icon-action {
+      width: 40px;
+      min-width: 40px;
+      --padding-start: 0;
+      --padding-end: 0;
+
+      ion-icon { margin: 0; font-size: 1.2rem; }
+      .btn-label { display: none; }
+    }
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+    gap: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-wrap {
+    --card-gap: 12px;
+    padding: 8px 12px 80px;
+  }
+
+  .profile-card { padding: 14px; }
+
+  .hero-card .worker-name { font-size: 1.3rem; }
 }
 
 // ── Lightbox (Style original conservé) ───────────────────────────────────────
@@ -99,57 +443,6 @@
   height: 60vh;
   ion-spinner { --color: var(--accent); width: 40px; height: 40px; }
 }
-
-.media-item{
-  cursor: pointer;
-  margin: 4px;
-}
-
-// ── Grilles médias ────────────────────────────────────────────────────────
-
-.gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); // Grille responsive de petites vignettes
-  gap: 10px;
-
-  .media-item {
-    width: 100%;
-    height: 220px;          // Hauteur fixe pour uniformiser la grille
-    object-fit: cover;      // Recadre l'image proprement sans la déformer
-    border-radius: 8px;     // Jolis coins arrondis
-    cursor: pointer;
-    transition: transform 0.2s ease;
-
-    &:hover {
-      transform: scale(1.03); // Petit effet de zoom au survol
-    }
-  }
-}
-
-.video-thumbnail-container {
-  position: relative;
-  height: 200px;
-  border-radius: 8px;
-  overflow: hidden;
-  cursor: pointer;
-
-  video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .play-icon-overlay {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 32px;
-    color: #fff;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.6);
-  }
-}
-
 
 // ── Swiper Plein Écran ────────────────────────────────────────────────────────
 .fullscreen-photo-modal {
@@ -242,40 +535,6 @@
 
     &:hover {
       background: rgba(0, 0, 0, 0.8);
-    }
-  }
-}
-
-.languages-spoken-list {
-  padding: 0;
-  background: transparent;
-
-  .language-item {
-    --padding-start: 0;
-    --inner-padding-end: 0;
-    --min-height: 40px;
-    --background: transparent;
-
-    .language-flag-icon {
-      width: 24px;
-      height: 18px;
-      object-fit: cover;
-      border-radius: 3px;
-      margin-right: 12px;
-    }
-
-    h2 {
-      font-size: 0.95rem;
-      font-weight: 500;
-    }
-
-    .mastery-badge {
-      font-size: 0.75rem;
-      font-weight: 400;
-      color: var(--ion-color-dark-tint);
-      background: rgba(var(--ion-color-medium-rgb), 0.12);
-      border-radius: 12px;
-      padding: 4px 10px;
     }
   }
 }

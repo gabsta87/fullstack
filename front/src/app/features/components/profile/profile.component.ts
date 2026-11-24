@@ -3,20 +3,12 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {
-  IonBadge,
   IonButton,
-  IonButtons,
-  IonChip,
   IonContent,
-  IonHeader,
   IonIcon,
-  IonItem,
-  IonLabel,
-  IonList,
   IonModal,
   IonSpinner,
   IonTextarea,
-  IonToolbar,
 } from '@ionic/angular/standalone';
 import {addIcons} from 'ionicons';
 import {
@@ -54,8 +46,7 @@ import {Subscription} from "rxjs";
   styleUrls: ['./profile.component.scss'],
   standalone: true,
   imports: [
-    CommonModule, FormsModule, IonContent, IonHeader, IonToolbar, IonButtons,
-    IonButton, IonIcon, IonList, IonItem, IonLabel, IonChip, HeaderComponent, IonModal, IonBadge, IonTextarea, IonSpinner,
+    CommonModule, FormsModule, IonContent, IonButton, IonIcon, HeaderComponent, IonModal, IonTextarea, IonSpinner,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
@@ -125,6 +116,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   // ── Gallery navigation ──────────────────────────────────────────────────────────────
+
+  /** Clic sur l'avatar : ouvre la galerie sur la première photo, s'il y en a. */
+  openFirstPhoto(): void {
+    const first = this.worker?.photos?.[0];
+    if (first) this.openMedia(first);
+  }
 
   openMedia(clickedItem: PhotoItem | VideoItem) {
     if (!this.worker) return;

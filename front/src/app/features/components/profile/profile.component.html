@@ -1,167 +1,149 @@
 <app-header></app-header>
 
 <ng-container *ngIf="languageService.currentLanguage$ | async as t">
-  <ion-header class="ion-no-border profile-header-bar">
-    <ion-toolbar>
-      <ion-buttons slot="start">
-        <ion-button (click)="goBack()" color="dark">
-          <ion-icon slot="start" name="chevron-back-outline"></ion-icon>
-          {{ t.common?.back || t.worker_profile?.back }}
-        </ion-button>
-      </ion-buttons>
-    </ion-toolbar>
-  </ion-header>
-
   <ion-content class="profile-content content-with-bottom-spacing">
     <div class="profile-wrap" *ngIf="worker">
+
+      <!-- Retour : lien compact, pas de barre d'outils dédiée -->
+      <button type="button" class="back-link" (click)="goBack()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+        <span>{{ t.common?.back }}</span>
+      </button>
+
+      <!--
+        Desktop : 2 colonnes (aside + contenu).
+        Mobile  : .sidebar et .content-col passent en display: contents et les
+                  cartes sont réordonnées (order) dans une seule colonne.
+      -->
       <div class="layout fade-in">
 
         <aside class="sidebar">
-          <div class="profile-card">
-            <img [src]="worker.mainThumbUrl ? worker.mainThumbUrl : 'assets/images/default-avatar.jpg'"
-                 alt="Avatar" class="avatar-img">
-            <h2>{{ worker.username }}</h2>
-            <p class="location">
-              <ion-icon name="location-outline"></ion-icon>
-              {{ worker.geographicZone?.name }}
-            </p>
-          </div>
+          <!-- Identité -->
+          <section class="profile-card hero-card">
+            <img [src]="worker.mainThumbUrl || 'assets/images/default-avatar.jpg'"
+                 alt="{{ worker.username }}" class="avatar-img"
+                 [class.clickable]="worker.photos.length"
+                 (click)="openFirstPhoto()">
+            <div class="hero-info">
+              <h1 class="worker-name">{{ worker.username }}</h1>
+              <p class="location" *ngIf="worker.geographicZone?.name">
+                <ion-icon name="location-outline"></ion-icon>
+                {{ worker.geographicZone?.name }}
+              </p>
+            </div>
+          </section>
 
-          <div class="profile-card actions-card" *ngIf="worker.available || isClient">
-            <ion-button *ngIf="worker.available" expand="block" color="primary"
-                        (click)="openContactModal()">{{ t.worker_profile?.contact_btn }}
+          <!-- Actions : contact en principal, le reste en petits boutons -->
+          <section class="profile-card actions-card" *ngIf="worker.available || isClient">
+            <ion-button *ngIf="worker.available" class="contact-btn" color="primary" (click)="openContactModal()">
+              <ion-icon slot="start" name="call-outline"></ion-icon>
+              {{ t.worker_profile?.contact_btn }}
             </ion-button>
 
-            <ion-button *ngIf="isClient" expand="block" fill="outline" color="medium" (click)="toggleFavorite()">
-              <ion-icon slot="start" [name]="isFavorite ? 'heart' : 'heart-outline'"
-                        [color]="isFavorite ? 'danger' : ''"></ion-icon>
-              {{ t.worker_profile?.favorite }}
-            </ion-button>
+            <div class="secondary-actions" *ngIf="isClient">
+              <ion-button fill="outline" color="medium" class="icon-action" [class.active]="isFavorite"
+                          [attr.aria-label]="t.worker_profile?.favorite" [title]="t.worker_profile?.favorite"
+                          (click)="toggleFavorite()">
+                <ion-icon slot="start" [name]="isFavorite ? 'heart' : 'heart-outline'"
+                          [color]="isFavorite ? 'danger' : undefined"></ion-icon>
+                <span class="btn-label">{{ t.worker_profile?.favorite }}</span>
+              </ion-button>
 
-            <ion-button *ngIf="isClient" expand="block" fill="outline" color="medium" (click)="toggleNotify()">
-              <ion-icon slot="start" [name]="notifyEnabled ? 'notifications' : 'notifications-outline'"></ion-icon>
-              {{ t.worker_profile?.notify_me }}
-            </ion-button>
+              <ion-button fill="outline" color="medium" class="icon-action" [class.active]="notifyEnabled"
+                          [attr.aria-label]="t.worker_profile?.notify_me" [title]="t.worker_profile?.notify_me"
+                          (click)="toggleNotify()">
+                <ion-icon slot="start" [name]="notifyEnabled ? 'notifications' : 'notifications-outline'"></ion-icon>
+                <span class="btn-label">{{ t.worker_profile?.notify_me }}</span>
+              </ion-button>
 
-            <ion-button *ngIf="isClient" expand="block" fill="outline" color="danger" (click)="report()">
-              <ion-icon slot="start" name="alert-circle-outline"></ion-icon>
-              {{ t.worker_profile?.report }}
-            </ion-button>
-          </div>
+              <ion-button fill="outline" color="danger" class="icon-action"
+                          [attr.aria-label]="t.worker_profile?.report" [title]="t.worker_profile?.report"
+                          (click)="report()">
+                <ion-icon slot="start" name="alert-circle-outline"></ion-icon>
+                <span class="btn-label">{{ t.worker_profile?.report }}</span>
+              </ion-button>
+            </div>
+          </section>
 
-          <div class="profile-card" *ngIf="worker.spokenLanguages && worker.spokenLanguages.length > 0">
+          <!-- Caractéristiques + langues -->
+          <section class="profile-card details-card">
+            <h3>{{ t.worker_profile?.details }}</h3>
+            <dl class="details-grid">
+              <dt>{{ t.common?.age }}</dt>
+              <dd>{{ worker.age }} {{ t.common?.years }}</dd>
 
-            <ion-list lines="none" class="languages-spoken-list">
-              <ion-item *ngFor="let l of worker.spokenLanguages" class="language-item">
-                <!-- Drapeau -->
-                <img slot="start"
-                     [src]="languageService.getLanguageMeta(l.language).flag"
-                     [alt]="l.language"
-                     class="language-flag-icon"/>
+              <ng-container *ngIf="worker.bodyType">
+                <dt>{{ t.worker_profile?.body_type }}</dt>
+                <dd>{{ languageService.getBodyTypeLabel(worker.bodyType, t) }}</dd>
+              </ng-container>
 
-                <!-- Nom de la langue -->
-                <ion-label>
-                  <h2>{{ languageService.getLanguageMeta(l.language).label }}</h2>
-                </ion-label>
+              <ng-container *ngIf="worker.eyeColor">
+                <dt>{{ t.worker_profile?.eye_color }}</dt>
+                <dd>{{ languageService.getEyeColorLabel(worker.eyeColor, t) }}</dd>
+              </ng-container>
 
-                <!-- Badge ou texte du niveau -->
-                <ion-badge slot="end" color="light" class="mastery-badge">
-                  {{ languageService.getMasteryLabel(l.level, t) }}
-                </ion-badge>
-              </ion-item>
-            </ion-list>
-          </div>
+              <ng-container *ngIf="worker.hairColor">
+                <dt>{{ t.worker_profile?.hair_color }}</dt>
+                <dd>{{ languageService.getHairColorLabel(worker.hairColor, t) }}</dd>
+              </ng-container>
+            </dl>
 
-          <div class="profile-card">
-            <ion-list lines="none">
-              <!-- Silhouette / Body Type -->
-              <ion-item *ngIf="worker.bodyType">
-                <!--                <ion-icon name="body-outline" slot="start"></ion-icon>-->
-                <ion-label>
-                  {{ t.worker_profile?.body_type || 'Silhouette' }}:
-                  {{ languageService.getBodyTypeLabel(worker.bodyType, t) }}
-                </ion-label>
-              </ion-item>
-
-              <!-- Couleur des Yeux -->
-              <ion-item *ngIf="worker.eyeColor">
-                <!--                <ion-icon name="eye-outline" slot="start"></ion-icon>-->
-                <ion-label>
-                  {{ t.worker_profile?.eye_color || 'Yeux' }}:
-                  {{ languageService.getEyeColorLabel(worker.eyeColor, t) }}
-                </ion-label>
-              </ion-item>
-
-              <!-- Couleur des Cheveux -->
-              <ion-item *ngIf="worker.hairColor">
-                <!--                <ion-icon name="color-palette-outline" slot="start"></ion-icon>-->
-                <ion-label>
-                  {{ t.worker_profile?.hair_color || 'Cheveux' }}:
-                  {{ languageService.getHairColorLabel(worker.hairColor, t) }}
-                </ion-label>
-              </ion-item>
-
-              <!-- Âge -->
-              <ion-item>
-                <!--                <ion-icon name="woman-outline" slot="start"></ion-icon>-->
-                <ion-label>{{ t.common?.age }}: {{ worker.age }} {{ t.common?.years }}</ion-label>
-              </ion-item>
-            </ion-list>
-          </div>
+            <ng-container *ngIf="worker.spokenLanguages.length">
+              <h3 class="sub-title">{{ t.worker_profile?.languages }}</h3>
+              <ul class="languages-list">
+                <li *ngFor="let l of worker.spokenLanguages">
+                  <img [src]="languageService.getLanguageMeta(l.language).flag" [alt]="l.language" class="flag">
+                  <span class="lang-name">{{ languageService.getLanguageMeta(l.language).label }}</span>
+                  <span class="mastery-badge">{{ languageService.getMasteryLabel(l.level, t) }}</span>
+                </li>
+              </ul>
+            </ng-container>
+          </section>
         </aside>
 
-        <main class="main-content">
+        <div class="content-col">
 
-          <!-- Section Photos -->
-          <div class="profile-card" *ngIf="worker.photos && worker.photos.length > 0">
-            <h3>{{ t.common?.photos }}</h3>
+          <!-- Galerie : vignettes cliquables (photos puis vidéos) -->
+          <section class="profile-card media-card" *ngIf="worker.photos.length || worker.videos.length">
+            <h3>
+              {{ t.common?.photos }}
+              <span class="count">{{ (worker.photos.length || 0) + (worker.videos.length || 0) }}</span>
+            </h3>
             <div class="gallery-grid">
-              <img *ngFor="let p of worker.photos"
-                   class="media-item"
-                   [src]="worker.mainThumbUrl ? worker.mainThumbUrl : 'assets/images/default-avatar.jpg'"
-                   (click)="openMedia(p)">
+              <button type="button" class="thumb" *ngFor="let p of worker.photos" (click)="openMedia(p)">
+                <img [src]="p.mainThumbUrl || p.originalUrl" [alt]="worker.username" loading="lazy">
+              </button>
+              <button type="button" class="thumb video-thumb" *ngFor="let v of worker.videos" (click)="openMedia(v)">
+                <video [src]="v.url" preload="metadata" muted playsinline></video>
+                <ion-icon name="play-circle-outline" class="play-icon"></ion-icon>
+              </button>
             </div>
-          </div>
+          </section>
 
-          <!-- Section Vidéos -->
-          <div class="profile-card ion-margin-top" *ngIf="worker.videos && worker.videos.length > 0">
-            <h3>{{ t.common?.videos }}</h3>
-            <div class="gallery-grid">
-              <div *ngFor="let v of worker.videos" class="video-thumbnail-container" (click)="openMedia(v)">
-                <ion-icon name="play-circle-outline" class="play-icon-overlay media-item"></ion-icon>
-                <video [src]="v.url" preload="metadata" muted></video>
-              </div>
-            </div>
-          </div>
-
-          <div class="profile-card ion-margin-top">
+          <!-- À propos + services -->
+          <section class="profile-card about-card" *ngIf="worker.description || workerServices.length">
             <h3>{{ t.worker_profile?.about }}</h3>
-            <p>{{ worker.description }}</p>
-
-            <div class="chips-group ion-margin-top">
-              <ion-chip *ngFor="let service of workerServices">
-                <ion-label>{{ service.name }}</ion-label>
-              </ion-chip>
+            <p class="description" *ngIf="worker.description">{{ worker.description }}</p>
+            <div class="chips-group" *ngIf="workerServices.length">
+              <span class="service-chip" *ngFor="let service of workerServices">{{ service.name }}</span>
             </div>
-          </div>
+          </section>
 
-          <!-- Section Avis / Commentaires -->
-          <div class="profile-card ion-margin-top">
-            <h3>{{ t.worker_profile?.reviews || 'Reviews' }} ({{ worker.comments.length || 0 }})</h3>
+          <!-- Avis -->
+          <section class="profile-card reviews-card">
+            <h3>
+              {{ t.worker_profile?.reviews }}
+              <span class="count">{{ worker.comments.length || 0 }}</span>
+            </h3>
 
-            <!-- Formulaire de dépôt / modification de commentaire -->
-            <div *ngIf="isClient" class="ion-margin-bottom"
-                 style="border-bottom: 1px solid var(--border, #e8e4df); padding-bottom: 16px;">
-              <ion-item lines="none" class="venus-input"
-                        style="border: 1px solid var(--border, #e8e4df); border-radius: 8px; margin-bottom: 10px;">
-                <ion-textarea
-                  [(ngModel)]="newCommentText"
-                  [placeholder]="t.worker_profile?.write_review_placeholder || 'Rédigez ou modifiez votre avis...'"
-                  [rows]="3"
-                  auto-grow="true">
-                </ion-textarea>
-              </ion-item>
-              <div class="ion-text-end">
+            <div *ngIf="isClient" class="review-form">
+              <ion-textarea class="review-input"
+                            [(ngModel)]="newCommentText"
+                            [placeholder]="t.worker_profile?.write_review_placeholder || 'Rédigez ou modifiez votre avis...'"
+                            [rows]="3"
+                            [autoGrow]="true">
+              </ion-textarea>
+              <div class="review-form-actions">
                 <ion-button size="small" [disabled]="isSubmittingReview || !newCommentText.trim()"
                             (click)="submitReview()">
                   <ion-spinner name="crescent" slot="start" *ngIf="isSubmittingReview"></ion-spinner>
@@ -170,36 +152,24 @@
               </div>
             </div>
 
-            <!-- Liste des commentaires -->
-            <div *ngIf="worker.comments && worker.comments.length > 0; else noComments" class="comments-list">
-              <div *ngFor="let comment of worker.comments"
-                   style="padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.04);">
-                <div
-                  style="display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 0.9rem; margin-bottom: 4px;">
-                  <div>
-                    <span>{{ comment.authorUsername }}</span>
-                    <!-- Petit badge optionnel "Votre avis" pour l'auteur connecté -->
-                    <ion-badge *ngIf="comment.authorId === authService.getUser()?.id" color="light"
-                               style="margin-left: 6px; font-size: 0.7rem;">
-                      Votre avis
-                    </ion-badge>
-                  </div>
-                  <span style="font-weight: normal; font-size: 0.8rem; color: var(--text-muted, #8c7d75);">
-          {{ comment.date | date:'shortDate' }}
-        </span>
+            <ul *ngIf="worker.comments.length; else noComments" class="comments-list">
+              <li *ngFor="let comment of worker.comments" class="comment">
+                <div class="comment-head">
+                  <span class="author">
+                    {{ comment.authorUsername }}
+                    <span *ngIf="comment.authorId === authService.getUser()?.id" class="mine-badge">Votre avis</span>
+                  </span>
+                  <span class="date">{{ comment.date | date:'shortDate' }}</span>
                 </div>
-                <p
-                  style="margin: 0; font-size: 0.95rem; color: var(--text-dark, #332d29); white-space: pre-line;">{{ comment.content }}</p>
-              </div>
-            </div>
+                <p class="comment-body">{{ comment.content }}</p>
+              </li>
+            </ul>
 
             <ng-template #noComments>
-              <p class="faded" style="font-size: 0.9rem; font-style: italic; margin-top: 10px;">
-                {{ t.worker_profile?.no_reviews || 'Aucun avis pour le moment.' }}
-              </p>
+              <p class="empty">{{ t.worker_profile?.no_reviews }}</p>
             </ng-template>
-          </div>
-        </main>
+          </section>
+        </div>
 
       </div>
 
