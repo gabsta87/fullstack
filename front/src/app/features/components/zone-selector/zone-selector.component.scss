@@ -54,6 +54,7 @@ ion-item {
 
 .filter-banner-mode {
   display: flex;
+  flex-wrap: nowrap;
   width: 100%;
   gap: 8px;
 
@@ -63,7 +64,13 @@ ion-item {
   }
 
   .zone-col {
-    flex: 1;
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  @media (max-width: 767px) {
+    gap: 6px;
+    .zone-col.child-empty { display: none; }
   }
 }
 

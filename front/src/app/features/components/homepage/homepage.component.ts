@@ -18,7 +18,15 @@ import {
   IonSelectOption
 } from '@ionic/angular/standalone';
 import {addIcons} from 'ionicons';
-import {closeOutline, locationOutline, optionsOutline, personOutline, arrowUpOutline} from 'ionicons/icons';
+import {
+  closeOutline,
+  locationOutline,
+  optionsOutline,
+  personOutline,
+  arrowUpOutline,
+  trashOutline,
+  closeCircleOutline
+} from 'ionicons/icons';
 import {HeaderComponent} from "../header/header.component";
 import {WorkerCardComponent} from "../worker-card/worker-card.component";
 import {AgeRangeSelectorComponent} from "../age-range-selector/age-range-selector.component";
@@ -31,7 +39,7 @@ import {ZoneSelectorComponent} from "../zone-selector/zone-selector.component";
 import { GalleryStateService } from '../../services/gallery-state.service';
 import { sparklesOutline } from 'ionicons/icons';
 import {ClientAccountService} from "../../services/client-account.service";
-import {AsyncPipe, KeyValuePipe, NgForOf, NgIf} from "@angular/common";
+import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
 import {Service} from "../../models/common.model";
 import {LanguageManagerService} from "../../services/language-manager.service";
 import {BODY_TYPES_LIST, EYES_COLOR_LIST, HAIR_COLOR_LIST} from "../../models/items.model";
@@ -97,7 +105,7 @@ export class HomepageComponent implements OnInit {
     private clientAccountService: ClientAccountService,
     protected languageService: LanguageManagerService
   ) {
-    addIcons({ optionsOutline, closeOutline, locationOutline, personOutline, sparklesOutline, arrowUpOutline });
+    addIcons({ optionsOutline, closeOutline, locationOutline, personOutline, sparklesOutline, arrowUpOutline, trashOutline, closeCircleOutline });
   }
 
   ngOnInit() {
