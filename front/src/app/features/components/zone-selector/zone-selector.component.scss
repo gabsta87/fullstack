@@ -14,14 +14,6 @@ ion-item {
   display: flex;
   align-items: center;
 
-  // Force l'arrondi interne d'Ionic
-  ::ng-deep {
-    .item-native, .item-inner, .native-wrapper {
-      border-radius: 8px;
-      background: transparent;
-    }
-  }
-
   ion-select, ion-input {
     font-size: 0.9rem;
     font-weight: 400;
@@ -52,15 +44,29 @@ ion-item {
   }
 }
 
+// Mode barre de filtres : hauteur et espacement hérités de la bannière parente
+// (--field-h / --field-gap définis dans homepage.component.scss).
 .filter-banner-mode {
   display: flex;
   flex-wrap: nowrap;
   width: 100%;
-  gap: 8px;
+  gap: var(--field-gap, 8px);
 
-  ion-item{
-    min-height: 40px;
-    height: 40px;
+  ion-item {
+    box-sizing: border-box;
+    height: var(--field-h, 40px);
+    min-height: var(--field-h, 40px);
+    --min-height: calc(var(--field-h, 40px) - 2px);
+    --padding-top: 0;
+    --padding-bottom: 0;
+    overflow: hidden;
+  }
+
+  // ion-select a un min-height de 44px dans Ionic 8
+  ion-select {
+    min-height: 0;
+    width: 100%;
+    min-width: 0;
   }
 
   .zone-col {
@@ -69,7 +75,6 @@ ion-item {
   }
 
   @media (max-width: 767px) {
-    gap: 6px;
     .zone-col.child-empty { display: none; }
   }
 }

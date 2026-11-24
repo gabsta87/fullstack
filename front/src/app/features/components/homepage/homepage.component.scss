@@ -26,11 +26,18 @@ ion-grid.cards-grid {
   opacity: 0.6;
 }
 
-// ── BANNIÈRE DE FILTRES AMINCIE ──────────────────────────────────────────────
+// ── BANNIÈRE DE FILTRES ──────────────────────────────────────────────────────
+// Toutes les hauteurs et tous les espacements de la barre dérivent de ces deux
+// variables. Elles sont héritées par zone-selector (CSS custom properties
+// traversent les composants et le shadow DOM).
 .filter-banner {
+  --field-h: 40px;
+  --field-gap: 8px;
+  --field-border: #e8e4df;
+
   background: linear-gradient(160deg, #f0ece7 0%, #e8e0d6 100%);
   border-radius: 10px;
-  padding: 8px 12px 10px 12px;
+  padding: var(--field-gap) 12px;
   margin: 0;
   border: 1px solid rgba(0, 0, 0, 0.03);
 
@@ -39,92 +46,57 @@ ion-grid.cards-grid {
     margin: 0;
   }
 
-  .name-input-item {
-    display: flex;
-    align-items: center;
-    --min-height: 36px;
-    --padding-top: 0;
-    --padding-bottom: 0;
-
-    ion-input {
-      display: flex;
-      align-items: center;
-      height: 100%;
-      min-height: 36px;
-      --padding-top: 0;
-      --padding-bottom: 0;
-    }
+  // Gouttière : chaque colonne a un padding droit, compensé par une marge
+  // négative sur la ligne -> bords alignés quel que soit le retour à la ligne.
+  ion-row {
+    row-gap: var(--field-gap);
+    margin-right: calc(-1 * var(--field-gap));
   }
 
-  .filter-col,
-  .advanced-filters-row ion-col {
-    padding-right: 8px;
+  .filter-col {
     display: flex;
     align-items: center;
     box-sizing: border-box;
     min-width: 0;
+    padding: 0 var(--field-gap) 0 0;
   }
 
-  .filter-col:last-child,
-  .advanced-filters-row ion-col:last-child {
-    padding-right: 0;
-  }
-
-  .filter-actions {
-    padding-right: 0;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 8px;
-    height: 40px;
-  }
-
+  // ── Champs (ion-item) ──
+  // Le host fait exactement --field-h (bordure comprise) ; l'intérieur d'Ionic
+  // (.item-native, min-height 48px par défaut) est ramené à --field-h - 2px.
   .filter-input-item,
-  zone-selector,
   age-range-selector {
+    box-sizing: border-box;
     width: 100%;
     min-width: 0;
-    height: 40px;
-    min-height: 40px;
-    display: flex;
-    align-items: center;
-    box-sizing: border-box;
-  }
-
-  .filter-input-item,
-  age-range-selector {
-    --background: rgba(255, 255, 255, 0.95);
+    height: var(--field-h);
+    min-height: var(--field-h);
+    --min-height: calc(var(--field-h) - 2px);
+    --padding-top: 0;
+    --padding-bottom: 0;
     --padding-start: 12px;
     --padding-end: 10px;
     --inner-padding-end: 0;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 8px;
-    border: 1px solid #e8e4df;
+    --background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    align-items: center;
     margin: 0;
+    border: 1px solid var(--field-border);
+    border-radius: 8px;
     box-shadow: none;
     overflow: hidden;
 
-    ::ng-deep {
-      .item-native,
-      .item-inner,
-      .native-wrapper {
-        background: transparent;
-        border-radius: 8px;
-        border: none;
-        box-shadow: none;
-        min-height: 40px;
-        height: 40px;
-        min-width: 0;
-      }
-    }
-
+    // ion-select / ion-input ont un min-height de 44px dans Ionic 8
     ion-select,
     ion-input {
-      font-size: 0.9rem;
-      font-weight: 500;
+      min-height: 0;
       width: 100%;
       min-width: 0;
+      font-size: 0.9rem;
+      font-weight: 500;
       text-align: left;
+      --padding-top: 0;
+      --padding-bottom: 0;
       --padding-start: 0;
       --padding-end: 0;
     }
@@ -139,94 +111,82 @@ ion-grid.cards-grid {
 
   age-range-selector {
     padding: 0;
+  }
 
-    ::ng-deep {
-      ion-item {
-        --background: transparent;
-        background: transparent;
-        --border-color: transparent;
-        box-shadow: none;
-      }
-    }
+  zone-selector {
+    width: 100%;
+    min-width: 0;
+  }
+
+  // ── Boutons ──
+  .filter-actions {
+    height: var(--field-h);
+    justify-content: flex-end;
+    gap: var(--field-gap);
   }
 
   .more-filters-btn {
+    height: var(--field-h);
+    margin: 0;
     --border-radius: 8px;
     --border-width: 1px;
-    font-weight: 500;
-    font-size: 0.9rem;
-    height: 40px;
-    margin: 0;
-    text-transform: none;
+    --border-color: var(--field-border);
     --background: rgba(255, 255, 255, 0.9);
     --color: #6b5b52;
-    --border-color: #e8e4df;
+    --box-shadow: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-transform: none;
     white-space: nowrap;
   }
 
+  // ── Filtres avancés ──
   .advanced-filters-wrapper {
-    margin-top: 10px;
+    margin-top: var(--field-gap);
+    padding-top: var(--field-gap);
     border-top: 1px solid rgba(107, 91, 82, 0.12);
-    padding-top: 10px;
 
-    .advanced-filters-row {
-      display: flex;
-      row-gap: 10px;
-
-      & + .advanced-filters-row {
-        margin-top: 10px;
-      }
+    .advanced-filters-row + .advanced-filters-row {
+      margin-top: var(--field-gap);
     }
   }
 }
 
-// ── ADAPTATION PETITS ÉCRANS (MOBILE) ─────────────────────────────────────────
+// ── MOBILE ────────────────────────────────────────────────────────────────────
 @media (max-width: 767px) {
   .filter-banner-sticky {
     padding: 6px 8px;
   }
 
   .filter-banner {
-    padding: 8px;
+    --field-h: 38px;
+    --field-gap: 6px;
+    padding: var(--field-gap);
     border-radius: 8px;
 
-    ion-col.filter-col:not(.name-col):not(.filter-actions),
-    .advanced-filters-row ion-col {
-      padding-right: 0;
-      padding-left: 0;
-      flex: 0 0 100%;
-      max-width: 100%;
-      width: 100%;
-    }
-
     .filter-main-row {
-      row-gap: 8px;
       flex-wrap: wrap;
 
+      // Le champ nom prend toute la place restante à côté des boutons
       > .name-col {
         flex: 1 1 120px;
-        padding: 0;
-        min-width: 0;
       }
 
       > .filter-actions {
-        height: 36px;
-        padding: 0 0 0 6px;
-        gap: 6px;
-        justify-content: flex-end;
         flex-wrap: nowrap;
       }
     }
 
-    // Boutons en icônes seules
-    .btn-label { display: none; }
+    // Boutons en icônes seules, carrés
+    .btn-label {
+      display: none;
+    }
 
     .more-filters-btn {
+      width: var(--field-h);
+      min-width: var(--field-h);
       --padding-start: 0;
       --padding-end: 0;
-      width: 36px;
-      min-width: 36px;
-      height: 36px;
 
       ion-icon {
         margin: 0;
@@ -234,57 +194,11 @@ ion-grid.cards-grid {
       }
     }
 
-    .filter-banner-field,
     .filter-input-item,
     age-range-selector {
-      height: 36px;
-      min-height: 36px;
-      max-width: 100%;
-
-      ::ng-deep {
-        .item-native,
-        .item-inner,
-        .native-wrapper {
-          height: 36px;
-          min-height: 36px;
-        }
-      }
-
       ion-select,
       ion-input {
         font-size: 0.85rem;
-      }
-    }
-
-    age-range-selector {
-      padding: 0;
-    }
-
-    // Régions côte à côte tant qu'il y a de la place, sinon retour à la ligne
-    zone-selector {
-      height: auto;
-      min-height: 36px;
-      max-width: 100%;
-    }
-
-    .more-filters-btn {
-      height: 36px;
-      font-size: 0.82rem;
-      --padding-start: 8px;
-      --padding-end: 8px;
-    }
-
-    .advanced-filters-wrapper {
-      margin-top: 8px;
-      padding-top: 8px;
-
-      .advanced-filters-row {
-        flex-wrap: wrap;
-        row-gap: 6px;
-
-        & + .advanced-filters-row {
-          margin-top: 6px;
-        }
       }
     }
   }
