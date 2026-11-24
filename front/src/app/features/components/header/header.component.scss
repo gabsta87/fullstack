@@ -5,6 +5,9 @@
 }
 
 .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-family: 'Playfair Display', serif;
   font-size: 20px;
   font-weight: 600;
@@ -12,9 +15,16 @@
   text-transform: none;
   white-space: nowrap;
 
-  .brand-mark {
-    color: var(--ion-color-primary);
-    margin-right: 4px;
+  // Logo (ailes + V) à la place de l'ancien losange ◆
+  .brand-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  .brand-name {
+    letter-spacing: 0.5px;
   }
 }
 
