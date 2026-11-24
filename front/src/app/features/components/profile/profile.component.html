@@ -125,7 +125,7 @@
             <h3>{{ t.worker_profile?.about }}</h3>
             <p class="description" *ngIf="worker.description">{{ worker.description }}</p>
             <div class="chips-group" *ngIf="workerServices.length">
-              <span class="service-chip" *ngFor="let service of workerServices">{{ service.name }}</span>
+              <service-info class="service-chip" *ngFor="let service of workerServices" [service]="service">{{ service.name }}</service-info>
             </div>
           </section>
 

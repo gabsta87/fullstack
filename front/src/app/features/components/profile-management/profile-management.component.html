@@ -17,73 +17,65 @@
       </div>
     </div>
 
-    <!-- Grille En-tête / Hero -->
-    <ion-grid class="pm-hero-grid ion-no-padding">
-      <ion-row class="ion-align-items-center">
-        <ion-col size="2" size-md="auto" class="ion-text-center">
-          <div class="avatar-wrapper">
-            <ion-avatar>
-              <img [src]="me.mainThumbUrl
-              ? (me.mainThumbUrl.startsWith('http') ? me.mainThumbUrl : environment.apiBase + me.mainThumbUrl)
-              : 'assets/images/default-avatar.jpg'"/>
-            </ion-avatar>
-            <ion-fab-button size="small" class="edit-photo-btn">
-              <ion-icon name="camera"></ion-icon>
-            </ion-fab-button>
-          </div>
-        </ion-col>
+    <!-- En-tête : avatar + nom + statuts -->
+    <section class="pm-hero">
+      <div class="avatar-wrapper">
+        <ion-avatar>
+          <img [src]="me.mainThumbUrl
+          ? (me.mainThumbUrl.startsWith('http') ? me.mainThumbUrl : environment.apiBase + me.mainThumbUrl)
+          : 'assets/images/default-avatar.jpg'"/>
+        </ion-avatar>
+        <ion-fab-button size="small" class="edit-photo-btn">
+          <ion-icon name="camera"></ion-icon>
+        </ion-fab-button>
+      </div>
 
-        <!-- Titre, Statut En Ligne & Pastille de Certification -->
-        <ion-col size="10" size-md="auto" class="ion-text-center ion-text-md-start">
-          <div class="profile-title">
-            <h1>{{ me.username }}</h1>
+      <div class="profile-title">
+        <h1>{{ me.username }}</h1>
 
-            <div class="badges-container">
-              <!-- Bouton Statut En Ligne / Hors Ligne -->
-              <ion-button [color]="me.available ? 'success' : 'medium'"
-                          class="status-badge"
-                          size="small"
-                          (click)="toggleAvailable(!me.available)">
-                <ion-icon [name]="me.available ? 'chevron-down-circle-outline' : 'close-circle-outline'"
-                          slot="start"></ion-icon>
-                {{ me.available ? t.common?.online : t.common?.offline }}
-              </ion-button>
+        <div class="badges-container">
+          <!-- Bouton Statut En Ligne / Hors Ligne -->
+          <ion-button [color]="me.available ? 'success' : 'medium'"
+                      class="status-badge"
+                      size="small"
+                      (click)="toggleAvailable(!me.available)">
+            <ion-icon [name]="me.available ? 'chevron-down-circle-outline' : 'close-circle-outline'"
+                      slot="start"></ion-icon>
+            {{ me.available ? t.common?.online : t.common?.offline }}
+          </ion-button>
 
-              <ion-button [color]="!me.hidden ? 'success' : 'medium'"
-                          class="status-badge"
-                          size="small"
-                          (click)="toggleVisible(!me.hidden)">
-                <ion-icon [name]="!me.hidden ? 'eye-outline' : 'eye-off-outline'" slot="start"></ion-icon>
-                {{ !me.hidden ? t.common?.visible : t.common?.invisible }}
-              </ion-button>
+          <ion-button [color]="!me.hidden ? 'success' : 'medium'"
+                      class="status-badge"
+                      size="small"
+                      (click)="toggleVisible(!me.hidden)">
+            <ion-icon [name]="!me.hidden ? 'eye-outline' : 'eye-off-outline'" slot="start"></ion-icon>
+            {{ !me.hidden ? t.common?.visible : t.common?.invisible }}
+          </ion-button>
 
-              <!-- Pastille de Certification Dynamique -->
-              <ion-button
-                *ngIf="currentUser$ | async as me"
-                [color]="getCertificationBadge(me, t).color"
-                [disabled]="getCertificationBadge(me, t).isDisabled"
-                class="status-badge"
-                size="small"
-                [title]="getCertificationBadge(me, t).label"
-                (click)="openCertificationModal(me)">
+          <!-- Pastille de Certification Dynamique -->
+          <ion-button
+            *ngIf="currentUser$ | async as me"
+            [color]="getCertificationBadge(me, t).color"
+            [disabled]="getCertificationBadge(me, t).isDisabled"
+            class="status-badge"
+            size="small"
+            [title]="getCertificationBadge(me, t).label"
+            (click)="openCertificationModal(me)">
 
-                <ion-icon [name]="getCertificationBadge(me, t).icon" slot="start"></ion-icon>
+            <ion-icon [name]="getCertificationBadge(me, t).icon" slot="start"></ion-icon>
 
-                {{ getCertificationBadge(me, t).buttonText }}
+            {{ getCertificationBadge(me, t).buttonText }}
 
-                <ion-badge *ngIf="getCertificationBadge(me, t).hasNotification" color="danger"
-                           class="notification-dot"></ion-badge>
-              </ion-button>
-            </div>
+            <ion-badge *ngIf="getCertificationBadge(me, t).hasNotification" color="danger"
+                       class="notification-dot"></ion-badge>
+          </ion-button>
+        </div>
 
-          </div>
-        </ion-col>
-
-      </ion-row>
-    </ion-grid>
+      </div>
+    </section>
 
     <!-- Navigation par Onglets -->
-    <ion-toolbar class="segment-toolbar">
+    <ion-toolbar class="venus-tabs">
       <ion-segment [(ngModel)]="activeTab" mode="md">
         <ion-segment-button value="profile">
           <ion-label
@@ -176,19 +168,22 @@
 
             <ion-row>
               <!-- Téléphone -->
-              <ion-col size="6" size-md="6">
+              <ion-col size="12" size-sm="6">
                 <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('phone', me)">
                   <ion-label position="stacked">{{ t.common?.phone }} *</ion-label>
                   <ion-input type="tel"
+                             inputmode="tel"
+                             autocomplete="tel"
+                             [maxlength]="20"
                              [(ngModel)]="profileForm.phone"
-                             [debounce]="500"
+                             (ionInput)="onPhoneInput($event)"
                              (ionChange)="updateProfileField('phone', $event.detail.value)"
                              [placeholder]="t.profile_management?.form?.phone_placeholder"></ion-input>
                 </ion-item>
               </ion-col>
 
               <!-- Date de Naissance -->
-              <ion-col size="6" size-md="6">
+              <ion-col size="12" size-sm="6">
                 <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('birthday', me)">
                   <ion-label position="stacked">{{ t.common?.birthdate }} *</ion-label>
                   <ion-input type="date"
@@ -277,7 +272,7 @@
 
                     <!-- Formulaire rapide pour ajouter une langue -->
                     <ion-row class="add-language-row ion-align-items-center">
-                      <ion-col size="12" size-sm="5">
+                      <ion-col size="6" size-md="5">
                         <ion-item lines="none" class="venus-input input-compact">
                           <ion-select [(ngModel)]="newLangCode"
                                       [placeholder]="t.profile_management?.form?.select_language || 'Choisir une langue'"
@@ -291,7 +286,7 @@
                         </ion-item>
                       </ion-col>
 
-                      <ion-col size="12" size-sm="5">
+                      <ion-col size="6" size-md="4">
                         <ion-item lines="none" class="venus-input input-compact">
                           <ion-select [(ngModel)]="newLangLevel"
                                       [placeholder]="t.profile_management?.form?.select_level || 'Niveau de maîtrise'"
@@ -303,12 +298,14 @@
                         </ion-item>
                       </ion-col>
 
-                      <ion-col size="12" size-sm="2" class="ion-text-end">
+                      <ion-col size="12" size-md="3">
                         <ion-button expand="block"
                                     color="primary"
+                                    class="add-language-btn"
                                     [disabled]="!newLangCode || !newLangLevel"
                                     (click)="addLanguage()">
-                          <ion-icon name="add-outline" slot="icon-only"></ion-icon>
+                          <ion-icon name="add-outline" slot="start"></ion-icon>
+                          {{ t.profile_management?.form?.add_language }}
                         </ion-button>
                       </ion-col>
                     </ion-row>
@@ -324,15 +321,18 @@
                 <div class="services-container" [class.invalid-container]="isFieldMissing('services', me)">
                   <ion-grid class="services-grid">
                     <ion-label class="section-box-title">{{ t.profile_management?.form?.services_title }}</ion-label>
-                    <ion-row>
-                      <ion-col *ngFor="let service of allServices">
+                    <div class="services-list">
+                      <div class="service-item" *ngFor="let service of allServices">
                         <ion-checkbox
+                          justify="start"
+                          labelPlacement="end"
                           [checked]="me.servicesId.includes(service.id)"
                           (ionChange)="toggleService(me, service.id, $event)">
-                          <ion-label>{{ service.name }}</ion-label>
+                          {{ service.name }}
                         </ion-checkbox>
-                      </ion-col>
-                    </ion-row>
+                        <service-info [service]="service"></service-info>
+                      </div>
+                    </div>
                   </ion-grid>
                 </div>
               </ion-col>

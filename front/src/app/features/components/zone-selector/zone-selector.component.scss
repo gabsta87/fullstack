@@ -28,19 +28,22 @@ ion-item {
   }
 }
 
+// Mode formulaire (profile-management) : même gouttière que les autres champs
+// (--gutter défini par .pm-wrapper), passage à la ligne sous ~400px.
 .form-profile-mode {
   display: flex;
   flex-wrap: wrap;
+  gap: var(--gutter, 16px);
 
-  ion-item{
+  ion-item {
     min-height: 58px;
     height: 58px;
+    --padding-start: 16px;
   }
 
   .zone-col {
-    flex: 1;
-    min-width: 200px;
-    margin-right: 16px;
+    flex: 1 1 200px;
+    min-width: 0;
   }
 }
 

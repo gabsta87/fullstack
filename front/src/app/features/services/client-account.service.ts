@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, firstValueFrom, Observable, of} from 'rxjs';
 import {environment} from "../../../environments/environment";
-import {tap} from "rxjs/operators";
+import {distinctUntilChanged, finalize, map, tap} from "rxjs/operators";
 import {ClientProfile} from "../models/user.model";
 import {GalleryFilters} from "../models/filter.model";
 
@@ -33,6 +33,28 @@ export class ClientAccountService {
 
   listenToMyAccount(): Observable<ClientProfile | null> {
     return this.accountSubject.asObservable();
+  }
+
+  private loadingAccount = false;
+
+  /**
+   * Charge le compte client une seule fois s'il n'est pas déjà en cache.
+   * À appeler uniquement quand l'utilisateur connecté est un CLIENT.
+   */
+  ensureLoaded(): void {
+    if (this.accountSubject.value || this.loadingAccount) return;
+    this.loadingAccount = true;
+    this.getCurrentAccount()
+      .pipe(finalize(() => this.loadingAccount = false))
+      .subscribe({ error: (err) => console.error('Impossible de charger le compte client', err) });
+  }
+
+  /** true si le worker fait partie des favoris du client (mis à jour en temps réel). */
+  isFavorite$(workerId: string): Observable<boolean> {
+    return this.accountSubject.pipe(
+      map(account => account?.favorites?.some(f => f.id === workerId) ?? false),
+      distinctUntilChanged()
+    );
   }
 
   async addFavorite(workerId: string): Promise<any> {

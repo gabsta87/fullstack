@@ -3,39 +3,12 @@
   --background: var(--bg);
 }
 
-// Toolbar de navigation collante
-.segment-toolbar {
-  --background: var(--surface);
-  --border-color: var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  border-bottom: 1px solid var(--border);
-
-  ion-segment {
-    max-width: 600px;
-    margin: 0 auto;
-    --background: transparent;
-
-    ion-segment-button {
-      --color: var(--text-muted);
-      --color-checked: var(--accent);
-      --indicator-color: var(--accent);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-
-      min-width: auto;
-      padding: 0 12px;
-
-      ion-label {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        margin: 0 4px;
-      }
-    }
-  }
+// Onglets : style partagé .venus-tabs (styles.scss), centrés avec marges ici
+.venus-tabs {
+  --background: var(--bg);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 12px 16px 4px;
 }
 
 // Entêtes de section

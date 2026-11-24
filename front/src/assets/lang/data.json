@@ -190,7 +190,8 @@
         "languages_title": "Known languages",
         "no_languages": "No languages added yet",
         "select_language": "Select a language",
-        "select_level": "Proficiency level"
+        "select_level": "Proficiency level",
+        "add_language": "Add"
       },
       "media": {
         "drop_title": "Drag and drop your photos or videos here or",
@@ -484,7 +485,8 @@
         "languages_title": "Langues maîtrisées",
         "no_languages": "Aucune langue ajoutée pour le moment",
         "select_language": "Choisir une langue",
-        "select_level": "Niveau de maîtrise"
+        "select_level": "Niveau de maîtrise",
+        "add_language": "Ajouter"
       },
       "media": {
         "drop_title": "Glissez-déposez vos photos ou vidéos ici ou",
@@ -773,7 +775,8 @@
         "languages_title": "Beherrschte Sprachen",
         "no_languages": "Derzeit sind keine Sprachen hinzugefügt",
         "select_language": "Sprache auswählen",
-        "select_level": "Beherrschungsgrad"
+        "select_level": "Beherrschungsgrad",
+        "add_language": "Hinzufügen"
       },
       "media": {
         "drop_title": "Ziehen Sie Fotos oder Videos hierher oder",
@@ -1062,7 +1065,8 @@
         "languages_title": "Idiomas hablados",
         "no_languages": "No se ha añadido ningún idioma por el momento",
         "select_language": "Elige un idioma",
-        "select_level": "Nivel de dominio"
+        "select_level": "Nivel de dominio",
+        "add_language": "Añadir"
       },
       "media": {
         "drop_title": "Arrastra tus fotos o videos aquí o",
@@ -1351,7 +1355,8 @@
         "languages_title": "Idiomas dominados",
         "no_languages": "Ainda não foi adicionado nenhum idioma",
         "select_language": "Escolher um idioma",
-        "select_level": "Nível de domínio"
+        "select_level": "Nível de domínio",
+        "add_language": "Adicionar"
       },
       "media": {
         "drop_title": "Arraste as suas fotos ou vídeos para aqui ou",
@@ -1600,7 +1605,11 @@
       "body_type": "Corporatura",
       "about": "Informazioni",
       "reviews": "Recensioni",
-      "no_reviews": "Ancora nessuna recensione"
+      "no_reviews": "Ancora nessuna recensione",
+      "details": "Dettagli",
+      "languages": "Lingue",
+      "eye_color": "Occhi",
+      "hair_color": "Capelli"
     },
     "reset_password": {
       "title": "Nuova password",
@@ -1636,7 +1645,8 @@
         "languages_title": "Lingue parlate",
         "no_languages": "Nessuna lingua aggiunta per il momento",
         "select_language": "Scegli una lingua",
-        "select_level": "Livello di conoscenza"
+        "select_level": "Livello di conoscenza",
+        "add_language": "Aggiungi"
       },
       "media": {
         "drop_title": "Trascina le tue foto o i tuoi video qui o",
@@ -1885,7 +1895,11 @@
       "body_type": "Тип фигуры",
       "about": "О себе",
       "reviews": "Отзывы",
-      "no_reviews": "Отзывов пока нет"
+      "no_reviews": "Отзывов пока нет",
+      "details": "Подробности",
+      "languages": "Языки",
+      "eye_color": "Глаза",
+      "hair_color": "Волосы"
     },
     "reset_password": {
       "title": "Новый пароль",
@@ -1921,7 +1935,8 @@
         "languages_title": "Владение языками",
         "no_languages": "Пока не добавлено ни одного языка",
         "select_language": "Выбрать язык",
-        "select_level": "Уровень владения"
+        "select_level": "Уровень владения",
+        "add_language": "Добавить"
       },
       "media": {
         "drop_title": "Перетащите фото или видео сюда или",
@@ -2170,7 +2185,11 @@
       "body_type": "Тип фігури",
       "about": "Про себе",
       "reviews": "Відгуки",
-      "no_reviews": "Відгуків ще немає"
+      "no_reviews": "Відгуків ще немає",
+      "details": "Деталі",
+      "languages": "Мови",
+      "eye_color": "Очі",
+      "hair_color": "Волосся"
     },
     "reset_password": {
       "title": "Новий пароль",
@@ -2206,7 +2225,8 @@
         "languages_title": "Мови, якими володієте",
         "no_languages": "Наразі жодної мови не додано",
         "select_language": "Виберіть мову",
-        "select_level": "Рівень володіння"
+        "select_level": "Рівень володіння",
+        "add_language": "Додати"
       },
       "media": {
         "drop_title": "Перетягніть фото або відео сюди або",
@@ -2455,7 +2475,11 @@
       "body_type": "نوع الجسم",
       "about": "نبذة",
       "reviews": "التعليقات",
-      "no_reviews": "لا توجد تقييمات حتى الآن"
+      "no_reviews": "لا توجد تقييمات حتى الآن",
+      "details": "التفاصيل",
+      "languages": "اللغات",
+      "eye_color": "العيون",
+      "hair_color": "الشعر"
     },
     "reset_password": {
       "title": "كلمة مرور جديدة",
@@ -2491,7 +2515,8 @@
         "languages_title": "اللغات التي يتحدثها ",
         "no_languages": "لم تتم إضافة أي لغة حتى الآن",
         "select_language": "اختر لغة",
-        "select_level": "مستوى إتقان"
+        "select_level": "مستوى إتقان",
+        "add_language": "إضافة"
       },
       "media": {
         "drop_title": "اسحب صورك أو مقاطع الفيديو الخاصة بك وأسقطها هنا أو",

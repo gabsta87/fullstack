@@ -5,6 +5,10 @@
     <div class="wcard-photo" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
       <img [src]="displayUrl ? displayUrl : 'assets/images/default-avatar.jpg'" [alt]="worker.username" class="wcard-img" loading="lazy" />
 
+      <span *ngIf="isFavorite$ | async" class="favorite-mark" [attr.aria-label]="t.worker_profile?.favorite" [title]="t.worker_profile?.favorite">
+        <ion-icon name="heart"></ion-icon>
+      </span>
+
       <ion-badge *ngIf="!worker.available" class="online-pill" color="medium">
         {{ t.common?.unavailable }}
       </ion-badge>

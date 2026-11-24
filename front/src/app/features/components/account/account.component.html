@@ -2,7 +2,7 @@
 
 <ng-container *ngIf="languageService.currentLanguage$ | async as t">
   <ion-content *ngIf="currentUser$ | async as user" class="venus-content">
-    <ion-toolbar class="segment-toolbar">
+    <ion-toolbar class="venus-tabs">
       <ion-segment [(ngModel)]="activeTab" mode="md">
         <ion-segment-button value="favorites">
           <ion-label>{{ t.account?.tabs?.favorites }} ({{user.favorites.length}}) </ion-label>

@@ -34,6 +34,7 @@ import {
 import {Comment, PhotoItem, VideoItem} from '../../models/items.model';
 import {WorkerPublicFullProfile} from "../../models/user.model";
 import {HeaderComponent} from "../header/header.component";
+import {ServiceInfoComponent} from "../service-info/service-info.component";
 import {ClientAccountService} from "../../services/client-account.service";
 import {AuthService} from "../../services/auth.service";
 import {Service} from "../../models/common.model";
@@ -46,7 +47,7 @@ import {Subscription} from "rxjs";
   styleUrls: ['./profile.component.scss'],
   standalone: true,
   imports: [
-    CommonModule, FormsModule, IonContent, IonButton, IonIcon, HeaderComponent, IonModal, IonTextarea, IonSpinner,
+    CommonModule, FormsModule, IonContent, IonButton, IonIcon, HeaderComponent, IonModal, IonTextarea, IonSpinner, ServiceInfoComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
@@ -105,6 +106,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
 
     if (this.isClient && this.worker) {
+      this.clientAccountService.ensureLoaded();
       this.clientAccountSub = this.clientAccountService.listenToMyAccount().subscribe({
         next: (clientAccount) => {
           // Vérification en temps réel de la liste des favoris depuis le cache local

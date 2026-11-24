@@ -18,6 +18,7 @@ import {
 import {AccountSettingsComponent} from "../account-settings/account-settings.component";
 import {GeographicZone} from "../../models/filter.model";
 import {ZoneSelectorComponent} from "../zone-selector/zone-selector.component";
+import {ServiceInfoComponent} from "../service-info/service-info.component";
 import {environment} from "../../../../environments/environment";
 import {CertificationStatus, Service} from "../../models/common.model";
 import {ModalController} from "@ionic/angular/standalone";
@@ -27,7 +28,7 @@ import {AccountService} from "../../services/account-service";
 
 @Component({
   selector: 'app-profile-management',
-  imports: [CommonModule, FormsModule, IonicModule, HeaderComponent, AccountSettingsComponent, ZoneSelectorComponent],
+  imports: [CommonModule, FormsModule, IonicModule, HeaderComponent, AccountSettingsComponent, ZoneSelectorComponent, ServiceInfoComponent],
   templateUrl: './profile-management.component.html',
   styleUrls: ['./profile-management.component.scss'],
   standalone: true
@@ -382,6 +383,25 @@ export class ProfileManagementComponent implements OnInit {
     await this.workerAccountService.setVisibility(currentVisibility);
   }
 
+  /**
+   * Téléphone : n'accepte que des chiffres, avec un « + » optionnel en tête.
+   * Le champ est corrigé pendant la frappe (ionInput) ; la sauvegarde reste
+   * déclenchée par ionChange.
+   */
+  async onPhoneInput(event: CustomEvent): Promise<void> {
+    const input = event.target as HTMLIonInputElement;
+    const raw = String((event as any).detail?.value ?? '');
+    const cleaned = sanitizePhone(raw);
+    this.profileForm.phone = cleaned;
+    if (cleaned !== raw) {
+      // Si la valeur nettoyée n'a pas changé depuis la frappe précédente,
+      // ion-input ne redessine pas : on corrige donc l'<input> natif directement.
+      input.value = cleaned;
+      const native = await input.getInputElement();
+      native.value = cleaned;
+    }
+  }
+
   async updateProfileField(field: keyof WorkerProfileUpdate, value: any) {
     if (this.lastServerState[field] === value) {
       return;
@@ -565,4 +585,11 @@ export class ProfileManagementComponent implements OnInit {
   protected readonly BODY_TYPES_LIST = BODY_TYPES_LIST;
   protected readonly HAIR_COLOR_LIST = HAIR_COLOR_LIST;
   protected readonly EYES_COLOR_LIST = EYES_COLOR_LIST;
+}
+
+/** Garde uniquement les chiffres et un éventuel « + » en première position. */
+export function sanitizePhone(value: string): string {
+  const trimmed = value.trim();
+  const plus = trimmed.startsWith('+') ? '+' : '';
+  return plus + trimmed.replace(/\D/g, '');
 }

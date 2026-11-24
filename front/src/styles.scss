@@ -19,3 +19,64 @@ ion-modal::part(content) {
 .content-with-bottom-spacing {
   --padding-bottom: 120px;
 }
+
+// ── Onglets « pilule » partagés (profile-management, account) ────────────────
+// Usage : <ion-toolbar class="venus-tabs"><ion-segment mode="md">…
+.venus-tabs {
+  --background: transparent;
+  --border-color: transparent;
+  --min-height: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  margin-bottom: 16px;
+
+  ion-segment {
+    --background: var(--surface-card);
+    border-radius: var(--radius-md);
+    padding: 4px;
+    width: 100%;
+  }
+
+  ion-segment-button {
+    --color: var(--text-muted);
+    --color-checked: var(--text);
+    --background-checked: var(--surface);
+    --indicator-color: transparent;
+    --indicator-height: 0;
+    --padding-start: 6px;
+    --padding-end: 6px;
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 40px;
+    border-radius: var(--radius-sm);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: none;
+
+    &::part(indicator) {
+      display: none;
+    }
+
+    ion-label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin: 0;
+    }
+  }
+
+  @media (max-width: 480px) {
+    ion-segment-button {
+      font-size: 0.72rem;
+      letter-spacing: 0;
+    }
+  }
+}
