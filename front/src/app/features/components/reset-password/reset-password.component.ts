@@ -83,7 +83,6 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   goToRoute(routePath: string) {
-    console.log('Navigation vers :', routePath);
     this.router.navigateByUrl(routePath);
   }
 

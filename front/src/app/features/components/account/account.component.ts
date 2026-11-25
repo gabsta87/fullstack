@@ -62,7 +62,6 @@ export class AccountComponent implements OnInit {
 
   updateLocation() {
     // this.accountService.updateSettings();
-    console.log("TODO: update location");
   }
 
   onZoneChange(event: any, user: ClientProfile) {

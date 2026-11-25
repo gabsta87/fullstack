@@ -17,7 +17,6 @@ export const workerOnlyGuard: CanActivateFn = (route, state) => {
         return true;
       }
 
-      console.log("Accès refusé : utilisateur n'est pas un worker");
       router.navigate(['/account']);
       return false;
     }),

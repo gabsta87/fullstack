@@ -436,7 +436,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     // 1. On demande le motif via une boîte de dialogue
     const reason = prompt(`Motif de la révocation de la certification pour ${user.username} (Requis) :`);
 
-    console.log(user);
 
     if (!reason || reason.trim() === '') {
       alert("Un motif valide est obligatoire pour révoquer une certification.");

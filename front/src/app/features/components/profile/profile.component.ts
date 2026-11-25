@@ -205,10 +205,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
     try {
       if (this.isFavorite) {
-        console.log("Retrait des favoris...");
         await this.clientAccountService.removeFavorite(this.worker.id);
       } else {
-        console.log("Ajout aux favoris...");
         await this.clientAccountService.addFavorite(this.worker.id);
       }
     } catch (error) {

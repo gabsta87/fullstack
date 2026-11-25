@@ -200,7 +200,6 @@ export class AdminService {
 
   revokeCertification(workerId: string, reason: string): Observable<any> {
     const payload = { workerId, reason };
-    console.log(payload);
     return this.http.post(`${this.apiUrl}/profiles/revoke-certification`, payload).pipe(
       tap(() => {
         this.refreshCertifications();

@@ -124,8 +124,6 @@ export class WorkerAccountService {
   }
 
   async updateSpokenLanguages(profileLanguages: { language: string; level: number }[]) {
-    console.log("updateSpokenLanguages");
-    console.log(profileLanguages);
 
     const payload = { languages: profileLanguages };
     const updatedAccount: WorkerPrivateProfile = await firstValueFrom(

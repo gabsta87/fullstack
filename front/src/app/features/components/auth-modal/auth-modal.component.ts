@@ -80,7 +80,6 @@ export class AuthModalComponent implements OnInit {
     if (this.mode === 'login') {
       this.authService.login(email, password).subscribe({
         next: (user) => {
-          console.log("Connexion réussie !", user);
           this.handleSuccess(user); // 🎯 3. On passe l'utilisateur pour gérer la redirection
         },
         error: (err) => {
@@ -108,7 +107,6 @@ export class AuthModalComponent implements OnInit {
           // 🎯 Dès que l'inscription réussit, on se connecte immédiatement en tâche de fond
           this.authService.login(email, password).subscribe({
             next: (loggedInUser) => {
-              console.log("Inscription + Connexion automatique réussie !", loggedInUser);
               // On passe le user connecté pour que handleSuccess() fasse la redirection vers le bon espace !
               this.handleSuccess(loggedInUser);
             },

@@ -372,7 +372,6 @@ export class ProfileManagementComponent implements OnInit {
       updatedServices = updatedServices.filter(s => s !== serviceId);
     }
 
-    console.log("Services à envoyer au serveur:", updatedServices);
     await this.workerAccountService.updateServices(updatedServices);
   }
 
@@ -408,7 +407,6 @@ export class ProfileManagementComponent implements OnInit {
       return;
     }
 
-    console.log(`Envoi au serveur pour [${field}] :`, value);
     try {
       await this.workerAccountService.updateProfile({ [field]: value });
       this.lastServerState[field] = value;
@@ -532,7 +530,6 @@ export class ProfileManagementComponent implements OnInit {
   }
 
   handleSubscriptionClick() {
-    console.log("Redirection vers la passerelle de paiement / Stripe / etc.");
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────

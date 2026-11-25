@@ -254,7 +254,6 @@ export class HomepageComponent implements OnInit {
       })
     );
 
-    console.log("Filters sent to backend:", cleanFilters);
 
     this.workerService.getGalleryPage(this.currentPage, cleanFilters).subscribe({
       next: workers => {
