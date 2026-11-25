@@ -3,28 +3,25 @@ package com.serv.services;
 import com.serv.database.entities.Photo;
 import com.serv.database.entities.Video;
 import com.serv.database.entities.Worker;
+import com.serv.support.TestImages;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.InjectMocks;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@ExtendWith(MockitoExtension.class)
 class MediaStorageServiceTest {
 
-    @InjectMocks
-    private MediaStorageService mediaStorageService;
+    private MediaStorageService service;
 
     @TempDir
     Path tempDir;
@@ -33,108 +30,123 @@ class MediaStorageServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Injection des propriétés @Value nécessaires au fonctionnement du service
-        ReflectionTestUtils.setField(mediaStorageService, "uploadBase", tempDir.toString());
-        ReflectionTestUtils.setField(mediaStorageService, "publicBaseUrl", "http://localhost/uploads");
+        service = new MediaStorageService();
+        ReflectionTestUtils.setField(service, "uploadBase", tempDir.toString());
+        ReflectionTestUtils.setField(service, "publicBaseUrl", "/media");
 
         worker = new Worker();
         worker.setId(UUID.randomUUID());
-        worker.setUsername("TestWorker");
+    }
+
+    private Path workerDir() {
+        return tempDir.resolve(worker.getId().toString());
     }
 
     @Test
-    @DisplayName("savePhoto - Sauvegarde l'image originale et génère la miniature principale avec succès")
-    void savePhoto_Success() throws IOException {
-        // Création d'un faux fichier image valide (sous forme de tableau d'octets minimal ou factice)
-        // Note : Thumbnailator nécessite un contenu image réel (ex: un petit PNG/JPG encodé)
-        // ou un Mock si l'on mocke la partie Thumbnailator, mais ici on teste l'intégration disque.
-        // Pour un test unitaire simple sans vraie image complexe, on peut fournir un flux d'octets.
-        byte[] dummyImageBytes = createDummyImageBytes();
-        MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "avatar.jpg",
-                "image/jpeg",
-                dummyImageBytes
-        );
+    @DisplayName("savePhoto stores a JPEG original and a thumbnail under the worker directory")
+    void savePhoto() throws IOException {
+        Photo photo = service.savePhoto(new MockMultipartFile("f", "a.png", "image/png", TestImages.png(640, 480)), worker);
 
-        Photo photo = mediaStorageService.savePhoto(file, worker);
-
-        assertThat(photo).isNotNull();
-        assertThat(photo.getUrl()).contains("/originals/");
-        assertThat(photo.getMainThumbUrl()).contains("/thumbs/main/");
-        assertThat(photo.getFileSize()).isEqualTo(file.getSize());
-        assertThat(photo.getWorker()).isEqualTo(worker);
+        assertThat(photo.getUrl()).startsWith("/media/" + worker.getId() + "/originals/").endsWith(".jpg");
+        assertThat(photo.getMainThumbUrl()).startsWith("/media/" + worker.getId() + "/thumbs/main/").endsWith("_main.jpg");
+        assertThat(photo.getFileSize()).isPositive();
+        assertThat(Files.list(workerDir().resolve("originals"))).hasSize(1);
+        assertThat(Files.list(workerDir().resolve("thumbs/main"))).hasSize(1);
     }
 
     @Test
-    @DisplayName("savePhoto - Échec si le fichier n'est pas une image")
-    void savePhoto_InvalidContentType() {
-        MockMultipartFile textFile = new MockMultipartFile(
-                "file",
-                "document.txt",
-                "text/plain",
-                "Hello World".getBytes()
-        );
-
-        assertThatThrownBy(() -> mediaStorageService.savePhoto(textFile, worker))
+    @DisplayName("savePhoto rejects non-image content types")
+    void savePhoto_wrongType() {
+        assertThatThrownBy(() -> service.savePhoto(new MockMultipartFile("f", "a.txt", "text/plain", "hi".getBytes()), worker))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Only image files are accepted.");
     }
 
     @Test
-    @DisplayName("saveVideo - Sauvegarde la vidéo avec succès")
-    void saveVideo_Success() throws IOException {
-        MockMultipartFile videoFile = new MockMultipartFile(
-                "file",
-                "clip.mp4",
-                "video/mp4",
-                new byte[1024]
-        );
-
-        Video video = mediaStorageService.saveVideo(videoFile, worker);
-
-        assertThat(video).isNotNull();
-        assertThat(video.getUrl()).contains("/videos/");
-        assertThat(video.getFileSize()).isEqualTo(videoFile.getSize());
-        assertThat(video.getWorker()).isEqualTo(worker);
+    @DisplayName("savePhoto rejects content that is not really an image")
+    void savePhoto_fakeImage() {
+        assertThatThrownBy(() -> service.savePhoto(new MockMultipartFile("f", "a.jpg", "image/jpeg", TestImages.htmlPayload()), worker))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThat(workerDir()).doesNotExist();
     }
 
     @Test
-    @DisplayName("saveVideo - Échec si le fichier n'est pas une vidéo")
-    void saveVideo_InvalidContentType() {
-        MockMultipartFile imageFile = new MockMultipartFile(
-                "file",
-                "pic.jpg",
-                "image/jpeg",
-                new byte[1024]
-        );
+    @DisplayName("savePhoto rejects images above 20 MB")
+    void savePhoto_tooBig() {
+        byte[] big = new byte[(int) MediaStorageService.MAX_IMAGE_BYTES + 1];
+        System.arraycopy(TestImages.jpeg(10, 10), 0, big, 0, 20);
+        assertThatThrownBy(() -> service.savePhoto(new MockMultipartFile("f", "a.jpg", "image/jpeg", big), worker))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("20 MB");
+    }
 
-        assertThatThrownBy(() -> mediaStorageService.saveVideo(imageFile, worker))
+    @Test
+    @DisplayName("saveVideo stores a recognised video with the extension of its real format")
+    void saveVideo() throws IOException {
+        Video video = service.saveVideo(new MockMultipartFile("f", "clip.exe", "video/mp4", TestImages.mp4()), worker);
+        assertThat(video.getUrl()).endsWith(".mp4");
+        assertThat(video.getFileSize()).isEqualTo(TestImages.mp4().length);
+    }
+
+    @Test
+    @DisplayName("saveVideo rejects unknown formats and non-video types")
+    void saveVideo_invalid() {
+        assertThatThrownBy(() -> service.saveVideo(new MockMultipartFile("f", "a.mp4", "video/mp4", new byte[1024]), worker))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Unsupported video format.");
+        assertThatThrownBy(() -> service.saveVideo(new MockMultipartFile("f", "a.jpg", "image/jpeg", TestImages.jpeg(5, 5)), worker))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Only video files are accepted.");
     }
 
     @Test
-    @DisplayName("deleteAllForUser - Supprime tout le dossier physique de l'utilisateur")
-    void deleteAllForUser_Success() throws IOException {
-        // Sauvegarde d'abord un fichier pour créer l'arborescence
-        MockMultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", createDummyImageBytes());
-        mediaStorageService.savePhoto(file, worker);
-
-        Path userDir = tempDir.resolve(String.valueOf(worker.getId()));
-        assertThat(userDir).exists();
-
-        // Suppression totale
-        mediaStorageService.deleteAllForUser(worker.getId());
-
-        assertThat(userDir).doesNotExist();
+    @DisplayName("deletePhotoFiles removes both the original and the thumbnail")
+    void deletePhotoFiles() throws IOException {
+        Photo photo = service.savePhoto(new MockMultipartFile("f", "a.jpg", "image/jpeg", TestImages.jpeg(100, 100)), worker);
+        service.deletePhotoFiles(worker.getId(), photo);
+        assertThat(Files.list(workerDir().resolve("originals"))).isEmpty();
+        assertThat(Files.list(workerDir().resolve("thumbs/main"))).isEmpty();
     }
 
-    // Utilitaire pour simuler des octets valides pour Thumbnailator
-    private byte[] createDummyImageBytes() {
-        // Utilisation d'un tout petit tableau ou d'un carré encodé si nécessaire,
-        // ou test avec Thumbnailator. (Si Thumbnailator échoue sur un tableau vide,
-        // on peut utiliser une image de test minimale en base64 ou un buffer).
-        return new byte[512];
+    @Test
+    @DisplayName("deletePhotoFiles ignores URLs trying to escape the worker directory")
+    void deletePhotoFiles_traversal() throws IOException {
+        Path victim = Files.writeString(tempDir.resolve("victim.txt"), "keep me");
+        Photo photo = new Photo();
+        photo.setUrl("/media/" + worker.getId() + "/originals/../../victim.txt");
+        service.deletePhotoFiles(worker.getId(), photo);
+        assertThat(victim).exists();
+    }
+
+    @Test
+    @DisplayName("deleteAllForUser removes the whole worker directory and nothing else")
+    void deleteAllForUser() throws IOException {
+        service.savePhoto(new MockMultipartFile("f", "a.jpg", "image/jpeg", TestImages.jpeg(50, 50)), worker);
+        Path neighbour = Files.writeString(tempDir.resolve("other.txt"), "x");
+
+        service.deleteAllForUser(worker.getId());
+
+        assertThat(workerDir()).doesNotExist();
+        assertThat(neighbour).exists();
+    }
+
+    @Test
+    @DisplayName("usedBytes sums the worker's files on disk")
+    void usedBytes() throws IOException {
+        assertThat(service.usedBytes(worker.getId())).isZero();
+        Photo photo = service.savePhoto(new MockMultipartFile("f", "a.jpg", "image/jpeg", TestImages.jpeg(200, 200)), worker);
+        assertThat(service.usedBytes(worker.getId())).isEqualTo(photo.getFileSize());
+    }
+
+    @Test
+    @DisplayName("Magic-byte detection")
+    void detection() {
+        assertThat(MediaStorageService.detectImageType(TestImages.jpeg(5, 5))).isEqualTo(MediaStorageService.ImageType.JPEG);
+        assertThat(MediaStorageService.detectImageType(TestImages.png(5, 5))).isEqualTo(MediaStorageService.ImageType.PNG);
+        assertThat(MediaStorageService.detectImageType(TestImages.htmlPayload())).isNull();
+        assertThat(MediaStorageService.detectImageType(new byte[3])).isNull();
+        assertThat(MediaStorageService.detectVideoType(TestImages.mp4())).isEqualTo(MediaStorageService.VideoType.MP4);
+        assertThat(MediaStorageService.detectVideoType(new byte[]{0x1A, 0x45, (byte) 0xDF, (byte) 0xA3, 0, 0, 0, 0, 0, 0, 0, 0}))
+                .isEqualTo(MediaStorageService.VideoType.WEBM);
     }
 }

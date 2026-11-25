@@ -79,7 +79,7 @@ class AuthServiceTest {
         when(userRepository.findByEmail("worker@venus.com")).thenReturn(Optional.of(worker));
         when(workerRepository.findByIdWithPhotos(workerId)).thenReturn(Optional.of(worker));
 
-        // Note : checkPassword s'appuie sur le hachage VenusUser, assure-toi que le mot correspond
-        // ou adapte selon la façon dont le mock gère le checkPassword si nécessaire.
+        assertThat(authService.verifyCredentials("worker@venus.com", "Password123!")).isSameAs(worker);
+        assertThat(authService.verifyCredentials("worker@venus.com", "wrong")).isNull();
     }
 }

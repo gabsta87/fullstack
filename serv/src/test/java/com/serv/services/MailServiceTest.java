@@ -27,6 +27,11 @@ class MailServiceTest {
     @InjectMocks
     private MailService mailService;
 
+    @org.junit.jupiter.api.BeforeEach
+    void setSender() {
+        org.springframework.test.util.ReflectionTestUtils.setField(mailService, "messageSender", "no-reply@venus.test");
+    }
+
     @Test
     @DisplayName("sendSimpleMessage - Envoie un e-mail simple via JavaMailSender")
     void sendSimpleMessage_Success() {
@@ -41,7 +46,7 @@ class MailServiceTest {
     @DisplayName("sendHtmlMessage - Envoie un e-mail HTML via JavaMailSender")
     void sendHtmlMessage_Success() {
         Email to = new Email("recipient@venus.com");
-        MimeMessage mimeMessage = mock(MimeMessage.class);
+        MimeMessage mimeMessage = new MimeMessage((jakarta.mail.Session) null);
 
         when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
 

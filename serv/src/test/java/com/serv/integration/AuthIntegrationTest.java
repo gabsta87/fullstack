@@ -18,11 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
-@Transactional
-class AuthIntegrationTest {
+class AuthIntegrationTest extends com.serv.support.IntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -33,11 +29,6 @@ class AuthIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
-    @BeforeEach
-    void setUp() {
-        // Nettoyage si nécessaire
-        userRepository.deleteAll();
-    }
 
     @Test
     @DisplayName("Intégration - Inscription d'un client puis connexion réussie")
@@ -54,7 +45,10 @@ class AuthIntegrationTest {
         // Vérifie que l'utilisateur est bien présent en base H2
         assertThat(userRepository.findByEmail("integration@venus.com")).isPresent();
 
-        // 2. Connexion (si le compte n'est pas locked ou si on teste le login direct)
-        // Note : Si l'email verification est requise, adapte l'état du user en base pour le test.
+        // 2. Connexion
+        mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new com.serv.requests.Login("integration@venus.com", "SecurePassword123!"))))
+                .andExpect(status().isOk());
     }
 }

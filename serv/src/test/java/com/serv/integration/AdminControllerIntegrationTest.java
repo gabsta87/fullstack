@@ -25,11 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
-@Transactional
-class AdminWorkflowIntegrationTest {
+class AdminControllerIntegrationTest extends com.serv.support.IntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -57,9 +53,6 @@ class AdminWorkflowIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        adminRepository.deleteAll();
-        serviceRepository.deleteAll();
-
         // Création de l'admin principal qui va exécuter les requêtes
         admin = new Admin();
         admin.setEmail(new Email("master.admin@venus.com"));
@@ -116,12 +109,18 @@ class AdminWorkflowIntegrationTest {
         assertThat(createdAdmin).isPresent();
         assertThat(createdAdmin.get().isLocked()).isTrue();
 
-        // 2. SUPPRESSION COMPTE ADMIN (Via l'endpoint de suppression de l'AdminController)
+        // 2. SUPPRESSION COMPTE ADMIN : refusée à un simple admin, autorisée au super admin
         mockMvc.perform(delete("/admin/users/" + createdAdmin.get().getId())
                         .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+
+        String superAdminToken = jwtProvider.generateToken(createSuperAdmin("root@venus.com"));
+        mockMvc.perform(delete("/admin/users/" + createdAdmin.get().getId())
+                        .header("Authorization", "Bearer " + superAdminToken)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Utilisateur supprimé avec succès"));
+                .andExpect(jsonPath("$.message").value("User deleted successfully"));
 
         // 3. VÉRIFICATION APRÈS SUPPRESSION (Doit échouer / être introuvable)
         assertThat(userRepository.findById(createdAdmin.get().getId())).isEmpty();
@@ -134,7 +133,7 @@ class AdminWorkflowIntegrationTest {
                         .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Vous ne pouvez pas supprimer votre propre compte administrateur."));
+                .andExpect(jsonPath("$.error").value("An admin cannot suppress himself"));
 
         // Vérification en base : L'admin est toujours là
         assertThat(adminRepository.findById(admin.getId())).isPresent();
@@ -195,7 +194,6 @@ class AdminWorkflowIntegrationTest {
 
         // 2. Création et rattachement d'un Worker à cette région
         Worker worker = new Worker();
-        worker.setId(java.util.UUID.randomUUID());
         worker.setEmail(new Email("worker.lyon@venus.com"));
         worker.setUsername("workerlyon");
         worker.setPassword("Password123!");
