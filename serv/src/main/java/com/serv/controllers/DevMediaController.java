@@ -53,7 +53,11 @@ public class DevMediaController {
         String subPath = requestPath.replaceFirst("^/media/", "");
 
         try {
-            Path filePath = Paths.get(uploadBase).resolve(subPath).normalize();
+            Path baseDir = Paths.get(uploadBase).toAbsolutePath().normalize();
+            Path filePath = baseDir.resolve(subPath).normalize();
+            if (!filePath.startsWith(baseDir)) {
+                return ResponseEntity.notFound().build();
+            }
             Resource resource = new UrlResource(filePath.toUri());
 
             if (!resource.exists() || !resource.isReadable()) {

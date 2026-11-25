@@ -3,33 +3,67 @@ package com.serv.services;
 import com.serv.database.entities.Photo;
 import com.serv.database.entities.Video;
 import com.serv.database.entities.Worker;
+import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.geometry.Positions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.UUID;
+import java.util.concurrent.Semaphore;
 
 /**
- * Handles all media storage:
- *  - Saves original file to disk
- *  - Generates a main thumbnail  (600 × 800  — used for profile cards in the gallery)
- *  - Generates preview thumbnails (400 × 300  — used for the hover carousel on cards)
+ * Handles all media storage.
+ * <p>
+ * Uploaded files are never trusted: their real type is detected from their content (magic bytes),
+ * the stored extension is derived from that type (never from the client file name), and images are
+ * fully decoded and re-encoded as JPEG. Re-encoding removes any embedded payload and all metadata,
+ * including EXIF GPS coordinates that could reveal where a photo was taken.
+ * <p>
  * Directory layout on disk:
- *   ${media.upload.base}/
- *     originals/{workerId}/{uuid}.jpg
- *     thumbs/main/{workerId}/{uuid}_main.jpg
- *     thumbs/preview/{workerId}/{uuid}_prev.jpg
+ * <pre>
+ *   ${media.upload.base}/{workerId}/originals/{uuid}.jpg
+ *   ${media.upload.base}/{workerId}/thumbs/main/{uuid}_main.jpg
+ *   ${media.upload.base}/{workerId}/certification/{uuid}.jpg
+ *   ${media.upload.base}/{workerId}/videos/{uuid}.mp4
+ * </pre>
  * Nginx serves everything under ${media.upload.base} directly.
- * Spring never needs to stream image bytes — only metadata goes through the API.
  */
+@Slf4j
 @Service
 public class MediaStorageService {
+
+    public static final long MAX_IMAGE_BYTES = 20L * 1024 * 1024;
+    public static final long MAX_VIDEO_BYTES = 50L * 1024 * 1024;
+    /** Rejects decompression bombs: a tiny file declaring a huge canvas. */
+    public static final int MAX_IMAGE_SIDE = 10_000;
+    public static final long MAX_IMAGE_PIXELS = 40_000_000L;
+    /** Stored originals are downscaled to this size (longest side). */
+    public static final int MAX_STORED_SIDE = 2560;
+
+    private static final int MAIN_THUMB_W = 600;
+    private static final int MAIN_THUMB_H = 800;
+    private static final double JPEG_QUALITY = 0.88;
+
+    /** Image decoding is memory hungry: limit how many run at the same time. */
+    private final Semaphore imageProcessing = new Semaphore(2);
 
     @Value("${media.upload.base}")
     private String uploadBase;
@@ -37,183 +71,297 @@ public class MediaStorageService {
     @Value("${media.public.base-url}")
     private String publicBaseUrl;
 
-    private static final int MAIN_THUMB_W = 600;
-    private static final int MAIN_THUMB_H = 800;
+    enum ImageType { JPEG, PNG, WEBP, GIF }
 
-    // Nouvelle méthode pour cibler directement /{uploadBase}/{userId}/{subdir}
-    private Path resolveDir(UUID userId, String subdir) throws IOException {
-        Path baseDir = Paths.get(uploadBase).toAbsolutePath().normalize();
-        Path dir = baseDir.resolve(String.valueOf(userId)).resolve(subdir).normalize();
-
-        if (!dir.startsWith(baseDir)) {
-            throw new SecurityException("Chemin non autorisé.");
-        }
-        if (!Files.exists(dir)) {
-            Files.createDirectories(dir);
-        }
-        return dir;
+    enum VideoType {
+        MP4(".mp4"), QUICKTIME(".mov"), WEBM(".webm");
+        final String extension;
+        VideoType(String extension) { this.extension = extension; }
     }
 
+    // ── Photos ────────────────────────────────────────────────────────────────
+
     public Photo savePhoto(MultipartFile file, Worker worker) throws IOException {
-        validateImage(file);
+        BufferedImage image = readValidatedImage(file);
 
         String uuid = UUID.randomUUID().toString();
-        String ext = getExtension(file.getOriginalFilename());
-        String baseName = uuid + ext;
+        Path originalPath = resolveDir(worker.getId(), "originals").resolve(uuid + ".jpg");
+        Path mainThumbPath = resolveDir(worker.getId(), "thumbs/main").resolve(uuid + "_main.jpg");
 
-        Path originalsDir = resolveDir(worker.getId(), "originals");
-        Path mainThumbDir = resolveDir(worker.getId(), "thumbs/main");
-
-        Path originalPath = originalsDir.resolve(baseName).normalize();
-        Path mainThumbPath = mainThumbDir.resolve(uuid + "_main" + ext).normalize();
-
-        Files.write(originalPath, file.getBytes());
-
-        Thumbnails.of(originalPath.toFile())
-                .size(MAIN_THUMB_W, MAIN_THUMB_H)
-                .crop(Positions.CENTER)
-                .outputQuality(0.85)
-                .toFile(mainThumbPath.toFile());
+        try {
+            writeJpeg(image, originalPath, MAX_STORED_SIDE);
+            Thumbnails.of(image)
+                    .size(MAIN_THUMB_W, MAIN_THUMB_H)
+                    .crop(Positions.CENTER)
+                    .outputFormat("jpg")
+                    .outputQuality(JPEG_QUALITY)
+                    .toFile(mainThumbPath.toFile());
+        } catch (IOException | RuntimeException e) {
+            Files.deleteIfExists(originalPath);
+            Files.deleteIfExists(mainThumbPath);
+            throw e;
+        }
 
         Photo photo = new Photo();
-        photo.setUrl(buildUrl(worker.getId(), "originals", baseName));
-        photo.setMainThumbUrl(buildUrl(worker.getId(), "thumbs/main", uuid + "_main" + ext));
-        photo.setFileSize(file.getSize());
+        photo.setUrl(buildUrl(worker.getId(), "originals", uuid + ".jpg"));
+        photo.setMainThumbUrl(buildUrl(worker.getId(), "thumbs/main", uuid + "_main.jpg"));
+        photo.setFileSize(Files.size(originalPath) + Files.size(mainThumbPath));
         photo.setWorker(worker);
-
         return photo;
     }
 
     public Photo saveCertificationPhoto(MultipartFile file, Worker worker) throws IOException {
-        validateImage(file);
+        BufferedImage image = readValidatedImage(file);
 
-        String uuid = UUID.randomUUID().toString();
-        String ext = getExtension(file.getOriginalFilename());
-        String baseName = uuid + ext;
-
-        // Stocké dans /{uploadBase}/{userId}/certification/
-        Path certDir = resolveDir(worker.getId(), "certification");
-        Path certPath = certDir.resolve(baseName).normalize();
-
-        Files.write(certPath, file.getBytes());
+        String baseName = UUID.randomUUID() + ".jpg";
+        Path certPath = resolveDir(worker.getId(), "certification").resolve(baseName);
+        writeJpeg(image, certPath, MAX_STORED_SIDE);
 
         Photo photo = new Photo();
         photo.setUrl(buildUrl(worker.getId(), "certification", baseName));
-        photo.setFileSize(file.getSize());
+        photo.setFileSize(Files.size(certPath));
         photo.setWorker(worker);
-        // Si tu as un champ pour différencier le type (comme ton @SQLRestriction("photo_type = 'GALLERY'")),
-        // pense à l'assigner ici si nécessaire, ex: photo.setPhotoType("CERTIFICATION");
-
         return photo;
     }
 
-    // SUPPRESSION TOTALE ULTRA-RAPIDE : Supprime tout le dossier /{uploadBase}/{userId} en une seule fois !
-    public void deleteAllForUser(UUID userId) throws IOException {
-        Path baseDir = Paths.get(uploadBase).toAbsolutePath().normalize();
-        Path userDir = baseDir.resolve(String.valueOf(userId)).normalize();
-
-        if (userDir.startsWith(baseDir) && Files.exists(userDir)) {
-            Files.walk(userDir)
-                    .sorted(java.util.Comparator.reverseOrder())
-                    .map(Path::toFile)
-                    .forEach(java.io.File::delete);
+    /**
+     * Validates the declared type, the real type (magic bytes), the size and the dimensions,
+     * then decodes the image.
+     */
+    BufferedImage readValidatedImage(MultipartFile file) throws IOException {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("Empty file.");
         }
-    }
-
-    private String buildUrl(UUID userId, String subdir, String filename) {
-        return publicBaseUrl + "/" + userId + "/" + subdir + "/" + filename;
-    }
-
-    public void deletePhotoFiles(UUID workerId, Photo photo) {
-        try {
-            deletePhysicalFile("originals", workerId, photo.getUrl());
-            deletePhysicalFile("thumbs/main", workerId, photo.getMainThumbUrl());
-        } catch (IOException e) {
-            System.err.println("Erreur suppression physique pour le worker " + workerId + ": " + e.getMessage());
-        }
-    }
-
-    private void deletePhysicalFile(String subdir, UUID workerId, String url) throws IOException {
-        if (url == null || !url.contains("/")) return;
-
-        String filename = url.substring(url.lastIndexOf('/') + 1);
-        Path baseDir = Paths.get(uploadBase).toAbsolutePath().normalize();
-        Path targetDir = baseDir.resolve(subdir).resolve(String.valueOf(workerId)).normalize();
-        Path filePath = targetDir.resolve(filename).normalize();
-
-        if (!filePath.startsWith(targetDir)) {
-            throw new SecurityException("Tentative de Path Traversal détectée !");
-        }
-
-        if (Files.exists(filePath)) {
-            Files.delete(filePath);
-        }
-
-        if (Files.isDirectory(targetDir)) {
-            try (var entries = Files.newDirectoryStream(targetDir)) {
-                if (!entries.iterator().hasNext()) {
-                    Files.delete(targetDir);
-                }
-            }
-        }
-    }
-
-    private String getExtension(String filename) {
-        if (filename == null || !filename.contains(".")) return ".jpg";
-        return filename.substring(filename.lastIndexOf('.'));
-    }
-
-    private void validateImage(MultipartFile file) {
         String ct = file.getContentType();
         if (ct == null || !ct.startsWith("image/")) {
             throw new IllegalArgumentException("Only image files are accepted.");
         }
-        if (file.getSize() > 20 * 1024 * 1024) {
+        if (file.getSize() > MAX_IMAGE_BYTES) {
             throw new IllegalArgumentException("Image must be smaller than 20 MB.");
+        }
+
+        byte[] bytes = file.getBytes();
+        if (detectImageType(bytes) == null) {
+            throw new IllegalArgumentException("Unsupported image format.");
+        }
+
+        boolean acquired = false;
+        try {
+            imageProcessing.acquire();
+            acquired = true;
+            return decodeImage(bytes);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IOException("Interrupted while processing image.", e);
+        } finally {
+            if (acquired) imageProcessing.release();
         }
     }
 
-    /**
-     * Sauvegarde une vidéo et retourne une entité Video prête à l'emploi.
-     */
+    private static BufferedImage decodeImage(byte[] bytes) throws IOException {
+        // 1. Read the declared dimensions without decoding the pixels.
+        try (ImageInputStream input = ImageIO.createImageInputStream(new ByteArrayInputStream(bytes))) {
+            Iterator<ImageReader> readers = ImageIO.getImageReaders(input);
+            if (!readers.hasNext()) {
+                throw new IllegalArgumentException("Unsupported image format.");
+            }
+            ImageReader reader = readers.next();
+            try {
+                reader.setInput(input, true, true);
+                int width = reader.getWidth(0);
+                int height = reader.getHeight(0);
+                if (width <= 0 || height <= 0 || width > MAX_IMAGE_SIDE || height > MAX_IMAGE_SIDE
+                        || (long) width * height > MAX_IMAGE_PIXELS) {
+                    throw new IllegalArgumentException("Image dimensions are too large.");
+                }
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Unreadable image.");
+            } finally {
+                reader.dispose();
+            }
+        }
+
+        // 2. Decode. Thumbnailator applies the EXIF orientation, so phone pictures are not stored rotated.
+        try {
+            BufferedImage image = Thumbnails.of(new ByteArrayInputStream(bytes)).scale(1.0).asBufferedImage();
+            return toRgb(image);
+        } catch (IOException | RuntimeException e) {
+            throw new IllegalArgumentException("Unreadable image.");
+        }
+    }
+
+    /** JPEG has no alpha channel: flatten transparent images onto a white background. */
+    private static BufferedImage toRgb(BufferedImage source) {
+        if (source.getType() == BufferedImage.TYPE_INT_RGB) return source;
+        BufferedImage rgb = new BufferedImage(source.getWidth(), source.getHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = rgb.createGraphics();
+        try {
+            g.setColor(Color.WHITE);
+            g.fillRect(0, 0, source.getWidth(), source.getHeight());
+            g.drawImage(source, 0, 0, null);
+        } finally {
+            g.dispose();
+        }
+        return rgb;
+    }
+
+    private static void writeJpeg(BufferedImage image, Path target, int maxSide) throws IOException {
+        var builder = Thumbnails.of(image);
+        if (image.getWidth() > maxSide || image.getHeight() > maxSide) {
+            builder = Thumbnails.of(image).size(maxSide, maxSide);
+        } else {
+            builder = builder.scale(1.0);
+        }
+        builder.outputFormat("jpg").outputQuality(JPEG_QUALITY).toFile(target.toFile());
+    }
+
+    static ImageType detectImageType(byte[] b) {
+        if (b == null || b.length < 12) return null;
+        if ((b[0] & 0xFF) == 0xFF && (b[1] & 0xFF) == 0xD8 && (b[2] & 0xFF) == 0xFF) return ImageType.JPEG;
+        if ((b[0] & 0xFF) == 0x89 && b[1] == 'P' && b[2] == 'N' && b[3] == 'G') return ImageType.PNG;
+        if (b[0] == 'R' && b[1] == 'I' && b[2] == 'F' && b[3] == 'F'
+                && b[8] == 'W' && b[9] == 'E' && b[10] == 'B' && b[11] == 'P') return ImageType.WEBP;
+        if (b[0] == 'G' && b[1] == 'I' && b[2] == 'F' && b[3] == '8') return ImageType.GIF;
+        return null;
+    }
+
+    // ── Videos ────────────────────────────────────────────────────────────────
+
     public Video saveVideo(MultipartFile file, Worker worker) throws IOException {
-        validateVideo(file);
+        VideoType type = validateVideo(file);
 
-        String uuid = UUID.randomUUID().toString();
-        String ext = getExtension(file.getOriginalFilename());
-        String baseName = uuid + ext; // ex: e4072d12-7d80-4a73-b537-9fd0e217a6d0.mp4
+        String baseName = UUID.randomUUID() + type.extension;
+        Path videoPath = resolveDir(worker.getId(), "videos").resolve(baseName);
 
-        Path videosDir = resolveDir(worker.getId(), "videos");
-        Path videoPath = videosDir.resolve(baseName).normalize();
+        // Streamed to disk: a large video is never loaded in memory.
+        try (InputStream in = file.getInputStream()) {
+            Files.copy(in, videoPath, StandardCopyOption.REPLACE_EXISTING);
+        }
 
-        // Sauvegarde physique de la vidéo
-        Files.write(videoPath, file.getBytes());
-
-        // Instanciation et remplissage de l'entité Video (AVEC L'EXTENSION)
         Video video = new Video();
-        video.setUrl(buildUrl(worker.getId(), "videos", baseName)); // 👈 Corrigé ici (baseName au lieu de uuid)
-        video.setFileSize(file.getSize());
+        video.setUrl(buildUrl(worker.getId(), "videos", baseName));
+        video.setFileSize(Files.size(videoPath));
         video.setWorker(worker);
-
         return video;
     }
 
-    private void validateVideo(MultipartFile file) {
+    private VideoType validateVideo(MultipartFile file) throws IOException {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("Empty file.");
+        }
         String ct = file.getContentType();
         if (ct == null || !ct.startsWith("video/")) {
             throw new IllegalArgumentException("Only video files are accepted.");
         }
-        // Par exemple, limite à 50 Mo pour les vidéos (à adapter selon tes besoins)
-        if (file.getSize() > 50 * 1024 * 1024) {
+        if (file.getSize() > MAX_VIDEO_BYTES) {
             throw new IllegalArgumentException("Video must be smaller than 50 MB.");
+        }
+        byte[] header;
+        try (InputStream in = file.getInputStream()) {
+            header = in.readNBytes(16);
+        }
+        VideoType type = detectVideoType(header);
+        if (type == null) {
+            throw new IllegalArgumentException("Unsupported video format.");
+        }
+        return type;
+    }
+
+    static VideoType detectVideoType(byte[] b) {
+        if (b == null || b.length < 12) return null;
+        if ((b[0] & 0xFF) == 0x1A && (b[1] & 0xFF) == 0x45 && (b[2] & 0xFF) == 0xDF && (b[3] & 0xFF) == 0xA3) {
+            return VideoType.WEBM;
+        }
+        if (b[4] == 'f' && b[5] == 't' && b[6] == 'y' && b[7] == 'p') {
+            String brand = new String(Arrays.copyOfRange(b, 8, 12), java.nio.charset.StandardCharsets.US_ASCII);
+            return brand.startsWith("qt") ? VideoType.QUICKTIME : VideoType.MP4;
+        }
+        return null;
+    }
+
+    // ── Deletion ──────────────────────────────────────────────────────────────
+
+    /** Deletes the whole /{uploadBase}/{userId} directory. */
+    public void deleteAllForUser(UUID userId) throws IOException {
+        Path baseDir = baseDir();
+        Path userDir = baseDir.resolve(String.valueOf(userId)).normalize();
+
+        if (!userDir.startsWith(baseDir) || userDir.equals(baseDir) || !Files.exists(userDir)) {
+            return;
+        }
+        try (var paths = Files.walk(userDir)) {
+            paths.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(java.io.File::delete);
+        }
+    }
+
+    public void deletePhotoFiles(UUID workerId, Photo photo) {
+        try {
+            deletePhysicalFile(workerId, "originals", photo.getUrl());
+            deletePhysicalFile(workerId, "thumbs/main", photo.getMainThumbUrl());
+            deletePhysicalFile(workerId, "certification", photo.getUrl());
+        } catch (IOException e) {
+            log.warn("Could not delete photo files of worker {}: {}", workerId, e.getMessage());
         }
     }
 
     public void deleteVideo(UUID workerId, Video video) {
         try {
-            deletePhysicalFile("videos", workerId, video.getUrl());
+            deletePhysicalFile(workerId, "videos", video.getUrl());
         } catch (IOException e) {
-            System.err.println("Erreur suppression physique de la vidéo pour le worker " + workerId + ": " + e.getMessage());
+            log.warn("Could not delete video file of worker {}: {}", workerId, e.getMessage());
         }
+    }
+
+    /** Deletes {@code /{uploadBase}/{workerId}/{subdir}/{file name taken from url}} if it exists. */
+    private void deletePhysicalFile(UUID workerId, String subdir, String url) throws IOException {
+        if (url == null || !url.contains("/" + subdir + "/")) return;
+
+        String filename = url.substring(url.lastIndexOf('/') + 1);
+        if (filename.isEmpty() || filename.contains("..")) return;
+
+        Path targetDir = baseDir().resolve(String.valueOf(workerId)).resolve(subdir).normalize();
+        Path filePath = targetDir.resolve(filename).normalize();
+
+        if (!filePath.startsWith(targetDir) || !filePath.getParent().equals(targetDir)) {
+            throw new SecurityException("Path traversal attempt detected.");
+        }
+
+        Files.deleteIfExists(filePath);
+    }
+
+    // ── Paths ─────────────────────────────────────────────────────────────────
+
+    /**
+     * Storage currently used by a worker, computed from the files on disk.
+     */
+    public long usedBytes(UUID workerId) {
+        Path userDir = baseDir().resolve(String.valueOf(workerId)).normalize();
+        if (!Files.isDirectory(userDir)) return 0L;
+        try (var paths = Files.walk(userDir)) {
+            return paths.filter(Files::isRegularFile).mapToLong(p -> {
+                try { return Files.size(p); } catch (IOException e) { return 0L; }
+            }).sum();
+        } catch (IOException e) {
+            return 0L;
+        }
+    }
+
+    private Path baseDir() {
+        return Paths.get(uploadBase).toAbsolutePath().normalize();
+    }
+
+    private Path resolveDir(UUID userId, String subdir) throws IOException {
+        Path baseDir = baseDir();
+        Path dir = baseDir.resolve(String.valueOf(userId)).resolve(subdir).normalize();
+
+        if (!dir.startsWith(baseDir)) {
+            throw new SecurityException("Path not allowed.");
+        }
+        Files.createDirectories(dir);
+        return dir;
+    }
+
+    private String buildUrl(UUID userId, String subdir, String filename) {
+        return publicBaseUrl + "/" + userId + "/" + subdir + "/" + filename;
     }
 }

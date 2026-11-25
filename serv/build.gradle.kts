@@ -48,6 +48,8 @@ dependencies {
 	// Bibliothèques tierces
 	implementation("com.stripe:stripe-java:27.1.0")
 	implementation("net.coobird:thumbnailator:0.4.20")
+	// WebP decoding for ImageIO (uploaded WebP photos are re-encoded as JPEG)
+	implementation("com.twelvemonkeys.imageio:imageio-webp:3.12.0")
 
 	// Tests
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
