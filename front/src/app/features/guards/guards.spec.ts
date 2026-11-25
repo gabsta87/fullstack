@@ -42,6 +42,9 @@ describe('Route guards', () => {
     });
     router = TestBed.inject(Router);
     spyOn(router, 'navigate').and.resolveTo(true);
+    // The guards report refusals with console.warn / console.error: keep the test output clean.
+    spyOn(console, 'warn');
+    spyOn(console, 'error');
   });
 
   describe('authGuard', () => {

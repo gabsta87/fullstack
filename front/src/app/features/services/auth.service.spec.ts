@@ -95,8 +95,10 @@ describe('AuthService', () => {
   it('checkSession is cached for a minute', () => {
     service.checkSession().subscribe();
     httpMock.expectOne(`${auth}/session-check`).flush({ id: '1', role: UserRole.CLIENT });
-    service.checkSession().subscribe();
+    let second: boolean | undefined;
+    service.checkSession().subscribe(r => (second = r));
     httpMock.expectNone(`${auth}/session-check`);
+    expect(second).toBeTrue();
   });
 
   it('logout clears everything even if the server call fails', () => {
