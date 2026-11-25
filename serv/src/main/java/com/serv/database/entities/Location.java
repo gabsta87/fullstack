@@ -1,6 +1,6 @@
 package com.serv.database.entities;
 
-import com.serv.common.TablesNames;
+import com.serv.common.TableNames;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -8,7 +8,7 @@ import java.util.Collection;
 
 @Data
 @Entity
-@Table(name = TablesNames.LOCATIONS)
+@Table(name = TableNames.LOCATIONS)
 public class Location {
 
     @Id

@@ -1,6 +1,6 @@
 package com.serv.database.entities;
 
-import com.serv.common.TablesNames;
+import com.serv.common.TableNames;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +11,7 @@ import java.util.Date;
 @Data
 @Entity
 @NoArgsConstructor
-@Table(name = TablesNames.COMMENTS)
+@Table(name = TableNames.COMMENTS)
 public class Comment {
     @Id
     @Basic(optional = false)

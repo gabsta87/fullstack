@@ -1,7 +1,9 @@
 package com.serv.database.entities;
 
+import com.serv.common.TableNames;
 import com.serv.common.UserRole;
 import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Table;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
@@ -12,6 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.List;
 
 @Entity
+@Table(name = TableNames.SUPER_ADMINS)
 @DiscriminatorValue("SUPER_ADMIN")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @NoArgsConstructor

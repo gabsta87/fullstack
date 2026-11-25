@@ -2,14 +2,14 @@ package com.serv.database.entities;
 
 import com.serv.common.Currency;
 import com.serv.common.PaymentType;
-import com.serv.common.TablesNames;
+import com.serv.common.TableNames;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = TablesNames.PAYMENTS)
+@Table(name = TableNames.PAYMENTS)
 @Data
 public class Payment {
 

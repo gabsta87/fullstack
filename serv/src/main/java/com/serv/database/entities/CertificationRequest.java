@@ -1,5 +1,6 @@
 package com.serv.database.entities;
 
+import com.serv.common.TableNames;
 import com.serv.common.CertificationStatus;
 import com.serv.database.listeners.CertificationRequestEventListener;
 import jakarta.persistence.*;
@@ -19,7 +20,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @EntityListeners({AuditingEntityListener.class, CertificationRequestEventListener.class})
 @Entity
-@Table(name = "certification_requests", indexes = {
+@Table(name = TableNames.CERTIFICATION_REQUESTS, indexes = {
         @Index(name = "idx_certification_status", columnList = "status")
 })
 public class CertificationRequest {

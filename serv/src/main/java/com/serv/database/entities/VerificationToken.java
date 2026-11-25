@@ -1,4 +1,6 @@
 package com.serv.database.entities;
+
+import com.serv.common.TableNames;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,7 +10,7 @@ import java.util.UUID;
 @Data
 @Entity
 @NoArgsConstructor
-@Table(name = "verification_tokens")
+@Table(name = TableNames.VERIFICATION_TOKENS)
 public class VerificationToken {
 
     private static final int EXPIRATION_HOURS = 24;

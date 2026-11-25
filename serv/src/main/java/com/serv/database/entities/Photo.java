@@ -1,7 +1,7 @@
 package com.serv.database.entities;
 
 import com.serv.common.PhotoType;
-import com.serv.common.TablesNames;
+import com.serv.common.TableNames;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,7 +13,7 @@ import java.util.UUID;
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
-@Table(name = TablesNames.PHOTOS, indexes = {
+@Table(name = TableNames.PHOTOS, indexes = {
         @Index(name = "idx_photo_worker", columnList = "worker_id")
 })
 public class Photo extends Media{

@@ -21,7 +21,7 @@ import java.util.*;
 @Entity
 @EqualsAndHashCode(callSuper = true)
 @DiscriminatorValue("WORKER")
-@Table(name = TablesNames.WORKERS, indexes = {
+@Table(name = TableNames.WORKERS, indexes = {
         @Index(name = "idx_worker_available_position", columnList = "isAvailable, galleryPositionPriority")
 })
 public class Worker extends VenusUser {
@@ -48,7 +48,7 @@ public class Worker extends VenusUser {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "workers_services", // Table de jointure
+            name = TableNames.WORKER_SERVICES,
             joinColumns = @JoinColumn(name = "worker_id"),
             inverseJoinColumns = @JoinColumn(name = "service_id")
     )
@@ -115,7 +115,7 @@ public class Worker extends VenusUser {
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
-            name = "workers_languages",
+            name = TableNames.WORKER_LANGUAGES,
             joinColumns = @JoinColumn(name = "worker_id")
     )
     private Set<WorkerLanguage> spokenLanguages = new HashSet<>();

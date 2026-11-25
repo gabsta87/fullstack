@@ -1,5 +1,7 @@
 package com.serv.database.repositories;
 
+import com.serv.common.TableNames;
+
 import com.serv.database.entities.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -18,7 +20,7 @@ public interface ClientRepository extends JpaRepository<Client, UUID> {
     Optional<Client> findById(@NonNull UUID Id);
 
     @Modifying
-    @Query(value = "DELETE FROM client_favorites WHERE worker_id = :workerId", nativeQuery = true)
+    @Query(value = "DELETE FROM " + TableNames.CLIENT_FAVORITES + " WHERE worker_id = :workerId", nativeQuery = true)
     void removeWorkerFromAllFavorites(@Param("workerId") UUID workerId);
 
 }

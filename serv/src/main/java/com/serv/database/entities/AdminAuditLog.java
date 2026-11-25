@@ -1,5 +1,6 @@
 package com.serv.database.entities;
 
+import com.serv.common.TableNames;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.OnDelete;
@@ -8,7 +9,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "admin_audit_logs")
+@Table(name = TableNames.ADMIN_AUDIT_LOGS)
 @Data
 public class AdminAuditLog {
     @Id

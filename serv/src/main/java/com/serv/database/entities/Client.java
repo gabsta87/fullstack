@@ -14,25 +14,25 @@ import java.util.Collection;
 @Entity
 @EqualsAndHashCode(callSuper = true)
 @DiscriminatorValue("CLIENT")
-@Table(name = TablesNames.CLIENTS)
+@Table(name = TableNames.CLIENTS)
 public class Client extends VenusUser {
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "client_favorites",
+            name = TableNames.CLIENT_FAVORITES,
             joinColumns = @JoinColumn(name = "client_id"),
             inverseJoinColumns = @JoinColumn(name = "worker_id")
     )
     private Collection<Worker> favorites;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "client_preferred_languages", joinColumns = @JoinColumn(name = "client_id"))
+    @CollectionTable(name = TableNames.CLIENT_PREFERRED_LANGUAGES, joinColumns = @JoinColumn(name = "client_id"))
     @Enumerated(EnumType.STRING)
     private Collection<Language> preferredLanguages;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "client_preferred_services", // Join table
+            name = TableNames.CLIENT_PREFERRED_SERVICES,
             joinColumns = @JoinColumn(name = "client_id"),
             inverseJoinColumns = @JoinColumn(name = "service_id")
     )

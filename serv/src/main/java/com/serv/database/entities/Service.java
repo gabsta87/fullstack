@@ -1,6 +1,6 @@
 package com.serv.database.entities;
 
-import com.serv.common.TablesNames;
+import com.serv.common.TableNames;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @NoArgsConstructor
-@Table(name = TablesNames.SERVICES)
+@Table(name = TableNames.SERVICES)
 public class Service {
     @Id
     @Basic(optional = false)

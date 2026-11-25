@@ -1,5 +1,6 @@
 package com.serv.database.entities;
 
+import com.serv.common.TableNames;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
+@Table(name = TableNames.PASSWORD_RESET_TOKENS)
 @Data
 @NoArgsConstructor
 public class PasswordResetToken {

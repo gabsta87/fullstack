@@ -1,5 +1,6 @@
 package com.serv.database.entities;
 
+import com.serv.common.TableNames;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name = TableNames.LEGAL_TEXTS)
 public class LegalText {
 
     @Id

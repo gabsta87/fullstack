@@ -1,6 +1,6 @@
 package com.serv.database.entities;
 
-import com.serv.common.TablesNames;
+import com.serv.common.TableNames;
 import com.serv.common.UserRole;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -20,7 +20,7 @@ import java.util.UUID;
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
-@Table(name = TablesNames.USERS, indexes = {
+@Table(name = TableNames.USERS, indexes = {
         @Index(name = "idx_user_zone", columnList = "geographic_zone_id")
 })
 @DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)

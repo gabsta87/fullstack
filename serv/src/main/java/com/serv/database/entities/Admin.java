@@ -1,7 +1,9 @@
 package com.serv.database.entities;
 
+import com.serv.common.TableNames;
 import com.serv.common.UserRole;
 import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Table;
 import jakarta.persistence.Entity;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @DiscriminatorValue("ADMIN")
 @Entity
+@Table(name = TableNames.ADMINS)
 public class Admin extends VenusUser{
 
     public Admin(String username, Email email, String password) {

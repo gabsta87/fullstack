@@ -1,5 +1,6 @@
 package com.serv.database.entities;
 
+import com.serv.common.TableNames;
 import com.serv.common.ReportStatus;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
-@Table(name = "reports", uniqueConstraints = {
+@Table(name = TableNames.REPORTS, uniqueConstraints = {
         @UniqueConstraint(columnNames = {"worker_id", "client_id"}) // Prevents a client from reporting the same worker repeatedly
 })
 public class Report {

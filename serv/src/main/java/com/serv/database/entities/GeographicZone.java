@@ -1,5 +1,6 @@
 package com.serv.database.entities;
 
+import com.serv.common.TableNames;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -10,7 +11,7 @@ import java.util.Collection;
 
 @Data
 @Entity
-@Table(name = "geographic_zones")
+@Table(name = TableNames.GEOGRAPHIC_ZONES)
 public class GeographicZone {
 
     @Id
