@@ -50,7 +50,7 @@ Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
   - [x] CI : tests backend + front sur GitHub avant tout déploiement (et sur chaque pull request)
 - [ ] `chore/english-docs` — documentation en anglais, remplacement des commentaires en français
 - [x] `chore/logging` — logs SLF4J avec id de requête, événements `SECURITY` / `ADMIN` sans données personnelles, rotation des logs Docker, plus de `console.log` côté front
-- [ ] `chore/warnings` — supprimer les warnings au démarrage de Spring et les suggestions IntelliJ pertinentes (front : warnings de build Angular). Vus au démarrage : `HHH90000025` (dialecte MySQL déclaré inutilement), `HHH000457` (`@DiscriminatorColumn` inutile en héritage JOINED), `InitializeUserDetailsManagerConfigurer` (`AuthenticationProvider` + `UserDetailsService` déclarés tous les deux)
+- [x] `chore/warnings` — zéro warning au démarrage Spring, à la compilation Java (`-Xlint:all` activé en permanence), au build Angular et dans les tests
 - [ ] `chore/refactoring` — nettoyage, factorisation du code, en particulier des fichiers SCSS (variables, mixins, styles partagés)
 - [ ] `chore/deps-upgrade` — mise à jour des dépendances pour la sécurité et les performances : MySQL 8.0 → 9.7 LTS (latest), Angular 18 → latest, Ionic, Spring Boot 3.3 → dernière 3.x, Stripe, etc. *À faire après `chore/tests` : les tests servent de filet de sécurité. Une montée de version par commit.*
 
