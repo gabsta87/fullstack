@@ -36,6 +36,14 @@ jobs:
             echo "Remove console.log calls (use console.warn / console.error for real problems)" >&2; exit 1
           fi
 
+      - name: Every Ionic tag used in templates is registered
+        run: |
+          missing=0
+          for tag in $(grep -rhoE "<ion-[a-z-]+" front/src/app --include='*.html' | sed 's/<//' | sort -u); do
+            grep -q "'$tag'" front/src/app/ionic-elements.ts || { echo "Missing in ionic-elements.ts: $tag" >&2; missing=1; }
+          done
+          exit $missing
+
       - name: Front tests
         working-directory: front
         run: |
