@@ -51,19 +51,19 @@ Chaque tâche y est marquée avec un type :
 ### Git
 
 - `master` déploie automatiquement sur le **staging** (NAS, https://venustest.synology.me) ; la production (Infomaniak) n'existe pas encore.
-- Claude peut merger dans `master` et pousser lui-même, **uniquement après la check-list « Avant de pousser » ci-dessous entièrement verte**. Sinon : ne pas pousser, résumer le problème.
-- Push : le dépôt utilise HTTPS avec les identifiants de `gh` (config locale au dépôt) ; le suivi de la CI se fait avec `gh run list` / `gh run watch`.
+- **Claude ne pousse jamais** : il peut merger dans `master` en local, le push reste fait à la main par le propriétaire.
+- Avant de proposer un push, la check-list « Avant de pousser » ci-dessous doit être entièrement verte. Le suivi de la CI se fait avec `gh run list` / `gh run watch`, le staging se vérifie depuis la machine locale.
 - Noms de branches : `feat/<sujet>`, `fix/<sujet>`, `chore/<sujet>` (tests, docs, logs, nettoyage).
 - Une branche = un sujet. Commits intermédiaires petits et cohérents (une étape qui compile).
 - Format des messages de commit (convention existante) : `front : …`, `serv : …`, `docker : …`, `ci : …`.
   Exemple : `serv : add old-password check on email change`.
-### Avant de pousser sur `master` (check-list obligatoire)
+### Avant de proposer un push sur `master` (check-list obligatoire)
 
 1. `cd serv && ./gradlew test` : tous les tests passent, aucun warning de compilation.
 2. `cd front && npx ng build --configuration production` (0 warning) et `npx ng test --watch=false --browsers=ChromeHeadless`.
 3. Stack Docker locale reconstruite (`docker compose -p venus-local --env-file .env.local up -d --build`) : démarrage du backend sans WARN/ERROR, parcours de base vérifié (pages publiques en anonyme, inscription, connexion d'un client et de l'admin, une action par rôle).
 4. Si l'interface a changé : vérification visuelle dans le navigateur des pages touchées.
-5. Après le push : suivre la CI (`gh run watch`) puis vérifier le staging (pages publiques, connexion). En cas d'échec, corriger ou annuler (`git revert`) immédiatement et prévenir.
+5. Après le push (fait par le propriétaire) : suivre la CI (`gh run watch`), vérifier le staging (pages publiques, connexion) et lire les logs du NAS si besoin (`ssh venus-nas-logs logs venus-backend 300`).
 - Ne jamais committer `.env`, secrets, `node_modules`, `dist`, `build`.
 
 ### Quand Claude prend une tâche de la roadmap
