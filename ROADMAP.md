@@ -12,7 +12,7 @@ Cocher `[x]` quand c'est mergé dans `master`.
 Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 
 - [x] phpmyadmin de mon NAS doit être accessible depuis mon réseau local, pas uniquement depuis le NAS, comme c'était le cas avant les modifications que tu as faites. *Port 8082 ouvert sur le réseau local ; ne jamais le rediriger sur la box. Sur un serveur public : `PHPMYADMIN_BIND=127.0.0.1`.*
-- [ ] front : afficher l'espace utilisé sur la page profile-management
+- [ ] front : afficher l'espace utilisé en Mo et % sur la page profile-management pour les images/vidéos
 - [ ] front : le guard profil bloque l'accès à un profil banni (sauf admins) — *backend fait dans `chore/tests` : `GET /workers/{id}` répond 404 pour un profil non public, sauf admin/propriétaire*
 - [ ] front : les admins voient quels champs sont manquants pour qu'un profil soit valide (détecter les problèmes de validité). si cela est compliqué sur le dashboard, on va faire une page d'administration d'un profil pour les admins. Ils y ont accès en cliquant sur un profil depuis le dashboard.
 - [x] front : les profils favoris sont marqués comme favoris sur la homepage
@@ -93,14 +93,13 @@ Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 ## 6. À réfléchir (ne pas implémenter)
 
 - **Tri de la galerie** : certifiés d'abord, puis par date de refresh. *La partie sans paiement (certifiés → date) pourrait être faite tout de suite ; refresh payant / cooldown à décider.*
-- **Mineurs** : notification quand un utilisateur s'inscrit avec une date de naissance < 18 ans → message aux autorités locales ? Qui, comment, selon quel pays ? (lié à la sécurité des annonceurs mineurs selon les pays)
+- **Mineurs** : notification quand un utilisateur s'inscrit avec une date de naissance < 18 ans → message aux autorités locales ? Ou impossibilité de créer le compte ? ou bannissement de compte ? Qui, comment, selon quel pays ? (lié à la sécurité des annonceurs mineurs selon les pays)
 - **Régions** générées selon le pays (et non par les utilisateurs)
 - **Certification** : une fois certifié, les photos doivent-elles rester figées (seul l'ajout autorisé) pour éviter la fraude ?
 - **Signalement de numéros de clients** par les annonceurs + outil « Vérifier un numéro » dans l'espace annonceur (plutôt qu'une app mobile)
 - **Serveur stateless / montée en charge** : pouvoir lancer plusieurs instances du backend. État actuellement gardé en mémoire à déplacer (DB ou Redis) : flux SSE (`SseStreamService`), limitation des connexions (`AbuseProtectionService`), tâches planifiées (`@Scheduled`, à exécuter sur une seule instance), future file de tarification. Les médias sont sur disque local → stockage partagé (cf. Azure Blob en §7).
-- **Super Admin** (sans la partie paiement) : tous les droits admin, page AdminAuditLog filtrable (admin, date, type, raison), ajout/suppression d'utilisateurs et admins
+- **Super Admin** (sans la partie paiement) : tous les droits admin, ajout/suppression d'admins
 - **Statistiques** : nombre de consultations par profil (et par heure)
-- **UI** : mini-carte de profil au survol au lieu de lancer le carrousel
 
 ## 7. Plus tard (site gratuit pour l'instant)
 
