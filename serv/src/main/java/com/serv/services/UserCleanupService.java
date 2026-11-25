@@ -5,11 +5,13 @@ import com.serv.database.entities.VenusUser;
 import com.serv.database.entities.Worker;
 import com.serv.database.repositories.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UserCleanupService {
@@ -36,7 +38,7 @@ public class UserCleanupService {
             try {
                 storageService.deleteAllForUser(worker.getId());
             } catch (IOException e) {
-                System.err.println("Erreur lors de la suppression des fichiers physiques pour le worker " + worker.getId() + ": " + e.getMessage());
+                log.error("Could not delete the files of worker {}: account kept", worker.getId(), e);
                 return;
             }
 
@@ -61,5 +63,6 @@ public class UserCleanupService {
 
         // 3. Suppression globale de l'utilisateur (gère VenusUser + tables filles automatiquement)
         userRepository.delete(user);
+        log.info("Account {} ({}) deleted with all its data", user.getId(), user.getRole());
     }
 }

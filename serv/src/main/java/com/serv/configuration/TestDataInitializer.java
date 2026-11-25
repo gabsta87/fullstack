@@ -7,6 +7,7 @@ import com.serv.database.repositories.PhotoRepository;
 import com.serv.database.repositories.ServiceRepository;
 import com.serv.database.repositories.WorkerRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -26,6 +27,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * or duplicate existing data.
  * Activate with: spring.profiles.active=dev
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 @Profile("dev")
@@ -44,7 +46,7 @@ public class TestDataInitializer implements ApplicationRunner {
 
         // 1. 🌍 INITIALISATION DES ZONES GEOGRAPHIQUES
         if (zoneRepository.findAll().isEmpty()) {
-            System.out.println("[TestDataInitializer] Inserting test geographic zones...");
+            log.info("Inserting test geographic zones...");
             GeographicZone paris = createZone("Paris", null);
             GeographicZone lyon = createZone("Lyon", null);
             createZone("Bordeaux", null);
@@ -57,27 +59,27 @@ public class TestDataInitializer implements ApplicationRunner {
             createZone("Lyon 2e", lyon);
             createZone("Vieux Lyon", lyon);
         } else {
-            System.out.println("[TestDataInitializer] Data (GeographicZones) already present — skipping.");
+            log.info("Data (GeographicZones) already present — skipping.");
         }
 
         // 2. 🛠️ INITIALISATION DES SERVICES
         if (serviceRepository.findAll().isEmpty()) {
-            System.out.println("[TestDataInitializer] Inserting test services...");
+            log.info("Inserting test services...");
             serviceRepository.save(new Service("Inter"));
             serviceRepository.save(new Service("No_Sex"));
             serviceRepository.save(new Service("Fetish"));
             serviceRepository.save(new Service("BDSM"));
         } else {
-            System.out.println("[TestDataInitializer] Data (Services) already present — skipping.");
+            log.info("Data (Services) already present — skipping.");
         }
 
         // 3. 👩‍💼 INITIALISATION DES WORKERS
         if (!workerRepository.findAll().isEmpty()) {
-            System.out.println("[TestDataInitializer] Data (Workers) already present — skipping.");
+            log.info("Data (Workers) already present — skipping.");
             return;
         }
 
-        System.out.println("[TestDataInitializer] Generating 2500 random workers...");
+        log.info("Generating 2500 random workers...");
 
         List<Service> allServices = serviceRepository.findAll();
         List<GeographicZone> allZones = zoneRepository.findAll();
@@ -166,7 +168,7 @@ public class TestDataInitializer implements ApplicationRunner {
             }
         }
 
-        System.out.println("[TestDataInitializer] Done — " + totalGenerated + " massive workers successfully inserted.");
+        log.info("Done — {} test workers inserted.", totalGenerated);
     }
 
     // ── Helpers ────────────────────────────────────────────────────────────────

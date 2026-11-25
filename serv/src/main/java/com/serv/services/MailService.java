@@ -7,6 +7,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 
 // TODO Handle failed deliveries of emails (no exception thrown sadly). See https://www.baeldung.com/spring-email#handling-send-errors
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MailService {
@@ -38,7 +40,7 @@ public class MailService {
             javaMailSender.send(message);
         } catch (Exception e) {
             // Log propre de l'erreur d'envoi
-            System.err.println("Erreur lors de l'envoi du mail simple à " + to + " : " + e.getMessage());
+            log.error("Could not send email \"{}\": {}", subject, e.getMessage());
         }
     }
 
@@ -53,9 +55,9 @@ public class MailService {
 
             javaMailSender.send(message);
         } catch (MessagingException e) {
-            System.err.println("Erreur de format ou d'envoi du mail HTML à " + to + " : " + e.getMessage());
+            log.error("Could not build email \"{}\": {}", subject, e.getMessage());
         } catch (MailException e) {
-            System.err.println("Erreur SMTP/Réseau lors de l'envoi à " + to + " : " + e.getMessage());
+            log.error("Could not send email \"{}\" (SMTP): {}", subject, e.getMessage());
         }
     }
 
@@ -66,8 +68,8 @@ public class MailService {
     }
 
     public void sendAlertToLocalAuthorities(Worker worker) {
-        // TODO: Implémenter l'envoi aux autorités si besoin
-        System.out.println("Alert sent to local authorities for worker " + worker.getId());
+        // Not implemented yet (see ROADMAP): only logged so that admins can act manually.
+        log.warn("SECURITY minor declared by worker {}: profile deactivated, authorities alert NOT sent (not implemented)", worker.getId());
     }
 
 }

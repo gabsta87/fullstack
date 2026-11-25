@@ -7,6 +7,7 @@ import com.serv.database.repositories.filters.WorkerSpecifications;
 import com.serv.dto.WorkerMinimalProfileDTO;
 import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -173,8 +175,8 @@ public class WorkerService {
                 }
 
             } catch (Exception e) {
-                System.err.println("Failed to apply age filtering " + paramName + ": " + e.getMessage());
-                e.printStackTrace(); // Utile pour voir les détails de l'erreur au cas où
+                // Invalid age filter from the query string: ignored, the gallery is returned unfiltered.
+                log.debug("Ignored invalid age filter {}", paramName);
             }
         }
     }

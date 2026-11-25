@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@lombok.extern.slf4j.Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin")
@@ -690,6 +691,9 @@ public class AdminController {
     }
 
     private void logAdminAction(Admin admin, String actionType, Object target, String details) {
+        // Full details (may contain personal data) stay in the audit table; the log only keeps who did what.
+        log.info("ADMIN {} by admin {}{}", actionType, admin.getId(),
+                target instanceof VenusUser u ? " on account " + u.getId() : "");
         AdminAuditLog log = new AdminAuditLog();
         log.setAdmin(admin);
         log.setActionType(actionType);

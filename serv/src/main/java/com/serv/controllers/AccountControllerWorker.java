@@ -108,6 +108,7 @@ public class AccountControllerWorker {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("message", "Could not store the file."));
         } catch (IllegalArgumentException e) {
+            log.warn("SECURITY certification photo refused for worker {}: {}", workerArg.getId(), e.getMessage());
             return ResponseEntity.badRequest()
                     .body(Map.of("message", e.getMessage()));
         }
@@ -283,6 +284,7 @@ public class AccountControllerWorker {
                 mediaAdded = true;
             } catch (IllegalArgumentException e) {
                 // Invalid file: reject the request (files already stored are kept, they are valid).
+                log.warn("SECURITY upload refused for worker {}: {}", worker.getId(), e.getMessage());
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
             } catch (IOException e) {
                 log.error("Could not store media of worker {}", worker.getId(), e);

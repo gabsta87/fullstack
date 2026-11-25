@@ -29,6 +29,7 @@ import java.util.UUID;
  * </ul>
  * Roles are never trusted from the token: they come from the stored account.
  */
+@lombok.extern.slf4j.Slf4j
 @Component
 @RequiredArgsConstructor
 public class VenusJwtAuthenticationConverter implements Converter<Jwt, AbstractAuthenticationToken> {
@@ -41,10 +42,12 @@ public class VenusJwtAuthenticationConverter implements Converter<Jwt, AbstractA
                 .orElseThrow(() -> new InvalidBearerTokenException("Unknown account."));
 
         if (user.isBanned()) {
+            log.info("SECURITY token of banned account {} refused", user.getId());
             throw new InvalidBearerTokenException("Account banned.");
         }
 
         if (tokenVersionOf(jwt) != user.getTokenVersion()) {
+            log.info("SECURITY revoked token of account {} refused", user.getId());
             throw new InvalidBearerTokenException("Token revoked.");
         }
 

@@ -19,6 +19,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.Map;
 
+@lombok.extern.slf4j.Slf4j
 @RestController
 @RequestMapping("/account")
 @RequiredArgsConstructor
@@ -98,6 +99,8 @@ public class AccountController {
         }
 
         VenusUser patchedUser = userRepository.save(user);
+        if (isPasswordChanging) log.info("Password changed for account {}: other sessions revoked", user.getId());
+        if (isEmailChanging) log.info("Email changed for account {}: verification required", user.getId());
 
         if (isEmailChanging) {
             emailVerificationService.createTokenAndSendEmail(patchedUser);

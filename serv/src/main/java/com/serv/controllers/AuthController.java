@@ -57,6 +57,7 @@ public class AuthController {
         String email = loginRequest.email();
 
         if (abuseProtection.isLoginBlocked(email)) {
+            log.warn("SECURITY login refused, too many failures for account {}", accountRef(email));
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
                     .body(Map.of("error", "Too many failed attempts. Please try again later."));
         }
@@ -65,15 +66,18 @@ public class AuthController {
 
         if (user == null) {
             abuseProtection.recordLoginFailure(email);
+            log.info("Login failed for account {}", accountRef(email));
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid credentials."));
         }
 
         abuseProtection.recordLoginSuccess(email);
 
         if (user.isBanned()) {
+            log.info("SECURITY login refused for banned account {}", user.getId());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Your account has been banned."));
         }
 
+        log.info("Login ok for account {} ({})", user.getId(), user.getRole());
         String jwtToken = jwtProvider.generateToken(user);
 
         return ResponseEntity.ok(new LoginResponse(jwtToken, VenusUserDTO.from(user)));
@@ -121,6 +125,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", "Email already taken."));
 
         VenusUser user = creator.apply(new Email(req.email()));
+        log.info("Account {} registered ({})", user.getId(), user.getRole());
 
         if (emailVerificationRequired) {
             user.setLocked(true);
@@ -155,6 +160,7 @@ public class AuthController {
         }
 
         VenusUser user = verificationToken.getUser();
+        log.info("Email verified for account {}", user.getId());
         user.setLocked(false);
         userRepository.save(user);
 
@@ -163,19 +169,31 @@ public class AuthController {
         return ResponseEntity.ok("Account activated successfully. You can now log in.");
     }
 
+    /** Account id for logs (never the email address, which is personal data). */
+    private String accountRef(String email) {
+        return userRepository.findByEmail(email).map(u -> u.getId().toString()).orElse("<unknown>");
+    }
+
     // ── Password reset ────────────────────────────────────────────────────────
 
     /** Always answers the same way so the endpoint cannot be used to discover registered emails. */
     @Transactional
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestParam("email") String email) {
-        if (!Email.isValid(email) || !abuseProtection.tryPasswordResetRequest(email)) {
+        if (!Email.isValid(email)) {
+            return ResponseEntity.ok(RESET_REQUESTED_MESSAGE);
+        }
+        if (!abuseProtection.tryPasswordResetRequest(email)) {
+            log.warn("SECURITY password reset throttled for account {}", accountRef(email));
             return ResponseEntity.ok(RESET_REQUESTED_MESSAGE);
         }
 
         userRepository.findByEmail(email)
                 .filter(user -> !user.isBanned())
-                .ifPresent(user -> passwordResetService.createTokenAndSendEmail(user, false));
+                .ifPresent(user -> {
+                    log.info("Password reset requested for account {}", user.getId());
+                    passwordResetService.createTokenAndSendEmail(user, false);
+                });
 
         return ResponseEntity.ok(RESET_REQUESTED_MESSAGE);
     }
@@ -213,6 +231,7 @@ public class AuthController {
 
         userRepository.save(user);
         passwordResetTokenRepository.delete(resetToken);
+        log.info("Password reset completed for account {}: previous sessions revoked", user.getId());
         abuseProtection.recordLoginSuccess(user.getEmail().getValue());
 
         return ResponseEntity.ok("Password reset successful.");

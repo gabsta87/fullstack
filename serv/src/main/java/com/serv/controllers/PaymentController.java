@@ -13,6 +13,7 @@ import com.stripe.net.Webhook;
 import com.stripe.param.PaymentIntentCreateParams;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/payment")
@@ -120,7 +122,7 @@ public class PaymentController {
         try{
             workerId = UUID.fromString(intent.getMetadata().get("workerId"));
         }catch(IllegalArgumentException e){
-            System.err.println("Invalid workerId in PaymentIntent metadata: " + intent.getMetadata().get("workerId"));
+            log.error("Invalid workerId in PaymentIntent {} metadata", intent.getId());
             return;
         }
 
