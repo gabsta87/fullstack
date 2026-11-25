@@ -52,6 +52,14 @@ public class AccountControllerWorker {
         return ResponseEntity.ok(WorkerFullProfileDTO.from(managedWorker));
     }
 
+    /** Media storage used by the worker and their limit, in bytes (shown on profile management). */
+    public record StorageUsageDTO(long usedBytes, long maxBytes) {}
+
+    @GetMapping("/storage")
+    public StorageUsageDTO getStorage(Worker worker) {
+        return new StorageUsageDTO(mediaStorageService.usedBytes(worker.getId()), worker.getMaxStorageBytes());
+    }
+
     @Transactional
     @GetMapping("/request-certification")
     public ResponseEntity<?> requestCertification(Worker workerArg) {
@@ -490,17 +498,7 @@ public class AccountControllerWorker {
     }
 
     private void setWorkerProfileCompleteness(Worker worker) {
-        boolean isComplete = worker.getUsername() != null && !worker.getUsername().trim().isEmpty()
-                && worker.getEmail() != null && !worker.getEmail().getValue().trim().isEmpty()
-                && worker.getDescription() != null && !worker.getDescription().trim().isEmpty()
-                && worker.getGeographicZone() != null
-                && worker.getPhone() != null && !worker.getPhone().trim().isEmpty()
-                && worker.getServices() != null && !worker.getServices().isEmpty()
-                && worker.getPhotos() != null && !worker.getPhotos().isEmpty()
-                && worker.getBirthdate() != null
-                && worker.getAge() >= 18;
-
-        worker.setInvalid(!isComplete);
+        worker.setInvalid(!worker.hasCompleteProfile());
     }
 
     private Worker getWorkerWithPhotos(VenusUser user) {

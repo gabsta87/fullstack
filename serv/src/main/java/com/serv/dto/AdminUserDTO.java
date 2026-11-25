@@ -4,6 +4,7 @@ import com.serv.database.entities.Service;
 import com.serv.database.entities.VenusUser;
 import com.serv.database.entities.Worker;
 
+import java.util.List;
 import java.util.UUID;
 
 public record AdminUserDTO(
@@ -24,7 +25,9 @@ public record AdminUserDTO(
         String certifiedAt,
         String certificationRequestDate,
         Integer[] servicesId,
-        GeographicZoneWithParentDTO geographicZone
+        GeographicZoneWithParentDTO geographicZone,
+        /** Why a worker profile is not public (see {@link Worker#profileIssues()}); empty otherwise. */
+        List<String> profileIssues
 ) {
     public static AdminUserDTO from(VenusUser user, String certificationRequestDateParam) {
         boolean available = false;
@@ -40,6 +43,7 @@ public record AdminUserDTO(
         Integer[] servicesId = null;
         GeographicZoneWithParentDTO zoneDto = null;
         String desc = null;
+        List<String> profileIssues = List.of();
 
         if (user instanceof Worker w) {
             available = w.isAvailable();
@@ -48,6 +52,7 @@ public record AdminUserDTO(
             birthdate = w.getBirthdate() != null ? w.getBirthdate().toString() : null;
             phone = w.getPhone();
             desc = w.getDescription();
+            profileIssues = w.profileIssues();
 
             certStatus = w.getLastCertificationRequest() != null ? w.getLastCertificationRequest().getStatus().toString() : null;
             verifCode = w.getVerificationCode();
@@ -80,7 +85,8 @@ public record AdminUserDTO(
                 certifiedAt,
                 certificationRequestDateParam,
                 servicesId,
-                zoneDto
+                zoneDto,
+                profileIssues
         );
     }
 

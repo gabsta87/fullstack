@@ -77,6 +77,7 @@ class AuthorizationMatrixTest extends IntegrationTest {
     static Stream<Endpoint> workerEndpoints() {
         return Stream.of(
                 new Endpoint(HttpMethod.GET, "/account/worker/me"),
+                new Endpoint(HttpMethod.GET, "/account/worker/storage"),
                 new Endpoint(HttpMethod.GET, "/account/worker/request-certification"),
                 new Endpoint(HttpMethod.POST, "/account/worker/certification-photo"),
                 new Endpoint(HttpMethod.PATCH, "/account/worker/availability"),

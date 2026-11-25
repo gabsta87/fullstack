@@ -24,6 +24,8 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class MediaUploadSecurityTest extends IntegrationTest {
@@ -62,6 +64,26 @@ class MediaUploadSecurityTest extends IntegrationTest {
         assertThat(files).hasSize(2);
         assertThat(files).allMatch(p -> p.getFileName().toString().endsWith(".jpg"));
         assertThat(photoRepository.findByWorker(worker)).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("The storage endpoint reports the bytes on disk and the limit of the worker only")
+    void storageUsage() throws Exception {
+        mvc.perform(get("/account/worker/storage").header("Authorization", bearer(worker)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.usedBytes").value(0))
+                .andExpect(jsonPath("$.maxBytes").value(worker.getMaxStorageBytes()));
+
+        upload(file("me.jpg", "image/jpeg", TestImages.jpeg(800, 600))).andExpect(status().isOk());
+        long onDisk = 0;
+        for (Path f : storedFiles()) onDisk += Files.size(f);
+
+        mvc.perform(get("/account/worker/storage").header("Authorization", bearer(worker)))
+                .andExpect(jsonPath("$.usedBytes").value(onDisk));
+
+        Worker other = createWorker("other@venus.test");
+        mvc.perform(get("/account/worker/storage").header("Authorization", bearer(other)))
+                .andExpect(jsonPath("$.usedBytes").value(0));
     }
 
     @Test

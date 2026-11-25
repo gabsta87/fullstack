@@ -210,6 +210,42 @@ public class Worker extends VenusUser {
         return getAge() >= 18 && !isInvalid() && !isBanned() && !isExpired() && !isHidden() && ! isLocked();
     }
 
+    /** Fields required for a profile to be shown publicly (codes shown to admins, translated by the front). */
+    public static final List<String> REQUIRED_FIELDS = List.of(
+            "USERNAME", "EMAIL", "DESCRIPTION", "LOCATION", "PHONE", "BIRTHDATE", "SERVICES", "PHOTOS");
+
+    /**
+     * Why this profile is not publicly visible: missing fields ({@link #REQUIRED_FIELDS}), then
+     * {@code MINOR}, {@code BANNED}, {@code LOCKED}, {@code HIDDEN}, {@code EXPIRED}. Empty for a valid profile.
+     * Not a getter on purpose (not serialized with the entity).
+     */
+    public List<String> profileIssues() {
+        List<String> issues = new ArrayList<>();
+        if (isBlank(getUsername())) issues.add("USERNAME");
+        if (getEmail() == null || isBlank(getEmail().getValue())) issues.add("EMAIL");
+        if (isBlank(description)) issues.add("DESCRIPTION");
+        if (getGeographicZone() == null) issues.add("LOCATION");
+        if (isBlank(phone)) issues.add("PHONE");
+        if (birthdate == null) issues.add("BIRTHDATE");
+        if (services == null || services.isEmpty()) issues.add("SERVICES");
+        if (photos == null || photos.isEmpty()) issues.add("PHOTOS");
+        if (birthdate != null && getAge() < 18) issues.add("MINOR");
+        if (isBanned()) issues.add("BANNED");
+        if (isLocked()) issues.add("LOCKED");
+        if (isHidden) issues.add("HIDDEN");
+        if (isExpired) issues.add("EXPIRED");
+        return issues;
+    }
+
+    /** All required fields are filled and the advertiser is an adult (drives {@code isInvalid}). */
+    public boolean hasCompleteProfile() {
+        return profileIssues().stream().noneMatch(i -> REQUIRED_FIELDS.contains(i) || "MINOR".equals(i));
+    }
+
+    private static boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+
     public boolean isCertified() {
         if (this.certifiedAt == null) {
             return false;
