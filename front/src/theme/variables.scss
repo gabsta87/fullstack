@@ -1,18 +1,9 @@
-@import "@ionic/angular/css/core.css";
-@import "@ionic/angular/css/normalize.css";
-@import "@ionic/angular/css/structure.css";
-@import "@ionic/angular/css/typography.css";
+// Design tokens (Ionic overrides + Venus variables). Ionic CSS is loaded before this file (angular.json).
 // No Ionic dark palette: the Venus design is light only for now.
 // (dark.system.css switched Ionic colors to dark depending on the phone,
 //  while the Venus tokens stayed light -> unreadable text.)
 // For a real dark theme later: redefine the Venus tokens below
 // in @media (prefers-color-scheme: dark) and import the palette again.
-@import "@ionic/angular/css/display.css";
-@import "@ionic/angular/css/padding.css";
-@import "@ionic/angular/css/float-elements.css";
-@import "@ionic/angular/css/text-alignment.css";
-@import "@ionic/angular/css/text-transformation.css";
-@import "@ionic/angular/css/flex-utils.css";
 
 :root {
   // The site is light: native elements (date, scrollbars...) too
