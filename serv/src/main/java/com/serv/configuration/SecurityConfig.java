@@ -6,7 +6,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationManagerResolver;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -40,7 +48,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtDecoder jwtDecoder) throws Exception {
         http
                 .cors(Customizer.withDefaults())
                 .formLogin(AbstractHttpConfigurer::disable)
@@ -53,7 +61,7 @@ public class SecurityConfig {
                         .frameOptions(frame -> frame.deny()))
 
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter))
+                        .authenticationManagerResolver(authenticationManagerResolver(jwtDecoder))
                         .bearerTokenResolver(bearerTokenResolver())
                         .authenticationEntryPoint((request, response, e) ->
                                 writeError(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token."))
@@ -93,6 +101,38 @@ public class SecurityConfig {
                 );
 
         return http.build();
+    }
+
+    /**
+     * Public pages (browsing profiles, login, registration...) must keep working for a visitor whose
+     * browser still holds an expired, revoked or foreign token (e.g. issued before a key change):
+     * on those routes an invalid token is ignored and the request continues as anonymous.
+     * Everywhere else an invalid token is rejected with 401.
+     */
+    AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver(JwtDecoder jwtDecoder) {
+        JwtAuthenticationProvider provider = new JwtAuthenticationProvider(jwtDecoder);
+        provider.setJwtAuthenticationConverter(jwtAuthenticationConverter);
+        AuthenticationManager strict = new ProviderManager(provider);
+        AuthenticationManager lenient = authentication -> {
+            try {
+                return strict.authenticate(authentication);
+            } catch (AuthenticationException e) {
+                return new AnonymousAuthenticationToken("public-route", "anonymousUser",
+                        AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"));
+            }
+        };
+        return request -> isPublicRequest(request) ? lenient : strict;
+    }
+
+    /** Routes open to anonymous visitors (keep in sync with authorizeHttpRequests above). */
+    static boolean isPublicRequest(HttpServletRequest request) {
+        String path = request.getRequestURI().substring(request.getContextPath().length());
+        String method = request.getMethod();
+        if (HttpMethod.OPTIONS.matches(method) || path.equals("/error")) return true;
+        if (path.startsWith("/auth/")) return !path.equals("/auth/session-check");
+        return HttpMethod.GET.matches(method)
+                && (path.startsWith("/common/") || path.equals("/workers") || path.startsWith("/workers/")
+                    || path.startsWith("/media/"));
     }
 
     /**
