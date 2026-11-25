@@ -65,7 +65,7 @@ class LoggingTest extends IntegrationTest {
         String body = mvc.perform(post("/auth/login").contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(new Login("bob.private@venus.test", password)))).andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
-        String token = json.readTree(body).get("token").asText();
+        String token = json.readTree(body).get("token").asString();
 
         mvc.perform(get("/account/stream").param("token", token)).andExpect(status().isOk());
         mvc.perform(patch("/account/data").header("Authorization", "Bearer " + token).contentType(MediaType.APPLICATION_JSON)

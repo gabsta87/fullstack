@@ -65,7 +65,7 @@ class AuthenticationTest extends IntegrationTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.user.role").value("CLIENT"))
                     .andReturn().getResponse().getContentAsString();
-            String token = json.readTree(body).get("token").asText();
+            String token = json.readTree(body).get("token").asString();
             sessionCheck("Bearer " + token).andExpect(status().isOk());
         }
 

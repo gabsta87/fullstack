@@ -90,11 +90,9 @@ public class Worker extends VenusUser {
     @Column(name = "last_refreshed")
     private Instant lastRefreshed;
 
-    // Date stored as DATE only (no time component)
-    @Temporal(TemporalType.DATE)
+    // SQL DATE (no time component, no time zone)
     @Column(name = "birthdate")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT+2")
-    private Date birthdate;
+    private java.time.LocalDate birthdate;
 
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -166,16 +164,13 @@ public class Worker extends VenusUser {
         if (date.isAfter(today) || date.isBefore(today.minusYears(MAX_AGE))) {
             throw new IllegalArgumentException("Invalid birthdate.");
         }
-        this.birthdate = java.sql.Date.valueOf(date);
+        this.birthdate = date;
     }
 
 
     public int getAge() {
         if (this.birthdate == null) return 0;
-        java.time.LocalDate birthDate = (this.birthdate instanceof java.sql.Date sqlDate)
-                ? sqlDate.toLocalDate()
-                : this.birthdate.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-        return java.time.Period.between(birthDate, java.time.LocalDate.now()).getYears();
+        return java.time.Period.between(this.birthdate, java.time.LocalDate.now()).getYears();
     }
 
 

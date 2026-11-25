@@ -136,7 +136,7 @@ public class TestDataInitializer implements ApplicationRunner {
                 int birthYear = ThreadLocalRandom.current().nextInt(1960, 2009);
                 int birthMonth = ThreadLocalRandom.current().nextInt(1, 13);
                 int birthDay = ThreadLocalRandom.current().nextInt(1, 29);
-                Date birthday = date(birthYear, birthMonth, birthDay);
+                LocalDate birthday = date(birthYear, birthMonth, birthDay);
 
                 // Tirage aléatoire des critères physiques et de la localisation
                 GeographicZone randomZone = allZones.get(random.nextInt(allZones.size()));
@@ -179,7 +179,7 @@ public class TestDataInitializer implements ApplicationRunner {
 
     private void createGeneratedWorker(
             String username, String email, String encodedPassword, String displayName,
-            Date birthday, GeographicZone zone,
+            LocalDate birthday, GeographicZone zone,
             BodyType bodyType, Gender gender, EyeColor eyeColor, HairColor hairColor,
             boolean available, Instant lastRefreshed, int remainingDays, List<Service> services) {
 
@@ -204,7 +204,7 @@ public class TestDataInitializer implements ApplicationRunner {
         workerRepository.save(w);
     }
 
-    private Date date(int year, int month, int day) {
-        return Date.from(LocalDate.of(year, month, day).atStartOfDay().toInstant(ZoneOffset.UTC));
+    private LocalDate date(int year, int month, int day) {
+        return LocalDate.of(year, month, day);
     }
 }

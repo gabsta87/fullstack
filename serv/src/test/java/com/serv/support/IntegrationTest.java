@@ -1,6 +1,6 @@
 package com.serv.support;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.serv.configuration.JwtProvider;
 import com.serv.database.entities.*;
 import com.serv.database.repositories.*;
@@ -10,7 +10,7 @@ import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -143,7 +143,7 @@ public abstract class IntegrationTest {
         worker.setPhone("+41790000000");
         worker.setGeographicZone(zone);
         worker.setServices(new java.util.ArrayList<>(List.of(service)));
-        worker.setBirthdate(java.sql.Date.valueOf(LocalDate.now().minusYears(25)));
+        worker.setBirthdate(LocalDate.now().minusYears(25));
         worker.setInvalid(false);
         worker = workerRepository.save(worker);
 

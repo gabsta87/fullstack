@@ -154,23 +154,16 @@ public class WorkerService {
                 int ageVal = Integer.parseInt(rawValue);
                 LocalDate today = LocalDate.now();
 
-                // 1. 🎯 On type explicitement en Path<Date> pour aider le CriteriaBuilder
-                Path<Date> birthDateAttribute = root.get("birthdate");
+                Path<LocalDate> birthDateAttribute = root.get("birthdate");
 
                 if (isMin) {
                     LocalDate maxBirthDateForMinAge = today.minusYears(ageVal);
 
-                    // 2. 🎯 Conversion de LocalDate vers java.util.Date
-                    Date targetDate = java.sql.Date.valueOf(maxBirthDateForMinAge);
-
-                    predicates.add(cb.lessThanOrEqualTo(birthDateAttribute, targetDate));
+                    predicates.add(cb.lessThanOrEqualTo(birthDateAttribute, maxBirthDateForMinAge));
                 } else {
                     LocalDate minBirthDateForMaxAge = today.minusYears(ageVal + 1);
 
-                    // 2. 🎯 Conversion de LocalDate vers java.util.Date
-                    Date targetDate = java.sql.Date.valueOf(minBirthDateForMaxAge);
-
-                    predicates.add(cb.greaterThan(birthDateAttribute, targetDate));
+                    predicates.add(cb.greaterThan(birthDateAttribute, minBirthDateForMaxAge));
                 }
 
             } catch (Exception e) {

@@ -9,8 +9,7 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 
 public record UpdateWorkerLanguage(
-        @Valid
         @NotNull
         @Size(max = InputLimits.LIST_MAX)
-        List<@NotNull SpokenLanguageDTO> languages) {
+        List<@Valid @NotNull SpokenLanguageDTO> languages) {
 }

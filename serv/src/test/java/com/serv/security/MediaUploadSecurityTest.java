@@ -175,7 +175,7 @@ class MediaUploadSecurityTest extends IntegrationTest {
     void quota() throws Exception {
         Path dir = Files.createDirectories(MEDIA_DIR.resolve(worker.getId().toString()).resolve("originals"));
         Files.write(dir.resolve("filler.jpg"), new byte[(int) worker.getMaxStorageBytes()]);
-        upload(file("one-more.jpg", "image/jpeg", TestImages.jpeg(50, 50))).andExpect(status().isPayloadTooLarge());
+        upload(file("one-more.jpg", "image/jpeg", TestImages.jpeg(50, 50))).andExpect(status().isContentTooLarge());
     }
 
     @Test

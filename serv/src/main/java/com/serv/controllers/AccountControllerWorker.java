@@ -254,7 +254,7 @@ public class AccountControllerWorker {
         long incoming = files.stream().mapToLong(MultipartFile::getSize).sum();
         long used = mediaStorageService.usedBytes(worker.getId());
         if (used + incoming > worker.getMaxStorageBytes()) {
-            throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
+            throw new ResponseStatusException(HttpStatus.CONTENT_TOO_LARGE,
                     "Storage limit reached: " + (worker.getMaxStorageBytes() / (1024 * 1024)) + " MB.");
         }
 

@@ -52,7 +52,7 @@ class AccessControlTest extends IntegrationTest {
                     hiddenBy(x -> x.setHidden(true)),
                     hiddenBy(x -> x.setExpired(true)),
                     hiddenBy(x -> x.setInvalid(true)),
-                    hiddenBy(x -> x.setBirthdate(java.sql.Date.valueOf(java.time.LocalDate.now().minusYears(17))))}) {
+                    hiddenBy(x -> x.setBirthdate(java.time.LocalDate.now().minusYears(17)))}) {
                 mvc.perform(get("/workers/" + w.getId())).andExpect(status().isNotFound());
                 mvc.perform(get("/workers/" + w.getId()).header("Authorization", bearer(createClient(
                         "c" + UUID.randomUUID().toString().substring(0, 8) + "@venus.test")))).andExpect(status().isNotFound());
