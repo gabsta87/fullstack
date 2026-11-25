@@ -51,13 +51,15 @@ services:
 #      LOGGING_LEVEL_ROOT: "DEBUG"
 #      LOGGING_LEVEL_COM_SERV: "DEBUG"
       
-      SPRING_APPLICATION_JSON: '{"media.upload.base": "/var/serv-media", "media.public.url": "/media"}'
+      SPRING_APPLICATION_JSON: '{"media.upload.base": "/var/serv-media", "media.public.url": "/media", "media.private.base": "/var/serv-private"}'
       
       # Mémoire
       JAVA_OPTS: "-Xms512m -Xmx1024m"
       
     volumes:
       - media-data:/var/serv-media
+      # Certification photos: mounted in the backend only, never served by nginx
+      - private-media:/var/serv-private
     depends_on:
       db:
         condition: service_healthy
@@ -88,7 +90,8 @@ services:
       PMA_HOST: venus-db
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     ports:
-      - "8082:80"
+      # Only reachable from the NAS itself (use an SSH tunnel: ssh -L 8082:localhost:8082 nas)
+      - "127.0.0.1:8082:80"
     depends_on:
       db:
         condition: service_healthy
@@ -98,6 +101,7 @@ services:
 volumes:
   db-data:
   media-data:
+  private-media:
 
 networks:
   default:

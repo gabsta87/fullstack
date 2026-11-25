@@ -3,9 +3,42 @@ name: Deploy Venus Project
 on:
   push:
     branches: [ master ]
+  pull_request:
 
 jobs:
+  # Runs on GitHub-hosted machines: nothing is deployed if a single test fails.
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Backend tests
+        working-directory: serv
+        run: ./gradlew test --no-daemon
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: front/package-lock.json
+
+      - name: Front tests
+        working-directory: front
+        run: |
+          npm ci
+          npx ng test --watch=false --browsers=ChromeHeadless
+
   deploy:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: self-hosted
     steps:
       - name: Update sources
