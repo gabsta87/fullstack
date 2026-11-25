@@ -1,6 +1,8 @@
 services:
   db:
-    image: mysql:8.0
+    # 8.4 LTS (supported until 2032). Upgrades must go one LTS at a time: 8.0 -> 8.4 -> 9.7.
+    # Each version must have started once on the data before the next one. Back up first (see ROADMAP).
+    image: mysql:8.4
     container_name: venus-db
     # Rotated logs: at most 5 x 10 MB per container on the NAS disk
     logging:
