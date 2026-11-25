@@ -16,6 +16,7 @@ public class PasswordResetService {
 
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final MailService mailService;
+    private final EmailTemplates emailTemplates;
 
     @Value("${app.frontend-url}")
     private String frontendUrl;
@@ -37,27 +38,10 @@ public class PasswordResetService {
         // 3. Build the URL and the email content
         String resetUrl = String.format("%s/reset-password?resetToken=%s", frontendUrl, token);
 
-        // Wording depends on whether this is an invitation or a forgotten password
-        String subject = isInvitation ? "Activation de votre compte Administrateur" : "Réinitialisation de votre mot de passe";
-        String introContext = isInvitation
-                ? "Un compte administrateur a été créé pour vous sur Venus. Veuillez cliquer sur le lien ci-dessous pour configurer votre mot de passe et activer votre compte (valable 24h) :"
-                : "Vous avez demandé la réinitialisation de votre mot de passe. Veuillez cliquer sur le lien ci-dessous pour configurer un nouveau mot de passe (valable 24h) :";
+        EmailTemplates.RenderedEmail email = emailTemplates.render(isInvitation ? EmailTemplates.Kind.ADMIN_INVITATION : EmailTemplates.Kind.RESET_PASSWORD, resetUrl);
 
-        String htmlContent = "<html><body>"
-                + "<p>Bonjour,</p>"
-                + "<p>" + introContext + "</p>"
-                + "<p style='margin: 20px 0;'>"
-                + "  <a href='" + resetUrl + "' style='background-color: #3880ff; color: white; padding: 10px 20px; content-decoration: none; border-radius: 4px; display: inline-block;'>"
-                + "    Configurer mon mot de passe"
-                + "  </a>"
-                + "</p>"
-                + "<p>Si le bouton ne fonctionne pas, vous pouvez copier-coller ce lien dans votre navigateur :<br>"
-                + "<a href='" + resetUrl + "'>" + resetUrl + "</a></p>"
-                + "<p>Cordialement,<br>L'équipe Venus</p>"
-                + "</body></html>";
-
-        // 4. Envoi
-        mailService.sendHtmlMessage(user.getEmail(), subject, htmlContent);
+        // 4. Send
+        mailService.sendHtmlMessage(user.getEmail(), email.subject(), email.html());
         return resetUrl;
     }
 }

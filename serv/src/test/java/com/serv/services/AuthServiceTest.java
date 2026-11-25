@@ -66,7 +66,7 @@ class AuthServiceTest {
 
         assertThatThrownBy(() -> authService.loadUserByUsername("banned@venus.com"))
                 .isInstanceOf(DisabledException.class)
-                .hasMessage("Ce compte a été banni.");
+                .hasMessage("This account has been banned.");
     }
 
     @Test

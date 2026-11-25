@@ -28,7 +28,7 @@ public class AuthService implements UserDetailsService{
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         if (venusUser.isBanned()) {
-            throw new DisabledException("Ce compte a été banni.");
+            throw new DisabledException("This account has been banned.");
         }
 
         return User.builder()

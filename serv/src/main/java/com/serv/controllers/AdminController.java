@@ -131,11 +131,11 @@ public class AdminController {
 
         if (req.locked() != null) {
             targetUser.setLocked(req.locked());
-            changes.append("Verrouillé: ").append(req.locked()).append(" ");
+            changes.append("Locked: ").append(req.locked()).append(" ");
         }
         if (req.banned() != null) {
             targetUser.setBanned(req.banned());
-            changes.append("Banni: ").append(req.banned()).append(" ");
+            changes.append("Banned: ").append(req.banned()).append(" ");
         }
 
         VenusUser savedUser = userRepository.save(targetUser);
@@ -330,7 +330,7 @@ public class AdminController {
                 newService.setDescription(service.description());
             serviceRepository.save(newService);
 
-            logAdminAction(admin, "CREATE_SERVICE", service, "Création du service : " + newService.getName());
+            logAdminAction(admin, "CREATE_SERVICE", service, "Service created: " + newService.getName());
         }
 
         List<ServiceDTO> updatedServices = serviceRepository.findAll().stream().map(ServiceDTO::from).collect(Collectors.toList());
@@ -354,7 +354,7 @@ public class AdminController {
         serviceRepository.delete(service);
 
         // 3. Audit log
-        logAdminAction(admin, "DELETE_SERVICE", snapshot, "Suppression du service : " + serviceName);
+        logAdminAction(admin, "DELETE_SERVICE", snapshot, "Service deleted: " + serviceName);
 
         // 4. Reload the updated list of services
         List<ServiceDTO> updatedServices = serviceRepository.findAll()
@@ -381,7 +381,7 @@ public class AdminController {
         legal.setAuthor(admin);
         legalTextRepository.save(legal);
 
-        logAdminAction(admin, "UPDATE_LEGAL_TEXT", legal, "Mise à jour du texte légal : " + req.key());
+        logAdminAction(admin, "UPDATE_LEGAL_TEXT", legal, "Legal text updated: " + req.key());
         return ResponseEntity.ok(Map.of("success", true));
     }
 
@@ -416,7 +416,7 @@ public class AdminController {
         long totalWorkers = workerRepository.countByGeographicZoneIdIn(zoneIdsToCheck);
         if (totalWorkers > 0) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
-                    "error", "Impossible de supprimer cette région (ou ses sous-régions) : " + totalWorkers + " annonceur(s) y sont rattaché(s)."
+                    "error", "This region (or one of its sub-regions) cannot be deleted: " + totalWorkers + " advertiser(s) are attached to it."
             ));
         }
 
@@ -428,7 +428,7 @@ public class AdminController {
         geographicZoneRepository.delete(zone);
 
         // 5. Audit log
-        logAdminAction(admin, "DELETE_REGION", snapshot, "Suppression de la zone géographique : " + zoneName);
+        logAdminAction(admin, "DELETE_REGION", snapshot, "Region deleted: " + zoneName);
 
         // 6. Reload the updated list of regions
         List<GeographicZoneWithChildrenDTO> updatedZones = geographicZoneRepository.findAll()
@@ -609,12 +609,12 @@ public class AdminController {
     @Transactional
     public ResponseEntity<?> dismissReport(@PathVariable Long reportId, Admin admin) {
         Report report = reportRepository.findById(reportId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Signalement introuvable"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Report not found"));
 
         report.setStatus(ReportStatus.DISMISSED);
         reportRepository.save(report);
 
-        logAdminAction(admin, "DISMISS_REPORT", report, "Signalement classé sans suite pour le worker " + report.getWorker().getEmail() + " : "+ report.getStatus());
+        logAdminAction(admin, "DISMISS_REPORT", report, "Report dismissed for worker #" + report.getWorker().getId() + ": " + report.getStatus());
 
         // Notify the other connected admins
         sseStreamService.broadcastAdminEvent("REPORT_UPDATED", report.getId());
@@ -630,15 +630,15 @@ public class AdminController {
         Email email;
 
         if (req.email() == null || req.email().isBlank()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Email requis"));
+            return ResponseEntity.badRequest().body(Map.of("error", "Email is required."));
         } else {
             try { email = new Email(req.email()); }
-            catch (IllegalArgumentException e) { return ResponseEntity.badRequest().body(Map.of("error", "Email invalide")); }
+            catch (IllegalArgumentException e) { return ResponseEntity.badRequest().body(Map.of("error", "Invalid email format.")); }
         }
 
         // 1. Reject duplicates
         if (userRepository.findByEmail(email.getValue()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", "Un utilisateur avec cet e-mail existe déjà"));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", "Email already taken."));
         }
 
         // 2. Create the admin account, locked
@@ -654,7 +654,7 @@ public class AdminController {
 
         // 4. Audit Log
         String snapshotJson = String.format("{\"invited_email\": \"%s\", \"role_assigned\": \"ADMIN\"}", email);
-        logAdminAction(admin, "INVITE_ADMIN", snapshotJson, "Compte admin pré-créé. Flux de reset password déclenché pour activation.");
+        logAdminAction(admin, "INVITE_ADMIN", snapshotJson, "Admin account pre-created; activation email sent (password reset flow).");
 
         return ResponseEntity.ok(AdminDTO.from(newAdmin));
     }

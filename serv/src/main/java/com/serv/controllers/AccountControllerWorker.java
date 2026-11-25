@@ -46,7 +46,7 @@ public class AccountControllerWorker {
     public ResponseEntity<WorkerFullProfileDTO> getMe(Worker user) {
         // 1. Reload the worker so it is managed by the current persistence context
         Worker managedWorker = workerRepository.findById(user.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker introuvable"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found"));
 
         // 2. Map to the DTO (lazy collections load within the session, batched by @BatchSize)
         return ResponseEntity.ok(WorkerFullProfileDTO.from(managedWorker));
@@ -440,7 +440,7 @@ public class AccountControllerWorker {
             Worker workerArg) {
 
         Worker managedWorker = workerRepository.findById(workerArg.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker introuvable."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found"));
 
         Set<WorkerLanguage> newLanguages = request.languages().stream()
                 .map(dto -> new WorkerLanguage(dto.language(), dto.level()))

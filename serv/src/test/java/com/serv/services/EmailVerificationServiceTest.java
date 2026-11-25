@@ -8,10 +8,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import com.serv.support.TestEmailTemplates;
 import org.mockito.InjectMocks;
+import org.mockito.Spy;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,11 +31,15 @@ class EmailVerificationServiceTest {
     @Mock
     private MailService mailService;
 
+    @Spy
+    private EmailTemplates emailTemplates = TestEmailTemplates.create();
+
     @InjectMocks
     private EmailVerificationService emailVerificationService;
 
     @BeforeEach
     void setUp() {
+        LocaleContextHolder.setLocale(Locale.ENGLISH);
         // Inject the frontend URL: @Value is not resolved outside a Spring Boot context
         ReflectionTestUtils.setField(emailVerificationService, "frontendUrl", "http://localhost:4200");
     }
@@ -51,6 +60,6 @@ class EmailVerificationServiceTest {
         verify(verificationTokenRepository, times(1)).deleteAllByUserId(client.getId());
         verify(verificationTokenRepository, times(1)).flush();
         verify(verificationTokenRepository, times(1)).save(any(VerificationToken.class));
-        verify(mailService, times(1)).sendHtmlMessage(eq(client.getEmail()), eq("Validation de votre adresse e-mail"), anyString());
+        verify(mailService, times(1)).sendHtmlMessage(eq(client.getEmail()), eq("Confirm your email address"), anyString());
     }
 }

@@ -17,6 +17,7 @@ public class EmailVerificationService {
 
     private final VerificationTokenRepository verificationTokenRepository;
     private final MailService mailService;
+    private final EmailTemplates emailTemplates;
 
     @Value("${app.frontend-url}")
     private String frontendUrl;
@@ -38,24 +39,10 @@ public class EmailVerificationService {
         // Note the front-end route: /verify-email (not /reset-password)
         String verificationUrl = String.format("%s/verify-email?token=%s", frontendUrl, myToken.getToken());
 
-        String subject = "Validation de votre adresse e-mail";
-        String introContext = "Bienvenue sur Venus ! Veuillez cliquer sur le lien ci-dessous pour valider votre adresse e-mail et activer votre compte (valable 24h) :";
+        EmailTemplates.RenderedEmail email = emailTemplates.render(EmailTemplates.Kind.VERIFY_EMAIL, verificationUrl);
 
-        String htmlContent = "<html><body>"
-                + "<p>Bonjour,</p>"
-                + "<p>" + introContext + "</p>"
-                + "<p style='margin: 20px 0;'>"
-                + "  <a href='" + verificationUrl + "' style='background-color: #3880ff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; display: inline-block;'>"
-                + "    Activer mon compte"
-                + "  </a>"
-                + "</p>"
-                + "<p>Si le bouton ne fonctionne pas, vous pouvez copier-coller ce lien dans votre navigateur :<br>"
-                + "<a href='" + verificationUrl + "'>" + verificationUrl + "</a></p>"
-                + "<p>Cordialement,<br>L'équipe Venus</p>"
-                + "</body></html>";
-
-        // 4. Envoi du mail
-        mailService.sendHtmlMessage(user.getEmail(), subject, htmlContent);
+        // 4. Send
+        mailService.sendHtmlMessage(user.getEmail(), email.subject(), email.html());
         return verificationUrl;
     }
 

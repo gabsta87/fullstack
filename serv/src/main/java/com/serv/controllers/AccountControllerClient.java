@@ -40,7 +40,7 @@ public class AccountControllerClient {
     @Transactional(readOnly = true)
     public ResponseEntity<ClientDTO> getMe(Client user) {
         Client managedClient = clientRepository.findById(user.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client introuvable"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
         return ResponseEntity.ok(ClientDTO.from(managedClient));
     }
 
@@ -48,7 +48,7 @@ public class AccountControllerClient {
     @Transactional(readOnly = true)
     public ResponseEntity<?> getFavorites(Client clientArg) {
         Client client = clientRepository.findById(clientArg.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client introuvable"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
         List<UUID> ids = client.getFavorites().stream().map(Worker::getId).toList();
         return ResponseEntity.ok(galleryService.getGalleryByIds(ids));
     }
@@ -61,7 +61,7 @@ public class AccountControllerClient {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found."));
 
         Client client = clientRepository.findById(clientArg.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client introuvable"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
 
         boolean alreadyFavorite = client.getFavorites().stream()
                 .anyMatch(w -> w.getId().equals(workerId));
@@ -78,7 +78,7 @@ public class AccountControllerClient {
     @Transactional
     public ResponseEntity<?> removeFavorite(@PathVariable UUID workerId, Client clientArg) {
         Client client = clientRepository.findById(clientArg.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client introuvable"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
 
         client.getFavorites().removeIf(w -> w.getId().equals(workerId));
         Client patchedUser = clientRepository.save(client);
@@ -90,7 +90,7 @@ public class AccountControllerClient {
     @Transactional(readOnly = true)
     public ResponseEntity<?> getFilters(Client clientArg) {
         Client client = clientRepository.findById(clientArg.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client introuvable"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
         return ResponseEntity.ok(GalleryFiltersDTO.from(client));
     }
 

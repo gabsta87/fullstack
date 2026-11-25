@@ -25,7 +25,7 @@ public class AccountControllerAdmin {
     @GetMapping("/me")
     public ResponseEntity<AdminDTO> getMe(Admin user) {
         Admin managedAdmin = adminRepository.findById(user.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin introuvable"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found"));
 
         return ResponseEntity.ok(AdminDTO.from(managedAdmin));
     }

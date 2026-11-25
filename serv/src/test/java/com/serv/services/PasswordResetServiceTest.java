@@ -8,10 +8,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import com.serv.support.TestEmailTemplates;
 import org.mockito.InjectMocks;
+import org.mockito.Spy;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,11 +31,15 @@ class PasswordResetServiceTest {
     @Mock
     private MailService mailService;
 
+    @Spy
+    private EmailTemplates emailTemplates = TestEmailTemplates.create();
+
     @InjectMocks
     private PasswordResetService passwordResetService;
 
     @BeforeEach
     void setUp() {
+        LocaleContextHolder.setLocale(Locale.ENGLISH);
         ReflectionTestUtils.setField(passwordResetService, "frontendUrl", "http://localhost:4200");
     }
 
@@ -49,6 +58,6 @@ class PasswordResetServiceTest {
         verify(passwordResetTokenRepository, times(1)).deleteAllByUserId(client.getId());
         verify(passwordResetTokenRepository, times(1)).flush();
         verify(passwordResetTokenRepository, times(1)).save(any(PasswordResetToken.class));
-        verify(mailService, times(1)).sendHtmlMessage(eq(client.getEmail()), eq("Réinitialisation de votre mot de passe"), anyString());
+        verify(mailService, times(1)).sendHtmlMessage(eq(client.getEmail()), eq("Reset your password"), anyString());
     }
 }
