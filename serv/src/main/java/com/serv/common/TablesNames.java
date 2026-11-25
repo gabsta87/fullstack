@@ -10,5 +10,4 @@ public final class TablesNames {
     public static final String VIDEOS = "videos";
     public static final String SERVICES = "services";
     public static final String LOCATIONS = "locations";
-
 }
