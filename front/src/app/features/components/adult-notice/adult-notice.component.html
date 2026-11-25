@@ -1,0 +1,10 @@
+<ion-content class="ion-padding">
+  <div class="adult-notice" role="dialog" aria-labelledby="adult-notice-title">
+    <h1 id="adult-notice-title">{{ languageService.msg('adult_title') }}</h1>
+    <p class="adult-notice-text">{{ text.content }}</p>
+    <div class="adult-notice-actions">
+      <ion-button expand="block" (click)="accept()">{{ languageService.msg('adult_enter') }}</ion-button>
+      <ion-button expand="block" fill="outline" color="medium" (click)="leave()">{{ languageService.msg('adult_leave') }}</ion-button>
+    </div>
+  </div>
+</ion-content>

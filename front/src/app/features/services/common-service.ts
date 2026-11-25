@@ -5,6 +5,14 @@ import {environment} from "../../../environments/environment";
 import {Observable} from "rxjs";
 import {GeographicZone, GeographicZoneWithParent} from "../models/filter.model";
 
+/** Current version of a public legal text (plain text, never rendered as HTML). */
+export interface LegalText {
+  key: string;
+  language: string;
+  version: number;
+  content: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -18,5 +26,10 @@ export class CommonService {
 
   getGeographicZones(): Observable<GeographicZone[]> {
     return this.http.get<GeographicZone[]>(`${environment.apiBase}/common/regions`);
+  }
+
+  /** `lang` is the site language code (fr, en, ..., ua); the backend falls back to English. */
+  getLegalText(key: string, lang: string): Observable<LegalText> {
+    return this.http.get<LegalText>(`${environment.apiBase}/common/legal/${key}`, { params: { lang } });
   }
 }

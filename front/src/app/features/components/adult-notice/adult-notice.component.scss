@@ -1,0 +1,22 @@
+.adult-notice {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 8px 0 24px;
+
+  h1 {
+    font-size: 1.4rem;
+    margin: 8px 0 16px;
+  }
+}
+
+/* Plain text from the database: line breaks kept, never interpreted as HTML */
+.adult-notice-text {
+  white-space: pre-line;
+  line-height: 1.5;
+}
+
+.adult-notice-actions {
+  margin-top: 24px;
+  display: grid;
+  gap: 8px;
+}

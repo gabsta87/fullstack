@@ -390,7 +390,10 @@
       "send_email": "Send an email",
       "certification_photo": "Certification photo",
       "advertiser_photo": "Advertiser photo",
-      "current_language": "Current language"
+      "current_language": "Current language",
+      "adult_title": "Adults only",
+      "adult_enter": "I am 18 or older, enter",
+      "adult_leave": "Leave"
     }
   },
   "fr": {
@@ -784,7 +787,10 @@
       "send_email": "Envoyer un e-mail",
       "certification_photo": "Photo de certification",
       "advertiser_photo": "Photo de l'annonceur",
-      "current_language": "Langue active"
+      "current_language": "Langue active",
+      "adult_title": "Réservé aux adultes",
+      "adult_enter": "J'ai 18 ans ou plus, entrer",
+      "adult_leave": "Quitter"
     }
   },
   "de": {
@@ -1173,7 +1179,10 @@
       "send_email": "E-Mail senden",
       "certification_photo": "Zertifizierungsfoto",
       "advertiser_photo": "Foto des Anbieters",
-      "current_language": "Aktuelle Sprache"
+      "current_language": "Aktuelle Sprache",
+      "adult_title": "Nur für Erwachsene",
+      "adult_enter": "Ich bin mindestens 18, eintreten",
+      "adult_leave": "Verlassen"
     }
   },
   "es": {
@@ -1562,7 +1571,10 @@
       "send_email": "Enviar un correo",
       "certification_photo": "Foto de certificación",
       "advertiser_photo": "Foto del anunciante",
-      "current_language": "Idioma actual"
+      "current_language": "Idioma actual",
+      "adult_title": "Solo para adultos",
+      "adult_enter": "Tengo 18 años o más, entrar",
+      "adult_leave": "Salir"
     }
   },
   "pt": {
@@ -1951,7 +1963,10 @@
       "send_email": "Enviar um e-mail",
       "certification_photo": "Foto de certificação",
       "advertiser_photo": "Foto do anunciante",
-      "current_language": "Idioma atual"
+      "current_language": "Idioma atual",
+      "adult_title": "Apenas para adultos",
+      "adult_enter": "Tenho 18 anos ou mais, entrar",
+      "adult_leave": "Sair"
     }
   },
   "it": {
@@ -2340,7 +2355,10 @@
       "send_email": "Invia un'e-mail",
       "certification_photo": "Foto di certificazione",
       "advertiser_photo": "Foto dell'inserzionista",
-      "current_language": "Lingua attuale"
+      "current_language": "Lingua attuale",
+      "adult_title": "Riservato agli adulti",
+      "adult_enter": "Ho almeno 18 anni, entra",
+      "adult_leave": "Esci"
     }
   },
   "ru": {
@@ -2729,7 +2747,10 @@
       "send_email": "Отправить письмо",
       "certification_photo": "Фото для сертификации",
       "advertiser_photo": "Фото рекламодателя",
-      "current_language": "Текущий язык"
+      "current_language": "Текущий язык",
+      "adult_title": "Только для взрослых",
+      "adult_enter": "Мне есть 18 лет, войти",
+      "adult_leave": "Уйти"
     }
   },
   "ua": {
@@ -3118,7 +3139,10 @@
       "send_email": "Надіслати лист",
       "certification_photo": "Фото для сертифікації",
       "advertiser_photo": "Фото рекламодавця",
-      "current_language": "Поточна мова"
+      "current_language": "Поточна мова",
+      "adult_title": "Лише для дорослих",
+      "adult_enter": "Мені є 18 років, увійти",
+      "adult_leave": "Вийти"
     }
   },
   "ar": {
@@ -3507,7 +3531,10 @@
       "send_email": "إرسال بريد",
       "certification_photo": "صورة الشهادة",
       "advertiser_photo": "صورة المعلن",
-      "current_language": "اللغة الحالية"
+      "current_language": "اللغة الحالية",
+      "adult_title": "للبالغين فقط",
+      "adult_enter": "عمري 18 عامًا أو أكثر، دخول",
+      "adult_leave": "مغادرة"
     }
   }
 }
