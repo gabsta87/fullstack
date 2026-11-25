@@ -91,6 +91,8 @@ export interface AdminUser {
   description?: string;
   servicesId: number[];
   geographicZone: GeographicZoneWithParent | null;
+  /** Why a worker profile is not public: USERNAME, PHONE, PHOTOS…, MINOR, BANNED, LOCKED, HIDDEN, EXPIRED. */
+  profileIssues?: string[];
 }
 
 // ==========================================

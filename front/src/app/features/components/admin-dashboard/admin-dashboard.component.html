@@ -82,10 +82,18 @@
                 <a (click)="viewProfile(user)" class="clickable-username">
                   {{ user.username }}
                 </a>
+                @if (profileIssueLabels(user); as issues) {
+                  @if (issues.length) {
+                    <div class="profile-issues" [title]="languageService.msg('missing_fields_title')">
+                      <ion-icon name="alert-circle-outline"></ion-icon>
+                      {{ issues.join(', ') }}
+                    </div>
+                  }
+                }
               </td>
               <!-- Clickable email (mailto) -->
               <td>
-                <a [href]="'mailto:' + user.email" class="mailto-link" title="Envoyer un e-mail">
+                <a [href]="'mailto:' + user.email" class="mailto-link" [title]="languageService.msg('send_email')">
                   {{ user.email }}
                 </a>
               </td>
@@ -217,7 +225,7 @@
               <img [src]="$safeNavigationMigration(selectedWorkerDetails.certificationRequest?.certificationPhotoUrl)"
                 (click)="openImagePreview(selectedWorkerDetails.certificationRequest?.certificationPhotoUrl ?? '', certificationPreviewList)"
                 class="certif-preview-img"
-                alt="Photo de certification" />
+                [alt]="languageService.msg('certification_photo')" />
             </div>
             <!-- Other photos of the profile -->
             <h4>{{ t.admin?.certif_tab?.other_photos_title }}</h4>
@@ -228,7 +236,7 @@
                     [src]="p.mainThumbUrl ? p.mainThumbUrl : 'assets/images/default-avatar.jpg'"
                     (click)="openImagePreview(p.mainThumbUrl, certificationPreviewList)"
                     class="other-thumb-img"
-                    alt="Photo annonceur" />
+                    [alt]="languageService.msg('advertiser_photo')" />
                 }
               </div>
             }

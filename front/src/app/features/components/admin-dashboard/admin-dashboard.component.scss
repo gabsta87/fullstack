@@ -22,6 +22,15 @@
   width: 70px;
 }
 
+.profile-issues {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: var(--ion-color-danger);
+}
+
 .clickable-username {
   cursor: pointer;
   color: var(--ion-color-primary, #c8956c);

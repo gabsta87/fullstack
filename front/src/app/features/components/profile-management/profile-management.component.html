@@ -365,6 +365,14 @@
                       <ion-icon slot="start" name="add-circle-outline"></ion-icon>
                       {{ t.profile_management?.media?.add_btn }}
                     </ion-button>
+                    @if (workerAccountService.storage$ | async; as usage) {
+                      <div class="storage-usage">
+                        <ion-progress-bar [value]="storageRatio(usage)"
+                          [color]="storageRatio(usage) >= 0.9 ? 'danger' : storageRatio(usage) >= 0.75 ? 'warning' : 'primary'">
+                        </ion-progress-bar>
+                        <p>{{ storageLabel(usage) }}</p>
+                      </div>
+                    }
                   </div>
                   <!-- Photo gallery -->
                   <div class="media-section-title">

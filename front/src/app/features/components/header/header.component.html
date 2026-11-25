@@ -22,7 +22,7 @@
 
       <!-- Language selector -->
       <ion-button (click)="openLangPopover($event)" class="lang-button">
-        <img [src]="langService.currentLanguageFlag" class="header-flag-icon" alt="Langue active" />
+        <img [src]="langService.currentLanguageFlag" class="header-flag-icon" [alt]="langService.msg('current_language')" />
         <ion-text class="ion-hide-sm-down lang-code">{{ langService.currentCode }}</ion-text>
       </ion-button>
 

@@ -7,13 +7,13 @@ import {filter, firstValueFrom, map, Observable} from "rxjs";
 import {BODY_TYPES_LIST, EYES_COLOR_LIST, HAIR_COLOR_LIST, PhotoItem, VideoItem} from "../../models/items.model";
 import {ActivatedRoute} from "@angular/router";
 import {WorkerPrivateProfile, WorkerProfileUpdate} from "../../models/user.model";
-import {WorkerAccountService} from "../../services/worker-account.service";
+import {StorageUsage, WorkerAccountService} from "../../services/worker-account.service";
 import {tap} from "rxjs/operators";
 import {addIcons} from "ionicons";
 import {
   addCircleOutline, camera, cloudUploadOutline, move, star, starOutline, trashOutline,timeOutline, cameraOutline,
   warningOutline, shieldCheckmarkOutline, shieldOutline, chevronDownCircleOutline, closeCircleOutline, eyeOffOutline,
-  eyeOutline, mailOutline, closeCircle, addOutline
+  eyeOutline, mailOutline, closeCircle, addOutline, alertCircleOutline
 } from 'ionicons/icons';
 import {AccountSettingsComponent} from "../account-settings/account-settings.component";
 import {GeographicZone} from "../../models/filter.model";
@@ -60,7 +60,7 @@ export class ProfileManagementComponent implements OnInit {
   newLangCode: string | null = null;
   newLangLevel: number | null = null;
 
-  constructor(private workerAccountService: WorkerAccountService,
+  constructor(protected workerAccountService: WorkerAccountService,
               private accountService : AccountService,
               private route : ActivatedRoute,
               private modalController: ModalController,
@@ -68,7 +68,7 @@ export class ProfileManagementComponent implements OnInit {
     addIcons({
       addCircleOutline, trashOutline, move, camera, warningOutline, star, starOutline, cloudUploadOutline,
       shieldCheckmarkOutline, shieldOutline, chevronDownCircleOutline, closeCircleOutline, timeOutline,cameraOutline,
-      eyeOutline, eyeOffOutline, mailOutline, closeCircle, addOutline
+      eyeOutline, eyeOffOutline, mailOutline, closeCircle, addOutline, alertCircleOutline
     });
   }
 
@@ -80,6 +80,7 @@ export class ProfileManagementComponent implements OnInit {
     });
 
     await firstValueFrom(this.workerAccountService.getCurrentAccount());
+    void this.workerAccountService.refreshStorage();
 
     // 2. Single stream for the UI, keeps the form in sync
     this.currentUser$ = this.workerAccountService.listenToMyAccount().pipe(
@@ -575,6 +576,18 @@ export class ProfileManagementComponent implements OnInit {
         return this.languageService.msg(hours > 1 ? 'hours_left_other' : 'hours_left_one', { n: hours });
       })
     );
+  }
+
+  /** "Storage used: 12.3 MB of 50 MB (25 %)" and the bar value (0..1). */
+  storageLabel(usage: StorageUsage): string {
+    const mb = (bytes: number) => Math.round(bytes / (1024 * 1024) * 10) / 10;
+    return this.languageService.msg('storage_used', {
+      used: mb(usage.usedBytes), total: mb(usage.maxBytes), percent: Math.round(this.storageRatio(usage) * 100)
+    });
+  }
+
+  storageRatio(usage: StorageUsage): number {
+    return usage.maxBytes > 0 ? Math.min(1, usage.usedBytes / usage.maxBytes) : 0;
   }
 
   protected readonly environment = environment;

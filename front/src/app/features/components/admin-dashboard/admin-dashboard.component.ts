@@ -9,7 +9,7 @@ import { AdminService } from '../../services/admin-service';
 import { addIcons } from "ionicons";
 import {
   addOutline, chevronBackOutline, chevronForwardOutline, closeOutline, pencilOutline, trashOutline, personAddOutline,
-  shieldCheckmarkOutline, lockClosedOutline, lockOpenOutline, closeCircleOutline
+  shieldCheckmarkOutline, lockClosedOutline, lockOpenOutline, closeCircleOutline, alertCircleOutline
 } from "ionicons/icons";
 import {combineLatest, firstValueFrom, map, Observable, Subject} from "rxjs";
 import { switchMap, tap } from "rxjs/operators";
@@ -22,6 +22,7 @@ import {Select} from "primeng/select";
 import {AdminWorkerReport} from "../../models/items.model";
 import {Router} from "@angular/router";
 import {LanguageManagerService} from "../../services/language-manager.service";
+import {profileIssueKeys} from "../../utils/error-messages";
 import {HeaderComponent} from "../header/header.component";
 
 @Component({
@@ -82,7 +83,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     protected languageService : LanguageManagerService
   ) {
     addIcons({ addOutline, trashOutline, pencilOutline, chevronBackOutline, chevronForwardOutline, closeOutline,
-      personAddOutline, shieldCheckmarkOutline, lockClosedOutline, lockOpenOutline, closeCircleOutline
+      personAddOutline, shieldCheckmarkOutline, lockClosedOutline, lockOpenOutline, closeCircleOutline, alertCircleOutline
     });
   }
 
@@ -455,6 +456,11 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     } catch (err) {
       console.error('Ban change failed', err);
     }
+  }
+
+  /** Translated reasons why this worker profile is not public (empty for other roles). */
+  profileIssueLabels(user: AdminUser): string[] {
+    return profileIssueKeys(user.profileIssues).map(key => this.languageService.msg(key));
   }
 
   viewProfile(user: any) {

@@ -34,6 +34,7 @@ import { defineCustomElement as defineIonLabel } from '@ionic/core/components/io
 import { defineCustomElement as defineIonList } from '@ionic/core/components/ion-list.js';
 import { defineCustomElement as defineIonModal } from '@ionic/core/components/ion-modal.js';
 import { defineCustomElement as defineIonPopover } from '@ionic/core/components/ion-popover.js';
+import { defineCustomElement as defineIonProgressBar } from '@ionic/core/components/ion-progress-bar.js';
 import { defineCustomElement as defineIonRange } from '@ionic/core/components/ion-range.js';
 import { defineCustomElement as defineIonRefresher } from '@ionic/core/components/ion-refresher.js';
 import { defineCustomElement as defineIonRefresherContent } from '@ionic/core/components/ion-refresher-content.js';
@@ -75,6 +76,7 @@ export const IONIC_TAGS: readonly string[] = [
   'ion-list',
   'ion-modal',
   'ion-popover',
+  'ion-progress-bar',
   'ion-range',
   'ion-refresher',
   'ion-refresher-content',
@@ -117,6 +119,7 @@ export function registerIonicElements(): void {
   defineIonList();
   defineIonModal();
   defineIonPopover();
+  defineIonProgressBar();
   defineIonRange();
   defineIonRefresher();
   defineIonRefresherContent();

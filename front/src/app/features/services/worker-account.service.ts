@@ -5,10 +5,18 @@ import {tap} from "rxjs/operators";
 import {environment} from "../../../environments/environment";
 import {WorkerPrivateProfile, WorkerProfileUpdate} from "../models/user.model";
 
+/** Media storage of the worker, in bytes. */
+export interface StorageUsage {
+  usedBytes: number;
+  maxBytes: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class WorkerAccountService {
   private base = `${environment.apiBase}/account/worker`;
   private accountSubject = new BehaviorSubject<WorkerPrivateProfile | null>(null);
+  /** Refreshed after each media upload / deletion. */
+  readonly storage$ = new BehaviorSubject<StorageUsage | null>(null);
 
   constructor(private http: HttpClient) { }
 
@@ -27,6 +35,14 @@ export class WorkerAccountService {
     );
     this.accountSubject.next(account);
     return account;
+  }
+
+  async refreshStorage(): Promise<void> {
+    try {
+      this.storage$.next(await firstValueFrom(this.http.get<StorageUsage>(`${this.base}/storage`)));
+    } catch (err) {
+      console.warn('Could not load the storage usage', err);
+    }
   }
 
   updateCache(account: WorkerPrivateProfile) {
@@ -78,12 +94,14 @@ export class WorkerAccountService {
     });
     const updatedProfile = await firstValueFrom(this.http.post<WorkerPrivateProfile>(`${this.base}/media`, fd));
     this.accountSubject.next(updatedProfile);
+    void this.refreshStorage();
     return updatedProfile;
   }
 
   async deletePhoto(photoId: string): Promise<WorkerPrivateProfile> {
     const updatedAccount = await firstValueFrom(this.http.delete<WorkerPrivateProfile>(`${this.base}/photos/${photoId}`));
     this.accountSubject.next(updatedAccount);
+    void this.refreshStorage();
     return updatedAccount;
   }
 
@@ -104,6 +122,7 @@ export class WorkerAccountService {
   async deleteVideo(videoId: string): Promise<WorkerPrivateProfile> {
     const updatedAccount = await firstValueFrom(this.http.delete<WorkerPrivateProfile>(`${this.base}/videos/${videoId}`));
     this.accountSubject.next(updatedAccount);
+    void this.refreshStorage();
     return updatedAccount;
   }
 

@@ -385,7 +385,12 @@
       "days_left_other": "{n} days left",
       "hours_left_one": "{n} hour left",
       "hours_left_other": "{n} hours left",
-      "storage_used": "Storage used: {used} MB of {total} MB ({percent} %)"
+      "storage_used": "Storage used: {used} MB of {total} MB ({percent} %)",
+      "issue_minor": "Under 18",
+      "send_email": "Send an email",
+      "certification_photo": "Certification photo",
+      "advertiser_photo": "Advertiser photo",
+      "current_language": "Current language"
     }
   },
   "fr": {
@@ -774,7 +779,12 @@
       "days_left_other": "{n} jours restants",
       "hours_left_one": "{n} heure restante",
       "hours_left_other": "{n} heures restantes",
-      "storage_used": "Espace utilisé : {used} Mo sur {total} Mo ({percent} %)"
+      "storage_used": "Espace utilisé : {used} Mo sur {total} Mo ({percent} %)",
+      "issue_minor": "Mineur",
+      "send_email": "Envoyer un e-mail",
+      "certification_photo": "Photo de certification",
+      "advertiser_photo": "Photo de l'annonceur",
+      "current_language": "Langue active"
     }
   },
   "de": {
@@ -1158,7 +1168,12 @@
       "days_left_other": "Noch {n} Tage",
       "hours_left_one": "Noch {n} Stunde",
       "hours_left_other": "Noch {n} Stunden",
-      "storage_used": "Belegter Speicher: {used} MB von {total} MB ({percent} %)"
+      "storage_used": "Belegter Speicher: {used} MB von {total} MB ({percent} %)",
+      "issue_minor": "Minderjährig",
+      "send_email": "E-Mail senden",
+      "certification_photo": "Zertifizierungsfoto",
+      "advertiser_photo": "Foto des Anbieters",
+      "current_language": "Aktuelle Sprache"
     }
   },
   "es": {
@@ -1542,7 +1557,12 @@
       "days_left_other": "Quedan {n} días",
       "hours_left_one": "Queda {n} hora",
       "hours_left_other": "Quedan {n} horas",
-      "storage_used": "Espacio usado: {used} MB de {total} MB ({percent} %)"
+      "storage_used": "Espacio usado: {used} MB de {total} MB ({percent} %)",
+      "issue_minor": "Menor de edad",
+      "send_email": "Enviar un correo",
+      "certification_photo": "Foto de certificación",
+      "advertiser_photo": "Foto del anunciante",
+      "current_language": "Idioma actual"
     }
   },
   "pt": {
@@ -1926,7 +1946,12 @@
       "days_left_other": "Faltam {n} dias",
       "hours_left_one": "Falta {n} hora",
       "hours_left_other": "Faltam {n} horas",
-      "storage_used": "Espaço usado: {used} MB de {total} MB ({percent} %)"
+      "storage_used": "Espaço usado: {used} MB de {total} MB ({percent} %)",
+      "issue_minor": "Menor de idade",
+      "send_email": "Enviar um e-mail",
+      "certification_photo": "Foto de certificação",
+      "advertiser_photo": "Foto do anunciante",
+      "current_language": "Idioma atual"
     }
   },
   "it": {
@@ -2310,7 +2335,12 @@
       "days_left_other": "Mancano {n} giorni",
       "hours_left_one": "Manca {n} ora",
       "hours_left_other": "Mancano {n} ore",
-      "storage_used": "Spazio usato: {used} MB su {total} MB ({percent} %)"
+      "storage_used": "Spazio usato: {used} MB su {total} MB ({percent} %)",
+      "issue_minor": "Minorenne",
+      "send_email": "Invia un'e-mail",
+      "certification_photo": "Foto di certificazione",
+      "advertiser_photo": "Foto dell'inserzionista",
+      "current_language": "Lingua attuale"
     }
   },
   "ru": {
@@ -2694,7 +2724,12 @@
       "days_left_other": "Осталось дней: {n}",
       "hours_left_one": "Осталось часов: {n}",
       "hours_left_other": "Осталось часов: {n}",
-      "storage_used": "Занято: {used} МБ из {total} МБ ({percent} %)"
+      "storage_used": "Занято: {used} МБ из {total} МБ ({percent} %)",
+      "issue_minor": "Несовершеннолетний",
+      "send_email": "Отправить письмо",
+      "certification_photo": "Фото для сертификации",
+      "advertiser_photo": "Фото рекламодателя",
+      "current_language": "Текущий язык"
     }
   },
   "ua": {
@@ -3078,7 +3113,12 @@
       "days_left_other": "Залишилося днів: {n}",
       "hours_left_one": "Залишилося годин: {n}",
       "hours_left_other": "Залишилося годин: {n}",
-      "storage_used": "Зайнято: {used} МБ із {total} МБ ({percent} %)"
+      "storage_used": "Зайнято: {used} МБ із {total} МБ ({percent} %)",
+      "issue_minor": "Неповнолітній",
+      "send_email": "Надіслати лист",
+      "certification_photo": "Фото для сертифікації",
+      "advertiser_photo": "Фото рекламодавця",
+      "current_language": "Поточна мова"
     }
   },
   "ar": {
@@ -3462,7 +3502,12 @@
       "days_left_other": "الأيام المتبقية: {n}",
       "hours_left_one": "الساعات المتبقية: {n}",
       "hours_left_other": "الساعات المتبقية: {n}",
-      "storage_used": "المساحة المستخدمة: {used} م.ب من {total} م.ب ({percent} %)"
+      "storage_used": "المساحة المستخدمة: {used} م.ب من {total} م.ب ({percent} %)",
+      "issue_minor": "قاصر",
+      "send_email": "إرسال بريد",
+      "certification_photo": "صورة الشهادة",
+      "advertiser_photo": "صورة المعلن",
+      "current_language": "اللغة الحالية"
     }
   }
 }
