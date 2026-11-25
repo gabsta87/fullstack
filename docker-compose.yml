@@ -2,6 +2,12 @@ services:
   db:
     image: mysql:8.0
     container_name: venus-db
+    # Rotated logs: at most 5 x 10 MB per container on the NAS disk
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
     environment:
       MYSQL_DATABASE: ${DB_NAME}
       MYSQL_USER: ${DB_USER}
@@ -29,6 +35,12 @@ services:
     build: ./serv
     image: venus-backend:latest
     container_name: venus-backend
+    # Rotated logs: at most 5 x 10 MB per container on the NAS disk
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://venus-db:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&connectTimeout=30000&socketTimeout=60000&tcpKeepAlive=true
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
@@ -74,6 +86,12 @@ services:
   frontend:
     build: ./front
     container_name: venus-frontend
+    # Rotated logs: at most 5 x 10 MB per container on the NAS disk
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
     ports:
       - "8888:8081"
     volumes:
@@ -86,6 +104,12 @@ services:
   phpmyadmin:
     image: phpmyadmin:latest
     container_name: venus-phpmyadmin
+    # Rotated logs: at most 5 x 10 MB per container on the NAS disk
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
     environment:
       PMA_HOST: venus-db
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}

@@ -30,6 +30,12 @@ jobs:
           cache: npm
           cache-dependency-path: front/package-lock.json
 
+      - name: No debug console.log in front code
+        run: |
+          if grep -rn "console\.log" front/src/app --include='*.ts' | grep -v '\.spec\.ts'; then
+            echo "Remove console.log calls (use console.warn / console.error for real problems)" >&2; exit 1
+          fi
+
       - name: Front tests
         working-directory: front
         run: |
