@@ -19,7 +19,7 @@ Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 - [ ] front+serv : debug — le worker ne voit pas la mise à jour de certification en live (SSE) — *cause probable corrigée dans `chore/tests` (le front lisait un rôle absent du JWT) ; à vérifier en conditions réelles*
 - [ ] test : les admins voient-ils en live les modifications des autres admins (SSE) ?
 - [ ] front : supprimer la clé `account.favorites.title` de `data.json`
-- [ ] front : onglets cassés — `ion-segment` / `ion-segment-button` / `ion-avatar` jamais enregistrés (composants Ionic standalone non importés) : onglets du tableau admin et de profile-management inopérants. Bug déjà présent sur `master`
+- [x] front : onglets cassés (admin, profile-management) — balises Ionic jamais enregistrées ; corrigé par `ionic-elements.ts` (vérifié en test et en CI)
 - [ ] front : simplifier les textes pour les régions (au lieu de "choisir une région" -> Région / localisation) afin de gagner de la place
 - [ ] serv : nettoyer les noms de tables (`@Table(name = …)`) en corrigeant et utilisant la classe TablesNames
 - [ ] s'assurer du fonctionnement des SSEStream pour que les admins soient notifiés en temps réel des actions des autres admins. Ainsi que les annonceurs notifiés des modifs des amins sur leur propre profile-management 
@@ -53,16 +53,16 @@ Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 - [x] `chore/logging` — logs SLF4J avec id de requête, événements `SECURITY` / `ADMIN` sans données personnelles, rotation des logs Docker, plus de `console.log` côté front
 - [x] `chore/warnings` — zéro warning au démarrage Spring, à la compilation Java (`-Xlint:all` activé en permanence), au build Angular et dans les tests
 - [ ] `chore/refactoring` — nettoyage, factorisation du code, en particulier des fichiers SCSS (variables, mixins, styles partagés). Inclut : Sass `@import` → `@use` (dépréciation masquée dans `angular.json` en attendant), `variables.scss` chargé deux fois (dans `angular.json` et dans `styles.scss`), composant Stripe inutilisé
-- [x] `chore/deps-upgrade` — Spring Boot 3.3 → 4.1.3, Gradle 8.14, Angular 18 → 22, PrimeNG 18 → 22, TypeScript 6, Node 24, MySQL 8.0 → 8.4 LTS ; dépendances inutiles retirées (serveur d'autorisation OAuth2, Thymeleaf, Spring Session, paquets Stripe/Express du front)
-  - [ ] **Avant le premier déploiement avec MySQL 8.4 (NAS puis Infomaniak)** : sauvegarder la base. Retour à 8.0 impossible une fois la 8.4 démarrée.
-    `docker exec venus-db sh -c 'mysqldump -uroot -p"$MYSQL_ROOT_PASSWORD" --single-transaction --routines --triggers --databases "$MYSQL_DATABASE"' > venus-backup-$(date +%F).sql`
-    Vérifier aussi : `docker exec venus-db mysql -uroot -p -e "SELECT user, plugin FROM mysql.user"` → aucun `mysql_native_password` (désactivé en 8.4).
-  - [ ] MySQL 8.4 → 9.7 LTS : seulement après que la 8.4 a démarré au moins une fois sur chaque environnement (pas de saut direct 8.0 → 9.7)
+- [x] `chore/deps-upgrade` — Spring Boot 3.3 → 4.1.3, Gradle 8.14, Angular 18 → 22, PrimeNG 18 → 22, TypeScript 6, Node 24, MySQL 8.0 → 9.7 LTS ; dépendances inutiles retirées (serveur d'autorisation OAuth2, Thymeleaf, Spring Session, paquets Stripe/Express du front)
+  - [x] MySQL 9.7 LTS sur un volume neuf (`db-data-mysql97`) : les données de test repartent de zéro. L'ancien volume peut être supprimé sur le NAS : `docker volume rm venus_db-data`. **Le jour où il y aura de vraies données (Infomaniak)** : sauvegarder avant toute montée MySQL, une LTS à la fois.
   - [ ] Ionic 8 → 9 (majeure, changements visuels possibles) : branche dédiée avec comparaison visuelle
   - [ ] Java 21 → 25 LTS (21 reste supporté jusqu'en 2029 : pas urgent)
   - [ ] `@angular/material` : seul son thème CSS est importé, aucun composant utilisé → à retirer dans `chore/refactoring` (contrôle visuel)
 
 ## 4. Sécurité — suites de l'audit (`chore/tests`)
+
+- [x] visiteurs anonymes bloqués (401 partout, y compris la connexion) quand le navigateur gardait un jeton de l'ancien déploiement : sur les routes publiques un jeton invalide est désormais ignoré (`PublicAccessTest`)
+- [x] connexion refusée (403 CORS) quand le site est servi sur un port non standard : nginx transmet l'hôte, le port et le protocole publics
 
 - [ ] **Déploiement** : créer le secret GitHub `JWT_SECRET` (≥ 32 caractères, ex. `openssl rand -base64 48`) avant de merger — sinon le déploiement s'arrête
 - [x] infra : phpMyAdmin n'écoute plus que sur `127.0.0.1:8082` du NAS (accès via tunnel SSH)
@@ -71,8 +71,8 @@ Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 - [x] infra : en-têtes de sécurité nginx (nosniff, X-Frame-Options, Referrer-Policy, CSP sandbox sur `/media`) et `client_max_body_size 110m` — *syntaxe à valider au premier démarrage (`nginx -t`)*
 - [ ] infra : CSP sur l'application Angular et HSTS (au niveau du reverse proxy Synology, qui termine le HTTPS) — à tester page par page, Ionic et Stripe utilisant des styles inline
 - [x] front : l'intercepteur enregistre le jeton renvoyé dans `X-Auth-Token` et n'envoie plus le jeton qu'à notre API
-- [ ] à décider : un compte `locked` (email non vérifié) peut encore se connecter ; faut-il bloquer le login tant que l'email n'est pas vérifié ?
-- [ ] à décider : durée de vie des jetons (30 jours actuellement, révocables)
+- [x] décidé : un compte `locked` est un blocage temporaire, il peut se connecter pour y remédier (≠ banni). Vérification d'email avant usage du compte : variable `EMAIL_VERIFICATION_REQUIRED` (false en staging, à mettre à true en production)
+- [x] décidé : jetons longs (30 jours, révocables), réglables par `JWT_EXPIRATION` (ex. `P90D`)
 
 ## 5. Mise en ligne
 
