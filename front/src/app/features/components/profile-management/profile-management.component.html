@@ -25,7 +25,7 @@
           <div class="avatar-wrapper">
             <ion-avatar>
           <img [src]="me.mainThumbUrl
-          ? (me.mainThumbUrl.startsWith('http') ? me.mainThumbUrl : environment.apiBase + me.mainThumbUrl)
+          ? me.mainThumbUrl
           : 'assets/images/default-avatar.jpg'"/>
             </ion-avatar>
             <ion-fab-button size="small" class="edit-photo-btn">

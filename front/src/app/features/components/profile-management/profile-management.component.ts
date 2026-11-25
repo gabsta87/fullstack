@@ -19,7 +19,6 @@ import {AccountSettingsComponent} from "../account-settings/account-settings.com
 import {GeographicZone} from "../../models/filter.model";
 import {ZoneSelectorComponent} from "../zone-selector/zone-selector.component";
 import {ServiceInfoComponent} from "../service-info/service-info.component";
-import {environment} from "../../../../environments/environment";
 import {CertificationStatus, Service} from "../../models/common.model";
 import {ModalController} from "@ionic/angular/standalone";
 import {CertificationModalComponent} from "../certification-modal/certification-modal.component";
@@ -27,6 +26,7 @@ import {LanguageManagerService} from "../../services/language-manager.service";
 import {AccountService} from "../../services/account-service";
 import {sanitizePhone} from "../../utils/input-limits";
 import {settingsErrorKey} from "../../utils/error-messages";
+import {siteLanguageTag} from "../../interceptors/jwt.interceptor";
 
 @Component({
     selector: 'app-profile-management',
@@ -96,9 +96,7 @@ export class ProfileManagementComponent implements OnInit {
           return {
             ...photo,
             isMain: isCurrentMain,
-            mainThumbUrl: photo.mainThumbUrl?.startsWith('http')
-              ? photo.mainThumbUrl
-              : `${environment.apiBase}${photo.mainThumbUrl}`
+            mainThumbUrl: photo.mainThumbUrl // Relative /media URL: served by nginx (proxy.conf.json in dev)
           };
         });
 
@@ -150,9 +148,7 @@ export class ProfileManagementComponent implements OnInit {
         return sortedPhotos.map(photo => ({
           ...photo,
           isMain: photo.mainThumbUrl === user.mainThumbUrl,
-          mainThumbUrl: photo.mainThumbUrl?.startsWith('http')
-            ? photo.mainThumbUrl
-            : `${environment.apiBase}${photo.mainThumbUrl}`
+          mainThumbUrl: photo.mainThumbUrl // Relative /media URL: served by nginx (proxy.conf.json in dev)
         }));
       })
     );
@@ -580,7 +576,8 @@ export class ProfileManagementComponent implements OnInit {
 
   /** "Storage used: 12.3 MB of 50 MB (25 %)" and the bar value (0..1). */
   storageLabel(usage: StorageUsage): string {
-    const mb = (bytes: number) => Math.round(bytes / (1024 * 1024) * 10) / 10;
+    const format = new Intl.NumberFormat(siteLanguageTag(), { maximumFractionDigits: 1 });
+    const mb = (bytes: number) => format.format(bytes / (1024 * 1024));
     return this.languageService.msg('storage_used', {
       used: mb(usage.usedBytes), total: mb(usage.maxBytes), percent: Math.round(this.storageRatio(usage) * 100)
     });
@@ -590,7 +587,6 @@ export class ProfileManagementComponent implements OnInit {
     return usage.maxBytes > 0 ? Math.min(1, usage.usedBytes / usage.maxBytes) : 0;
   }
 
-  protected readonly environment = environment;
   protected readonly isNaN = isNaN;
   protected readonly BODY_TYPES_LIST = BODY_TYPES_LIST;
   protected readonly HAIR_COLOR_LIST = HAIR_COLOR_LIST;
