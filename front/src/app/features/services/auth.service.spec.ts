@@ -126,7 +126,8 @@ describe('AuthService', () => {
     tick(250);
     const update = { id: '1', role: UserRole.WORKER, isCertified: true };
     FakeEventSource.instances[0].emit('account-update', update);
-    expect(workerService.updateCache).toHaveBeenCalledWith(jasmine.objectContaining({ isCertified: true }));
+    expect(workerService.updateCache).toHaveBeenCalledTimes(1);
+    expect(workerService.updateCache.calls.mostRecent().args[0]).toEqual(update as any);
     expect(clientService.updateCache).not.toHaveBeenCalled();
   }));
 
