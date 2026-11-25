@@ -20,7 +20,7 @@ describe('Route guards', () => {
   async function run(guard: any): Promise<boolean | UrlTree> {
     const result = TestBed.runInInjectionContext(() => guard(route, state));
     const awaited = result instanceof Promise ? await result : result;
-    return isObservable(awaited) ? await firstValueFrom(awaited) : awaited;
+    return (isObservable(awaited) ? await firstValueFrom(awaited) : awaited) as boolean | UrlTree;
   }
 
   const urlOf = (r: boolean | UrlTree) => (r instanceof UrlTree ? router.serializeUrl(r) : r);

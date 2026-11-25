@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { AlertController, IonicModule } from '@ionic/angular';
 import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
-import { DropdownModule } from 'primeng/dropdown';
 import { TagModule } from 'primeng/tag';
 import { AdminService } from '../../services/admin-service';
 import { addIcons } from "ionicons";
@@ -27,7 +26,7 @@ import {HeaderComponent} from "../header/header.component";
 
 @Component({
     selector: 'app-admin-dashboard',
-    imports: [CommonModule, FormsModule, IonicModule, TableModule, InputTextModule, DropdownModule, TagModule, Select,
+    imports: [CommonModule, FormsModule, IonicModule, TableModule, InputTextModule, TagModule, Select,
         HeaderComponent],
     templateUrl: './admin-dashboard.component.html',
     styleUrls: ['./admin-dashboard.component.scss']

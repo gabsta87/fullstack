@@ -152,7 +152,7 @@
               </div>
             </td>
 
-            <td>{{ user.certifiedAt | date:'yyyy-MM-dd' || '' }}</td>
+            <td>{{ (user.certifiedAt | date:'yyyy-MM-dd') || '' }}</td>
 
             <td class="ion-text-center">
               <ion-button size="small" fill="clear" color="danger" (click)="deleteUser(user)" [title]="t.common?.delete">
