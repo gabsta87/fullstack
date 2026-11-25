@@ -1,5 +1,6 @@
 # ── Stage 1: build the jar ────────────────────────────────────────────────────
-FROM gradle:8-jdk21 AS builder
+# 8.14 line, multi-arch (amd64 NAS + arm64 Mac); patch versions of the tag lag behind on arm64
+FROM gradle:8.14-jdk21 AS builder
 WORKDIR /app
 COPY . .
 USER root
