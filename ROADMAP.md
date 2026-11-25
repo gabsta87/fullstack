@@ -11,7 +11,7 @@ Cocher `[x]` quand c'est mergé dans `master`.
 
 Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 
-- [ ] phpmyadmin de mon NAS doit être accessible depuis mon réseau local, pas uniquement depuis le NAS, comme c'était le cas avant les modifications que tu as faites.
+- [x] phpmyadmin de mon NAS doit être accessible depuis mon réseau local, pas uniquement depuis le NAS, comme c'était le cas avant les modifications que tu as faites. *Port 8082 ouvert sur le réseau local ; ne jamais le rediriger sur la box. Sur un serveur public : `PHPMYADMIN_BIND=127.0.0.1`.*
 - [ ] front : afficher l'espace utilisé sur la page profile-management
 - [ ] front : le guard profil bloque l'accès à un profil banni (sauf admins) — *backend fait dans `chore/tests` : `GET /workers/{id}` répond 404 pour un profil non public, sauf admin/propriétaire*
 - [ ] front : les admins voient tous les champs requis de chaque profil dans le tableau (détecter les problèmes de validité)
@@ -73,7 +73,7 @@ Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 - [x] connexion refusée (403 CORS) quand le site est servi sur un port non standard : nginx transmet l'hôte, le port et le protocole publics
 
 - [x] **Déploiement** : créer le secret GitHub `JWT_SECRET` (≥ 32 caractères, ex. `openssl rand -base64 48`) avant de merger — sinon le déploiement s'arrête
-- [x] infra : phpMyAdmin n'écoute plus que sur `127.0.0.1:8082` du NAS (accès via tunnel SSH)
+- [x] infra : phpMyAdmin configurable (`PHPMYADMIN_BIND`) : réseau local sur le NAS de staging, `127.0.0.1` + tunnel SSH sur un serveur public
 - [x] infra : photos de certification stockées hors de `/media` (volume `private-media`), servies uniquement aux admins par l'API ; migration automatique des anciennes photos au démarrage
 - [ ] infra : limitation de débit par IP dans nginx (`limit_req`) pour inscription / login / reset, une fois la vraie IP client connue derrière le reverse proxy Synology
 - [x] infra : en-têtes de sécurité nginx (nosniff, X-Frame-Options, Referrer-Policy, CSP sandbox sur `/media`) et `client_max_body_size 110m` — *syntaxe à valider au premier démarrage (`nginx -t`)*

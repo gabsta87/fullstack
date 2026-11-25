@@ -121,8 +121,9 @@ services:
       PMA_HOST: venus-db
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     ports:
-      # Only reachable from the NAS itself (use an SSH tunnel: ssh -L 8082:localhost:8082 nas)
-      - "127.0.0.1:8082:80"
+      # Reachable from the local network (staging NAS). Never forward port 8082 on the router; on a
+      # public server set PHPMYADMIN_BIND=127.0.0.1 and use an SSH tunnel (ssh -L 8082:localhost:8082 host).
+      - "${PHPMYADMIN_BIND:-0.0.0.0}:8082:80"
     depends_on:
       db:
         condition: service_healthy
