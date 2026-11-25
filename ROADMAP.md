@@ -5,6 +5,8 @@ Cocher `[x]` quand c'est mergé dans `master`.
 
 ---
 
+> Modèle économique : le site loue aux annonceurs la mise en ligne de leur annonce. Il ne gère jamais les rendez-vous ni les échanges entre visiteurs et annonceurs.
+
 ## 1. Prêt — petites corrections (commits isolés)
 
 Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
@@ -33,13 +35,16 @@ Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 | `feat/certification-expiration` | Expiration automatique des certifications (table triée par date, réveil à l'échéance) | |
 | `feat/city-alert-email` | Alerte email quand un profil arrive dans la ville souhaitée | nécessite un service d'envoi d'email |
 | `feat/gallery-cache` | Cache pour réduire les requêtes de la galerie | après les tests, idéalement |
-| `feat/availability-calendar` | Les annonceurs affichent leurs jours de disponibilité à venir dans un calendrier, visible par les clients sur leur profil | version gratuite : affichage seul ; la prise de RDV sur créneaux reste en §7 |
+| `feat/photo-management-ui` | Gestion des photos plus jolie et moderne (les boutons actuels sont peu esthétiques) | profile-management |
+| `feat/admin-users-table` | Alléger la table utilisateurs de l'admin-dashboard (lente à charger) sans perdre le filtrage sur l'ensemble des utilisateurs | piste : pagination + filtrage côté serveur (endpoint paginé `GET /admin/users?page&size&q&role&status`), DTO de liste allégé (détails chargés à l'ouverture d'une ligne), index SQL sur les colonnes filtrées |
+| `feat/clear-filters` | Croix / touche Échap pour annuler le filtrage courant | galerie et tables admin |
+| `feat/availability-calendar` | Les annonceurs affichent leurs jours de disponibilité à venir dans un calendrier, visible par les clients sur leur profil | affichage seul : les RDV ne sont jamais gérés par le site, visiteur et annonceur s'arrangent entre eux |
 
 ## 3. Chantiers transverses (branches `chore/…`)
 
 À faire tôt : ils facilitent tout le reste.
 
-- [ ] `chore/tests` — mise en place des tests : non-régression, bugs existants, cas non standards / sécurité
+- [x] `chore/tests` — mise en place des tests : non-régression, bugs existants, cas non standards / sécurité
   - [x] serv : infrastructure d'intégration (H2, vrais JWT), matrice d'autorisation, auth/jetons, uploads, validation, IDOR, droits admin, photos de certification privées — 334 tests
   - [x] front : tests Angular (`ng test`) — intercepteur JWT, AuthService (SSE inclus), guards, formulaire de connexion, utilitaires, photo de certification — 51 tests
   - [x] CI : tests backend + front sur GitHub avant tout déploiement (et sur chaque pull request)
@@ -84,7 +89,7 @@ Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 
 - Système de paiement (Stripe — comment tester avant la mise en prod ?) — *`/payment/**` est fermé (`denyAll`) tant que le site est gratuit ; à rouvrir avec des tests (webhook public mais signé, montant/worker vérifiés côté serveur)*
 - Tarification workers : file d'événements persistée en DB pour la consommation de temps (voir détail dans l'ancien `serv/TODO`)
-- Abonnements workers (annuel, mensuel…), refresh payant, auto-refresh programmé, gestion de RDV
+- Abonnements workers (annuel, mensuel…), refresh payant, auto-refresh programmé
 - Super Admin : voir les paiements, modifier les tarifications
 - Workers : voir leurs paiements et tarifications
 - Système de paiement en liquide via employé (quittance, photo, calcul du dû)
