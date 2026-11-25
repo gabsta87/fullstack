@@ -3,24 +3,24 @@ import {inject} from "@angular/core";
 import {AuthService} from "../services/auth.service";
 import {catchError, map, of} from "rxjs";
 
+/** Lets the navigation through only when the server confirms the session. */
 export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  // 1. "Fast Path" : Si on sait localement qu'on est connecté, on autorise immédiatement
+  // Fast path: already known to be logged in.
   if (authService.isAuthenticated) {
     return true;
   }
 
-  // 2. "Slow Path" : Appel serveur pour vérifier la session
+  const denied = () => {
+    authService.setRedirectUrl(state.url);
+    return router.parseUrl('/');
+  };
+
+  // Slow path: ask the server. checkSession() emits false (it never errors) when there is no valid session.
   return authService.checkSession().pipe(
-    map(() => {
-      return true;
-    }),
-    catchError((err) => {
-      authService.setRedirectUrl(state.url);
-      router.navigate(['/login']);
-      return of(false);
-    })
+    map(isLoggedIn => isLoggedIn ? true : denied()),
+    catchError(() => of(denied()))
   );
 };

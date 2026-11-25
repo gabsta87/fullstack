@@ -25,6 +25,7 @@ import {ModalController} from "@ionic/angular/standalone";
 import {CertificationModalComponent} from "../certification-modal/certification-modal.component";
 import {LanguageManagerService} from "../../services/language-manager.service";
 import {AccountService} from "../../services/account-service";
+import {sanitizePhone} from "../../utils/input-limits";
 
 @Component({
   selector: 'app-profile-management',
@@ -588,8 +589,3 @@ export class ProfileManagementComponent implements OnInit {
 }
 
 /** Garde uniquement les chiffres et un éventuel « + » en première position. */
-export function sanitizePhone(value: string): string {
-  const trimmed = value.trim();
-  const plus = trimmed.startsWith('+') ? '+' : '';
-  return plus + trimmed.replace(/\D/g, '');
-}

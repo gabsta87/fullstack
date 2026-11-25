@@ -1,6 +1,6 @@
 import {Injectable, NgZone} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, firstValueFrom, Observable} from 'rxjs';
 import {shareReplay, switchMap, tap} from 'rxjs/operators';
 import {environment} from "../../../environments/environment";
 import {AdminUser, WorkerPrivateProfile} from "../models/user.model";
@@ -14,6 +14,20 @@ import {AdminWorkerReport} from "../models/items.model";
 })
 export class AdminService {
   private apiUrl = `${environment.apiBase}/admin`;
+
+  /** Certification photos are private API resources (see backend AdminController). */
+  static readonly PRIVATE_PHOTO_PREFIX = '/admin/certification-photos/';
+
+  /**
+   * Returns a displayable URL for a certification photo. Private photos are downloaded with the
+   * admin token and exposed as an object URL (to release with URL.revokeObjectURL).
+   */
+  async loadCertificationPhoto(url: string | null | undefined): Promise<string> {
+    if (!url) return '';
+    if (!url.startsWith(AdminService.PRIVATE_PHOTO_PREFIX)) return url; // legacy public URL
+    const blob = await firstValueFrom(this.http.get(`${environment.apiBase}${url}`, { responseType: 'blob' }));
+    return URL.createObjectURL(blob);
+  }
   private adminEventSource: EventSource | null = null;
 
   private usersRefresh$ = new BehaviorSubject<void>(undefined);

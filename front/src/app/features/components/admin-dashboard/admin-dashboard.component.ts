@@ -34,6 +34,9 @@ import {HeaderComponent} from "../header/header.component";
   styleUrls: ['./admin-dashboard.component.scss']
 })
 export class AdminDashboardComponent implements OnInit, OnDestroy {
+  /** Object URL of the private certification photo currently displayed (released on close). */
+  private certificationObjectUrl: string | null = null;
+
   currentTab: 'users' | 'certifications' | 'reports' | 'services' | 'zones' | 'logs' | 'admins' = 'users';
 
   users$!: Observable<AdminUser[]>;
@@ -323,10 +326,14 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         this.adminService.getWorkerPrivateProfile(request.workerId)
       );
 
-      const formattedCertifUrl = request.certificationPhotoUrl ?? "";
+      const formattedCertifUrl = await this.adminService.loadCertificationPhoto(request.certificationPhotoUrl);
+      this.certificationObjectUrl = formattedCertifUrl.startsWith('blob:') ? formattedCertifUrl : null;
 
       this.selectedWorkerDetails = {
         ...workerDetails,
+        certificationRequest: workerDetails.certificationRequest
+          ? { ...workerDetails.certificationRequest, certificationPhotoUrl: formattedCertifUrl }
+          : workerDetails.certificationRequest,
         certificationRequestId: request.id,
         verificationCode: request.verificationCode,
         certificationPhotoUrl: formattedCertifUrl
@@ -354,6 +361,10 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
     this.isCertifModalOpen = false;
     this.selectedWorkerDetails = null;
+    if (this.certificationObjectUrl) {
+      URL.revokeObjectURL(this.certificationObjectUrl);
+      this.certificationObjectUrl = null;
+    }
     this.currentCertifRequestId = null;
     this.adminComment = '';
   }

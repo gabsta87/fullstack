@@ -94,14 +94,7 @@ export class AuthService {
 
     this.eventSource.addEventListener('account-update', (event: MessageEvent) => {
       this.zone.run(() => {
-        const updatedAccount = JSON.parse(event.data);
-        const tokenData = this.getDecodedToken();
-
-        if (tokenData?.role === 'ROLE_CLIENT') {
-          this.clientService.updateCache(updatedAccount);
-        } else if (tokenData?.role === 'ROLE_WORKER') {
-          this.workerService.updateCache(updatedAccount);
-        }
+        this.applyAccountUpdate(JSON.parse(event.data));
       });
     });
 
@@ -117,6 +110,19 @@ export class AuthService {
         console.warn("Le flux SSE a subitement tressauté ou s'est coupé (reconnexion automatique en cours)...");
       });
     };
+  }
+
+  /**
+   * Pushes a live account update (SSE "account-update") to the right cache.
+   * The role comes from the account itself (the JWT carries no role claim).
+   */
+  applyAccountUpdate(updatedAccount: any) {
+    const role = updatedAccount?.role ?? this.currentAccount?.role;
+    if (role === UserRole.CLIENT) {
+      this.clientService.updateCache(updatedAccount);
+    } else if (role === UserRole.WORKER) {
+      this.workerService.updateCache(updatedAccount);
+    }
   }
 
   public closeStream() {

@@ -1,4 +1,5 @@
 import { Router } from '@angular/router';
+import {InputLimits} from "../../utils/input-limits";
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
@@ -46,7 +47,7 @@ export class AuthModalComponent implements OnInit {
     if (this.mode === 'register') {
       this.authForm = this.fb.group({
         email: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(72)]],
+        password: ['', [Validators.required, Validators.minLength(InputLimits.PASSWORD_MIN), Validators.maxLength(InputLimits.PASSWORD_MAX)]],
         confirmPassword: ['', [Validators.required]],
         role: ['client']
       }, { validators: this.passwordMatchValidator });
@@ -90,6 +91,8 @@ export class AuthModalComponent implements OnInit {
             this.errorMsg = "Identifiant ou mot de passe incorrects.";
           } else if(err.status == 403){
             this.errorMsg = "Requête interdite.";
+          } else if (err.status === 429) {
+            this.errorMsg = "Trop de tentatives. Réessayez dans quelques minutes.";
           } else {
             this.errorMsg = "Une erreur est survenue lors de la connexion.";
           }
@@ -133,7 +136,7 @@ export class AuthModalComponent implements OnInit {
       this.router.navigate(['/profile-management']);
     } else if (userRole === UserRole.CLIENT) {
       this.router.navigate(['/account']);
-    } else if (userRole === UserRole.ADMIN) {
+    } else if (userRole === UserRole.ADMIN || userRole === UserRole.SUPER_ADMIN) {
       this.router.navigate(['/admin-dashboard']);
     } else {
       // Par sécurité, si le rôle est indéterminé à cet instant précis

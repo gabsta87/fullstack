@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {InputLimits} from "../../utils/input-limits";
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {IonText, ModalController} from '@ionic/angular/standalone';
@@ -46,7 +47,7 @@ export class ResetPasswordComponent implements OnInit {
     this.token = this.route.snapshot.queryParamMap.get('resetToken');
 
     this.resetForm = this.fb.group({
-      newPassword: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(72)]],
+      newPassword: ['', [Validators.required, Validators.minLength(InputLimits.PASSWORD_MIN), Validators.maxLength(InputLimits.PASSWORD_MAX)]],
       confirmPassword: ['', [Validators.required]]
     }, { validators: this.passwordMatchValidator });
   }
