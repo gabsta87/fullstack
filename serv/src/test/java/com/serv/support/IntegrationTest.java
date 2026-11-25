@@ -12,7 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.ActiveProfiles;
@@ -80,7 +80,7 @@ public abstract class IntegrationTest {
     @Autowired protected PhotoRepository photoRepository;
     @Autowired protected CommentRepository commentRepository;
 
-    @MockBean protected JavaMailSender mailSender;
+    @MockitoBean protected JavaMailSender mailSender;
 
     @BeforeEach
     void resetState() throws IOException {

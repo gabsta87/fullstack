@@ -34,8 +34,7 @@ public class WorkerService {
         }
 
         // 1. On prépare la base : Uniquement les profils non désactivés + les filtres dynamiques
-        Specification<Worker> spec = Specification
-                .where(WorkerSpecifications.isValidProfile())
+        Specification<Worker> spec = WorkerSpecifications.isValidProfile()
                 .and(buildDynamicFilters(filters));
 
         // 2. LA MAGIE DU MULTI-TRI :
@@ -187,9 +186,8 @@ public class WorkerService {
 
         // 1. ÉTAPE D'OPTIMISATION 1 : Filtrage direct au niveau de la BDD avec la Spécification
         // On ne récupère que les IDs demandés ET qui passent les filtres de validité (âge, banni, masqué...)
-        Specification<Worker> spec = Specification
-                .<Worker>where((root, query, cb) -> root.get("id").in(ids))
-                .and(WorkerSpecifications.isValidProfile());
+        Specification<Worker> requestedIds = (root, query, cb) -> root.get("id").in(ids);
+        Specification<Worker> spec = requestedIds.and(WorkerSpecifications.isValidProfile());
 
         List<Worker> validWorkers = workerRepository.findAll(spec);
         if (validWorkers.isEmpty()) return List.of();
