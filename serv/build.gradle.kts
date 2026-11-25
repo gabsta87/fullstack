@@ -47,6 +47,8 @@ dependencies {
 
 	// Bibliothèques tierces
 	implementation("com.stripe:stripe-java:27.1.0")
+	// Stripe's classes carry Gson annotations: needed on the compile classpath to avoid javac warnings
+	compileOnly("com.google.code.gson:gson")
 	implementation("net.coobird:thumbnailator:0.4.20")
 	// WebP decoding for ImageIO (uploaded WebP photos are re-encoded as JPEG)
 	implementation("com.twelvemonkeys.imageio:imageio-webp:3.12.0")
@@ -58,6 +60,19 @@ dependencies {
 	testImplementation("com.h2database:h2")
 }
 
+// Mockito's inline mock maker needs the Byte Buddy agent, declared up front: JDK 21+ warns about (and will
+// later forbid) agents attached dynamically at runtime.
+val mockitoAgent = configurations.create("mockitoAgent")
+dependencies {
+	mockitoAgent("net.bytebuddy:byte-buddy-agent") { isTransitive = false }
+}
+
 tasks.withType<Test> {
 	useJUnitPlatform()
+	jvmArgs("-javaagent:${mockitoAgent.asPath}", "-Xshare:off")
+}
+
+// Show every compiler warning instead of a one-line summary, so they get fixed.
+tasks.withType<JavaCompile> {
+	options.compilerArgs.addAll(listOf("-Xlint:all", "-Xlint:-processing", "-Xlint:-serial"))
 }

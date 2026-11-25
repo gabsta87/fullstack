@@ -49,7 +49,6 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       
       # Configuration pour la stabilité au démarrage
-      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQLDialect
       SPRING_DATASOURCE_TESTONBORROW: "true"
       SPRING_DATASOURCE_VALIDATIONQUERY: "SELECT 1"
       

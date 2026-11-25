@@ -1,5 +1,8 @@
 package com.serv.services;
 
+import org.mockito.ArgumentMatchers;
+
+import com.serv.database.entities.Worker;
 import com.serv.database.repositories.WorkerRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,26 +34,26 @@ class WorkerServiceTest {
     @DisplayName("getGalleryPage - Retourne une liste vide si aucun worker ne correspond")
     void getGalleryPage_EmptyResult() {
         Page<com.serv.database.entities.Worker> emptyPage = Page.empty();
-        when(workerRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(emptyPage);
+        when(workerRepository.findAll(ArgumentMatchers.<Specification<Worker>>any(), any(Pageable.class))).thenReturn(emptyPage);
 
         var result = workerService.getGalleryPage(0, Map.of());
 
         assertThat(result).isNotNull();
         assertThat(result).isEmpty();
-        verify(workerRepository, times(1)).findAll(any(Specification.class), any(Pageable.class));
+        verify(workerRepository, times(1)).findAll(ArgumentMatchers.<Specification<Worker>>any(), any(Pageable.class));
     }
 
     @Test
     @DisplayName("getGalleryPage - Corrige une page négative à 0")
     void getGalleryPage_NegativePageCorrection() {
         Page<com.serv.database.entities.Worker> emptyPage = Page.empty();
-        when(workerRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(emptyPage);
+        when(workerRepository.findAll(ArgumentMatchers.<Specification<Worker>>any(), any(Pageable.class))).thenReturn(emptyPage);
 
         // On passe une page négative (-5)
         var result = workerService.getGalleryPage(-5, Collections.emptyMap());
 
         assertThat(result).isEmpty();
         // Le test valide que le traitement ne lève pas d'exception et interroge bien la page 0
-        verify(workerRepository, times(1)).findAll(any(Specification.class), any(Pageable.class));
+        verify(workerRepository, times(1)).findAll(ArgumentMatchers.<Specification<Worker>>any(), any(Pageable.class));
     }
 }

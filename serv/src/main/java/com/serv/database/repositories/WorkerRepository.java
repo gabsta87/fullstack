@@ -26,12 +26,12 @@ public interface WorkerRepository extends JpaRepository<Worker, UUID>, JpaSpecif
 
     // TODO check logic
     @Query("""
-    SELECT w FROM Worker w 
+    SELECT w FROM Worker w
     WHERE (w.hasBeenActiveToday = true OR w.isAvailable = true)
-      AND w.isInvalid = false 
-      AND w.isBanned = false 
-      AND w.isExpired = false 
-      AND w.isHidden = false 
+      AND w.isInvalid = false
+      AND w.isBanned = false
+      AND w.isExpired = false
+      AND w.isHidden = false
       AND w.isLocked = false
     """)
     List<Worker> findValidActiveOrAvailableWorkers();
