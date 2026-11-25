@@ -19,11 +19,10 @@ import {AccountService} from "../../services/account-service";
 import {Comment} from "../../models/items.model";
 
 @Component({
-  selector: 'app-account',
-  standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, WorkerCardComponent, HeaderComponent, AccountSettingsComponent],
-  templateUrl: './account.component.html',
-  styleUrls: ['./account.component.scss']
+    selector: 'app-account',
+    imports: [CommonModule, FormsModule, IonicModule, WorkerCardComponent, HeaderComponent, AccountSettingsComponent],
+    templateUrl: './account.component.html',
+    styleUrls: ['./account.component.scss']
 })
 export class AccountComponent implements OnInit {
   currentUser$: Observable<ClientProfile>;

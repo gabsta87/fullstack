@@ -4,11 +4,10 @@ import {LanguageManagerService} from "../../services/language-manager.service";
 import {AsyncPipe, NgIf} from "@angular/common";
 
 @Component({
-  selector: 'age-range-selector',
-  templateUrl: './age-range-selector.component.html',
-  styleUrls: ['./age-range-selector.component.scss'],
-  imports: [IonItem, IonLabel, IonRange, NgIf, AsyncPipe],
-  standalone: true
+    selector: 'age-range-selector',
+    templateUrl: './age-range-selector.component.html',
+    styleUrls: ['./age-range-selector.component.scss'],
+    imports: [IonItem, IonLabel, IonRange, NgIf, AsyncPipe]
 })
 export class AgeRangeSelectorComponent implements OnInit, OnChanges {
   @Input() minAge: string | undefined = undefined;

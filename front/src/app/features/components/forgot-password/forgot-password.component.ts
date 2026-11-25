@@ -7,11 +7,10 @@ import {LanguageManagerService} from "../../services/language-manager.service";
 import {AsyncPipe, NgIf} from "@angular/common";
 
 @Component({
-  selector: 'app-forgot-password',
-  templateUrl: './forgot-password.component.html',
-  styleUrls: ['./forgot-password.component.scss'],
-  standalone: true,
-  imports: [IonContent, FormsModule, IonItem, IonInput, IonButton, NgIf, AsyncPipe]
+    selector: 'app-forgot-password',
+    templateUrl: './forgot-password.component.html',
+    styleUrls: ['./forgot-password.component.scss'],
+    imports: [IonContent, FormsModule, IonItem, IonInput, IonButton, NgIf, AsyncPipe]
 })
 export class ForgotPasswordComponent implements OnInit {
   email = '';

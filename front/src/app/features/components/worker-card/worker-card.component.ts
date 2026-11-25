@@ -12,12 +12,11 @@ import {ClientAccountService} from "../../services/client-account.service";
 import {Observable, of} from "rxjs";
 
 @Component({
-  selector: 'worker-card',
-  templateUrl: './worker-card.component.html',
-  styleUrls: ['./worker-card.component.scss'],
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, IonRippleEffect, IonCard, IonIcon, IonBadge, IonCardContent],
+    selector: 'worker-card',
+    templateUrl: './worker-card.component.html',
+    styleUrls: ['./worker-card.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, IonRippleEffect, IonCard, IonIcon, IonBadge, IonCardContent]
 })
 export class WorkerCardComponent implements OnInit, OnDestroy {
 

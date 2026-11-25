@@ -10,22 +10,21 @@ import {ForgotPasswordComponent} from "../forgot-password/forgot-password.compon
 import {LanguageManagerService} from "../../services/language-manager.service";
 
 @Component({
-  selector: 'app-reset-password',
-  templateUrl: './reset-password.component.html',
-  styleUrls: ['./reset-password.component.scss'],
-  imports: [
-    IonContent,
-    ReactiveFormsModule,
-    IonItem,
-    IonInput,
-    IonButton,
-    IonSpinner,
-    IonIcon,
-    NgIf,
-    AsyncPipe,
-    IonText
-  ],
-  standalone: true
+    selector: 'app-reset-password',
+    templateUrl: './reset-password.component.html',
+    styleUrls: ['./reset-password.component.scss'],
+    imports: [
+        IonContent,
+        ReactiveFormsModule,
+        IonItem,
+        IonInput,
+        IonButton,
+        IonSpinner,
+        IonIcon,
+        NgIf,
+        AsyncPipe,
+        IonText
+    ]
 })
 export class ResetPasswordComponent implements OnInit {
   resetForm!: FormGroup;

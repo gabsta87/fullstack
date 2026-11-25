@@ -7,11 +7,10 @@ import {LanguageManagerService} from "../../services/language-manager.service";
 import {IonicModule} from "@ionic/angular";
 
 @Component({
-  selector: 'app-certification-modal',
-  templateUrl: './certification-modal.component.html',
-  styleUrls: ['./certification-modal.component.scss'],
-  standalone: true,
-  imports: [IonicModule, CommonModule],
+    selector: 'app-certification-modal',
+    templateUrl: './certification-modal.component.html',
+    styleUrls: ['./certification-modal.component.scss'],
+    imports: [IonicModule, CommonModule]
 })
 export class CertificationModalComponent implements OnInit {
   @Input() verificationCode!: string;

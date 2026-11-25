@@ -12,11 +12,10 @@ import {UserRole} from "../../models/roles";
 import {LanguageManagerService} from "../../services/language-manager.service";
 
 @Component({
-  selector: 'app-auth-modal',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, IonicModule],
-  templateUrl: './auth-modal.component.html',
-  styleUrls: ['./auth-modal.component.scss']
+    selector: 'app-auth-modal',
+    imports: [CommonModule, ReactiveFormsModule, FormsModule, IonicModule],
+    templateUrl: './auth-modal.component.html',
+    styleUrls: ['./auth-modal.component.scss']
 })
 export class AuthModalComponent implements OnInit {
   @Input() mode: 'login' | 'register' = 'login';

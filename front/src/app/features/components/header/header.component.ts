@@ -19,11 +19,10 @@ import {IonPopover} from "@ionic/angular/standalone";
 import {environment} from "../../../../environments/environment";
 
 @Component({
-  selector: 'app-header',
-  standalone: true,
-  imports: [CommonModule, IonicModule, RouterLink],
-  templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss'],
+    selector: 'app-header',
+    imports: [CommonModule, IonicModule, RouterLink],
+    templateUrl: './header.component.html',
+    styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent {
 

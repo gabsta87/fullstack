@@ -5,11 +5,10 @@ import { FormsModule } from '@angular/forms';
 import {LanguageManagerService} from "../../services/language-manager.service";
 import {AccountService} from "../../services/account-service";
 @Component({
-  selector: 'account-settings',
-  standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule],
-  templateUrl: './account-settings.component.html',
-  styleUrls: ['./account-settings.component.scss']
+    selector: 'account-settings',
+    imports: [CommonModule, IonicModule, FormsModule],
+    templateUrl: './account-settings.component.html',
+    styleUrls: ['./account-settings.component.scss']
 })
 export class AccountSettingsComponent implements OnInit {
   @Input() initialEmail: string = '';

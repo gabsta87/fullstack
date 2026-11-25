@@ -28,11 +28,10 @@ import {AccountService} from "../../services/account-service";
 import {sanitizePhone} from "../../utils/input-limits";
 
 @Component({
-  selector: 'app-profile-management',
-  imports: [CommonModule, FormsModule, IonicModule, HeaderComponent, AccountSettingsComponent, ZoneSelectorComponent, ServiceInfoComponent],
-  templateUrl: './profile-management.component.html',
-  styleUrls: ['./profile-management.component.scss'],
-  standalone: true
+    selector: 'app-profile-management',
+    imports: [CommonModule, FormsModule, IonicModule, HeaderComponent, AccountSettingsComponent, ZoneSelectorComponent, ServiceInfoComponent],
+    templateUrl: './profile-management.component.html',
+    styleUrls: ['./profile-management.component.scss']
 })
 export class ProfileManagementComponent implements OnInit {
 

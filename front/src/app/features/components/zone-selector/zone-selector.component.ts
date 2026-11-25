@@ -8,11 +8,10 @@ import { GeographicZone } from "../../models/filter.model";
 import {LanguageManagerService} from "../../services/language-manager.service";
 
 @Component({
-  selector: 'zone-selector',
-  standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule],
-  templateUrl: './zone-selector.component.html',
-  styleUrls: ['./zone-selector.component.scss']
+    selector: 'zone-selector',
+    imports: [CommonModule, FormsModule, IonicModule],
+    templateUrl: './zone-selector.component.html',
+    styleUrls: ['./zone-selector.component.scss']
 })
 export class ZoneSelectorComponent implements OnChanges {
   // ── INPUTS CONFIGURATION ──────────────────────────────────────────────────

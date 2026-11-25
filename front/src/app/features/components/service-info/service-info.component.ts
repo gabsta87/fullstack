@@ -18,11 +18,10 @@ let nextId = 0;
  * Sans description, rien n'est cliquable et aucune icône n'est affichée.
  */
 @Component({
-  selector: 'service-info',
-  standalone: true,
-  imports: [CommonModule, IonIcon, IonPopover],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
+    selector: 'service-info',
+    imports: [CommonModule, IonIcon, IonPopover],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
     <span class="trigger"
           [id]="hasDescription ? triggerId : null"
           [class.interactive]="hasDescription"
@@ -49,7 +48,7 @@ let nextId = 0;
       </ng-template>
     </ion-popover>
   `,
-  styles: [`
+    styles: [`
     :host { display: inline-flex; align-items: center; min-width: 0; }
 
     .trigger {
@@ -87,7 +86,7 @@ let nextId = 0;
 
     .service-info-body strong { display: block; margin-bottom: 4px; }
     .service-info-body p { margin: 0; white-space: pre-line; }
-  `],
+  `]
 })
 export class ServiceInfoComponent {
   @Input({required: true}) service!: Service;
