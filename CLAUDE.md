@@ -19,8 +19,24 @@ cd front && npm run build
 cd front && npm test
 cd serv && ./gradlew bootRun
 cd serv && ./gradlew test
-docker compose up --build      # stack complète
 ```
+
+### Tester la stack complète en local (comme sur le NAS)
+
+Docker Desktop doit être lancé. Créer une fois `.env.local` à partir de `.env.example` (valeurs locales, jamais commitées), puis :
+
+```bash
+docker compose -p venus-local --env-file .env.local up -d --build   # site sur http://localhost:8888
+docker logs -f venus-backend                                        # logs du backend
+docker compose -p venus-local --env-file .env.local down            # arrêt (les données restent dans les volumes)
+```
+
+### Logs
+
+- Backend : SLF4J uniquement (un test interdit `System.out` / `printStackTrace`). Chaque ligne porte l'id de requête (`[a1b2c3d4]`, aussi renvoyé dans l'en-tête `X-Request-Id`).
+- Événements de sécurité préfixés `SECURITY`, actions admin préfixées `ADMIN` : `docker logs venus-backend 2>&1 | grep -E "SECURITY|ADMIN"`.
+- Jamais de mot de passe, jeton ou email dans les logs (vérifié par `LoggingTest`) : identifier les comptes par leur id.
+- Front : pas de `console.log` (refusé par la CI), seulement `console.warn` / `console.error`.
 
 ## Organisation du travail
 
