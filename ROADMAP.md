@@ -1,6 +1,6 @@
 # Roadmap Venus
 
-Regroupe `front/TODO` et `serv/TODO`. Conventions : voir `CLAUDE.md`.
+Source unique des tâches (remplace les anciens `front/TODO` et `serv/TODO`). Conventions : voir `CLAUDE.md`.
 Cocher `[x]` quand c'est mergé dans `master`.
 
 ---
@@ -14,7 +14,7 @@ Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 - [ ] front : les admins voient tous les champs requis de chaque profil dans le tableau (détecter les problèmes de validité)
 - [ ] front : les profils favoris sont marqués comme favoris sur la homepage
 - [x] serv : sécuriser la demande de certification côté backend (refuser si déjà certifié / en cours de revue) — `chore/tests`
-- [ ] front+serv : debug — le worker ne voit pas la mise à jour de certification en live (SSE)
+- [ ] front+serv : debug — le worker ne voit pas la mise à jour de certification en live (SSE) — *cause probable corrigée dans `chore/tests` (le front lisait un rôle absent du JWT) ; à vérifier en conditions réelles*
 - [ ] test : les admins voient-ils en live les modifications des autres admins (SSE) ?
 - [ ] front : supprimer la clé `account.favorites.title` de `data.json`
 - [ ] front : simplifier les textes pour les régions (au lieu de "choisir une région" -> Région / localisation) afin de gagner de la place
@@ -33,26 +33,31 @@ Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 | `feat/certification-expiration` | Expiration automatique des certifications (table triée par date, réveil à l'échéance) | |
 | `feat/city-alert-email` | Alerte email quand un profil arrive dans la ville souhaitée | nécessite un service d'envoi d'email |
 | `feat/gallery-cache` | Cache pour réduire les requêtes de la galerie | après les tests, idéalement |
+| `feat/availability-calendar` | Les annonceurs affichent leurs jours de disponibilité à venir dans un calendrier, visible par les clients sur leur profil | version gratuite : affichage seul ; la prise de RDV sur créneaux reste en §7 |
 
 ## 3. Chantiers transverses (branches `chore/…`)
 
 À faire tôt : ils facilitent tout le reste.
 
 - [ ] `chore/tests` — mise en place des tests : non-régression, bugs existants, cas non standards / sécurité
-  - [x] serv : infrastructure d'intégration (H2, vrais JWT), matrice d'autorisation, auth/jetons, uploads, validation, IDOR, droits admin — 327 tests
-  - [ ] front : tests Angular (`ng test`) — services d'auth, guards, formulaires
-  - [ ] CI : lancer `./gradlew test` dans le workflow avant le déploiement
+  - [x] serv : infrastructure d'intégration (H2, vrais JWT), matrice d'autorisation, auth/jetons, uploads, validation, IDOR, droits admin, photos de certification privées — 334 tests
+  - [x] front : tests Angular (`ng test`) — intercepteur JWT, AuthService (SSE inclus), guards, formulaire de connexion, utilitaires, photo de certification — 51 tests
+  - [x] CI : tests backend + front sur GitHub avant tout déploiement (et sur chaque pull request)
 - [ ] `chore/english-docs` — documentation en anglais, remplacement des commentaires en français
 - [ ] `chore/logging` — logs minimaux mais clairs (SLF4J, retirer les `println`, niveaux cohérents)
+- [ ] `chore/warnings` — supprimer les warnings au démarrage de Spring et les suggestions IntelliJ pertinentes (front : warnings de build Angular)
+- [ ] `chore/refactoring` — nettoyage, factorisation du code, en particulier des fichiers SCSS (variables, mixins, styles partagés)
+- [ ] `chore/deps-upgrade` — mise à jour des dépendances pour la sécurité et les performances : MySQL 8.0 → 8.4 LTS, Angular 18 → version supportée, Ionic, Spring Boot 3.3 → dernière 3.x, Stripe, etc. *À faire après `chore/tests` : les tests servent de filet de sécurité. Une montée de version par commit.*
 
 ## 4. Sécurité — suites de l'audit (`chore/tests`)
 
 - [ ] **Déploiement** : créer le secret GitHub `JWT_SECRET` (≥ 32 caractères, ex. `openssl rand -base64 48`) avant de merger — sinon le déploiement s'arrête
-- [ ] infra : phpMyAdmin est exposé sur le port 8082 → le retirer du compose de prod ou le limiter au réseau local / VPN
-- [ ] infra : photos de certification servies publiquement par nginx (`/media/{id}/certification/…`, URL non devinable mais publique) → les stocker hors de `/media` et les servir via un endpoint admin
+- [x] infra : phpMyAdmin n'écoute plus que sur `127.0.0.1:8082` du NAS (accès via tunnel SSH)
+- [x] infra : photos de certification stockées hors de `/media` (volume `private-media`), servies uniquement aux admins par l'API ; migration automatique des anciennes photos au démarrage
 - [ ] infra : limitation de débit par IP dans nginx (`limit_req`) pour inscription / login / reset, une fois la vraie IP client connue derrière le reverse proxy Synology
-- [ ] infra : en-têtes de sécurité nginx (`X-Content-Type-Options: nosniff` sur `/media`, CSP, HSTS) et `client_max_body_size` cohérent avec les limites d'upload (50 Mo)
-- [ ] front : lire l'en-tête `X-Auth-Token` renvoyé après un changement de mot de passe / email (les anciens jetons sont révoqués) — à faire avec `feat/account-credentials`
+- [x] infra : en-têtes de sécurité nginx (nosniff, X-Frame-Options, Referrer-Policy, CSP sandbox sur `/media`) et `client_max_body_size 110m` — *syntaxe à valider au premier démarrage (`nginx -t`)*
+- [ ] infra : CSP sur l'application Angular et HSTS (au niveau du reverse proxy Synology, qui termine le HTTPS) — à tester page par page, Ionic et Stripe utilisant des styles inline
+- [x] front : l'intercepteur enregistre le jeton renvoyé dans `X-Auth-Token` et n'envoie plus le jeton qu'à notre API
 - [ ] à décider : un compte `locked` (email non vérifié) peut encore se connecter ; faut-il bloquer le login tant que l'email n'est pas vérifié ?
 - [ ] à décider : durée de vie des jetons (30 jours actuellement, révocables)
 
@@ -70,6 +75,7 @@ Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 - **Régions** générées selon le pays (et non par les utilisateurs)
 - **Certification** : une fois certifié, les photos doivent-elles rester figées (seul l'ajout autorisé) pour éviter la fraude ?
 - **Signalement de numéros de clients** par les annonceurs + outil « Vérifier un numéro » dans l'espace annonceur (plutôt qu'une app mobile)
+- **Serveur stateless / montée en charge** : pouvoir lancer plusieurs instances du backend. État actuellement gardé en mémoire à déplacer (DB ou Redis) : flux SSE (`SseStreamService`), limitation des connexions (`AbuseProtectionService`), tâches planifiées (`@Scheduled`, à exécuter sur une seule instance), future file de tarification. Les médias sont sur disque local → stockage partagé (cf. Azure Blob en §7).
 - **Super Admin** (sans la partie paiement) : tous les droits admin, page AdminAuditLog filtrable (admin, date, type, raison), ajout/suppression d'utilisateurs et admins
 - **Statistiques** : nombre de consultations par profil (et par heure)
 - **UI** : mini-carte de profil au survol au lieu de lancer le carrousel
