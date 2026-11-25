@@ -384,15 +384,21 @@ public class AdminController {
     @PostMapping("/legal")
     @Transactional
     public ResponseEntity<?> updateLegalText(@Valid @RequestBody UpdateLegalText req, Admin admin) {
+        // A new version is added: previous versions stay as proof of what was accepted
+        int previous = legalTextRepository.findFirstByNameAndLanguageOrderByVersionDesc(req.key(), req.language())
+                .map(LegalText::getVersion).orElse(0);
         LegalText legal = new LegalText();
         legal.setName(req.key());
+        legal.setLanguage(req.language());
         legal.setContent(req.content());
+        legal.setVersion(previous + 1);
         legal.setLastUpdate(LocalDateTime.now());
         legal.setAuthor(admin);
         legalTextRepository.save(legal);
 
-        logAdminAction(admin, "UPDATE_LEGAL_TEXT", legal, "Legal text updated: " + req.key());
-        return ResponseEntity.ok(Map.of("success", true));
+        logAdminAction(admin, "UPDATE_LEGAL_TEXT", legal,
+                "Legal text updated: " + req.key() + " (" + req.language() + ") v" + legal.getVersion());
+        return ResponseEntity.ok(Map.of("success", true, "version", legal.getVersion()));
     }
 
     // REGIONS

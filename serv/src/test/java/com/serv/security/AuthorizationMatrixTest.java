@@ -218,6 +218,8 @@ class AuthorizationMatrixTest extends IntegrationTest {
         assertThat(statusOf(new Endpoint(HttpMethod.GET, "/workers"), null)).isEqualTo(200);
         assertThat(statusOf(new Endpoint(HttpMethod.GET, "/common/services"), null)).isEqualTo(200);
         assertThat(statusOf(new Endpoint(HttpMethod.GET, "/common/regions"), null)).isEqualTo(200);
+        // No legal text in the emptied test database: 404, but never refused to anonymous visitors
+        assertThat(statusOf(new Endpoint(HttpMethod.GET, "/common/legal/ADULT_NOTICE"), null)).isNotIn(401, 403);
     }
 
     @Test

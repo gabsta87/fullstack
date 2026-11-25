@@ -4,7 +4,13 @@ import com.serv.database.entities.LegalText;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
-public interface LegalTextRepository extends JpaRepository<LegalText, Integer> {
-    LegalText findByName(String name);
+public interface LegalTextRepository extends JpaRepository<LegalText, Long> {
+
+    /** Current version of a legal text in a language. */
+    Optional<LegalText> findFirstByNameAndLanguageOrderByVersionDesc(String name, String language);
+
+    boolean existsByName(String name);
 }

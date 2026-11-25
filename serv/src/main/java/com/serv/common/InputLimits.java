@@ -25,6 +25,10 @@ public final class InputLimits {
     public static final int REASON_MAX = 1000;
     public static final int NAME_MAX = 100;
     public static final int LEGAL_CONTENT_MAX = 200_000;
+    /** Legal text keys: upper-case words, e.g. ADULT_NOTICE. */
+    public static final String LEGAL_KEY_PATTERN = "[A-Z][A-Z_]{0,39}";
+    /** Site language codes (front data.json keys). */
+    public static final String SITE_LANGUAGE_PATTERN = "fr|en|de|es|pt|it|ru|ua|ar";
     public static final int LIST_MAX = 50;
 
     public static final int MAX_CREDIT_DAYS = 3650;
