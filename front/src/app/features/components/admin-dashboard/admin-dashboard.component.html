@@ -2,7 +2,7 @@
 
 @if (languageService.currentLanguage$ | async; as t) {
   <ion-header class="ion-no-border">
-    <!-- Segments de navigation des onglets -->
+    <!-- Tab navigation segments -->
     <ion-toolbar color="light">
       <ion-segment [(ngModel)]="currentTab">
         <ion-segment-button value="users">
@@ -30,7 +30,7 @@
     </ion-toolbar>
   </ion-header>
   <ion-content class="ion-padding content-with-bottom-spacing">
-    <!-- ONGLET 1 : UTILISATEURS (Table PrimeNG) -->
+    <!-- TAB 1: USERS (PrimeNG table) -->
     @if (currentTab === 'users') {
       <div>
         <div class="admin-toolbar ion-margin-bottom admin-flex-toolbar">
@@ -77,13 +77,13 @@
           </ng-template>
           <ng-template #body let-user>
             <tr>
-              <!-- Pseudo cliquable pour consulter le profil -->
+              <!-- Clickable username to open the profile -->
               <td>
                 <a (click)="viewProfile(user)" class="clickable-username">
                   {{ user.username }}
                 </a>
               </td>
-              <!-- Email cliquable avec mailto -->
+              <!-- Clickable email (mailto) -->
               <td>
                 <a [href]="'mailto:' + user.email" class="mailto-link" title="Envoyer un e-mail">
                   {{ user.email }}
@@ -93,7 +93,7 @@
                 <p-tag [value]="user.role"></p-tag>
               </td>
               <td>{{ user.birthdate }}</td>
-              <!-- Colonne Banned avec tooltip explicatif -->
+              <!-- Banned column with explanatory tooltip -->
               <td>
                 <ion-button size="small"
                   [fill]="user.banned ? 'solid' : 'outline'"
@@ -104,7 +104,7 @@
                   {{ user.banned ? t.common?.banned : t.admin?.users_tab?.btn_ban }}
                 </ion-button>
               </td>
-              <!-- Colonne Locked avec tooltip explicatif -->
+              <!-- Locked column with explanatory tooltip -->
               <td>
                 <ion-button size="small"
                   [fill]="user.locked ? 'solid' : 'outline'"
@@ -125,7 +125,7 @@
                   </span>
                 }
               </td>
-              <!-- Certification et option de révocation (Harmonisé) -->
+              <!-- Certification and revocation -->
               <td>
                 <div class="certif-cell-wrapper">
                   <span>{{ user.certificationStatus || '' }}</span>
@@ -158,7 +158,7 @@
         </p-table>
       </div>
     }
-    <!-- ONGLET 2 : CERTIFICATIONS EN ATTENTE -->
+    <!-- TAB 2: PENDING CERTIFICATIONS -->
     @if (currentTab === 'certifications') {
       <div>
         @if (pendingCertificationRequests$ | async; as requests) {
@@ -196,7 +196,7 @@
         }
       </div>
     }
-    <!-- MODALE DE DÉTAIL DE LA CERTIFICATION -->
+    <!-- CERTIFICATION DETAILS MODAL -->
     <ion-modal [isOpen]="isCertifModalOpen" (didDismiss)="closeCertificationModal()">
       <ng-template>
         <ion-header>
@@ -212,14 +212,14 @@
             <h3>{{ t.admin?.certif_tab?.advertiser_label }} {{ selectedWorkerDetails.username }}</h3>
             <p><strong>{{ t.admin?.certif_tab?.expected_code_label }}</strong> <span class="expected-code-highlight">{{ selectedWorkerDetails.certificationRequest?.verificationCode }}</span></p>
             <hr class="modal-divider" />
-            <!-- Photo de certification -->
+            <!-- Certification photo -->
             <div class="image-verification-box ion-margin-bottom">
               <img [src]="$safeNavigationMigration(selectedWorkerDetails.certificationRequest?.certificationPhotoUrl)"
                 (click)="openImagePreview(selectedWorkerDetails.certificationRequest?.certificationPhotoUrl ?? '', certificationPreviewList)"
                 class="certif-preview-img"
                 alt="Photo de certification" />
             </div>
-            <!-- Autres photos du profil -->
+            <!-- Other photos of the profile -->
             <h4>{{ t.admin?.certif_tab?.other_photos_title }}</h4>
             @if (selectedWorkerDetails.photos && selectedWorkerDetails.photos.length > 0) {
               <div class="other-photos-container">
@@ -302,7 +302,7 @@
         </ion-content>
       </ng-template>
     </ion-modal>
-    <!-- ONGLET 3 : SIGNALEMENTS -->
+    <!-- TAB 3: REPORTS -->
     @if (currentTab === 'reports') {
       <div>
         <div class="reports-header-margin">
@@ -340,7 +340,7 @@
         </p-table>
       </div>
     }
-    <!-- MODALE DE CONSULTATION DES SIGNALEMENTS -->
+    <!-- REPORTS MODAL -->
     <ion-modal [isOpen]="isReportsModalOpen" (didDismiss)="closeReportsModal()">
       <ng-template>
         <ion-header>
@@ -394,7 +394,7 @@
         }
       </ng-template>
     </ion-modal>
-    <!-- ONGLET 4 : SERVICES -->
+    <!-- TAB 4: SERVICES -->
     @if (currentTab === 'services') {
       <div>
         <div class="tab-header-flex">
@@ -436,7 +436,7 @@
         </p-table>
       </div>
     }
-    <!-- ONGLET 5 : ZONES GÉOGRAPHIQUES -->
+    <!-- TAB 5: GEOGRAPHIC ZONES -->
     @if (currentTab === 'zones') {
       <div>
         <div class="tab-header-flex">
@@ -484,7 +484,7 @@
         </p-table>
       </div>
     }
-    <!-- ONGLET 6 : JOURNAL D'AUDIT -->
+    <!-- TAB 6: AUDIT LOG -->
     @if (currentTab === 'logs') {
       <div>
         <ion-list>
@@ -501,7 +501,7 @@
         </ion-list>
       </div>
     }
-    <!-- ONGLET 7 : ADMINISTRATION / ÉQUIPE -->
+    <!-- TAB 7: ADMINISTRATION / TEAM -->
     @if (currentTab === 'admins') {
       <div>
         <div class="tab-header-flex ion-margin-bottom">

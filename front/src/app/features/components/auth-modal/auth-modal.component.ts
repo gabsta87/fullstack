@@ -80,7 +80,7 @@ export class AuthModalComponent implements OnInit {
     if (this.mode === 'login') {
       this.authService.login(email, password).subscribe({
         next: (user) => {
-          this.handleSuccess(user); // 🎯 3. On passe l'utilisateur pour gérer la redirection
+          this.handleSuccess(user); // Pass the user to pick the redirection
         },
         error: (err) => {
           console.error("Erreur reçue du serveur :", err);
@@ -104,10 +104,10 @@ export class AuthModalComponent implements OnInit {
 
       call.subscribe({
         next: () => {
-          // 🎯 Dès que l'inscription réussit, on se connecte immédiatement en tâche de fond
+          // Once registered, log in right away
           this.authService.login(email, password).subscribe({
             next: (loggedInUser) => {
-              // On passe le user connecté pour que handleSuccess() fasse la redirection vers le bon espace !
+              // handleSuccess() redirects to the user's space
               this.handleSuccess(loggedInUser);
             },
             error: (err) => {
@@ -122,12 +122,12 @@ export class AuthModalComponent implements OnInit {
     }
   }
 
-  // 🎯 5. Nouvelle logique de succès centralisée avec routage intelligent
+  // Success: redirect according to the role
   private handleSuccess(user: any) {
     this.isLoading = false;
     this.modalCtrl.dismiss(true);
 
-    // On récupère le rôle de l'utilisateur fraîchement connecté
+    // Role of the freshly logged-in user
     const userRole = user?.role || this.authService.getUser()?.role;
 
     if (userRole === UserRole.WORKER) {
@@ -137,7 +137,7 @@ export class AuthModalComponent implements OnInit {
     } else if (userRole === UserRole.ADMIN || userRole === UserRole.SUPER_ADMIN) {
       this.router.navigate(['/admin-dashboard']);
     } else {
-      // Par sécurité, si le rôle est indéterminé à cet instant précis
+      // Role unknown at this point: go home
       this.router.navigate(['/']);
     }
   }

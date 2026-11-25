@@ -2,7 +2,7 @@
   --background: #ffffff;
 }
 
-/* Fixation de la barre de recherche au sommet de la page */
+/* Search bar fixed at the top of the page */
 .filter-banner-sticky {
   position: sticky;
   top: 0;
@@ -12,13 +12,13 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
-/* Grille principale ajustée sur les côtés et espacement réduit entre les cartes */
+/* Main grid: side margins and tighter spacing between cards */
 ion-grid.cards-grid {
   padding: 8px 12px;
   margin: 0;
 
   ion-col.card-col {
-    padding: 6px; /* Réduit l'espace (gouttière) entre les cartes */
+    padding: 6px; /* Smaller gutter between cards */
   }
 }
 
@@ -26,10 +26,10 @@ ion-grid.cards-grid {
   opacity: 0.6;
 }
 
-// ── BANNIÈRE DE FILTRES ──────────────────────────────────────────────────────
-// Toutes les hauteurs et tous les espacements de la barre dérivent de ces deux
-// variables. Elles sont héritées par zone-selector (CSS custom properties
-// traversent les composants et le shadow DOM).
+// ── FILTER BANNER ────────────────────────────────────────────────────────────
+// All heights and spacings of the bar derive from these two
+// variables. zone-selector inherits them (CSS custom properties
+// cross component and shadow DOM boundaries).
 .filter-banner {
   --field-h: 40px;
   --field-gap: 8px;
@@ -46,8 +46,8 @@ ion-grid.cards-grid {
     margin: 0;
   }
 
-  // Gouttière : chaque colonne a un padding droit, compensé par une marge
-  // négative sur la ligne -> bords alignés quel que soit le retour à la ligne.
+  // Gutter: each column has a right padding, offset by a negative margin
+  // on the row -> edges stay aligned whatever the wrapping.
   ion-row {
     row-gap: var(--field-gap);
     margin-right: calc(-1 * var(--field-gap));
@@ -61,9 +61,9 @@ ion-grid.cards-grid {
     padding: 0 var(--field-gap) 0 0;
   }
 
-  // ── Champs (ion-item) ──
-  // Le host fait exactement --field-h (bordure comprise) ; l'intérieur d'Ionic
-  // (.item-native, min-height 48px par défaut) est ramené à --field-h - 2px.
+  // ── Fields (ion-item) ──
+  // The host is exactly --field-h (border included); Ionic's inner element
+  // (.item-native, min-height 48px by default) is brought down to --field-h - 2px.
   .filter-input-item,
   age-range-selector {
     box-sizing: border-box;
@@ -86,7 +86,7 @@ ion-grid.cards-grid {
     box-shadow: none;
     overflow: hidden;
 
-    // ion-select / ion-input ont un min-height de 44px dans Ionic 8
+    // ion-select / ion-input have a 44px min-height in Ionic 8
     ion-select,
     ion-input {
       min-height: 0;
@@ -118,7 +118,7 @@ ion-grid.cards-grid {
     min-width: 0;
   }
 
-  // ── Boutons ──
+  // ── Buttons ──
   .filter-actions {
     height: var(--field-h);
     justify-content: flex-end;
@@ -140,7 +140,7 @@ ion-grid.cards-grid {
     white-space: nowrap;
   }
 
-  // ── Filtres avancés ──
+  // ── Advanced filters ──
   .advanced-filters-wrapper {
     margin-top: var(--field-gap);
     padding-top: var(--field-gap);
@@ -167,7 +167,7 @@ ion-grid.cards-grid {
     .filter-main-row {
       flex-wrap: wrap;
 
-      // Le champ nom prend toute la place restante à côté des boutons
+      // The name field takes all the remaining space next to the buttons
       > .name-col {
         flex: 1 1 120px;
       }
@@ -177,7 +177,7 @@ ion-grid.cards-grid {
       }
     }
 
-    // Boutons en icônes seules, carrés
+    // Icon-only square buttons
     .btn-label {
       display: none;
     }

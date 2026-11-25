@@ -15,7 +15,7 @@
   text-transform: none;
   white-space: nowrap;
 
-  // Logo (ailes + V) à la place de l'ancien losange ◆
+  // Logo (wings + V)
   .brand-logo {
     width: 40px;
     height: 40px;
@@ -88,7 +88,7 @@
   }
 }
 
-// ── ADAPTATION PETITS ÉCRANS (MOBILE) ─────────────────────────────────────────
+// ── SMALL SCREENS (MOBILE) ────────────────────────────────────────────────────
 @media (max-width: 767px) {
   .brand-button {
     --padding-start: 8px;

@@ -12,8 +12,8 @@ export interface LoginResponse {
 }
 
 export interface SpokenLanguage {
-  language: string; // Correspond à l'enum Language (ex: 'FR', 'EN', etc.)
-  level: number;    // Entre 1 et 4
+  language: string; // Matches the Language enum (e.g. 'FR', 'EN')
+  level: number;    // Between 1 and 4
 }
 
 export const CertificationStatus = {

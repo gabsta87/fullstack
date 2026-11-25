@@ -8,14 +8,14 @@ import {Service} from '../../models/common.model';
 let nextId = 0;
 
 /**
- * Affiche la description (facultative) d'un service dans une bulle.
- * - Desktop (souris) : au survol.
- * - Mobile / tactile  : au toucher, fermeture en touchant ailleurs.
+ * Shows the (optional) description of a service in a bubble.
+ * - Desktop (mouse): on hover.
+ * - Mobile / touch: on tap, closed by tapping elsewhere.
  *
- * Le contenu projeté (ex. le nom du service) fait partie du déclencheur :
- *   <service-info [service]="s">{{ s.name }}</service-info>  -> nom + icône cliquables
- *   <service-info [service]="s"></service-info>               -> icône seule
- * Sans description, rien n'est cliquable et aucune icône n'est affichée.
+ * The projected content (e.g. the service name) is part of the trigger:
+ *   <service-info [service]="s">{{ s.name }}</service-info>  -> name + icon are clickable
+ *   <service-info [service]="s"></service-info>               -> icon only
+ * Without a description, nothing is clickable and no icon is shown.
  */
 @Component({
     selector: 'service-info',
@@ -97,7 +97,7 @@ export class ServiceInfoComponent {
 
   readonly triggerId = `service-info-${nextId++}`;
 
-  /** Survol si l'appareil a une vraie souris, sinon toucher. */
+  /** Hover when the device has a real mouse, tap otherwise. */
   readonly triggerAction: 'hover' | 'click' =
     typeof window !== 'undefined' && window.matchMedia?.('(hover: hover) and (pointer: fine)').matches
       ? 'hover'

@@ -20,7 +20,7 @@ ion-modal::part(content) {
   --padding-bottom: 120px;
 }
 
-// ── Onglets « pilule » partagés (profile-management, account) ────────────────
+// ── Shared "pill" tabs (profile-management, account) ────────────────────────
 // Usage : <ion-toolbar class="venus-tabs"><ion-segment mode="md">…
 .venus-tabs {
   --background: transparent;

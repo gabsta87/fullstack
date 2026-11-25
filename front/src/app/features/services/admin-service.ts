@@ -77,7 +77,7 @@ export class AdminService {
 
     this.adminEventSource = new EventSource(`${this.apiUrl}/stream?token=${token}`);
 
-    // 1. Événements de certification
+    // 1. Certification events
     const certificationEvents = [
       'CERTIFICATION_UPDATED',
       'CERTIFICATION_LOCKED',
@@ -95,12 +95,12 @@ export class AdminService {
       this.zone.run(() => this.refreshReports());
     });
 
-    // 2. Événements de gestion des services
+    // 2. Service management events
     this.adminEventSource.addEventListener('SERVICES_UPDATED', () => {
       this.zone.run(() => this.refreshServices());
     });
 
-    // 3. Événements de gestion des régions
+    // 3. Region management events
     const regionEvents = ['REGIONS_UPDATED', 'ZONE_CREATED', 'ZONE_MODIFIED'];
     regionEvents.forEach(eventName => {
       this.adminEventSource?.addEventListener(eventName, () => {
@@ -108,7 +108,7 @@ export class AdminService {
       });
     });
 
-    // 🚀 3. ANTICIPATION FUTURE : possibilité d'ajouter d'autres blocs ici sans tout casser
+    // More event types can be added here
     /*
     const userEvents = ['USER_LOCKED', 'USER_UPDATED', 'USER_BANNED'];
     userEvents.forEach(eventName => {

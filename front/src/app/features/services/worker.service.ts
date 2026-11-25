@@ -21,11 +21,11 @@ export class WorkerService {
   getGalleryPage(page: number, filters: GalleryFilters): Observable<WorkerMinimalProfile[]> {
     let params = new HttpParams().set('page', page.toString());
 
-    // 🎯 Boucle dynamique sur toutes les clés de l'objet de filtres
+    // Every key of the filters object
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '' && value !== -1) {
         if (Array.isArray(value)) {
-          // Pour les tableaux (services, languages) : on ajoute chaque élément au même paramètre
+          // Arrays (services, languages): each element goes into the same parameter
           value.forEach(val => {
             params = params.append(key, val.toString());
           });
@@ -61,7 +61,7 @@ export class WorkerService {
   getWorkersServices(): Promise<Service[]> {
     if (!this.servicesCache$) {
       this.servicesCache$ = this.http.get<Service[]>(`${environment.apiBase}/common/services`).pipe(
-        shareReplay(1) // 👈 Conserve la réponse en cache pour tous les abonnements futurs
+        shareReplay(1) // Cache the response for every future subscriber
       );
     }
     return firstValueFrom(this.servicesCache$);

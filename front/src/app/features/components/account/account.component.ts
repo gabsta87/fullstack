@@ -68,7 +68,7 @@ export class AccountComponent implements OnInit {
     this.selectedZoneId = event.childZoneId;
     const targetId = event.childZoneId || event.parentZoneId;
 
-    // On cherche dans les parents OU dans les sous-zones aplaties en une seule ligne
+    // Look in the root zones OR in the flattened sub-zones
     user.geographicZone = targetId
       ? (this.locations.find(p => p.id === targetId) || this.locations.flatMap(p => p.subZones || []).find(c => c.id === targetId) || null)
       : null;
@@ -113,7 +113,7 @@ export class AccountComponent implements OnInit {
     try {
       await this.clientAccountService.postComment(comment.workerId, this.editingCommentText);
 
-      // Mise à jour locale
+      // Local update
       comment.content = this.editingCommentText;
       comment.date = new Date().toISOString();
 
@@ -131,7 +131,7 @@ export class AccountComponent implements OnInit {
 
     try {
       await this.clientAccountService.deleteComment(commentId);
-      // Retrait local pour mise à jour synchrone sans rechargement
+      // Remove locally: synchronous update without reloading
       user.reviews = user.reviews.filter(c => c.id !== commentId);
     } catch (err) {
       console.error("Erreur lors de la suppression", err);

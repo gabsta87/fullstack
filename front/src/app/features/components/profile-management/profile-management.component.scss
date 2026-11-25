@@ -10,7 +10,7 @@
   }
 }
 
-// ── EN-TÊTE PROFIL (HERO) ──────────────────────────────────────────────────
+// ── PROFILE HEADER (HERO) ──────────────────────────────────────────────────
 .pm-hero {
   display: flex;
   align-items: center;
@@ -97,7 +97,7 @@
     }
   }
 
-  // Mobile : avatar plus petit, statuts sous le nom (jamais par-dessus l'avatar)
+  // Mobile: smaller avatar, statuses under the name (never over the avatar)
   @media (max-width: 576px) {
     gap: 14px;
     padding: 12px;
@@ -121,7 +121,7 @@
   display: block;
 }
 
-// ── CHAMPS DE FORMULAIRE UNIFORMES ─────────────────────────
+// ── UNIFORM FORM FIELDS ─────────────────────────────────
 .venus-input, .description-container {
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
@@ -138,7 +138,7 @@
   padding-bottom: 10px;
 }
 
-// ── CARTE PRINCIPALE (.pm-card) ─────────────────────────────
+// ── MAIN CARD (.pm-card) ────────────────────────────────
 .pm-card {
   --background: var(--surface-card);
   border-radius: var(--radius-md);
@@ -159,8 +159,8 @@
       margin-bottom: 12px;
     }
 
-    // Gouttière : padding des colonnes compensé par une marge négative,
-    // les colonnes passent à la ligne selon leurs size/size-sm/size-md.
+    // Gutter: column padding offset by a negative margin,
+    // columns wrap according to their size/size-sm/size-md.
     ion-row {
       flex-wrap: wrap;
       row-gap: var(--gutter);
@@ -174,7 +174,7 @@
   }
 }
 
-// ── LANGUES ─────────────────────────────────────────────────
+// ── LANGUAGES ───────────────────────────────────────────
 .languages-container {
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
@@ -211,7 +211,7 @@
         font-size: 0.8rem;
       }
 
-      // Suppression : icône corbeille, rougit au survol
+      // Delete: trash icon, turns red on hover
       .chip-remove {
         display: inline-flex;
         align-items: center;
@@ -245,7 +245,7 @@
     margin-bottom: 12px;
   }
 
-  // Ligne d'ajout : selects et bouton à la même hauteur
+  // Add row: selects and button at the same height
   .add-language-row {
     margin-bottom: 0 !important;
   }
@@ -319,7 +319,7 @@
   }
 }
 
-// ── BANNIÈRE D'AVERTISSEMENT PROFIL INCOMPLET ──────────────────────────────
+// ── INCOMPLETE PROFILE WARNING BANNER ──────────────────────────────────────
 .profile-warning-banner {
   display: flex;
   align-items: flex-start;
@@ -365,7 +365,7 @@
   }
 }
 
-// ── ÉTATS D'ERREUR (VALIDATION) ────────────────────────────────────────────
+// ── ERROR STATES (VALIDATION) ──────────────────────────────────────────────
 .invalid-item {
   border-color: var(--ion-color-danger, #eb445a) !important;
   background: rgba(235, 68, 90, 0.02) !important;
@@ -399,7 +399,7 @@
   }
 }
 
-// ── ONGLET PHOTOS (ZONE DE DROP & GALERIE) ─────────────────────────────────
+// ── PHOTOS TAB (DROP ZONE & GALLERY) ───────────────────────────────────────
 .drop-zone-container{
   width: 80%;
   margin: 0 auto;

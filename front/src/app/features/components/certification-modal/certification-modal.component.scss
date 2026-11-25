@@ -107,8 +107,8 @@
   }
 }
 
-// 💡 Style global ou classe utilitaire pour élargir la modale
-// (À passer dans le cssClass du modalController lors de l'ouverture)
+// Wider modal
+// (pass it as cssClass when opening the modal)
 host.ion-page {
   --width: 600px;
   --max-width: 90vw;

@@ -5,7 +5,7 @@
     >
     @if (currentUser$ | async; as me) {
       <div class="pm-wrapper">
-        <!-- Bannière d'alerte profil incomplet -->
+        <!-- Incomplete profile warning -->
         @if (getMissingFieldsList(me).length > 0) {
           <div class="profile-warning-banner">
             <ion-icon name="warning-outline" color="danger"></ion-icon>
@@ -20,7 +20,7 @@
             </div>
           </div>
         }
-        <!-- En-tête : avatar + nom + statuts -->
+        <!-- Header: avatar + name + statuses -->
         <section class="pm-hero">
           <div class="avatar-wrapper">
             <ion-avatar>
@@ -35,7 +35,7 @@
           <div class="profile-title">
             <h1>{{ me.username }}</h1>
             <div class="badges-container">
-              <!-- Bouton Statut En Ligne / Hors Ligne -->
+              <!-- Online / offline status button -->
               <ion-button [color]="me.available ? 'success' : 'medium'"
                 class="status-badge"
                 size="small"
@@ -51,7 +51,7 @@
                 <ion-icon [name]="!me.hidden ? 'eye-outline' : 'eye-off-outline'" slot="start"></ion-icon>
                 {{ !me.hidden ? t.common?.visible : t.common?.invisible }}
               </ion-button>
-              <!-- Pastille de Certification Dynamique -->
+              <!-- Dynamic certification badge -->
               @if (currentUser$ | async; as me) {
                 <ion-button
                   [color]="getCertificationBadge(me, t).color"
@@ -71,7 +71,7 @@
             </div>
           </div>
         </section>
-        <!-- Navigation par Onglets -->
+        <!-- Tab navigation -->
         <ion-toolbar class="venus-tabs">
           <ion-segment [(ngModel)]="activeTab" mode="md">
             <ion-segment-button value="profile">
@@ -92,7 +92,7 @@
         </ion-toolbar>
         <ion-card class="pm-card ion-no-margin">
           <ion-card-content>
-            <!-- ONGLET PROFIL -->
+            <!-- PROFILE TAB -->
             @if (activeTab === 'profile') {
               <div class="fade-in">
                 <ion-grid class="ion-no-padding">
@@ -160,7 +160,7 @@
                     </ion-col>
                   </ion-row>
                   <ion-row>
-                    <!-- Téléphone -->
+                    <!-- Phone -->
                     <ion-col size="12" size-sm="6">
                       <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('phone', me)">
                         <ion-label position="stacked">{{ t.common?.phone }} *</ion-label>
@@ -236,14 +236,14 @@
                     </ion-col>
                   </ion-row>
                   <ion-row>
-                    <!-- Langues Parlées -->
+                    <!-- Spoken languages -->
                     <ion-col size="12">
                       <div class="languages-container">
                         <ion-grid class="ion-no-padding">
                           <ion-label class="section-box-title">
                             {{ t.profile_management?.form?.languages_title || 'Known languages' }}
                           </ion-label>
-                          <!-- Liste des langues déjà sélectionnées (Chips) -->
+                          <!-- Selected languages (chips) -->
                           @if (profileLanguages && profileLanguages.length > 0) {
                             <div class="selected-languages-chips ion-margin-bottom"
                               >
@@ -270,7 +270,7 @@
                               {{ t.profile_management?.form?.no_languages || 'Aucune langue ajoutée pour le moment.' }}
                             </p>
                           }
-                          <!-- Formulaire rapide pour ajouter une langue -->
+                          <!-- Quick form to add a language -->
                           <ion-row class="add-language-row ion-align-items-center">
                             <ion-col size="6" size-md="5">
                               <ion-item lines="none" class="venus-input input-compact">
@@ -342,7 +342,7 @@
                 </ion-grid>
               </div>
             }
-            <!-- ONGLET PHOTOS / MÉDIAS -->
+            <!-- PHOTOS / MEDIA TAB -->
             @if (activeTab === 'photos') {
               <div class="fade-in">
                 <div class="drop-zone-container">
@@ -366,7 +366,7 @@
                       {{ t.profile_management?.media?.add_btn }}
                     </ion-button>
                   </div>
-                  <!-- Galerie Photos -->
+                  <!-- Photo gallery -->
                   <div class="media-section-title">
                     <h3>{{ t.common?.photos }} <span class="required-asterisk">*</span></h3>
                   </div>
@@ -401,7 +401,7 @@
                       }
                     </ion-row>
                   </ion-grid>
-                  <!-- Galerie Vidéos -->
+                  <!-- Video gallery -->
                   <div class="media-section-title ion-margin-top">
                     <h3>{{ t.common?.videos }} <span class="optional-text">{{ t.common?.optional }}</span></h3>
                   </div>
@@ -425,7 +425,7 @@
                   </ion-grid>
                 </div>
               }
-              <!-- ONGLET COMPTE -->
+              <!-- ACCOUNT TAB -->
               @if (activeTab === 'settings') {
                 <div class="fade-in">
                   <account-settings [initialEmail]="me.email ? me.email : ''"></account-settings>

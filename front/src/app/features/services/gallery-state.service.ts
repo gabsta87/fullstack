@@ -6,7 +6,7 @@ import {GalleryFilters} from "../models/filter.model";
   providedIn: 'root'
 })
 export class GalleryStateService {
-  // On y stocke exactement les variables de ta Homepage
+  // Same variables as the homepage
   allWorkers: WorkerMinimalProfile[] = [];
   filters: GalleryFilters = {};
   currentPage = 0;
@@ -16,7 +16,7 @@ export class GalleryStateService {
   showMoreFilters = false;
   scrollTop?: number;
 
-  // Permet de vider le cache proprement (ex: clic sur "Effacer")
+  // Clears the cache (e.g. "Clear" button)
   clear(): void {
     this.allWorkers = [];
     this.filters = {};

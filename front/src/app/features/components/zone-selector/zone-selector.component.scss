@@ -28,8 +28,8 @@ ion-item {
   }
 }
 
-// Mode formulaire (profile-management) : même gouttière que les autres champs
-// (--gutter défini par .pm-wrapper), passage à la ligne sous ~400px.
+// Form mode (profile-management): same gutter as the other fields
+// (--gutter set by .pm-wrapper), wraps below ~400px.
 .form-profile-mode {
   display: flex;
   flex-wrap: wrap;
@@ -47,8 +47,8 @@ ion-item {
   }
 }
 
-// Mode barre de filtres : hauteur et espacement hérités de la bannière parente
-// (--field-h / --field-gap définis dans homepage.component.scss).
+// Filter bar mode: height and spacing inherited from the parent banner
+// (--field-h / --field-gap set in homepage.component.scss).
 .filter-banner-mode {
   display: flex;
   flex-wrap: nowrap;
@@ -65,7 +65,7 @@ ion-item {
     overflow: hidden;
   }
 
-  // ion-select a un min-height de 44px dans Ionic 8
+  // ion-select has a 44px min-height in Ionic 8
   ion-select {
     min-height: 0;
     width: 100%;

@@ -11,7 +11,7 @@
   padding: 12px 16px 80px;
 }
 
-// Retour : simple lien compact
+// Back: simple compact link
 .back-link {
   display: inline-flex;
   align-items: center;
@@ -46,7 +46,7 @@
   min-width: 0;
 }
 
-// ── Cartes ────────────────────────────────────────────────────────────────────
+// ── Cards ─────────────────────────────────────────────────────────────────────
 .profile-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -73,7 +73,7 @@
   }
 }
 
-// Identité
+// Identity
 .hero-card {
   display: flex;
   flex-direction: column;
@@ -135,7 +135,7 @@
   }
 }
 
-// Détails + langues
+// Details + languages
 .details-card {
   .sub-title { margin-top: 16px; }
 }
@@ -186,7 +186,7 @@
   }
 }
 
-// Galerie : petites vignettes cliquables
+// Gallery: small clickable thumbnails
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -228,7 +228,7 @@
   }
 }
 
-// À propos
+// About
 .about-card {
   .description {
     margin: 0 0 12px;
@@ -252,7 +252,7 @@
   color: #6b5b52;
 }
 
-// Avis
+// Reviews
 .review-form {
   padding-bottom: 16px;
   margin-bottom: 4px;
@@ -325,7 +325,7 @@
   color: var(--muted);
 }
 
-// ── Tablette / mobile : une seule colonne, cartes réordonnées ─────────────────
+// ── Tablet / mobile: single column, cards reordered ───────────────────────────
 @media (max-width: 900px) {
   .layout {
     display: flex;
@@ -334,8 +334,8 @@
     gap: var(--card-gap);
   }
 
-  // Les colonnes disparaissent : leurs cartes deviennent enfants directs
-  // de .layout, ce qui permet de les ordonner librement.
+  // The columns disappear: their cards become direct children
+  // of .layout, so they can be ordered freely.
   .sidebar,
   .content-col {
     display: contents;
@@ -348,7 +348,7 @@
   .details-card { order: 5; }
   .reviews-card { order: 6; }
 
-  // Identité en ligne : avatar à gauche, nom à droite
+  // Identity on one line: avatar on the left, name on the right
   .hero-card {
     flex-direction: row;
     align-items: center;
@@ -364,7 +364,7 @@
     .hero-info { min-width: 0; }
   }
 
-  // Actions : « Contacter » prend la place, les autres sont des icônes carrées
+  // Actions: "Contact" takes the space, the others are square icons
   .actions-card {
     flex-direction: row;
     align-items: center;
@@ -404,7 +404,7 @@
   .hero-card .worker-name { font-size: 1.3rem; }
 }
 
-// ── Lightbox (Style original conservé) ───────────────────────────────────────
+// ── Lightbox ─────────────────────────────────────────────────────────────────
 .lightbox {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(0,0,0,0.9); z-index: 2000;
@@ -444,7 +444,7 @@
   ion-spinner { --color: var(--accent); width: 40px; height: 40px; }
 }
 
-// ── Swiper Plein Écran ────────────────────────────────────────────────────────
+// ── Full-screen Swiper ────────────────────────────────────────────────────────
 .fullscreen-photo-modal {
   --width: 100%;
   --height: 100%;
@@ -473,7 +473,7 @@
     height: 100%;
   }
 
-  /* Force le composant Swiper moderne en plein écran horizontal */
+  /* Full-screen horizontal Swiper */
   swiper-container.banner-slides {
     width: 100%;
     height: 100%;
@@ -511,7 +511,7 @@
     outline: none;
   }
 
-  /* Flèches latérales remises au premier plan */
+  /* Side arrows brought to the front */
   .gallerySideButton {
     position: absolute;
     top: 50%;
@@ -546,9 +546,9 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.5); // L'écran grisé
+  background: rgba(0, 0, 0, 0.5); // Dimmed backdrop
   backdrop-filter: blur(2px);
-  z-index: 3000; // Au-dessus de tout
+  z-index: 3000; // Above everything
   display: flex;
   align-items: center;
   justify-content: center;
@@ -556,7 +556,7 @@
   animation: fadeInBackdrop 0.2s ease;
 
   .custom-modal-card {
-    background: #fbf9f7; // Fond beige/chaleureux cohérent
+    background: #fbf9f7; // Warm beige background
     width: 100%;
     max-width: 380px;
     border-radius: 16px;
@@ -654,7 +654,7 @@
   }
 }
 
-// Petites animations fluides d'ouverture
+// Smooth opening animations
 @keyframes fadeInBackdrop {
   from { opacity: 0; }
   to { opacity: 1; }

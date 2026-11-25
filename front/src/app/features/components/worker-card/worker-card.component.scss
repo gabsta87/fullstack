@@ -62,7 +62,7 @@
   }
 }
 
-// ── Nom et localisation par-dessus l'image (Tokens centralisés) ──────────────
+// ── Name and location over the image ─────────────────────────────────────
 
 .wcard-overlay-info {
   position: absolute;
@@ -72,7 +72,7 @@
   width: 90%;
   text-align: center;
   z-index: 2;
-  pointer-events: none; // Laisse passer les clics vers la carte
+  pointer-events: none; // Clicks go through to the card
 
   .wcard-overlay-title {
     margin: 0;
@@ -80,7 +80,7 @@
     font-weight: 650;
     color: var(--text-dark);
 
-    // Alignement flex pour l'icône de certification
+    // Flex alignment for the certification icon
     display: flex;
     align-items: center;
     justify-content: center;
@@ -104,9 +104,9 @@
     margin: 2px 0 0 0;
     font-size: 0.85rem;
     font-weight: 500;
-    color: var(--text-dark); // Utilisation du token de texte foncé
+    color: var(--text-dark); // Dark text token
 
-    // Solution 1 : Même halo de contraste pour la localisation
+    // Same contrast halo for the location
     text-shadow:
       -1px -1px 0 var(--surface),
       1px -1px 0 var(--surface),
@@ -189,7 +189,7 @@
   50%       { opacity: 0.35; }
 }
 
-// Cœur « favori » (visible uniquement pour un client connecté)
+// "Favorite" heart (only for a logged-in client)
 .favorite-mark {
   position: absolute;
   top: 8px;

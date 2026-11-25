@@ -16,7 +16,7 @@ import {IonicModule} from "@ionic/angular";
 export class CertificationModalComponent implements OnInit {
   @Input() verificationCode!: string;
   @Input() adminMessage?: string;
-  @Input() existingPhotoUrl?: string; // Optionnel : si l'utilisateur a déjà soumis une photo
+  @Input() existingPhotoUrl?: string; // Optional: the user may already have submitted a photo
 
   selectedFile: File | null = null;
   previewUrl: string | null = null;
@@ -31,7 +31,7 @@ export class CertificationModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Si une photo existe déjà en base, on l'affiche par défaut dans l'aperçu
+    // Show the existing photo in the preview
     if (this.existingPhotoUrl) {
       this.previewUrl = this.existingPhotoUrl;
     }
@@ -45,7 +45,7 @@ export class CertificationModalComponent implements OnInit {
     const file = event.target.files[0];
     if (file) {
       this.selectedFile = file;
-      // Génère une URL temporaire pour afficher l'aperçu immédiat de la nouvelle photo
+      // Temporary URL to preview the new photo right away
       this.previewUrl = URL.createObjectURL(file);
     }
   }

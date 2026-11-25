@@ -8,7 +8,7 @@ import {GalleryFilters} from "../models/filter.model";
 
 @Injectable({ providedIn: 'root' })
 export class ClientAccountService {
-  // 🎯 Changement de chemin vers le contrôleur spécifique Client
+  // Client-specific controller
   private base = `${environment.apiBase}/account/client`;
   private accountSubject = new BehaviorSubject<ClientProfile | null>(null);
 
@@ -38,8 +38,8 @@ export class ClientAccountService {
   private loadingAccount = false;
 
   /**
-   * Charge le compte client une seule fois s'il n'est pas déjà en cache.
-   * À appeler uniquement quand l'utilisateur connecté est un CLIENT.
+   * Loads the client account once, when not already cached.
+   * Only for a logged-in CLIENT.
    */
   ensureLoaded(): void {
     if (this.accountSubject.value || this.loadingAccount) return;
@@ -49,7 +49,7 @@ export class ClientAccountService {
       .subscribe({ error: (err) => console.error('Impossible de charger le compte client', err) });
   }
 
-  /** true si le worker fait partie des favoris du client (mis à jour en temps réel). */
+  /** true when the worker is one of the client's favorites (updated live). */
   isFavorite$(workerId: string): Observable<boolean> {
     return this.accountSubject.pipe(
       map(account => account?.favorites?.some(f => f.id === workerId) ?? false),

@@ -16,7 +16,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     provideIonicAngular(),
     provideHttpClient(withXhr(), 
-      withInterceptorsFromDi() // Permet d'utiliser les intercepteurs de type Classe
+      withInterceptorsFromDi() // Enables class-based interceptors
     ),
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }
   ]

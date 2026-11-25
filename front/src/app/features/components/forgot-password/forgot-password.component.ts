@@ -25,7 +25,7 @@ export class ForgotPasswordComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Forcer le focus dès l'affichage du composant dans la modale
+    // Focus the field as soon as the modal shows
     setTimeout(() => {
       const inputEl = document.querySelector('app-forgot-password ion-input') as any;
       if (inputEl) {
@@ -50,7 +50,7 @@ export class ForgotPasswordComponent implements OnInit {
       },
       error: async () => {
         await loading.dismiss();
-        // Sécurité anti-énumération d'e-mails
+        // Same answer whatever the email (no account enumeration)
         await this.showConfirmationAlert("Si cette adresse est enregistrée chez nous, un e-mail de réinitialisation vient de vous être envoyé.");
       }
     });
@@ -60,7 +60,7 @@ export class ForgotPasswordComponent implements OnInit {
     const alert = await this.alertCtrl.create({
       header: 'E-mail envoyé',
       message: message,
-      backdropDismiss: false, // L'utilisateur doit obligatoirement cliquer sur le bouton.
+      backdropDismiss: false, // The user must click the button.
       buttons: [
         {
           text: 'Fermer',
@@ -73,7 +73,7 @@ export class ForgotPasswordComponent implements OnInit {
     await alert.present();
   }
 
-  // Permet aussi de fermer via un éventuel bouton "Annuler" dans ton HTML
+  // Also closes from a "Cancel" button
   close() {
     this.modalCtrl.dismiss();
   }

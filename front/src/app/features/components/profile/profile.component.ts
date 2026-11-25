@@ -109,7 +109,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.clientAccountService.ensureLoaded();
       this.clientAccountSub = this.clientAccountService.listenToMyAccount().subscribe({
         next: (clientAccount) => {
-          // Vérification en temps réel de la liste des favoris depuis le cache local
+          // Favorite state, live from the local cache
           this.isFavorite = clientAccount?.favorites?.some(f => f.id === this.worker?.id) ?? false;
         },
         error: (err) => console.error("Erreur du flux de favoris client", err)
@@ -119,7 +119,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   // ── Gallery navigation ──────────────────────────────────────────────────────────────
 
-  /** Clic sur l'avatar : ouvre la galerie sur la première photo, s'il y en a. */
+  /** Avatar click: opens the gallery on the first photo, if any. */
   openFirstPhoto(): void {
     const first = this.worker?.photos?.[0];
     if (first) this.openMedia(first);
@@ -138,10 +138,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
       url: v.url
     }));
 
-    // On combine les deux listes
+    // Photos and videos in one list
     this.modalMedia = [...photoItems, ...videoItems];
 
-    // On cherche dynamiquement l'index de l'élément cliqué dans la liste globale
+    // Index of the clicked item in that list
     const targetUrl = 'originalUrl' in clickedItem ? clickedItem.originalUrl : clickedItem.url;
     const globalIndex = this.modalMedia.findIndex(m => m.url === targetUrl);
 
@@ -176,15 +176,15 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Méthode appelée à chaque changement de diapositive par Swiper
+  // Called by Swiper on every slide change
   onSlideChange() {
     const swiperEl = this.swiperRef?.nativeElement;
     if (swiperEl && swiperEl.shadowRoot) {
-      // Sélectionne toutes les balises vidéo à l'intérieur du Shadow DOM de Swiper
+      // All video elements inside Swiper's shadow DOM
       const videos = swiperEl.shadowRoot.querySelectorAll('video');
       videos.forEach((video: HTMLVideoElement) => {
         video.pause();
-        // Optionnel : remet la vidéo au début si tu veux qu'elle se relise depuis le début plus tard
+        // Optional: rewind the video so it restarts from the beginning
         // video.currentTime = 0;
       });
     }
@@ -217,7 +217,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   toggleNotify(): void {
     if (!this.isClient) return;
     this.notifyEnabled = !this.notifyEnabled;
-    // TODO: Appel à ton futur NotificationService.toggle(this.worker!.id)
+    // TODO: call the future NotificationService.toggle(this.worker!.id)
   }
 
   async report(): Promise<void> {
@@ -234,9 +234,9 @@ export class ProfileComponent implements OnInit, OnDestroy {
   goBack(): void {
     const state = window.history.state;
     if (state && state.from) {
-      this.router.navigateByUrl(state.from); // Retourne aux favoris
+      this.router.navigateByUrl(state.from); // Back to the favorites
     } else {
-      this.router.navigateByUrl('/'); // Fallback sur la galerie si accès direct
+      this.router.navigateByUrl('/'); // Fall back to the gallery on direct access
     }
   }
 
@@ -257,14 +257,14 @@ export class ProfileComponent implements OnInit, OnDestroy {
       const existingIndex = this.worker.comments.findIndex(c => c.authorId === currentUser?.id);
 
       if (existingIndex >= 0) {
-        // Édition d'un commentaire existant
+        // Editing an existing comment
         this.worker.comments[existingIndex] = savedComment;
       } else {
-        // Nouveau commentaire
+        // New comment
         this.worker.comments.unshift(savedComment);
       }
 
-      // Ré-appliquer le tri et s'assurer que le commentaire reste en haut
+      // Sort again and keep the comment at the top
       this.sortAndPrepareComments(currentUser?.id);
 
     } catch (err) {
@@ -276,24 +276,24 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Trie les commentaires :
-   * 1. Le commentaire du client connecté tout en haut.
-   * 2. Les autres commentaires triés du plus récent au plus ancien.
-   * 3. PRÉ-REMPLIT le champ de texte si le client a déjà rédigé un commentaire.
+   * Sorts the comments:
+   * 1. The logged-in client's comment first.
+   * 2. The others from newest to oldest.
+   * 3. PRE-FILLS the text field when the client has already written a comment.
    */
   private sortAndPrepareComments(currentUserId?: string): void {
     if (!this.worker || !this.worker.comments) return;
 
-    // Tri par date décroissante (plus récent d'abord)
+    // Newest first
     this.worker.comments.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     if (currentUserId) {
       const myComment = this.worker.comments.find(c => c.authorId === currentUserId);
       if (myComment) {
-        // Pré-remplir le champ de modification avec l'avis existant
+        // Pre-fill the edit field with the existing review
         this.newCommentText = myComment.content;
 
-        // Retirer son commentaire de la liste globale puis le placer tout en haut
+        // Take the client's own comment out of the list and put it first
         this.worker.comments = [
           myComment,
           ...this.worker.comments.filter(c => c.authorId !== currentUserId)

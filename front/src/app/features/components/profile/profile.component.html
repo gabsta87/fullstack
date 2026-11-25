@@ -4,19 +4,19 @@
   <ion-content class="profile-content content-with-bottom-spacing">
     @if (worker) {
       <div class="profile-wrap">
-        <!-- Retour : lien compact, pas de barre d'outils dédiée -->
+        <!-- Back: compact link, no dedicated toolbar -->
         <button type="button" class="back-link" (click)="goBack()">
           <ion-icon name="chevron-back-outline"></ion-icon>
           <span>{{ t.common?.back }}</span>
         </button>
         <!--
-        Desktop : 2 colonnes (aside + contenu).
-        Mobile  : .sidebar et .content-col passent en display: contents et les
-        cartes sont réordonnées (order) dans une seule colonne.
+        Desktop: 2 columns (aside + content).
+        Mobile: .sidebar and .content-col switch to display: contents and the
+        cards are reordered (order) in a single column.
         -->
         <div class="layout fade-in">
           <aside class="sidebar">
-            <!-- Identité -->
+            <!-- Identity -->
             <section class="profile-card hero-card">
               <img [src]="worker.mainThumbUrl || 'assets/images/default-avatar.jpg'"
                 alt="{{ worker.username }}" class="avatar-img"
@@ -32,7 +32,7 @@
                 }
               </div>
             </section>
-            <!-- Actions : contact en principal, le reste en petits boutons -->
+            <!-- Actions: contact as the main one, the rest as small buttons -->
             @if (worker.available || isClient) {
               <section class="profile-card actions-card">
                 @if (worker.available) {
@@ -66,7 +66,7 @@
                 }
               </section>
             }
-            <!-- Caractéristiques + langues -->
+            <!-- Characteristics + languages -->
             <section class="profile-card details-card">
               <h3>{{ t.worker_profile?.details }}</h3>
               <dl class="details-grid">
@@ -100,7 +100,7 @@
             </section>
           </aside>
           <div class="content-col">
-            <!-- Galerie : vignettes cliquables (photos puis vidéos) -->
+            <!-- Gallery: clickable thumbnails (photos then videos) -->
             @if (worker.photos.length || worker.videos.length) {
               <section class="profile-card media-card">
                 <h3>
@@ -122,7 +122,7 @@
                 </div>
               </section>
             }
-            <!-- À propos + services -->
+            <!-- About + services -->
             @if (worker.description || workerServices.length) {
               <section class="profile-card about-card">
                 <h3>{{ t.worker_profile?.about }}</h3>
@@ -138,7 +138,7 @@
                 }
               </section>
             }
-            <!-- Avis -->
+            <!-- Reviews -->
             <section class="profile-card reviews-card">
               <h3>
                 {{ t.worker_profile?.reviews }}
@@ -189,7 +189,7 @@
         <ion-modal [isOpen]="isImageOpen" class="fullscreen-photo-modal" (ionModalDidDismiss)="closeFullSizeImage()">
           <ng-template>
             <ion-content class="modal-swiper-content">
-              <!-- Bouton croix pour fermer -->
+              <!-- Close (cross) button -->
               <ion-button fill="clear" class="close-modal-btn" (click)="closeFullSizeImage()">
                 <ion-icon name="close-outline" slot="icon-only"></ion-icon>
               </ion-button>
@@ -204,7 +204,7 @@
                     @for (media of modalMedia; track media) {
                       <swiper-slide>
                         <div class="slide-content-wrapper">
-                          <!-- Vidéo -->
+                          <!-- Video -->
                           @if (media.type === 'video') {
                             <video
                               [src]="media.url"
@@ -220,7 +220,7 @@
                               [src]="media.url"
                               class="fullscreen-media"/>
                           }
-                          <!-- Flèches de navigation -->
+                          <!-- Navigation arrows -->
                           <ion-icon (click)="slidePrev()" class="gallerySideButton left"
                           name="chevron-back-outline"></ion-icon>
                           <ion-icon (click)="slideNext()" class="gallerySideButton right"
@@ -234,7 +234,7 @@
             </ion-content>
           </ng-template>
         </ion-modal>
-        <!-- Modale de contact personnalisée -->
+        <!-- Custom contact modal -->
         @if (isContactOpen) {
           <div class="custom-modal-backdrop" (click)="closeContactModal()">
             <div class="custom-modal-card" (click)="$event.stopPropagation()">

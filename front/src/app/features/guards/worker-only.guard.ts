@@ -23,7 +23,7 @@ export const workerOnlyGuard: CanActivateFn = (route, state) => {
     catchError((error) => {
       if (error instanceof HttpErrorResponse) {
 
-        // Cas 401 (Non connecté) ou 403 (Interdit / Session expirée)
+        // 401 (not logged in) or 403 (forbidden / session expired)
         if (error.status === 401 || error.status === 403) {
           console.warn(`Accès refusé : utilisateur non connecté ou session expirée (Code ${error.status})`);
           authService.setRedirectUrl(state.url);
@@ -31,14 +31,14 @@ export const workerOnlyGuard: CanActivateFn = (route, state) => {
           return of(false);
         }
 
-        // Cas 500 (Erreur Serveur) ou autres codes d'erreurs (ex: 503, 0 pour réseau)
+        // 500 (server error) or other codes (e.g. 503, 0 for network)
         console.error(`Erreur technique serveur (Code ${error.status}) lors de la validation du profil :`, error.message);
-        // Au lieu de renvoyer sur le login (ce qui est faux), on redirige vers l'espace par défaut ou une page d'erreur
+        // Not a login problem: send to the default space instead of the login page
         router.navigate(['/account']);
         return of(false);
       }
 
-      // Fallback si l'erreur n'est pas une réponse HTTP (ex: erreur de code JS)
+      // Fallback when the error is not an HTTP response (e.g. a JS error)
       console.error("Une erreur inattendue est survenue dans le guard :", error);
       router.navigate(['/account']);
       return of(false);

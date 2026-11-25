@@ -1,9 +1,9 @@
-// Couleur de fond globale
+// Global background color
 .venus-content {
   --background: var(--bg);
 }
 
-// Onglets : style partagé .venus-tabs (styles.scss), centrés avec marges ici
+// Tabs: shared .venus-tabs style (styles.scss), centered with margins here
 .venus-tabs {
   --background: var(--bg);
   max-width: 800px;
@@ -11,7 +11,7 @@
   padding: 12px 16px 4px;
 }
 
-// Entêtes de section
+// Section headers
 .section-header {
   max-width: 800px;
   margin: 0 auto 16px;
@@ -23,7 +23,7 @@
   }
 }
 
-// Cartes de réglages (Desktop-friendly)
+// Settings cards (desktop-friendly)
 .settings-container {
   display: flex;
   justify-content: flex-start;
@@ -31,7 +31,7 @@
 
 .settings-card {
   width: 100%;
-  max-width: 800px; // On garde le formulaire lisible mais la grille de favoris reste large
+  max-width: 800px; // The form stays readable while the favorites grid stays wide
   background: var(--surface);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
@@ -44,7 +44,7 @@
   }
 }
 
-// Style des champs Venus
+// Venus field style
 .venus-item {
   --background: var(--bg);
   --border-radius: var(--radius-sm);
@@ -66,8 +66,8 @@
   gap: 8px;
 }
 
-// ── Mes commentaires ──────────────────────────────────────────────────────────
-// Liste compacte : vignette de l'annonceur à gauche, puis nom, date, texte.
+// ── My comments ───────────────────────────────────────────────────────────────
+// Compact list: advertiser thumbnail on the left, then name, date, text.
 .my-comments {
   list-style: none;
   margin: 0 auto;
@@ -216,7 +216,7 @@
   }
 }
 
-// États vides
+// Empty states
 .empty-favorites {
   text-align: center;
   padding: 100px 20px;

@@ -2,11 +2,11 @@
 @import "@ionic/angular/css/normalize.css";
 @import "@ionic/angular/css/structure.css";
 @import "@ionic/angular/css/typography.css";
-// Pas de palette sombre Ionic : le design Venus est uniquement clair pour l'instant.
-// (dark.system.css basculait les couleurs Ionic en sombre selon le téléphone,
-//  alors que les tokens Venus restaient clairs -> texte illisible.)
-// Pour un vrai thème sombre plus tard : redéfinir les tokens Venus ci-dessous
-// dans @media (prefers-color-scheme: dark) et réimporter la palette.
+// No Ionic dark palette: the Venus design is light only for now.
+// (dark.system.css switched Ionic colors to dark depending on the phone,
+//  while the Venus tokens stayed light -> unreadable text.)
+// For a real dark theme later: redefine the Venus tokens below
+// in @media (prefers-color-scheme: dark) and import the palette again.
 @import "@ionic/angular/css/display.css";
 @import "@ionic/angular/css/padding.css";
 @import "@ionic/angular/css/float-elements.css";
@@ -15,7 +15,7 @@
 @import "@ionic/angular/css/flex-utils.css";
 
 :root {
-  // Le site est clair : les éléments natifs (date, scrollbars…) aussi
+  // The site is light: native elements (date, scrollbars...) too
   color-scheme: light;
 
   // Ionic Core Overrides

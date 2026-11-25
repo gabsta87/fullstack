@@ -18,7 +18,7 @@ export class AgeRangeSelectorComponent implements OnInit, OnChanges {
   @Output() maxAgeChange = new EventEmitter<string | undefined>();
   @Output() ageRangeChange = new EventEmitter<{ minAge: string | undefined; maxAge: string | undefined }>();
 
-  // 🎯 L'unique source de vérité locale pour l'affichage et le curseur
+  // Single local source of truth for the label and the slider
   currentLower: number = 18;
   currentUpper: number = 60;
 
@@ -28,7 +28,7 @@ export class AgeRangeSelectorComponent implements OnInit, OnChanges {
     this.syncInputsToLocal();
   }
 
-  // Si le parent modifie les filtres extérieurement (ex: bouton reset)
+  // When the parent changes the filters (e.g. reset button)
   ngOnChanges(changes: SimpleChanges) {
     if (changes['minAge'] || changes['maxAge']) {
       this.syncInputsToLocal();
@@ -40,7 +40,7 @@ export class AgeRangeSelectorComponent implements OnInit, OnChanges {
     this.currentUpper = this.maxAge ? parseInt(this.maxAge, 10) : 60;
   }
 
-  // 1. Appelé EN CONTINU (Mouvement fluide du texte et de la bulle)
+  // 1. Called CONTINUOUSLY (smooth label and bubble movement)
   onRangeInput(event: any) {
     const value = event.detail.value;
     if (!value) return;
@@ -49,7 +49,7 @@ export class AgeRangeSelectorComponent implements OnInit, OnChanges {
     this.currentUpper = value.upper;
   }
 
-// 2. Appelé UNIQUEMENT au relâchement (Envoi officiel au parent)
+// 2. Called ONLY on release (sends the value to the parent)
   onRangeChangeEnd(event: any) {
     const value = event.detail.value;
     if (!value) return;
@@ -63,7 +63,7 @@ export class AgeRangeSelectorComponent implements OnInit, OnChanges {
     this.minAgeChange.emit(lowerStr);
     this.maxAgeChange.emit(upperStr);
 
-    // 🎯 On émet via notre nouvel émetteur unique
+    // Emit through the single emitter
     this.ageRangeChange.emit({ minAge: lowerStr, maxAge: upperStr });
   }
 }

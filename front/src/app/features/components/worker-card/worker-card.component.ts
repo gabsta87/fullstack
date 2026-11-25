@@ -22,7 +22,7 @@ export class WorkerCardComponent implements OnInit, OnDestroy {
 
   @Input() worker!: WorkerMinimalProfile;
 
-  /** Cœur affiché sur la photo si le visiteur (CLIENT) a ce profil en favori. */
+  /** Heart shown on the photo when the visitor (CLIENT) has this profile in favorites. */
   isFavorite$: Observable<boolean> = of(false);
 
   private hoverDelayId: ReturnType<typeof setTimeout> | null = null;
@@ -49,7 +49,7 @@ export class WorkerCardComponent implements OnInit, OnDestroy {
   // ── Hover ────────────────────────────────________________──────────────────
 
   onMouseEnter(): void {
-    // On garde le prefetch intelligent en arrière-plan si l'utilisateur survole la carte
+    // Prefetch in the background when the card is hovered
     this.hoverDelayId = setTimeout(() => {
       this.workerService.prefetchProfile(this.worker.id);
     }, 300);

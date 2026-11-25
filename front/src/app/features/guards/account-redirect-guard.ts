@@ -11,14 +11,14 @@ export const accountRedirectGuard: CanActivateFn = async () => {
   const isAuthenticated = await firstValueFrom(authService.isAuthenticated$);
 
   if (!isAuthenticated) {
-    // Si pas connecté, on redirige vers l'accueil (ou on ouvre la modale)
+    // Not logged in: go home
     return router.parseUrl('/');
   }
 
   const user = authService.getUser();
   const role = user?.role;
 
-  // Aiguillage propre centralisé
+  // Route by role
   if (role === UserRole.ADMIN || role === UserRole.SUPER_ADMIN) {
     return router.parseUrl('/admin-dashboard');
   } else if (role === UserRole.WORKER) {
@@ -27,6 +27,6 @@ export const accountRedirectGuard: CanActivateFn = async () => {
     return router.parseUrl('/account');
   }
 
-  // Par sécurité si aucun rôle ne matche
+  // No known role: go home
   return router.parseUrl('/');
 };

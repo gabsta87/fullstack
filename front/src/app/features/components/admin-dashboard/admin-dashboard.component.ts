@@ -108,7 +108,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // On récupère les utilisateurs directement depuis le flux réactif du service
+    // Users come from the service's reactive stream
     this.users$ = this.adminService.users$;
 
     this.auditLogs$ = this.adminService.getAuditLogs().pipe(
@@ -119,15 +119,14 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.displayedAuditLogs$ = combineLatest([this.auditLogs$, this.users$]).pipe(
       map(([logs, users]) => {
         return logs.map(log => {
-          // Recherchez la propriété qui lie le log à l'admin (ex: log.adminId, log.userId, log.admin?.id, etc.)
-          // Adaptez 'log.adminId' selon la structure réelle de votre AdminLog
+          // Property linking the log to the admin
           const adminId = (log as any).adminId;
 
           const matchingUser = users.find(u => u.id === adminId);
 
           return {
             ...log,
-            adminUser: matchingUser || null // On ajoute l'objet AdminUser (ou null s'il n'est pas trouvé)
+            adminUser: matchingUser || null // Attach the AdminUser (or null when not found)
           };
         });
       })
@@ -180,7 +179,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
     this.adminService.refreshReports();
 
-    // Chargement initial des données
+    // Initial data load
     this.adminService.refreshUsers();
     this.adminService.refreshCertifications();
     this.adminService.refreshServices();
@@ -197,7 +196,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.location.back();
   }
 
-  // Utilisation de Async/Await propre, sans manipulation manuelle de tableau
   async setLocked(user: any, lockState: boolean) {
     try {
       await firstValueFrom(this.adminService.updateWorkerStatus(user.id, { locked: lockState }));
@@ -418,7 +416,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   closeReportsModal() {
     this.selectedReportWorker = null;
     this.isReportsModalOpen = false;
-    this.adminService.refreshReports(); // Rafraîchit au cas où on a banni/bloqué
+    this.adminService.refreshReports(); // Refresh in case of a ban / lock
   }
 
   async dismissReport(reportId: number) {
@@ -432,7 +430,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   async revokeCertification(user: any) {
-    // 1. On demande le motif via une boîte de dialogue
+    // 1. Ask for the reason
     const reason = prompt(`Motif de la révocation de la certification pour ${user.username} (Requis) :`);
 
 
@@ -442,7 +440,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     }
 
     try {
-      // 3. Appel au service avec l'ID et la raison
+      // 3. Call the service with the id and the reason
       await firstValueFrom(this.adminService.revokeCertification(user.id, reason.trim()));
       this.adminService.refreshUsers();
       alert('Certification révoquée avec succès.');
@@ -485,7 +483,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           text: 'Envoyer l\'invitation',
           handler: async (data) => {
             if (!data.email || data.email.trim() === '') {
-              alert('Veuillez saisir une adresse email.'); // C'est ici que l'erreur se produisait
+              alert('Veuillez saisir une adresse email.');
               return false;
             }
             try {

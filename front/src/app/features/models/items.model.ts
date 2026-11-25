@@ -29,7 +29,7 @@ export interface Comment {
   workerId: string;
   authorUsername: string;
   date: string;
-  /** Profil commenté (affiché dans « Mes commentaires » côté client) */
+  /** Commented profile (shown in the client's "My comments") */
   workerUsername?: string;
   workerThumbUrl?: string;
 }

@@ -15,7 +15,7 @@ declare var Stripe: any;
 })
 export class StripePaymentComponent implements OnInit, AfterViewInit {
   @Input() workerId!: string;
-  @Input() amount!: number;       // En centimes (ex: 1500 pour 15.00€)
+  @Input() amount!: number;       // In cents (e.g. 1500 for 15.00)
   @Input() paymentType!: 'DAYS' | 'BOOST';
 
   stripe: any;
@@ -26,7 +26,7 @@ export class StripePaymentComponent implements OnInit, AfterViewInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    // Initialisation de Stripe avec la clé publique récupérée depuis ton API
+    // Initialize Stripe with the public key provided by the API
     this.http.get<{ publicKey: string }>(`${environment.apiBase}/payment/config`).subscribe(config => {
       this.stripe = Stripe(config.publicKey);
       this.createIntent();
@@ -34,7 +34,7 @@ export class StripePaymentComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    // La zone d'injection HTML #payment-element doit être prête.
+    // The #payment-element container must be rendered.
   }
 
   private createIntent() {
@@ -58,7 +58,7 @@ export class StripePaymentComponent implements OnInit, AfterViewInit {
   private mountStripeForm() {
     if (!this.stripe || !this.clientSecret) return;
 
-    // Configuration automatique du formulaire unifié (CB, Apple Pay, etc.)
+    // Unified payment form (card, Apple Pay, etc.)
     this.elements = this.stripe.elements({ clientSecret: this.clientSecret });
     const paymentElement = this.elements.create('payment', { layout: 'accordion' });
     paymentElement.mount('#payment-element');
@@ -69,7 +69,7 @@ export class StripePaymentComponent implements OnInit, AfterViewInit {
 
     this.isProcessing = true;
 
-    // Envoi des données directement du navigateur du client vers Stripe
+    // Data goes straight from the browser to Stripe
     const { error } = await this.stripe.confirmPayment({
       elements: this.elements,
       confirmParams: {
@@ -82,6 +82,6 @@ export class StripePaymentComponent implements OnInit, AfterViewInit {
       alert(`Échec du paiement : ${error.message}`);
       this.isProcessing = false;
     }
-    // Si pas d'erreur, Stripe gère lui-même la redirection vers la return_url
+    // Without error, Stripe redirects to return_url itself
   }
 }

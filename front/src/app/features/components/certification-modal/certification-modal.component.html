@@ -8,7 +8,7 @@
     </ion-toolbar>
   </ion-header>
   <ion-content class="ion-padding">
-    <!-- 🛑 Alerte si l'admin demande une révision -->
+    <!-- Warning when the admin asks for a revision -->
     @if (adminMessage) {
       <div class="admin-feedback-banner">
         <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
@@ -18,7 +18,7 @@
         </div>
       </div>
     }
-    <!-- 📌 Affichage du Code de Vérification -->
+    <!-- Verification code -->
     <div class="code-instruction-card">
       <h3>{{ t.certification?.step1_title }}</h3>
       <p>{{ t.certification?.step1_desc }}</p>
@@ -26,10 +26,10 @@
         {{ verificationCode }}
       </div>
     </div>
-    <!-- 📤 Espace d'upload ou Aperçu de la photo -->
+    <!-- Upload area or photo preview -->
     <div class="upload-section">
       <h3>{{ t.certification?.step2_title }}</h3>
-      <!-- Si une image est sélectionnée ou existe déjà : Affichage de l'aperçu -->
+      <!-- Selected or existing image: preview -->
       @if (previewUrl) {
         <div class="image-preview-container">
           <img [src]="previewUrl" alt="Aperçu certification" class="certification-preview-img" />
@@ -45,13 +45,13 @@
           <span class="format-hint">{{ t.certification?.format_hint }}</span>
         </div>
       }
-      <!-- Sinon : Zone de dépôt classique -->
+      <!-- Otherwise: drop zone -->
       <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;" />
-      <!-- Texte additionnel via le service de langues (à adapter dans tes JSON) -->
+      <!-- Additional text from the translations -->
       <p class="preview-helper-text">
         {{ t.certification?.preview_helper_text}}
       </p>
-      <!-- Bouton d'envoi final -->
+      <!-- Final submit button -->
       <ion-button expand="block" color="primary" [disabled]="!selectedFile && !existingPhotoUrl" (click)="submitCertificationPhoto()" class="ion-margin-top">
         <ion-icon name="send-outline" slot="start"></ion-icon>
         {{ t.certification?.submit_btn }}

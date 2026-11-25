@@ -107,13 +107,13 @@ export class HomepageComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Vérification de la session
+    // Session check
     this.authService.checkSession().subscribe({
       next: (user) => this.isLoggedIn = user,
       error: () => this.isLoggedIn = false
     });
 
-    // 1. CAS DE RETOUR EN ARRIÈRE (Données déjà présentes dans le State)
+    // 1. BACK NAVIGATION (data already in the state)
     if (this.stateService.allWorkers.length > 0) {
       this.allWorkers = [...this.stateService.allWorkers];
       this.filters = { ...this.stateService.filters };
@@ -123,7 +123,7 @@ export class HomepageComponent implements OnInit {
       this.parentZoneId = this.stateService.parentZoneId;
       this.showMoreFilters = this.stateService.showMoreFilters;
 
-      // On ne récupère du resolver QUE les données fixes (structures), pas les workers !
+      // Only the static data (structures) comes from the resolver, not the workers
       this.route.data.subscribe((data) => {
         this.allServices = data['allServices'] || [];
         this.parentZones = data['locations'] || [];
@@ -140,7 +140,7 @@ export class HomepageComponent implements OnInit {
       });
 
     } else {
-      // 2. PREMIER CHARGEMENT DE LA PAGE
+      // 2. FIRST PAGE LOAD
       this.route.data.subscribe((data) => {
         this.allWorkers = data['workers'] || [];
         this.allServices = data['allServices'] || [];
@@ -150,13 +150,13 @@ export class HomepageComponent implements OnInit {
           this.noMoreData = true;
           setTimeout(() => { if (this.infiniteScroll) this.infiniteScroll.disabled = true; }, 100);
         } else if (this.allWorkers.length >= 24) {
-          this.currentPage = 1; // Prêt pour la page suivante au prochain scroll
+          this.currentPage = 1; // Ready for the next page on the next scroll
         }
         this.saveState();
       });
     }
 
-    // Gestion de la recherche par nom (debounce)
+    // Name search (debounced)
     this.searchSubject.pipe(
       debounceTime(400),
       distinctUntilChanged()
@@ -183,7 +183,7 @@ export class HomepageComponent implements OnInit {
       return true;
     }).length;
 
-    // Validation stricte des IDs numériques
+    // Strict check of numeric ids
     const hasParent = this.parentZoneId !== undefined && this.parentZoneId !== null && this.parentZoneId > 0;
     const hasChild = this.childZoneId !== undefined && this.childZoneId !== null && this.childZoneId > 0;
 
@@ -243,7 +243,7 @@ export class HomepageComponent implements OnInit {
       delete requestFilters.zoneId;
     }
 
-    // Nettoyage final des filtres
+    // Final cleanup of the filters
     const cleanFilters = Object.fromEntries(
       Object.entries(requestFilters).filter(([_, v]) => {
         if (v === undefined || v === null || v === '' || v === -1 || String(v) === 'undefined') return false;
@@ -257,7 +257,7 @@ export class HomepageComponent implements OnInit {
       next: workers => {
         this.allWorkers = reset ? workers : [...this.allWorkers, ...workers];
 
-        // Si le back-end renvoie moins de profils que la taille d'une page (24), le scroll s'arrête
+        // Fewer profiles than a page (24) means the end: infinite scroll stops
         if (!workers || workers.length < 24) {
           this.noMoreData = true;
           if (this.infiniteScroll) this.infiniteScroll.disabled = true;
@@ -293,7 +293,7 @@ export class HomepageComponent implements OnInit {
 
     this.showScrollTopButton = scrollTop > 400;
 
-    // sauvegarde de l'état pour le bouton retour
+    // Save the state for the back button
     if (event.detail && event.detail.scrollTop) {
       this.stateService.scrollTop = event.detail.scrollTop;
     }

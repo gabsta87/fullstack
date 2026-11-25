@@ -7,15 +7,15 @@ export const adminOnlyGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  // 1. Si l'utilisateur est déjà en mémoire et qu'il est admin, on laisse passer instantanément
+  // 1. Admin already known in memory: let through
   if (authService.isAdmin) {
     return true;
   }
 
-  // 2. Sinon (cas du F5), on interroge le serveur pour récupérer le profil et son rôle
+  // 2. Otherwise (page reload), ask the server for the profile and its role
   return authService.checkSession().pipe(
     map(() => {
-      // Une fois la session vérifiée, on re-teste si c'est un admin
+      // Check the role again once the session is known
       if (authService.isAdmin) {
         return true;
       }

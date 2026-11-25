@@ -43,7 +43,7 @@ export class ZoneSelectorComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // Si l'état transmis par le parent change (ex: via le State ou l'initialisation du Resolver)
+    // When the state passed by the parent changes (e.g. restored state or resolver init)
     if (changes['zones'] || changes['selectedParentId'] || changes['selectedChildId']) {
       this.initializeSelection();
     }
@@ -55,11 +55,11 @@ export class ZoneSelectorComponent implements OnChanges {
       return;
     }
 
-    // Restauration des IDs du parent (Homepage) vers l'état local du select
+    // Restore the parent's (homepage) ids into the select's local state
     this.parentZoneId = this.selectedParentId;
     this.childZoneId = this.selectedChildId;
 
-    // Mise à jour de la liste des enfants disponibles selon le parent sélectionné
+    // Update the available child zones for the selected parent
     if (this.parentZoneId) {
       const parent = this.zones.find(p => p.id === this.parentZoneId);
       this.availableChildZones = parent?.subZones || [];
@@ -69,11 +69,11 @@ export class ZoneSelectorComponent implements OnChanges {
   }
 
   onParentChange() {
-    // Si l'utilisateur choisit "Toutes les régions" (valeur nulle ou indéfinie)
+    // "All regions" selected (null or undefined value)
     if (!this.parentZoneId) {
       this.resetFields();
     } else {
-      // Si l'utilisateur change de parent (ex: Paris -> Lyon), on réinitialise l'enfant
+      // Another parent selected (e.g. Paris -> Lyon): reset the child
       this.childZoneId = undefined;
       const parent = this.zones.find(p => p.id === this.parentZoneId);
       this.availableChildZones = parent?.subZones || [];

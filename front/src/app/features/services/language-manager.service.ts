@@ -20,7 +20,7 @@ export class LanguageManagerService {
     { value: 4, labelKey: 'native', defaultLabel: 'Native' }
   ];
 
-  // Liste des langues supportées
+  // Supported languages
   public availableLanguages = [
     { code: 'FR', label: 'Français', flag: '/assets/flags/france.svg' },
     { code: 'EN', label: 'English', flag: '/assets/flags/united_kingdom.svg' },
@@ -48,13 +48,13 @@ export class LanguageManagerService {
     this.currentCode = lang.code;
     this.currentLanguageFlag = lang.flag;
 
-    // Extrait les mots correspondants du JSON
+    // Extracts the matching words from the JSON
     const lowerKey = lang.code.toLowerCase() as keyof typeof languageData;
     const selectedTranslations = languageData[lowerKey] || languageData.fr;
 
     this.currentLanguage$.next(selectedTranslations);
 
-    // Sauvegarde dans le cache
+    // Save in the cache
     localStorage.setItem(this.STORAGE_KEY, lang.code);
   }
 
@@ -75,7 +75,7 @@ export class LanguageManagerService {
     return item.defaultLabel;
   }
 
-  // Récupérer le libellé traduit d'un BodyType
+  // Translated label of a BodyType
   getBodyTypeLabel(key: string, t: any): string {
     if (!key) return '';
     const map: Record<string, string> = {
@@ -88,7 +88,7 @@ export class LanguageManagerService {
     return map[key] || key;
   }
 
-// Récupérer le libellé traduit d'une couleur d'yeux
+// Translated label of an eye color
   getEyeColorLabel(key: string, t: any): string {
     if (!key) return '';
     const map: Record<string, string> = {
@@ -101,7 +101,7 @@ export class LanguageManagerService {
     return map[key] || key;
   }
 
-// Récupérer le libellé traduit d'une couleur de cheveux
+// Translated label of a hair color
   getHairColorLabel(key: string, t: any): string {
     if (!key) return '';
     const map: Record<string, string> = {

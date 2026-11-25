@@ -18,7 +18,7 @@ export interface BaseUser {
 // 1. WORKER PROFILES
 // ==========================================
 
-// Correspond à WorkerMinimalProfileDTO
+// Matches WorkerMinimalProfileDTO
 export interface WorkerMinimalProfile extends BaseUser {
   age?: number;
   available: boolean;
@@ -33,7 +33,7 @@ export interface WorkerMinimalProfile extends BaseUser {
   certifiedAt?: string;
 }
 
-// Correspond à WorkerPublicFullProfileDTO
+// Matches WorkerPublicFullProfileDTO
 export interface WorkerPublicFullProfile extends WorkerMinimalProfile {
   banned: boolean;
   locked: boolean;
@@ -46,7 +46,7 @@ export interface WorkerPublicFullProfile extends WorkerMinimalProfile {
   spokenLanguages: SpokenLanguage[];
 }
 
-// Correspond à WorkerFullProfileDTO (Profil privé du worker connecté)
+// Matches WorkerFullProfileDTO (private profile of the logged-in worker)
 export interface WorkerPrivateProfile extends WorkerPublicFullProfile {
   birthdate?: string;
   certificationRequest?: CertificationRequest;
@@ -62,16 +62,16 @@ export interface WorkerPrivateProfile extends WorkerPublicFullProfile {
 // 2. CLIENT & ADMIN ACCOUNTS
 // ==========================================
 
-// Correspond à ClientDTO
+// Matches ClientDTO
 export interface ClientProfile extends BaseUser {
   favorites: WorkerMinimalProfile[];
   reviews: Comment[];
 }
 
-// Correspond à AdminDTO
+// Matches AdminDTO
 export interface AdminProfile extends BaseUser {}
 
-// Correspond à AdminUserDTO (Pour le tableau de bord Admin)
+// Matches AdminUserDTO (admin dashboard)
 export interface AdminUser {
   id: string;
   username: string;

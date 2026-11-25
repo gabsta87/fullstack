@@ -72,7 +72,7 @@ export class ProfileManagementComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    // 1. Chargement des données statiques
+    // 1. Static data
     this.route.data.subscribe((data) => {
       this.allServices = data['services'] || [];
       this.allLocations = data['locations'] || [];
@@ -80,11 +80,11 @@ export class ProfileManagementComponent implements OnInit {
 
     await firstValueFrom(this.workerAccountService.getCurrentAccount());
 
-    // 2. Flux unique pour l'UI & Synchronisation automatique du formulaire
+    // 2. Single stream for the UI, keeps the form in sync
     this.currentUser$ = this.workerAccountService.listenToMyAccount().pipe(
       filter((user): user is WorkerPrivateProfile => user !== null),
       tap(user => {
-        // Gestion des zones et du formulaire (reste inchangé)
+        // Zones and form
         this.childZoneId = user.geographicZone?.id;
 
         this.photos = (user.photos || [])
@@ -137,12 +137,12 @@ export class ProfileManagementComponent implements OnInit {
       })
     );
 
-    // 3. Dérivation réactive des photos à partir de currentUser$
+    // 3. Photos derived from currentUser$
     this.photos$ = this.currentUser$.pipe(
       map(user => {
         const rawPhotos = user.photos || [];
 
-        // 💡 On trie les photos selon leur sortOrder avant de les mapper
+        // Sort the photos by sortOrder before mapping them
         const sortedPhotos = [...rawPhotos].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
 
         return sortedPhotos.map(photo => ({
@@ -155,7 +155,7 @@ export class ProfileManagementComponent implements OnInit {
       })
     );
 
-    // 4. Dérivation réactive des vidéos
+    // 4. Videos derived from currentUser$
     this.videos$ = this.currentUser$.pipe(
       map(user => user.videos || [])
     );
@@ -194,15 +194,14 @@ export class ProfileManagementComponent implements OnInit {
     return missing;
   }
 
-  // ── Gestion de la Certification ──────────────────────────────────────────
+  // ── Certification ────────────────────────────────────────────────────────
 
   /**
-   * Calcule la couleur et le libellé de la certification selon un délai fixe de 8 mois
-   * à partir de la date d'obtention (certifiedAt).
-   * - Vert (< 6 mois) : Valide
-   * - Jaune (6 à 7 mois) : Bientôt à renouveler
-   * - Orange (7 à 8 mois) : Très proche de l'expiration
-   * - Rouge (> 8 mois ou non certifié) : Expiré / Invalide
+   * Color and label of the certification, valid for 8 months after it was granted (certifiedAt).
+   * - Green (< 6 months): valid
+   * - Yellow (6 to 7 months): renewal soon
+   * - Orange (7 to 8 months): about to expire
+   * - Red (> 8 months or not certified): expired / invalid
    */
   getCertificationBadge(me: WorkerPrivateProfile, t: any): {
     color: string;
@@ -215,7 +214,7 @@ export class ProfileManagementComponent implements OnInit {
   } {
     const status = me.certificationRequest?.status;
 
-    // 1. En attente de photo (ou premier choix)
+    // 1. Waiting for the photo (or first request)
     if (status === CertificationStatus.PENDING_PHOTO || !status || status === CertificationStatus.NOT_CERTIFIED) {
       return {
         color: 'tertiary',
@@ -228,7 +227,7 @@ export class ProfileManagementComponent implements OnInit {
       };
     }
 
-    // 2. Correction requise par l'admin OU Rejeté
+    // 2. Correction requested by the admin OR rejected
     if (status === CertificationStatus.NEEDS_REVISION || status === CertificationStatus.REJECTED) {
       return {
         color: 'danger',
@@ -241,7 +240,7 @@ export class ProfileManagementComponent implements OnInit {
       };
     }
 
-    // 3. En attente de validation par les admins -> BLOQUÉ 🔒
+    // 3. Waiting for the admins -> LOCKED
     if (status === CertificationStatus.PENDING_APPROVAL) {
       return {
         color: 'medium',
@@ -254,7 +253,7 @@ export class ProfileManagementComponent implements OnInit {
       };
     }
 
-    // 4. Si certifié
+    // 4. Certified
     if (status === CertificationStatus.CERTIFIED) {
       const certifiedDate = new Date(me.certifiedAt!).getTime();
       const currentTime = new Date().getTime();
@@ -282,8 +281,8 @@ export class ProfileManagementComponent implements OnInit {
   }
 
   /**
-   * Point d'entrée unique au clic sur le bouton de certification :
-   * Ouvre directement la modale en lui passant l'utilisateur.
+   * Single entry point of the certification button:
+   * opens the modal with the current user.
    */
   async openCertificationModal(me: WorkerPrivateProfile) {
     try {
@@ -299,7 +298,7 @@ export class ProfileManagementComponent implements OnInit {
   }
 
   /**
-   * Crée et présente la modale Ionic
+   * Creates and presents the Ionic modal.
    */
   async presentModal(me: WorkerPrivateProfile) {
     const modal = await this.modalController.create({
@@ -318,7 +317,7 @@ export class ProfileManagementComponent implements OnInit {
       formData.append('file', data.file);
 
       try {
-        // On délègue l'appel au service. Le service émettra la nouvelle version du profil.
+        // The service emits the updated profile
         await this.workerAccountService.uploadCertificationPhoto(formData);
       } catch (err) {
         console.error("Erreur lors de l'envoi de la photo de certification", err);
@@ -347,7 +346,7 @@ export class ProfileManagementComponent implements OnInit {
     await this.saveLanguages();
   }
 
-// Suppression d'une langue
+// Remove a language
   async removeLanguage(index: number) {
     this.profileLanguages.splice(index, 1);
     await this.saveLanguages();
@@ -384,9 +383,9 @@ export class ProfileManagementComponent implements OnInit {
   }
 
   /**
-   * Téléphone : n'accepte que des chiffres, avec un « + » optionnel en tête.
-   * Le champ est corrigé pendant la frappe (ionInput) ; la sauvegarde reste
-   * déclenchée par ionChange.
+   * Phone: digits only, with an optional leading "+".
+   * The field is corrected while typing (ionInput); saving is still
+   * triggered by ionChange.
    */
   async onPhoneInput(event: CustomEvent): Promise<void> {
     const input = event.target as HTMLIonInputElement;
@@ -394,8 +393,8 @@ export class ProfileManagementComponent implements OnInit {
     const cleaned = sanitizePhone(raw);
     this.profileForm.phone = cleaned;
     if (cleaned !== raw) {
-      // Si la valeur nettoyée n'a pas changé depuis la frappe précédente,
-      // ion-input ne redessine pas : on corrige donc l'<input> natif directement.
+      // When the cleaned value did not change since the previous keystroke,
+      // ion-input does not re-render: fix the native <input> directly.
       input.value = cleaned;
       const native = await input.getInputElement();
       native.value = cleaned;
@@ -489,9 +488,6 @@ export class ProfileManagementComponent implements OnInit {
   async onDrop(targetIndex: number) {
     if (this.draggedIndex === null || this.draggedIndex === targetIndex) return;
 
-    // On récupère le tableau actuel depuis le flux ou une copie locale synchrone si besoin,
-    // mais le plus propre avec un flux réactif est de mapper l'ordre des IDs directement :
-    // Si tu as gardé un tableau 'photos' synchrone pour le drag & drop :
     const movedPhoto = this.photos[this.draggedIndex];
     this.photos.splice(this.draggedIndex, 1);
     this.photos.splice(targetIndex, 0, movedPhoto);
@@ -499,7 +495,7 @@ export class ProfileManagementComponent implements OnInit {
     this.draggedIndex  = null;
     this.dragOverIndex = null;
 
-    // On extrait les IDs dans le nouvel ordre visuel
+    // Ids in the new visual order
     const orderedIds = this.photos.map(p => p.id);
 
     try {
@@ -585,4 +581,4 @@ export class ProfileManagementComponent implements OnInit {
   protected readonly EYES_COLOR_LIST = EYES_COLOR_LIST;
 }
 
-/** Garde uniquement les chiffres et un éventuel « + » en première position. */
+/** Keeps digits only, plus an optional leading "+". */

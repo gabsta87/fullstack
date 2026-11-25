@@ -10,7 +10,7 @@
     </ion-buttons>
 
     <ion-buttons slot="end">
-      <!-- 💡 Bouton de contact visible uniquement pour les personnes enregistrées -->
+      <!-- Contact button, only for registered users -->
       @if ((authService.isAuthenticated$ | async)) {
         @if (langService.currentLanguage$ | async; as t) {
           <ion-button [href]="'mailto:' + supportEmail" fill="clear" class="nav-link-btn">
@@ -20,13 +20,13 @@
         }
       }
 
-      <!-- Sélecteur de langue -->
+      <!-- Language selector -->
       <ion-button (click)="openLangPopover($event)" class="lang-button">
         <img [src]="langService.currentLanguageFlag" class="header-flag-icon" alt="Langue active" />
         <ion-text class="ion-hide-sm-down lang-code">{{ langService.currentCode }}</ion-text>
       </ion-button>
 
-      <!-- Le reste des boutons (authentification) -->
+      <!-- Other (authentication) buttons -->
       @if (langService.currentLanguage$ | async; as t) {
         @if (!(authService.isAuthenticated$ | async)) {
           <ion-button (click)="openAuth('login')" fill="clear" class="nav-link-btn">
@@ -61,7 +61,7 @@
   </ion-toolbar>
 </ion-header>
 
-<!-- Popover de langue -->
+<!-- Language popover -->
 <ion-popover #langPopover [dismissOnSelect]="true" side="bottom" alignment="end">
   <ng-template>
     <ion-content>
