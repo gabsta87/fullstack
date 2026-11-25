@@ -44,12 +44,12 @@ dependencies {
 	annotationProcessor("org.projectlombok:lombok")
 
 	// Bibliothèques tierces
-	implementation("com.stripe:stripe-java:27.1.0")
+	implementation("com.stripe:stripe-java:34.2.0")
 	// Stripe's classes carry Gson annotations: needed on the compile classpath to avoid javac warnings
 	compileOnly("com.google.code.gson:gson")
-	implementation("net.coobird:thumbnailator:0.4.20")
+	implementation("net.coobird:thumbnailator:0.4.21")
 	// WebP decoding for ImageIO (uploaded WebP photos are re-encoded as JPEG)
-	implementation("com.twelvemonkeys.imageio:imageio-webp:3.12.0")
+	implementation("com.twelvemonkeys.imageio:imageio-webp:3.15.3")
 
 	// Tests
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
