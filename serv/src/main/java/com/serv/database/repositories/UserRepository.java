@@ -17,7 +17,13 @@ public interface UserRepository extends JpaRepository<VenusUser, UUID> {
     Optional<VenusUser> findById(@NonNull UUID id);
 
     @Query("SELECT u FROM VenusUser u WHERE u.email.value = :email")
-    Optional<VenusUser> findByEmail(@Param("email") String email);
+    Optional<VenusUser> findByNormalizedEmail(@Param("email") String email);
+
+    /** Case-insensitive lookup: the email is normalized the same way it is stored. */
+    default Optional<VenusUser> findByEmail(String email) {
+        if (email == null) return Optional.empty();
+        return findByNormalizedEmail(com.serv.database.entities.Email.normalize(email));
+    }
 
     @NonNull
     List<VenusUser> findAll();

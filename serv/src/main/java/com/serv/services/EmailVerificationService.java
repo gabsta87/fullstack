@@ -54,8 +54,6 @@ public class EmailVerificationService {
                 + "<p>Cordialement,<br>L'équipe Venus</p>"
                 + "</body></html>";
 
-        System.out.println("Verification URL for email " + user.getEmail() + " : " + verificationUrl);
-
         // 4. Envoi du mail
         mailService.sendHtmlMessage(user.getEmail(), subject, htmlContent);
         return verificationUrl;

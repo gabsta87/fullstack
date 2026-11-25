@@ -13,6 +13,10 @@ import java.time.temporal.ChronoUnit;
 @RequiredArgsConstructor
 public class JwtProvider {
 
+    public static final String CLAIM_USER_ID = "userId";
+    /** Incremented on the user to revoke every token issued before (password change, ban...). */
+    public static final String CLAIM_TOKEN_VERSION = "tv";
+
     private final JwtEncoder jwtEncoder;
     private final JwtDecoder jwtDecoder;
 
@@ -28,8 +32,8 @@ public class JwtProvider {
                 .issuedAt(now)
                 .expiresAt(now.plus(30, ChronoUnit.DAYS))
                 .subject(user.getEmail().toString())
-                .claim("userId", user.getId().toString())
-//                .claim("role", "ROLE_" + user.getRole().toString())
+                .claim(CLAIM_USER_ID, user.getId().toString())
+                .claim(CLAIM_TOKEN_VERSION, user.getTokenVersion())
                 .build();
 
         // 🎯 3. On passe le HEADER ET les CLAIMS dans les paramètres de l'encodeur

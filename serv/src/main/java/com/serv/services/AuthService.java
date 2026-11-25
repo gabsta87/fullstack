@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -37,10 +38,18 @@ public class AuthService implements UserDetailsService{
                 .build();
     }
 
+    /** Hash compared when the account does not exist, so response time does not reveal registered emails. */
+    private static final String DUMMY_HASH = new BCryptPasswordEncoder().encode("venus-timing-equalizer");
+
     public VenusUser verifyCredentials(String email, String password){
         Optional<VenusUser> user = userRepository.findByEmail(email);
 
-        if(user.isPresent() && user.get().checkPassword(password)){
+        if (user.isEmpty()) {
+            new BCryptPasswordEncoder().matches(password == null ? "" : password, DUMMY_HASH);
+            return null;
+        }
+
+        if(user.get().checkPassword(password)){
             if(user.get().getRole() == UserRole.WORKER)
                 return workerRepository.findByIdWithPhotos(user.get().getId()).orElse(null);
 

@@ -28,7 +28,9 @@ jobs:
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: |
+          if [ "${#JWT_SECRET}" -lt 32 ]; then echo "JWT_SECRET secret is missing or shorter than 32 characters" >&2; exit 1; fi
           cd /volume1/docker/venus
           docker compose -p venus build --no-cache --pull
           docker compose -p venus up -d --remove-orphans

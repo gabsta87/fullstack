@@ -40,21 +40,19 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
 
             // 1. On récupère le VenusUser (qui peut être un Client, Worker ou Admin)
             VenusUser user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Utilisateur introuvable."));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unknown user."));
 
             // 2. On regarde quel type de paramètre le contrôleur attend (ex: Client, Admin, VenusUser)
             Class<?> requiredType = parameter.getParameterType();
 
             // 3. Si le type attendu n'est pas compatible avec l'utilisateur connecté
             if (!requiredType.isInstance(user)) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                        "Accès refusé : Le type d'utilisateur (" + user.getClass().getSimpleName() +
-                                ") ne correspond pas à la ressource demandée (" + requiredType.getSimpleName() + ").");
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied.");
             }
 
             return user;
         }
 
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Non authentifié.");
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
     }
 }

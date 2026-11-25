@@ -48,6 +48,13 @@ public abstract class VenusUser {
     @Column(nullable = false)
     protected boolean isLocked = false;
 
+    /**
+     * Revocation counter embedded in every JWT. Incrementing it invalidates all the user's
+     * existing tokens (see {@link #revokeTokens()}).
+     */
+    @Column(name = "token_version", nullable = false, columnDefinition = "INT NOT NULL DEFAULT 0")
+    protected int tokenVersion = 0;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "geographic_zone_id")
     @ToString.Exclude
@@ -74,8 +81,28 @@ public abstract class VenusUser {
         this.passwordHash = ENCODER.encode(password);
     }
 
-    public void setPassword(String password)        { this.passwordHash = ENCODER.encode(password); }
-    public boolean checkPassword(String password)   { return ENCODER.matches(password, this.passwordHash); }
+    /** Hashes and stores a new password, and revokes every token issued with the old one. */
+    public void setPassword(String password) {
+        this.passwordHash = ENCODER.encode(password);
+        revokeTokens();
+    }
+
+    public boolean checkPassword(String password) {
+        return password != null && this.passwordHash != null && ENCODER.matches(password, this.passwordHash);
+    }
+
+    /** Invalidates every JWT previously issued to this user. */
+    public void revokeTokens() {
+        this.tokenVersion++;
+    }
+
+    /** Banning a user also kills all of their sessions. */
+    public void setBanned(boolean banned) {
+        if (banned && !this.isBanned) {
+            revokeTokens();
+        }
+        this.isBanned = banned;
+    }
     public boolean isAdmin(){ return false; };
     public boolean isSuperAdmin() { return false; }
 

@@ -1,5 +1,6 @@
 package com.serv.controllers;
 
+import com.serv.common.PasswordPolicy;
 import com.serv.configuration.JwtProvider;
 import com.serv.database.entities.*;
 import com.serv.database.repositories.*;
@@ -7,28 +8,31 @@ import com.serv.dto.VenusUserDTO;
 import com.serv.requests.Login;
 import com.serv.requests.LoginResponse;
 import com.serv.requests.Register;
+import com.serv.services.AbuseProtectionService;
 import com.serv.services.AuthService;
 import com.serv.services.EmailVerificationService;
 import com.serv.services.PasswordResetService;
-import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {
+
+    private static final String RESET_REQUESTED_MESSAGE = "If that address is registered, a reset link has been sent.";
 
     private final UserRepository userRepository;
     private final ClientRepository clientRepository;
@@ -38,6 +42,7 @@ public class AuthController {
 
     private final PasswordResetService passwordResetService;
     private final EmailVerificationService verificationTokenService;
+    private final AbuseProtectionService abuseProtection;
 
     private final AuthService authService;
     private final JwtProvider jwtProvider;
@@ -48,12 +53,22 @@ public class AuthController {
     // ── Login / Logout ────────────────────────────────────────────────────────
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Login loginRequest) {
-        VenusUser user = authService.verifyCredentials(loginRequest.email(), loginRequest.password());
+    public ResponseEntity<?> login(@Valid @RequestBody Login loginRequest) {
+        String email = loginRequest.email();
+
+        if (abuseProtection.isLoginBlocked(email)) {
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                    .body(Map.of("error", "Too many failed attempts. Please try again later."));
+        }
+
+        VenusUser user = authService.verifyCredentials(email, loginRequest.password());
 
         if (user == null) {
+            abuseProtection.recordLoginFailure(email);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid credentials."));
         }
+
+        abuseProtection.recordLoginSuccess(email);
 
         if (user.isBanned()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Your account has been banned."));
@@ -64,86 +79,54 @@ public class AuthController {
         return ResponseEntity.ok(new LoginResponse(jwtToken, VenusUserDTO.from(user)));
     }
 
+    /** Tokens are stateless: the client simply discards its token. */
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpSession session) {
-        session.invalidate();
+    public ResponseEntity<Void> logout() {
         return ResponseEntity.ok().build();
     }
 
+    /** Only reachable with a valid token for a non-banned account (enforced by the security filter). */
     @GetMapping("/session-check")
-    public ResponseEntity<?> sessionCheck(@AuthenticationPrincipal Jwt jwt) {
-        if (jwt == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        String email = jwt.getSubject();
-
-        return userRepository.findByEmail(email)
-                .map(user -> {
-                    if (user.isBanned()) {
-                        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Your account has been banned."));
-                    }
-                    // On autorise le session-check pour les locked afin que le front-end sache qu'il est connecté mais restreint
-
-                    return ResponseEntity.ok(VenusUserDTO.from(user));
-                })
-                .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+    public ResponseEntity<?> sessionCheck(VenusUser user) {
+        return ResponseEntity.ok(VenusUserDTO.from(user));
     }
 
     // ── Registration ──────────────────────────────────────────────────────────
 
     @PostMapping("/register/client")
     @Transactional
-    public ResponseEntity<?> registerClient(@RequestBody Register req) {
-        if (!Email.isValid(req.email()))
-            return ResponseEntity.badRequest().body(Map.of("error", "Invalid email format."));
-
-        if (userRepository.findByEmail(req.email()).isPresent())
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", "Email already taken."));
-
-        // Le mot de passe sera automatiquement haché par l'entité Client/VenusUser
-        Client client = new Client(new Email(req.email()), req.password());
-
-        clientRepository.save(client);
-
-        if (emailVerificationRequired) {
-            client.setLocked(true);
-            String activationUrl = verificationTokenService.createTokenAndSendEmail(client);
-            System.out.println("Activation URL for client: " + activationUrl);
-        } else {
-            client.setLocked(false);
-        }
-
-
-        String message = emailVerificationRequired
-                ? "Registration successful. Please check your email to activate your account."
-                : "Registration successful.";
-
-        return ResponseEntity.ok(Map.of("message", message));
+    public ResponseEntity<?> registerClient(@Valid @RequestBody Register req) {
+        return register(req, email -> clientRepository.save(new Client(email, req.password())));
     }
 
     @PostMapping("/register/worker")
     @Transactional
-    public ResponseEntity<?> registerWorker(@RequestBody Register req) {
+    public ResponseEntity<?> registerWorker(@Valid @RequestBody Register req) {
+        return register(req, email -> {
+            Worker worker = new Worker(email, req.password());
+            worker.setBanned(false);
+            worker.setExpired(false);
+            return workerRepository.save(worker);
+        });
+    }
+
+    private ResponseEntity<?> register(Register req, Function<Email, VenusUser> creator) {
         if (!Email.isValid(req.email()))
             return ResponseEntity.badRequest().body(Map.of("error", "Invalid email format."));
+
+        if (!PasswordPolicy.isValid(req.password()))
+            return ResponseEntity.badRequest().body(Map.of("error", PasswordPolicy.MESSAGE));
 
         if (userRepository.findByEmail(req.email()).isPresent())
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", "Email already taken."));
 
-        // Le mot de passe sera automatiquement haché par l'entité Worker/VenusUser
-        Worker worker = new Worker(new Email(req.email()), req.password());
-        worker.setBanned(false);
-        worker.setExpired(false);
-
-        workerRepository.save(worker);
+        VenusUser user = creator.apply(new Email(req.email()));
 
         if (emailVerificationRequired) {
-            worker.setLocked(true);
-            String activationUrl = verificationTokenService.createTokenAndSendEmail(worker);
-            System.out.println("Activation URL for worker: " + activationUrl);
+            user.setLocked(true);
+            verificationTokenService.createTokenAndSendEmail(user);
         } else {
-            worker.setLocked(false);
+            user.setLocked(false);
         }
 
         String message = emailVerificationRequired
@@ -156,8 +139,15 @@ public class AuthController {
     @GetMapping("/verify-email")
     @Transactional
     public ResponseEntity<String> verifyEmail(@RequestParam String token) {
-        VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token"));
+        if (token.length() > 64) {
+            return ResponseEntity.badRequest().body("Invalid token.");
+        }
+
+        Optional<VerificationToken> tokenOpt = verificationTokenRepository.findByToken(token);
+        if (tokenOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body("Invalid token.");
+        }
+        VerificationToken verificationToken = tokenOpt.get();
 
         if (verificationToken.isExpired()) {
             verificationTokenRepository.delete(verificationToken);
@@ -174,24 +164,30 @@ public class AuthController {
     }
 
     // ── Password reset ────────────────────────────────────────────────────────
+
+    /** Always answers the same way so the endpoint cannot be used to discover registered emails. */
     @Transactional
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestParam("email") String email) {
-        Optional<VenusUser> userOpt = userRepository.findByEmail(email);
-
-        if (userOpt.isEmpty()) {
-            return ResponseEntity.ok("If that address is registered, a reset link has been sent.");
+        if (!Email.isValid(email) || !abuseProtection.tryPasswordResetRequest(email)) {
+            return ResponseEntity.ok(RESET_REQUESTED_MESSAGE);
         }
 
-        passwordResetService.createTokenAndSendEmail(userOpt.get(), false);
+        userRepository.findByEmail(email)
+                .filter(user -> !user.isBanned())
+                .ifPresent(user -> passwordResetService.createTokenAndSendEmail(user, false));
 
-        return ResponseEntity.ok("If that address is registered, a reset link has been sent.");
+        return ResponseEntity.ok(RESET_REQUESTED_MESSAGE);
     }
 
     @PostMapping("/reset-password/confirm")
     @Transactional
     public ResponseEntity<String> confirmReset(@RequestParam("resetToken") UUID token,
                                                @RequestParam("newPassword") String newPassword) {
+        if (!PasswordPolicy.isValid(newPassword)) {
+            return ResponseEntity.badRequest().body(PasswordPolicy.MESSAGE);
+        }
+
         Optional<PasswordResetToken> tokenOpt = passwordResetTokenRepository.findById(token);
 
         if (tokenOpt.isEmpty()) {
@@ -207,15 +203,17 @@ public class AuthController {
 
         VenusUser user = resetToken.getUser();
 
-        // Le setter user.setPassword() appelle automatiquement ENCODER.encode()
+        // Hashes the password and revokes every token issued before the reset.
         user.setPassword(newPassword);
 
+        // Admin invitations are activated by setting the first password.
         if (user.isLocked() && user.isAdmin()) {
             user.setLocked(false);
         }
 
         userRepository.save(user);
         passwordResetTokenRepository.delete(resetToken);
+        abuseProtection.recordLoginSuccess(user.getEmail().getValue());
 
         return ResponseEntity.ok("Password reset successful.");
     }
