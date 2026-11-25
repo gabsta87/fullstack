@@ -14,8 +14,8 @@ Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 - [x] phpmyadmin de mon NAS doit être accessible depuis mon réseau local, pas uniquement depuis le NAS, comme c'était le cas avant les modifications que tu as faites. *Port 8082 ouvert sur le réseau local ; ne jamais le rediriger sur la box. Sur un serveur public : `PHPMYADMIN_BIND=127.0.0.1`.*
 - [ ] front : afficher l'espace utilisé sur la page profile-management
 - [ ] front : le guard profil bloque l'accès à un profil banni (sauf admins) — *backend fait dans `chore/tests` : `GET /workers/{id}` répond 404 pour un profil non public, sauf admin/propriétaire*
-- [ ] front : les admins voient tous les champs requis de chaque profil dans le tableau (détecter les problèmes de validité)
-- [ ] front : les profils favoris sont marqués comme favoris sur la homepage
+- [ ] front : les admins voient quels champs sont manquants pour qu'un profil soit valide (détecter les problèmes de validité). si cela est compliqué sur le dashboard, on va faire une page d'administration d'un profil pour les admins. Ils y ont accès en cliquant sur un profil depuis le dashboard.
+- [x] front : les profils favoris sont marqués comme favoris sur la homepage
 - [x] serv : sécuriser la demande de certification côté backend (refuser si déjà certifié / en cours de revue) — `chore/tests`
 - [ ] front+serv : debug — le worker ne voit pas la mise à jour de certification en live (SSE) — *cause probable corrigée dans `chore/tests` (le front lisait un rôle absent du JWT) ; à vérifier en conditions réelles*
 - [ ] test : les admins voient-ils en live les modifications des autres admins (SSE) ?
@@ -57,15 +57,16 @@ Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
   - [x] serv : infrastructure d'intégration (H2, vrais JWT), matrice d'autorisation, auth/jetons, uploads, validation, IDOR, droits admin, photos de certification privées — 334 tests
   - [x] front : tests Angular (`ng test`) — intercepteur JWT, AuthService (SSE inclus), guards, formulaire de connexion, utilitaires, photo de certification — 51 tests
   - [x] CI : tests backend + front sur GitHub avant tout déploiement (et sur chaque pull request)
-- [ ] `chore/english-docs` — documentation en anglais, remplacement des commentaires en français
+- [x] `chore/english-docs` — commentaires et noms de tests en anglais (~450 commentaires, code inchangé vérifié automatiquement)
+  - [ ] textes encore en français codés en dur (hors traductions) : messages d'erreur de l'API, e-mails, quelques messages du front (`errorMsg`, `alert`) → à passer par `data.json` / des clés de traduction
 - [x] `chore/logging` — logs SLF4J avec id de requête, événements `SECURITY` / `ADMIN` sans données personnelles, rotation des logs Docker, plus de `console.log` côté front
 - [x] `chore/warnings` — zéro warning au démarrage Spring, à la compilation Java (`-Xlint:all` activé en permanence), au build Angular et dans les tests
-- [ ] `chore/refactoring` — nettoyage, factorisation du code, en particulier des fichiers SCSS (variables, mixins, styles partagés). Inclut : Sass `@import` → `@use` (dépréciation masquée dans `angular.json` en attendant), `variables.scss` chargé deux fois (dans `angular.json` et dans `styles.scss`), composant Stripe inutilisé
+- [x] `chore/refactoring` — code mort supprimé (composant Stripe, services et resolver inutilisés), Angular Material retiré, CSS globaux chargés une seule fois (plus de Sass `@import`), build Angular moderne (esbuild, 844 → 491 paquets npm) ; rendu vérifié par 30 captures comparées pixel par pixel. Le SCSS des composants n'avait presque pas de duplication : pas de factorisation forcée
 - [x] `chore/deps-upgrade` — Spring Boot 3.3 → 4.1.3, Gradle 8.14, Angular 18 → 22, PrimeNG 18 → 22, TypeScript 6, Node 24, MySQL 8.0 → 9.7 LTS ; dépendances inutiles retirées (serveur d'autorisation OAuth2, Thymeleaf, Spring Session, paquets Stripe/Express du front)
   - [x] MySQL 9.7 LTS sur un volume neuf (`db-data-mysql97`) : les données de test repartent de zéro. L'ancien volume peut être supprimé sur le NAS : `docker volume rm venus_db-data`. **Le jour où il y aura de vraies données (Infomaniak)** : sauvegarder avant toute montée MySQL, une LTS à la fois.
   - [ ] Ionic 8 → 9 (majeure, changements visuels possibles) : branche dédiée avec comparaison visuelle
-  - [ ] Java 21 → 25 LTS (21 reste supporté jusqu'en 2029 : pas urgent)
-  - [ ] `@angular/material` : seul son thème CSS est importé, aucun composant utilisé → à retirer dans `chore/refactoring` (contrôle visuel)
+  - [ ] Java 21 → 25 LTS (21 reste supporté jusqu'en 2029 : pas urgent ; nécessite aussi Gradle 9)
+  - [x] `@angular/material` retiré (dans `chore/refactoring`)
 
 ## 4. Sécurité — suites de l'audit (`chore/tests`)
 
