@@ -18,6 +18,10 @@ public class JwtProvider {
     public static final String CLAIM_TOKEN_VERSION = "tv";
 
     private final JwtEncoder jwtEncoder;
+
+    /** Token lifetime (app.jwt.expiration, ISO-8601 or Spring duration such as 30d). */
+    @org.springframework.beans.factory.annotation.Value("${app.jwt.expiration:30d}")
+    private java.time.Duration expiration = java.time.Duration.ofDays(30);
     private final JwtDecoder jwtDecoder;
 
     public String generateToken(VenusUser user) {
@@ -30,7 +34,7 @@ public class JwtProvider {
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("venus-api")
                 .issuedAt(now)
-                .expiresAt(now.plus(30, ChronoUnit.DAYS))
+                .expiresAt(now.plus(expiration))
                 .subject(user.getEmail().toString())
                 .claim(CLAIM_USER_ID, user.getId().toString())
                 .claim(CLAIM_TOKEN_VERSION, user.getTokenVersion())
