@@ -31,12 +31,12 @@ class EmailVerificationServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Injecte la valeur de l'URL du frontend puisque @Value ne s'initialise pas hors contexte Spring Boot
+        // Inject the frontend URL: @Value is not resolved outside a Spring Boot context
         ReflectionTestUtils.setField(emailVerificationService, "frontendUrl", "http://localhost:4200");
     }
 
     @Test
-    @DisplayName("createTokenAndSendEmail - Nettoie, sauvegarde et envoie l'e-mail de vérification")
+    @DisplayName("createTokenAndSendEmail - cleans up, saves and sends the verification email")
     void createTokenAndSendEmail_Success() {
         Client client = new Client(new Email("client@venus.com"), "Password123!");
 
@@ -47,7 +47,7 @@ class EmailVerificationServiceTest {
 
         assertThat(verificationUrl).contains("http://localhost:4200/verify-email?token=");
 
-        // Vérification des interactions
+        // Check the interactions
         verify(verificationTokenRepository, times(1)).deleteAllByUserId(client.getId());
         verify(verificationTokenRepository, times(1)).flush();
         verify(verificationTokenRepository, times(1)).save(any(VerificationToken.class));

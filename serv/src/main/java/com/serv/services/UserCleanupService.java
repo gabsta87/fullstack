@@ -25,16 +25,16 @@ public class UserCleanupService {
 
     @Transactional
     public void deleteUserCompletely(VenusUser user) {
-        // 1. Nettoyage spécifique selon le type d'utilisateur
+        // 1. Cleanup specific to the user type
         if (user instanceof Client client) {
-            // Vider les tables de jointure ManyToMany / OneToMany pour éviter les contraintes FK
+            // Clear the join tables (ManyToMany / OneToMany) to avoid FK violations
             client.getFavorites().clear();
             client.getPreferredServices().clear();
             client.getPreferredLanguages().clear();
-            userRepository.save(client); // Met à jour les tables de jointure
+            userRepository.save(client); // Updates the join tables
         }
         else if (user instanceof Worker worker) {
-            // Supprimer les fichiers physiques du disque via le dossier unique de l'user
+            // Delete the user's media directory from disk
             try {
                 storageService.deleteAllForUser(worker.getId());
             } catch (IOException e) {
@@ -42,7 +42,7 @@ public class UserCleanupService {
                 return;
             }
 
-            // Vider les collections (la cascade ALL + orphanRemoval fera le reste en base)
+            // Clear the collections (cascade ALL + orphanRemoval removes the rows)
             worker.setMainPhoto(null);
             worker.setLastCertificationRequest(null);
             userRepository.save(worker);
@@ -57,11 +57,11 @@ public class UserCleanupService {
             certificationRequestRepository.deleteByWorkerId(worker.getId());
         }
 
-        // 2. Nettoyage commun pour tous les types d'utilisateur
+        // 2. Cleanup common to every user type
         adminAuditLogRepository.nullifyUserTarget(user.getId());
         passwordResetTokenRepository.deleteAllByUserId(user.getId());
 
-        // 3. Suppression globale de l'utilisateur (gère VenusUser + tables filles automatiquement)
+        // 3. Delete the user (VenusUser and subclass tables)
         userRepository.delete(user);
         log.info("Account {} ({}) deleted with all its data", user.getId(), user.getRole());
     }

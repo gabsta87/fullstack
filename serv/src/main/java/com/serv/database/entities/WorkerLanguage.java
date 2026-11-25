@@ -22,7 +22,7 @@ public class WorkerLanguage {
     @Column(name = "language", nullable = false)
     private Language language;
 
-    // Niveau de maîtrise (1 à 4) : Beginner - Intermediate - Good - Native
+    // Mastery level (1 to 4): Beginner - Intermediate - Good - Native
     @Column(name = "mastery_level", nullable = false)
     private int masteryLevel;
 

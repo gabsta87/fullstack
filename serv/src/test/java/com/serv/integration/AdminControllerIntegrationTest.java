@@ -52,7 +52,7 @@ class AdminControllerIntegrationTest extends com.serv.support.IntegrationTest {
 
     @BeforeEach
     void setUp() {
-        // Création de l'admin principal qui va exécuter les requêtes
+        // Main admin who performs the requests
         admin = new Admin();
         admin.setEmail(new Email("master.admin@venus.com"));
         admin.setUsername("master.admin@venus.com");
@@ -63,11 +63,11 @@ class AdminControllerIntegrationTest extends com.serv.support.IntegrationTest {
     }
 
     @Test
-    @DisplayName("WORKFLOW - Cycle de vie complet d'un Service : Création -> Doublon interdit -> Suppression -> Vérification")
+    @DisplayName("WORKFLOW - service lifecycle: creation -> deletion -> check")
     void serviceLifecycleWorkflow() throws Exception {
         UpdateService newServiceReq = new UpdateService(null, "FIRST", "Description du service");
 
-        // 1. CRÉATION DU SERVICE
+        // 1. CREATE THE SERVICE
         mockMvc.perform(post("/admin/service")
                         .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -75,7 +75,7 @@ class AdminControllerIntegrationTest extends com.serv.support.IntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[?(@.name == 'FIRST')]").exists());
 
-        // Vérification en base H2
+        // Check in the H2 database
         Service savedService = serviceRepository.findByName("FIRST").orElseThrow();
         assertThat(savedService.getName()).isEqualTo("FIRST");
 
@@ -86,16 +86,16 @@ class AdminControllerIntegrationTest extends com.serv.support.IntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[?(@.name == 'FIRST')]").doesNotExist());
 
-        // 3. VÉRIFICATION APRÈS SUPPRESSION (Doit être absent de la base H2)
+        // 3. CHECK AFTER DELETION (must be gone from the H2 database)
         assertThat(serviceRepository.findById(savedService.getId())).isEmpty();
     }
 
     @Test
-    @DisplayName("WORKFLOW - Cycle de vie d'un Admin : Invitation -> Enregistrement en base -> Suppression sécurisée")
+    @DisplayName("WORKFLOW - admin lifecycle: invitation -> stored in database -> deletion by a super admin only")
     void adminInvitationAndDeletionWorkflow() throws Exception {
         AdminInvitation invitationReq = new AdminInvitation("new.admin@venus.com");
 
-        // 1. INVITATION / PRÉ-CRÉATION DE L'ADMIN
+        // 1. INVITATION / PRE-CREATION OF THE ADMIN
         mockMvc.perform(post("/admin/invite")
                         .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -103,12 +103,12 @@ class AdminControllerIntegrationTest extends com.serv.support.IntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("new.admin@venus.com"));
 
-        // Vérification en base H2 qu'il est bien créé et verrouillé
+        // Check in the H2 database that it exists and is locked
         var createdAdmin = adminRepository.findByEmail(new Email("new.admin@venus.com"));
         assertThat(createdAdmin).isPresent();
         assertThat(createdAdmin.get().isLocked()).isTrue();
 
-        // 2. SUPPRESSION COMPTE ADMIN : refusée à un simple admin, autorisée au super admin
+        // 2. ADMIN ACCOUNT DELETION: refused to a plain admin, allowed to the super admin
         mockMvc.perform(delete("/admin/users/" + createdAdmin.get().getId())
                         .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -121,12 +121,12 @@ class AdminControllerIntegrationTest extends com.serv.support.IntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("User deleted successfully"));
 
-        // 3. VÉRIFICATION APRÈS SUPPRESSION (Doit échouer / être introuvable)
+        // 3. CHECK AFTER DELETION (must not be found)
         assertThat(userRepository.findById(createdAdmin.get().getId())).isEmpty();
     }
 
     @Test
-    @DisplayName("WORKFLOW - Sécurité : Un admin ne peut pas s'auto-supprimer")
+    @DisplayName("WORKFLOW - security: an admin cannot delete their own account")
     void adminCannotDeleteSelf() throws Exception {
         mockMvc.perform(delete("/admin/users/" + admin.getId())
                         .header("Authorization", "Bearer " + adminToken)
@@ -134,14 +134,14 @@ class AdminControllerIntegrationTest extends com.serv.support.IntegrationTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("An admin cannot suppress himself"));
 
-        // Vérification en base : L'admin est toujours là
+        // Check in the database: the admin is still there
         assertThat(adminRepository.findById(admin.getId())).isPresent();
     }
 
     @Test
-    @DisplayName("WORKFLOW - Cycle de vie complet d'une Région : Création racine -> Création enfant -> Tentative suppression bloquée si worker présent -> Suppression réussie")
+    @DisplayName("WORKFLOW - region lifecycle: root -> child -> child deletion")
     void regionLifecycleWorkflow() throws Exception {
-        // 1. CRÉATION D'UNE RÉGION RACINE (ex: Île-de-France)
+        // 1. CREATE A ROOT REGION (e.g. Île-de-France)
         String createRootJson = "{\"name\": \"Île-de-France\", \"parentId\": null}";
 
         mockMvc.perform(post("/admin/region")
@@ -156,7 +156,7 @@ class AdminControllerIntegrationTest extends com.serv.support.IntegrationTest {
                 .findFirst()
                 .orElseThrow();
 
-        // 2. CRÉATION D'UNE SOUS-RÉGION (ex: Paris 8e rattachée à Île-de-France)
+        // 2. CREATE A SUB-REGION (e.g. Paris 8e under Île-de-France)
         String createChildJson = String.format("{\"name\": \"Paris 8e\", \"parentId\": %d}", rootZone.getId());
 
         mockMvc.perform(post("/admin/region")
@@ -170,43 +170,43 @@ class AdminControllerIntegrationTest extends com.serv.support.IntegrationTest {
                 .findFirst()
                 .orElseThrow();
 
-        // 3. TENTATIVE DE SUPPRESSION DE LA RÉGION PARENTE (Devrait réussir car aucun worker n'est rattaché)
-        // Note : Selon la cascade de ta base de données, supprimer le parent peut supprimer l'enfant ou lever une contrainte.
-        // Testons la suppression de la sous-région (Paris 8e) qui n'a pas de workers.
+        // 3. DELETE THE CHILD REGION (should succeed: no worker attached)
+        // Note: depending on the cascade settings, deleting the parent may delete the child or violate a constraint.
+        // So the sub-region (Paris 8e), which has no workers, is deleted.
         mockMvc.perform(delete("/admin/regions/" + childZone.getId())
                         .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[?(@.name == 'Paris 8e')]").doesNotExist());
 
-        // Vérification en base H2
+        // Check in the H2 database
         assertThat(zoneRepository.findById(childZone.getId())).isEmpty();
     }
 
     @Test
-    @DisplayName("WORKFLOW - Sécurité Région : Empêche la suppression d'une région si un worker y est rattaché (409 Conflict)")
+    @DisplayName("WORKFLOW - region security: a region with attached workers cannot be deleted (409 Conflict)")
     void deleteRegion_BlockedWhenWorkersAttached() throws Exception {
-        // 1. Création d'une région en base H2
+        // 1. Create a region in the H2 database
         GeographicZone zone = new GeographicZone();
         zone.setName("Lyon");
         GeographicZone savedZone = zoneRepository.save(zone);
 
-        // 2. Création et rattachement d'un Worker à cette région
+        // 2. Create a worker attached to this region
         Worker worker = new Worker();
         worker.setEmail(new Email("worker.lyon@venus.com"));
         worker.setUsername("workerlyon");
         worker.setPassword("Password123!");
-        worker.setGeographicZone(savedZone); // 👈 Rattachement du worker à la zone de Lyon
+        worker.setGeographicZone(savedZone);
         userRepository.save(worker);
 
-        // 3. Tentative de suppression de la région (Doit échouer avec un 409 Conflict)
+        // 3. Try to delete the region (must fail with 409 Conflict)
         mockMvc.perform(delete("/admin/regions/" + savedZone.getId())
                         .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.error").exists()); // Vérifie que l'objet d'erreur explicite est retourné
+                .andExpect(jsonPath("$.error").exists()); // The explicit error object is returned
 
-        // 4. Vérification en base : La région ne doit PAS avoir été supprimée
+        // 4. Check in the database: the region must NOT have been deleted
         assertThat(zoneRepository.findById(savedZone.getId())).isPresent();
     }
 }

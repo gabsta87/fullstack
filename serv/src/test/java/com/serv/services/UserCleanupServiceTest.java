@@ -29,7 +29,7 @@ class UserCleanupServiceTest {
     private UserCleanupService userCleanupService;
 
     @Test
-    @DisplayName("deleteUserCompletely - Supprime un worker, ses fichiers et ses dépendances")
+    @DisplayName("deleteUserCompletely - deletes a worker, its files and its dependencies")
     void deleteUserCompletely_WorkerSuccess() throws IOException {
         Worker worker = new Worker();
         worker.setId(UUID.randomUUID());

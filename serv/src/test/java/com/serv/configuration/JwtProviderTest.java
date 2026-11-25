@@ -21,7 +21,7 @@ class JwtProviderTest {
 
     @BeforeEach
     void setUp() {
-        // Clé secrète de test (doit faire au moins 256 bits pour HMAC-SHA256)
+        // Test secret key (at least 256 bits for HMAC-SHA256)
         String secret = "MaCleSecreteSuperSecuriseeDePlusDe32Caracteres!";
         SecretKey secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
 
@@ -37,7 +37,7 @@ class JwtProviderTest {
     }
 
     @Test
-    @DisplayName("generateToken & extractEmail - Génère un token valide et extrait correctement l'email")
+    @DisplayName("generateToken & extractEmail - generates a valid token and extracts the email")
     void generateAndExtractToken_Success() {
         Client client = new Client();
         client.setId(UUID.randomUUID());
@@ -52,7 +52,7 @@ class JwtProviderTest {
     }
 
     @Test
-    @DisplayName("extractEmail - Lève une exception si le token est corrompu ou invalide")
+    @DisplayName("extractEmail - throws when the token is corrupted or invalid")
     void extractEmail_InvalidToken() {
         String invalidToken = "token.invalide.corrompu";
 

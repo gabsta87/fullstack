@@ -17,12 +17,12 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    // L'identifiant du compte de l'annonceur qui paie
+    // Account id of the paying advertiser
     @Column(name = "worker_id", nullable = false)
     private Long workerId;
 
     @Column(name = "bill_value")
-    private int billValue; // En centimes (ex: 2500 pour 25.00€)
+    private int billValue; // In cents (e.g. 2500 for 25.00)
 
     @Column(name = "currency")
     private String currency;

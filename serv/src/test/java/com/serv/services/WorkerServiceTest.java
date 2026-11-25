@@ -31,7 +31,7 @@ class WorkerServiceTest {
     private WorkerService workerService;
 
     @Test
-    @DisplayName("getGalleryPage - Retourne une liste vide si aucun worker ne correspond")
+    @DisplayName("getGalleryPage - returns an empty list when no worker matches")
     void getGalleryPage_EmptyResult() {
         Page<com.serv.database.entities.Worker> emptyPage = Page.empty();
         when(workerRepository.findAll(ArgumentMatchers.<Specification<Worker>>any(), any(Pageable.class))).thenReturn(emptyPage);
@@ -44,16 +44,16 @@ class WorkerServiceTest {
     }
 
     @Test
-    @DisplayName("getGalleryPage - Corrige une page négative à 0")
+    @DisplayName("getGalleryPage - turns a negative page into 0")
     void getGalleryPage_NegativePageCorrection() {
         Page<com.serv.database.entities.Worker> emptyPage = Page.empty();
         when(workerRepository.findAll(ArgumentMatchers.<Specification<Worker>>any(), any(Pageable.class))).thenReturn(emptyPage);
 
-        // On passe une page négative (-5)
+        // Negative page number (-5)
         var result = workerService.getGalleryPage(-5, Collections.emptyMap());
 
         assertThat(result).isEmpty();
-        // Le test valide que le traitement ne lève pas d'exception et interroge bien la page 0
+        // No exception is thrown and page 0 is queried
         verify(workerRepository, times(1)).findAll(ArgumentMatchers.<Specification<Worker>>any(), any(Pageable.class));
     }
 }

@@ -22,20 +22,20 @@ public class EmailVerificationService {
     private String frontendUrl;
 
     /**
-     * @return l'URL de vérification à envoyer par e-mail
+     * @return the verification URL sent by email
      */
     @Transactional
     public String createTokenAndSendEmail(VenusUser user) {
-        // 1. Nettoyage des anciens tokens éventuels pour cet utilisateur
+        // 1. Remove any previous token of this user
         verificationTokenRepository.deleteAllByUserId(user.getId());
         verificationTokenRepository.flush();
 
-        // 2. Génération du token d'activation
-        VerificationToken myToken = new VerificationToken(user); // Utilise le constructeur de ton entité
+        // 2. Generate the activation token
+        VerificationToken myToken = new VerificationToken(user);
         verificationTokenRepository.save(myToken);
 
-        // 3. Construction de l'URL et du contenu du mail
-        // Note bien la route front-end différente : /verify-email au lieu de /reset-password
+        // 3. Build the URL and the email content
+        // Note the front-end route: /verify-email (not /reset-password)
         String verificationUrl = String.format("%s/verify-email?token=%s", frontendUrl, myToken.getToken());
 
         String subject = "Validation de votre adresse e-mail";
@@ -60,12 +60,11 @@ public class EmailVerificationService {
     }
 
     /**
-     * Purge automatique des tokens d'activation expirés tous les jours à 3h du matin.
+     * Purges expired activation tokens every day at 3 am.
      */
     @Scheduled(cron = "0 0 3 * * *")
     @Transactional
     public void purgeExpiredVerificationTokens() {
-        // Attention à utiliser le type de date correspondant à ton entité (Instant ou LocalDateTime)
         verificationTokenRepository.deleteAllByExpiryDateBefore(Instant.now());
     }
 }

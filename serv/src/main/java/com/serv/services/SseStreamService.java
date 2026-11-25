@@ -15,7 +15,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 public class SseStreamService {
-    // Permet de stocker PLUSIEURS connexions actives pour un même UUID utilisateur
+    // Several active connections per user UUID (one per tab/device)
     private final Map<UUID, List<SseEmitter>> emitters = new ConcurrentHashMap<>();
 
     /** A user (or admin) rarely has more tabs open; older connections are closed beyond this. */
@@ -58,23 +58,23 @@ public class SseStreamService {
     }
 
     /**
-     * Méthode générique pour envoyer n'importe quel type d'événement à un utilisateur
+     * Sends any kind of event to a user.
      */
     public void emitEvent(UUID userId, String eventName, Object data) {
-        // 🎯 On vérifie si le thread actuel exécute une transaction (@Transactional)
+        // Inside a transaction (@Transactional)?
         if (TransactionSynchronizationManager.isActualTransactionActive()) {
 
-            // On enregistre un hook de synchronisation Spring
+            // Then emit through a Spring synchronization hook
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
                 @Override
                 public void afterCommit() {
-                    // Cette méthode ne s'exécutera QUE si la BDD a validé à 100% l'écriture
+                    // Runs ONLY once the database has committed the write
                     executeEmission(userId, eventName, data);
                 }
             });
 
         } else {
-            // S'il n'y a pas de transaction (ex: GET /me ou calculs), on envoie immédiatement
+            // No transaction (e.g. GET /me): emit right away
             executeEmission(userId, eventName, data);
         }
     }
@@ -96,7 +96,7 @@ public class SseStreamService {
     }
 
     /**
-     * Logique interne d'envoi physique aux sockets (encapsulée)
+     * Writes the event to the user's open connections.
      */
     private void executeEmission(UUID userId, String eventName, Object data) {
         List<SseEmitter> userEmitters = emitters.get(userId);

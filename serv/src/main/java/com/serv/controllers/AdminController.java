@@ -61,23 +61,23 @@ public class AdminController {
     @GetMapping("/users")
     @Transactional(readOnly = true)
     public ResponseEntity<List<AdminUserDTO>> getAllUsers() {
-        // 1. On récupère tous les workers et toutes les requêtes de certification d'un coup
+        // 1. Load all users and all certification requests at once
         List<VenusUser> users = userRepository.findAll();
 
-        // On crée une map pour associer facilement un workerId à sa date de demande
+        // Map each workerId to its request date
         Map<UUID, String> requestDatesMap = certificationRequestRepository.findAll().stream()
                 .filter(req -> req.getWorker() != null && req.getCreatedAt() != null)
                 .collect(Collectors.toMap(
                         req -> req.getWorker().getId(),
                         req -> req.getCreatedAt().toString(),
-                        (existing, replacement) -> existing // Sécurité en cas de doublon
+                        (existing, replacement) -> existing // Keep the first one on duplicates
                 ));
 
-        // 2. On transforme en DTO en passant la map ou la date correspondante
+        // 2. Map to DTOs with the matching request date
         List<AdminUserDTO> userDTOs = users.stream()
                 .map(user -> {
                     String reqDate = (user instanceof Worker w) ? requestDatesMap.get(w.getId()) : null;
-                    return AdminUserDTO.from(user, reqDate); // On passe la date en paramètre
+                    return AdminUserDTO.from(user, reqDate);
                 })
                 .toList();
 
@@ -90,14 +90,14 @@ public class AdminController {
         VenusUser userToDelete = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        // Empêcher un admin de se supprimer lui-même
+        // An admin cannot delete their own account
         if (userToDelete.getId().equals(admin.getId())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("error", "An admin cannot suppress himself"));
         }
         requireAuthorityOver(admin, userToDelete);
 
-        // Appel du service de nettoyage et de suppression
+        // Delete the account and all its data
         userCleanupService.deleteUserCompletely(userToDelete);
 
         // Audit Log
@@ -297,7 +297,7 @@ public class AdminController {
     // SERVICES
 
     /**
-     * 🔄 SAVE OR UPDATE unique pour les services
+     * Creates or updates a service.
      */
     @PostMapping("/service")
     @Transactional
@@ -346,26 +346,26 @@ public class AdminController {
         Service service = serviceRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Service not found"));
 
-        // 1. Sauvegarde des infos pour l'audit
+        // 1. Keep the details for the audit log
         String serviceName = service.getName();
         String snapshot = String.format("{\"id\": %d, \"name\": \"%s\"}", id, serviceName);
 
         // 2. Suppression effective
         serviceRepository.delete(service);
 
-        // 3. Enregistrement de l'audit
+        // 3. Audit log
         logAdminAction(admin, "DELETE_SERVICE", snapshot, "Suppression du service : " + serviceName);
 
-        // 4. Récupération de la liste mise à jour des services
+        // 4. Reload the updated list of services
         List<ServiceDTO> updatedServices = serviceRepository.findAll()
                 .stream()
                 .map(ServiceDTO::from)
                 .collect(Collectors.toList());
 
-        // 5. Émission de l'événement SSE
+        // 5. Notify the other admins (SSE)
         sseStreamService.broadcastAdminEvent("SERVICES_UPDATED", updatedServices);
 
-        // 6. Retour HTTP final
+        // 6. HTTP response
         return ResponseEntity.ok(updatedServices);
     }
 
@@ -402,17 +402,17 @@ public class AdminController {
         GeographicZone zone = geographicZoneRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Region not found"));
 
-        // 1. Rassembler l'ID de la zone parente et de ses enfants directs (2 niveaux max)
+        // 1. Collect the zone id and its direct children (2 levels max)
         List<Integer> zoneIdsToCheck = new java.util.ArrayList<>();
         zoneIdsToCheck.add(zone.getId());
 
-        // Récupération des enfants (adapte la méthode selon ton repository, ex: findByParentId ou findByParent)
+        // Child zones
         List<GeographicZone> childrenZones = geographicZoneRepository.findByParentId(id);
         for (GeographicZone child : childrenZones) {
             zoneIdsToCheck.add(child.getId());
         }
 
-        // 2. Compter les annonceurs présents dans la zone OU dans ses enfants
+        // 2. Count the advertisers in the zone OR in its children
         long totalWorkers = workerRepository.countByGeographicZoneIdIn(zoneIdsToCheck);
         if (totalWorkers > 0) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
@@ -420,26 +420,26 @@ public class AdminController {
             ));
         }
 
-        // 3. Sauvegarde des infos pour le log d'audit
+        // 3. Keep the details for the audit log
         String zoneName = zone.getName();
         String snapshot = String.format("{\"id\": %d, \"name\": \"%s\"}", id, zoneName);
 
-        // 4. Suppression effective (si cascade est configuré sur les enfants, ils seront supprimés avec)
+        // 4. Delete (children are removed by the cascade)
         geographicZoneRepository.delete(zone);
 
-        // 5. Enregistrement de l'audit
+        // 5. Audit log
         logAdminAction(admin, "DELETE_REGION", snapshot, "Suppression de la zone géographique : " + zoneName);
 
-        // 6. Récupération de la liste mise à jour des régions
+        // 6. Reload the updated list of regions
         List<GeographicZoneWithChildrenDTO> updatedZones = geographicZoneRepository.findAll()
                 .stream()
                 .map(GeographicZoneWithChildrenDTO::from)
                 .collect(Collectors.toList());
 
-        // 7. Émission de l'événement SSE
+        // 7. Notify the other admins (SSE)
         sseStreamService.broadcastAdminEvent("REGIONS_UPDATED", updatedZones);
 
-        // 8. Retour HTTP final
+        // 8. HTTP response
         return ResponseEntity.ok(updatedZones);
     }
 
@@ -471,7 +471,7 @@ public class AdminController {
             String oldName = zone.getName();
             String oldParentName = (zone.getParent() != null) ? zone.getParent().getName() : "Aucun";
 
-            // Gérer le cas où le parentId est fourni ou mis à null
+            // A null parentId makes the zone a root zone
             if (region.parentId() != null) {
                 GeographicZone parentZone = geographicZoneRepository.findById(region.parentId()).orElse(null);
                 if(parentZone == null) return ResponseEntity.notFound().build();
@@ -480,7 +480,7 @@ public class AdminController {
                 }
                 zone.setParent(parentZone);
             } else {
-                zone.setParent(null); // Devient une zone racine
+                zone.setParent(null); // Becomes a root zone
             }
 
             zone.setName(region.name().trim());
@@ -580,7 +580,7 @@ public class AdminController {
                     Worker worker = entry.getKey();
                     List<Report> reports = entry.getValue();
 
-                    // On compte uniquement les signalements actifs (PENDING)
+                    // Only active (PENDING) reports are counted
                     long activeCount = reports.stream()
                             .filter(r -> r.getStatus() == ReportStatus.PENDING)
                             .count();
@@ -616,7 +616,7 @@ public class AdminController {
 
         logAdminAction(admin, "DISMISS_REPORT", report, "Signalement classé sans suite pour le worker " + report.getWorker().getEmail() + " : "+ report.getStatus());
 
-        // On diffuse la mise à jour aux autres admins connectés
+        // Notify the other connected admins
         sseStreamService.broadcastAdminEvent("REPORT_UPDATED", report.getId());
 
         return ResponseEntity.ok(AdminWorkerReportDTO.ReportDetailDTO.from(report));
@@ -636,20 +636,20 @@ public class AdminController {
             catch (IllegalArgumentException e) { return ResponseEntity.badRequest().body(Map.of("error", "Email invalide")); }
         }
 
-        // 1. On vérifie les doublons
+        // 1. Reject duplicates
         if (userRepository.findByEmail(email.getValue()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", "Un utilisateur avec cet e-mail existe déjà"));
         }
 
-        // 2. On crée l'Admin en BDD "verrouillé"
+        // 2. Create the admin account, locked
         Admin newAdmin = new Admin();
         newAdmin.setEmail(email);
         newAdmin.setUsername(email.toString());
-        newAdmin.setLocked(true); // Verrouillé tant que le premier mot de passe n'est pas posé
-        newAdmin.setPassword("PENDING_ACTIVATION_" + UUID.randomUUID()); // Chaîne BCrypt non valide par sécurité
+        newAdmin.setLocked(true); // Locked until the first password is set
+        newAdmin.setPassword("PENDING_ACTIVATION_" + UUID.randomUUID()); // Not a valid BCrypt hash: nobody can log in with it
         adminRepository.save(newAdmin);
 
-        // 3. Réutilisation immédiate avec le paramètre d'invitation à true
+        // 3. Send the invitation (password reset flow in invitation mode)
         passwordResetService.createTokenAndSendEmail(newAdmin, true);
 
         // 4. Audit Log

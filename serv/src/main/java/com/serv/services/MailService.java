@@ -39,7 +39,7 @@ public class MailService {
             message.setText(content);
             javaMailSender.send(message);
         } catch (Exception e) {
-            // Log propre de l'erreur d'envoi
+            // Log the sending error
             log.error("Could not send email \"{}\": {}", subject, e.getMessage());
         }
     }

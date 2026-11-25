@@ -35,7 +35,7 @@ class AuthServiceTest {
     private AuthService authService;
 
     @Test
-    @DisplayName("loadByUsername - Succès pour un utilisateur valide")
+    @DisplayName("loadByUsername - succeeds for a valid user")
     void loadUserByUsername_Success() {
         Client client = new Client(new Email("test@venus.com"), "Password123!");
         when(userRepository.findByEmail("test@venus.com")).thenReturn(Optional.of(client));
@@ -47,7 +47,7 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("loadByUsername - Échec si l'utilisateur est introuvable")
+    @DisplayName("loadByUsername - fails when the user does not exist")
     void loadUserByUsername_NotFound() {
         when(userRepository.findByEmail("unknown@venus.com")).thenReturn(Optional.empty());
 
@@ -57,7 +57,7 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("loadByUsername - Échec si le compte est banni (DisabledException)")
+    @DisplayName("loadByUsername - fails when the account is banned (DisabledException)")
     void loadUserByUsername_Banned() {
         Client client = new Client(new Email("banned@venus.com"), "Password123!");
         client.setBanned(true);
@@ -70,7 +70,7 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("verifyCredentials - Retourne le worker avec photos si le rôle est WORKER")
+    @DisplayName("verifyCredentials - returns the worker with photos when the role is WORKER")
     void verifyCredentials_WorkerSuccess() {
         Worker worker = new Worker(new Email("worker@venus.com"), "Password123!");
         UUID workerId = UUID.randomUUID();

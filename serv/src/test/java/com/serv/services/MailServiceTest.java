@@ -33,7 +33,7 @@ class MailServiceTest {
     }
 
     @Test
-    @DisplayName("sendSimpleMessage - Envoie un e-mail simple via JavaMailSender")
+    @DisplayName("sendSimpleMessage - sends a plain email through JavaMailSender")
     void sendSimpleMessage_Success() {
         Email to = new Email("recipient@venus.com");
 
@@ -43,7 +43,7 @@ class MailServiceTest {
     }
 
     @Test
-    @DisplayName("sendHtmlMessage - Envoie un e-mail HTML via JavaMailSender")
+    @DisplayName("sendHtmlMessage - sends an HTML email through JavaMailSender")
     void sendHtmlMessage_Success() {
         Email to = new Email("recipient@venus.com");
         MimeMessage mimeMessage = new MimeMessage((jakarta.mail.Session) null);

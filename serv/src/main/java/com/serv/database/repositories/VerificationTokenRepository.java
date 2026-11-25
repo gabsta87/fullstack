@@ -15,7 +15,7 @@ public interface VerificationTokenRepository extends JpaRepository<VerificationT
 
     Optional<VerificationToken> findByUser(VenusUser user);
 
-    // Utile pour nettoyer les anciens tokens d'un utilisateur s'il re-tente une inscription
+    // Removes a user's previous tokens when they register again
     void deleteByUser(VenusUser user);
 
     void deleteAllByUserId(UUID id);

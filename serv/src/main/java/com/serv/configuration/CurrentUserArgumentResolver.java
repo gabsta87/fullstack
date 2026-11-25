@@ -38,14 +38,14 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
         if (authentication != null && authentication.getPrincipal() instanceof Jwt jwt) {
             String email = jwt.getSubject();
 
-            // 1. On récupère le VenusUser (qui peut être un Client, Worker ou Admin)
+            // 1. Load the VenusUser (Client, Worker or Admin)
             VenusUser user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unknown user."));
 
-            // 2. On regarde quel type de paramètre le contrôleur attend (ex: Client, Admin, VenusUser)
+            // 2. Parameter type expected by the controller (e.g. Client, Admin, VenusUser)
             Class<?> requiredType = parameter.getParameterType();
 
-            // 3. Si le type attendu n'est pas compatible avec l'utilisateur connecté
+            // 3. Reject when the expected type does not match the authenticated user
             if (!requiredType.isInstance(user)) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied.");
             }

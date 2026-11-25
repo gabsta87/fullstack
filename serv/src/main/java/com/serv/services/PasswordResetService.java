@@ -25,19 +25,19 @@ public class PasswordResetService {
      */
     @Transactional
     public String createTokenAndSendEmail(VenusUser user, boolean isInvitation) {
-        // 1. Nettoyage des anciens tokens
+        // 1. Remove previous tokens
         passwordResetTokenRepository.deleteAllByUserId(user.getId());
         passwordResetTokenRepository.flush();
 
-        // 2. Génération du token
+        // 2. Generate the token
         UUID token = UUID.randomUUID();
         PasswordResetToken myToken = new PasswordResetToken(token, user);
         passwordResetTokenRepository.save(myToken);
 
-        // 3. Construction de l'URL et du contenu du mail
+        // 3. Build the URL and the email content
         String resetUrl = String.format("%s/reset-password?resetToken=%s", frontendUrl, token);
 
-        // On adapte le texte selon qu'il s'agit d'une invitation ou d'un oubli de mot de passe
+        // Wording depends on whether this is an invitation or a forgotten password
         String subject = isInvitation ? "Activation de votre compte Administrateur" : "Réinitialisation de votre mot de passe";
         String introContext = isInvitation
                 ? "Un compte administrateur a été créé pour vous sur Venus. Veuillez cliquer sur le lien ci-dessous pour configurer votre mot de passe et activer votre compte (valable 24h) :"

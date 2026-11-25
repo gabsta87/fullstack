@@ -44,7 +44,7 @@ public class TestDataInitializer implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
 
-        // 1. 🌍 INITIALISATION DES ZONES GEOGRAPHIQUES
+        // 1. GEOGRAPHIC ZONES
         if (zoneRepository.findAll().isEmpty()) {
             log.info("Inserting test geographic zones...");
             GeographicZone paris = createZone("Paris", null);
@@ -84,7 +84,7 @@ public class TestDataInitializer implements ApplicationRunner {
         List<Service> allServices = serviceRepository.findAll();
         List<GeographicZone> allZones = zoneRepository.findAll();
 
-        // 📝 Banques de données de 50 prénoms et 50 noms
+        // Pools of 50 first names and 50 last names
         List<String> firstNames = Arrays.asList(
                 "Amelie", "Sofia", "Lea", "Camille", "Ines", "Zoe", "Manon", "Chloe", "Emma", "Jade",
                 "Sarah", "Eva", "Clara", "Anna", "Alice", "Lucie", "Mila", "Elena", "Maya", "Nina",
@@ -101,7 +101,7 @@ public class TestDataInitializer implements ApplicationRunner {
                 "Aubert", "Giraud", "Henry", "Barbier", "Brun", "Dumas", "Brunet", "Mercier", "Roger", "Vidal"
         );
 
-        // Récupération des valeurs d'Enums sous forme de tableaux pour le tirage aléatoire
+        // Enum values as arrays for random picks
         BodyType[] bodyTypes = BodyType.values();
         EyeColor[] eyeColors = EyeColor.values();
         HairColor[] hairColors = HairColor.values();
@@ -112,11 +112,11 @@ public class TestDataInitializer implements ApplicationRunner {
         int totalGenerated = 0;
         Set<String> generatedEmails = new HashSet<>();
 
-        // Boucles imbriquées pour faire chaque combinaison unique
+        // Nested loops: every combination is unique
         for (String firstName : firstNames) {
             for (String lastName : lastNames) {
 
-                // Génération de l'identité et de l'adresse email uniques
+                // Unique identity and email address
                 String displayName = firstName + " " + lastName;
                 String username = (firstName + "." + lastName).toLowerCase()
                         .replaceAll("[éèêë]", "e")
@@ -132,32 +132,32 @@ public class TestDataInitializer implements ApplicationRunner {
                 }
                 generatedEmails.add(email);
 
-                // Calcul d'une date de naissance aléatoire entre 1960 et 2009 (entre 18 et 66 ans)
+                // Random birthdate between 1960 and 2009 (18 to 66 years old)
                 int birthYear = ThreadLocalRandom.current().nextInt(1960, 2009);
                 int birthMonth = ThreadLocalRandom.current().nextInt(1, 13);
                 int birthDay = ThreadLocalRandom.current().nextInt(1, 29);
                 LocalDate birthday = date(birthYear, birthMonth, birthDay);
 
-                // Tirage aléatoire des critères physiques et de la localisation
+                // Random physical criteria and location
                 GeographicZone randomZone = allZones.get(random.nextInt(allZones.size()));
                 BodyType randomBody = bodyTypes[random.nextInt(bodyTypes.length)];
                 Gender randomGender = Gender.FEMALE;
                 EyeColor randomEye = eyeColors[random.nextInt(eyeColors.length)];
                 HairColor randomHair = hairColors[random.nextInt(hairColors.length)];
 
-                // Configuration de l'état du profil (70% de chances d'être disponible)
+                // Profile state (70% chance of being available)
                 boolean available = random.nextDouble() < 0.70;
-                Instant lastRefreshed = Instant.now().minusSeconds(random.nextInt(259200)); // refresh dans les 3 derniers jours
+                Instant lastRefreshed = Instant.now().minusSeconds(random.nextInt(259200)); // refreshed within the last 3 days
 
-                // Détermination des services (1 à 3 services aléatoires)
+                // 1 to 3 random services
                 Collections.shuffle(allServices);
                 int servicesCount = random.nextInt(3) + 1;
                 List<Service> selectedServices = new ArrayList<>(allServices.subList(0, servicesCount));
 
-                // Attribution de crédit de jours aléatoire (de 0 à 30 jours) pour simuler l'état de la plateforme
+                // Random day credit (0 to 30 days) to simulate a live platform
                 int remainingDays = random.nextInt(31);
 
-                // Création et sauvegarde de l'entité de test
+                // Create and save the test entity
                 createGeneratedWorker(
                         username, email, encodedPassword, displayName, birthday, randomZone,
                         randomBody, randomGender, randomEye, randomHair, available,

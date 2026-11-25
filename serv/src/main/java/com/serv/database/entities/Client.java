@@ -32,7 +32,7 @@ public class Client extends VenusUser {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "client_preferred_services", // Nom de ta table de jointure
+            name = "client_preferred_services", // Join table
             joinColumns = @JoinColumn(name = "client_id"),
             inverseJoinColumns = @JoinColumn(name = "service_id")
     )

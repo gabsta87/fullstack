@@ -174,11 +174,11 @@ public class Worker extends VenusUser {
     }
 
 
-    // Option A : Si tu optes pour un système d'abonnement (Enum ou String)
+    // Option A: subscription tier
     @Enumerated(EnumType.STRING)
     private SubscriptionTier subscriptionTier = SubscriptionTier.BASIC; // BASIC, STANDARD, PREMIUM
 
-    // Option B : Si tu optes pour des ajouts de stockage à la carte (en octets)
+    // Option B: extra storage bought separately (in bytes)
     @Column(name = "extra_storage_purchased")
     private Long extraStoragePurchased = 0L;
 
@@ -188,7 +188,7 @@ public class Worker extends VenusUser {
     public long getMaxStorageBytes() {
         long baseLimit = 0L;
 
-        // Scénario 1 : Limite basée sur l'abonnement
+        // Case 1: limit based on the subscription tier
         if (subscriptionTier != null) {
             baseLimit = switch (subscriptionTier) {
                 case BASIC -> 50L * 1024 * 1024;    // 50 Mo
@@ -197,10 +197,10 @@ public class Worker extends VenusUser {
                 default -> 50L * 1024 * 1024;
             };
         } else {
-            baseLimit = 50L * 1024 * 1024; // Valeur par défaut
+            baseLimit = 50L * 1024 * 1024; // Default value
         }
 
-        // Scénario 2 : Ajout éventuel de stockage acheté à la volée
+        // Case 2: extra storage bought separately
         long extra = (extraStoragePurchased != null) ? extraStoragePurchased : 0L;
 
         return baseLimit + extra;
@@ -252,7 +252,7 @@ public class Worker extends VenusUser {
 
     public void setShortDescription(String shortDescription) {
         if (shortDescription != null && shortDescription.length() > 45) {
-            // Tronque automatiquement et ajoute une ellipse si le texte dépasse
+            // Truncates with an ellipsis when the text is too long
             this.shortDescription = shortDescription.substring(0, 42) + "...";
         } else {
             this.shortDescription = shortDescription;

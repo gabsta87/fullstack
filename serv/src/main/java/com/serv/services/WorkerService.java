@@ -33,17 +33,17 @@ public class WorkerService {
             page = 0;
         }
 
-        // 1. On prépare la base : Uniquement les profils non désactivés + les filtres dynamiques
+        // 1. Only publicly visible profiles + the dynamic filters
         Specification<Worker> spec = WorkerSpecifications.isValidProfile()
                 .and(buildDynamicFilters(filters));
 
-        // 2. LA MAGIE DU MULTI-TRI :
-        // D'abord 'available' (true avant false), puis 'galleryPositionPriority' par ordre décroissant
+        // 2. Sorting:
+        // 'available' first (true before false), then 'galleryPositionPriority' descending
         Sort doubleSort = Sort.by(Sort.Direction.DESC, "isAvailable")
                 .and(Sort.by(Sort.Direction.DESC, "galleryPositionPriority"));
 //                .and(Sort.by(Sort.Direction.ASC, "id"));
 
-        // 3. Une seule et unique requête propre, paginée au niveau SQL
+        // 3. A single query, paginated in SQL
         List<Worker> workers = workerRepository.findAll(
                 spec,
                 PageRequest.of(page, PAGE_SIZE, doubleSort)
@@ -51,7 +51,7 @@ public class WorkerService {
 
         if (workers.isEmpty()) return List.of();
 
-        // 4. Assemblage des DTOs (Tri conservé fidèlement depuis la base de données)
+        // 4. Map to DTOs (keeps the database order)
         return workers.stream()
                 .map(WorkerMinimalProfileDTO::from)
                 .toList();
@@ -73,7 +73,7 @@ public class WorkerService {
                 } catch (NumberFormatException ignored) {}
             }
 
-            // 2. 🎯 UTILISATION DE LA METHODE GENERIQUE POUR LES ENUMS
+            // 2. Enum filters
             addEqualPredicate(filters, "bodyType", "bodyType", predicates, root, cb, v -> BodyType.valueOf(v.toUpperCase()));
             addEqualPredicate(filters, "eyeColor", "eyeColor", predicates, root, cb, v -> EyeColor.valueOf(v.toUpperCase()));
             addEqualPredicate(filters, "hairColor", "hairColor", predicates, root, cb, v -> HairColor.valueOf(v.toUpperCase()));
@@ -89,8 +89,8 @@ public class WorkerService {
                 }
             }
 
-            // 5. Cas des Collections : Services et Langues
-            // Filtre Services
+            // 5. Collections: services and languages
+            // Services filter
             if (filters.containsKey("services")) {
                 List<?> services = (List<?>) filters.get("services");
                 if (services != null && !services.isEmpty()) {
@@ -99,13 +99,13 @@ public class WorkerService {
                 }
             }
 
-            // 🎯 NOUVEAU : Filtre Langues (Intégration de ta nouvelle demande !)
+            // Languages filter
             if (filters.containsKey("languages")) {
                 List<?> languages = (List<?>) filters.get("languages");
                 if (languages != null && !languages.isEmpty()) {
                     query.distinct(true);
 
-                    // 1. On convertit d'abord les Strings reçues en Enums "Language" valides
+                    // 1. Convert the received strings to valid Language enums
                     List<Language> enumLanguages = languages.stream()
                             .map(obj -> Language.fromRepositoryOrString(obj.toString()))
                             .filter(Optional::isPresent)
@@ -113,10 +113,10 @@ public class WorkerService {
                             .toList();
 
                     if (!enumLanguages.isEmpty()) {
-                        // 2. On fait un JOIN sur la collection embedded 'spokenLanguages'
+                        // 2. Join the embedded 'spokenLanguages' collection
                         var spokenLangJoin = root.join("spokenLanguages");
 
-                        // 3. On cible le champ 'language' à l'intérieur de l'objet WorkerLanguage
+                        // 3. Filter on the 'language' field of WorkerLanguage
                         predicates.add(spokenLangJoin.get("language").in(enumLanguages));
                     }
                 }
@@ -177,15 +177,15 @@ public class WorkerService {
     public List<WorkerMinimalProfileDTO> getGalleryByIds(List<UUID> ids) {
         if (ids == null || ids.isEmpty()) return List.of();
 
-        // 1. ÉTAPE D'OPTIMISATION 1 : Filtrage direct au niveau de la BDD avec la Spécification
-        // On ne récupère que les IDs demandés ET qui passent les filtres de validité (âge, banni, masqué...)
+        // 1. Filter in the database with the specification
+        // Only the requested ids that are publicly visible (age, ban, hidden...)
         Specification<Worker> requestedIds = (root, query, cb) -> root.get("id").in(ids);
         Specification<Worker> spec = requestedIds.and(WorkerSpecifications.isValidProfile());
 
         List<Worker> validWorkers = workerRepository.findAll(spec);
         if (validWorkers.isEmpty()) return List.of();
 
-        // 3. ÉTAPE D'OPTIMISATION 3 : Mapping et Tri
+        // 3. Map and sort
         return validWorkers.stream()
                 .map(WorkerMinimalProfileDTO::from)
                 .sorted()

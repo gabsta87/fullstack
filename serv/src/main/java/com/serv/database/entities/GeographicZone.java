@@ -20,14 +20,14 @@ public class GeographicZone {
     @Column(nullable = false)
     private String name;
 
-    // La zone parente (ex: Le Canton pour une Commune, ou la Région pour un Département)
+    // Parent zone (e.g. the canton of a municipality, or the region of a department)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     @ToString.Exclude
     @JsonIgnore
     private GeographicZone parent;
 
-    // Les sous-zones rattachées
+    // Child zones
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Collection<GeographicZone> subZones = new ArrayList<>();
 

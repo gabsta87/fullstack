@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-@Profile("dev") // Cette configuration s'active UNIQUEMENT en mode dev
+@Profile("dev") // Active ONLY with the dev profile
 public class DevMediaWebConfig implements WebMvcConfigurer {
 
     @Value("${media.upload.base}")
@@ -16,15 +16,15 @@ public class DevMediaWebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
-        // On s'assure que le chemin se termine par un slash
+        // Make sure the path ends with a slash
         String location = uploadBase.endsWith("/") ? uploadBase : uploadBase + "/";
 
-        // Sous macOS/Linux, pour un dossier absolu, Spring a besoin du préfixe file:
+        // An absolute directory needs the file: prefix
         if (!location.startsWith("file:")) {
             location = "file:" + location;
         }
 
-        // Associe l'URL /media/** au dossier physique de votre Mac
+        // Maps /media/** to the local media directory
         registry.addResourceHandler("/media/**")
                 .addResourceLocations(location);
     }

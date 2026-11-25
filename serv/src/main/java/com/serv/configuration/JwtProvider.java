@@ -27,7 +27,7 @@ public class JwtProvider {
     public String generateToken(VenusUser user) {
         Instant now = Instant.now();
 
-        // 🎯 1. On crée explicitement le Header en spécifiant l'algorithme HMAC HS256
+        // 1. Explicit header with the HMAC HS256 algorithm
         JwsHeader jwsHeader = JwsHeader.with(MacAlgorithm.HS256).build();
 
         // 2. Tes claims habituels
@@ -40,17 +40,17 @@ public class JwtProvider {
                 .claim(CLAIM_TOKEN_VERSION, user.getTokenVersion())
                 .build();
 
-        // 🎯 3. On passe le HEADER ET les CLAIMS dans les paramètres de l'encodeur
+        // 3. Encode header and claims
         return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
     }
 
     public String extractEmail(String token) {
         // .decode(token) va automatiquement :
-        // - Vérifier la signature HMAC avec ta clé secrète
-        // - Vérifier que le token n'est pas expiré (expiresAt)
-        // Si le token est invalide ou expiré, cela lève une JwtException
+        // - checks the HMAC signature with the secret key
+        // - checks that the token has not expired (expiresAt)
+        // An invalid or expired token throws a JwtException
         org.springframework.security.oauth2.jwt.Jwt jwt = this.jwtDecoder.decode(token);
 
-        return jwt.getSubject(); // Retourne l'email stocké dans le subject
+        return jwt.getSubject(); // The email is stored in the subject
     }
 }

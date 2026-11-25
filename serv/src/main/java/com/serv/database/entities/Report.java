@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @Table(name = "reports", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"worker_id", "client_id"}) // Empêche un client de spammer les signalements sur le même worker
+        @UniqueConstraint(columnNames = {"worker_id", "client_id"}) // Prevents a client from reporting the same worker repeatedly
 })
 public class Report {
 

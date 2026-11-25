@@ -41,7 +41,7 @@ class CurrentUserArgumentResolverTest {
 
     @BeforeEach
     void setUp() {
-        // Nettoyage préalable du contexte de sécurité
+        // Start from a clean security context
         SecurityContextHolder.clearContext();
     }
 
@@ -51,7 +51,7 @@ class CurrentUserArgumentResolverTest {
     }
 
     @Test
-    @DisplayName("supportsParameter - Accepte uniquement les sous-types de VenusUser")
+    @DisplayName("supportsParameter - accepts VenusUser subtypes only")
     void supportsParameter() {
         when(methodParameter.getParameterType()).thenAnswer(inv -> Client.class);
         assertThat(resolver.supportsParameter(methodParameter)).isTrue();
@@ -61,7 +61,7 @@ class CurrentUserArgumentResolverTest {
     }
 
     @Test
-    @DisplayName("resolveArgument - Retourne l'utilisateur connecté si tout est valide")
+    @DisplayName("resolveArgument - returns the authenticated user when everything is valid")
     void resolveArgument_Success() {
         Client client = new Client(new Email("client@venus.com"), "Pass123!");
         Jwt jwt = Jwt.withTokenValue("token")
@@ -86,7 +86,7 @@ class CurrentUserArgumentResolverTest {
     }
 
     @Test
-    @DisplayName("resolveArgument - Lève 403 Forbidden si le type d'utilisateur ne correspond pas à la ressource demandée")
+    @DisplayName("resolveArgument - 403 Forbidden when the user type does not match the requested resource")
     void resolveArgument_TypeMismatchForbidden() {
         Client client = new Client(new Email("client@venus.com"), "Pass123!");
         Jwt jwt = Jwt.withTokenValue("token")
@@ -102,7 +102,7 @@ class CurrentUserArgumentResolverTest {
         SecurityContextHolder.setContext(securityContext);
 
         when(userRepository.findByEmail("client@venus.com")).thenReturn(Optional.of(client));
-        // Le contrôleur attend un Worker mais l'utilisateur connecté est un Client
+        // The controller expects a Worker but the authenticated user is a Client
         when(methodParameter.getParameterType()).thenAnswer(inv -> Worker.class);
 
         assertThatThrownBy(() -> resolver.resolveArgument(methodParameter, null, null, null))

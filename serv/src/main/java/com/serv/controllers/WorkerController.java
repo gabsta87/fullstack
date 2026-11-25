@@ -55,7 +55,7 @@ public class WorkerController {
         if (req.hairColor() != null && !req.hairColor().isBlank()) allFilters.put("hairColor", req.hairColor().trim());
         if (req.gender()    != null && !req.gender().isBlank()) allFilters.put("gender", req.gender().trim());
 
-        // Pour l'âge (on accepte le fait que ça vienne sous n'importe quelle forme textuelle ou numérique)
+        // Age (accepted as any textual or numeric form)
         if (req.minAge() != null && !req.minAge().toString().isBlank()) allFilters.put("minAge", req.minAge().toString().trim());
         if (req.maxAge() != null && !req.maxAge().toString().isBlank()) allFilters.put("maxAge", req.maxAge().toString().trim());
 

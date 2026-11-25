@@ -44,11 +44,11 @@ public class AccountControllerWorker {
     @Transactional(readOnly = true)
     @GetMapping("/me")
     public ResponseEntity<WorkerFullProfileDTO> getMe(Worker user) {
-        // 1. Recharger le worker depuis le repository pour le rendre "managed" dans la session active
+        // 1. Reload the worker so it is managed by the current persistence context
         Worker managedWorker = workerRepository.findById(user.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker introuvable"));
 
-        // 2. Le mapper vers le DTO (les collections lazy pourront s'initialiser grâce à la session active et au @BatchSize)
+        // 2. Map to the DTO (lazy collections load within the session, batched by @BatchSize)
         return ResponseEntity.ok(WorkerFullProfileDTO.from(managedWorker));
     }
 
@@ -328,10 +328,10 @@ public class AccountControllerWorker {
             return ResponseEntity.notFound().build();
         }
 
-        // 1 — Suppression des fichiers physiques de la photo
+        // 1. Delete the photo files
         mediaStorageService.deletePhotoFiles(worker.getId(), photo);
 
-        // 2 — Si on supprime la photo principale, on choisit la suivante disponible
+        // 2. If the main photo is deleted, use the next available one
         if (worker.getMainPhoto() != null && worker.getMainPhoto().getId().equals(photoId)) {
             worker.getPhotos().stream()
                     .filter(p -> !p.getId().equals(photoId))
@@ -342,7 +342,7 @@ public class AccountControllerWorker {
                     );
         }
 
-        // 3 — Suppression de la collection et sauvegarde commune
+        // 3. Remove from the collection and save
         worker.removePhoto(photo);
 
         this.setWorkerProfileCompleteness(worker);
@@ -368,10 +368,10 @@ public class AccountControllerWorker {
             return ResponseEntity.notFound().build();
         }
 
-        // 1 — Suppression des fichiers physiques de la vidéo
+        // 1. Delete the video file
         mediaStorageService.deleteVideo(worker.getId(), video);
 
-        // 2 — Suppression de la collection et sauvegarde commune
+        // 2. Remove from the collection and save
         worker.removeVideo(video);
 
         this.setWorkerProfileCompleteness(worker);
@@ -423,7 +423,7 @@ public class AccountControllerWorker {
             photoRepository.save(ordered.get(i));
         }
 
-        // 💡 On recharge le worker propre avec ses photos triées et on notifie le front
+        // Save the worker with its reordered photos and return the updated profile
         this.setWorkerProfileCompleteness(worker);
         Worker savedWorker = workerRepository.save(worker);
         WorkerFullProfileDTO updatedDto = WorkerFullProfileDTO.from(savedWorker);

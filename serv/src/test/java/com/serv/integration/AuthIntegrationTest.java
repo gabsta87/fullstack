@@ -30,21 +30,21 @@ class AuthIntegrationTest extends com.serv.support.IntegrationTest {
 
 
     @Test
-    @DisplayName("Intégration - Inscription d'un client puis connexion réussie")
+    @DisplayName("Integration - client registration then successful login")
     void testRegisterAndLoginIntegrationWorkflow() throws Exception {
         // 1. Inscription
         Register registerReq = new Register("integration@venus.com", "SecurePassword123!");
 
-        // On désactive provisoirement la vérif mail par configuration ou on simule
+        // Email verification is disabled in the test profile
         mockMvc.perform(post("/auth/register/client")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerReq)))
                 .andExpect(status().isOk());
 
-        // Vérifie que l'utilisateur est bien présent en base H2
+        // The user exists in the H2 database
         assertThat(userRepository.findByEmail("integration@venus.com")).isPresent();
 
-        // 2. Connexion
+        // 2. Login
         mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(new com.serv.requests.Login("integration@venus.com", "SecurePassword123!"))))

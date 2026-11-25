@@ -4,9 +4,9 @@ import com.serv.database.entities.Comment;
 import com.serv.database.entities.Worker;
 
 /**
- * Commentaire exposé au front.
- * workerUsername / workerThumbUrl : profil commenté, utilisés par la page
- * « Mes commentaires » du client pour afficher la vignette de l'annonceur.
+ * Comment exposed to the front end.
+ * workerUsername / workerThumbUrl: the commented profile, used by the client's
+ * "My comments" page to display the advertiser's thumbnail.
  */
 public record CommentDTO(
         Long id,

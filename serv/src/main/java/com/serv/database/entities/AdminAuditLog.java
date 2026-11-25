@@ -49,7 +49,7 @@ public class AdminAuditLog {
     private String targetSnapshot;
 
     @Column(name = "details", length = 1000)
-    private String details; // ex: "Passage du crédit de 5 jours à 30 jours"
+    private String details; // e.g. "Credit changed from 5 days to 30 days"
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();

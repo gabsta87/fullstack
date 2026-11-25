@@ -108,7 +108,7 @@ public abstract class VenusUser {
 
     public List<GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_USER")); // Rôle de base par exemple
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER")); // Base role
         return authorities;
     }
 

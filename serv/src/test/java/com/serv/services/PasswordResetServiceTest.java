@@ -35,7 +35,7 @@ class PasswordResetServiceTest {
     }
 
     @Test
-    @DisplayName("createTokenAndSendEmail - Nettoie, sauvegarde et envoie l'e-mail de réinitialisation")
+    @DisplayName("createTokenAndSendEmail - cleans up, saves and sends the reset email")
     void createTokenAndSendEmail_Success() {
         Client client = new Client(new Email("client@venus.com"), "Password123!");
 
