@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
@@ -11,6 +11,7 @@ import {LanguageManagerService} from "../../services/language-manager.service";
     selector: 'zone-selector',
     imports: [CommonModule, FormsModule, IonicModule],
     templateUrl: './zone-selector.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./zone-selector.component.scss']
 })
 export class ZoneSelectorComponent implements OnChanges {

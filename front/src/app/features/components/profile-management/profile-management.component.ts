@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from "@angular/common";
 import {IonicModule} from "@ionic/angular";
 import {FormsModule} from "@angular/forms";
@@ -31,6 +31,7 @@ import {sanitizePhone} from "../../utils/input-limits";
     selector: 'app-profile-management',
     imports: [CommonModule, FormsModule, IonicModule, HeaderComponent, AccountSettingsComponent, ZoneSelectorComponent, ServiceInfoComponent],
     templateUrl: './profile-management.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./profile-management.component.scss']
 })
 export class ProfileManagementComponent implements OnInit {

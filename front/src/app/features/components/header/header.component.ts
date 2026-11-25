@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {Router, RouterLink} from "@angular/router";
 import {AuthService} from "../../services/auth.service";
 import {CommonModule} from "@angular/common";
@@ -22,6 +22,7 @@ import {environment} from "../../../../environments/environment";
     selector: 'app-header',
     imports: [CommonModule, IonicModule, RouterLink],
     templateUrl: './header.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent {

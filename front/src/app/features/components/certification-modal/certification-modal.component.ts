@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ModalController} from "@ionic/angular/standalone";
 import {addIcons} from "ionicons";
 import {alertCircleOutline, cloudUploadOutline, sendOutline, refreshOutline} from "ionicons/icons";
@@ -10,6 +10,7 @@ import {IonicModule} from "@ionic/angular";
     selector: 'app-certification-modal',
     templateUrl: './certification-modal.component.html',
     styleUrls: ['./certification-modal.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [IonicModule, CommonModule]
 })
 export class CertificationModalComponent implements OnInit {

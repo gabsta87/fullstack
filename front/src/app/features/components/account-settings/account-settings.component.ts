@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {AlertController, IonicModule} from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
@@ -8,6 +8,7 @@ import {AccountService} from "../../services/account-service";
     selector: 'account-settings',
     imports: [CommonModule, IonicModule, FormsModule],
     templateUrl: './account-settings.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./account-settings.component.scss']
 })
 export class AccountSettingsComponent implements OnInit {

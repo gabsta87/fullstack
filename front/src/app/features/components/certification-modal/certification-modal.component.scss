@@ -21,7 +21,7 @@
   p {
     margin: 0;
     font-size: 0.9rem;
-    color: type-of(var(--text)) var(--text);
+    color: var(--text);
   }
 }
 

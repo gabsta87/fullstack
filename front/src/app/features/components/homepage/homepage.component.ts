@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {ActivatedRoute} from '@angular/router';
 import {
@@ -48,6 +48,7 @@ import {BODY_TYPES_LIST, EYES_COLOR_LIST, HAIR_COLOR_LIST} from "../../models/it
     selector: 'app-homepage',
     templateUrl: './homepage.component.html',
     styleUrls: ['./homepage.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
     HeaderComponent,
     IonContent,

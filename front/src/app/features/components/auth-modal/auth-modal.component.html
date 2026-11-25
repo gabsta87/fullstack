@@ -23,7 +23,7 @@
         <label>{{ t.common?.email }}</label>
         <input type="email" #input
           formControlName="email"
-          [placeholder]="t.auth?.email_placeholder"
+          [placeholder]="$safeNavigationMigration(t.auth?.email_placeholder)"
           autocomplete="email"
           />
       </div>

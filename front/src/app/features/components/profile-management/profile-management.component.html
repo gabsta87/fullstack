@@ -107,7 +107,7 @@
                           [required]="true"
                           [debounce]="500"
                           (ionChange)="updateProfileField('username', $event.detail.value)"
-                        [placeholder]="t.profile_management?.form?.display_name_placeholder"></ion-input>
+                        [placeholder]="$safeNavigationMigration(t.profile_management?.form?.display_name_placeholder)"></ion-input>
                       </ion-item>
                     </ion-col>
                     <ion-col size="12" size-md="6">
@@ -120,7 +120,7 @@
                           [maxlength]="45"
                           [debounce]="500"
                           (ionChange)="updateProfileField('shortDescription', $event.detail.value)"
-                        [placeholder]="t.profile_management?.form?.short_desc_placeholder"></ion-input>
+                        [placeholder]="$safeNavigationMigration(t.profile_management?.form?.short_desc_placeholder)"></ion-input>
                       </ion-item>
                     </ion-col>
                   </ion-row>
@@ -135,7 +135,7 @@
                           [autoGrow]="true"
                           (ionChange)="updateProfileField('description', $event.detail.value)"
                           class="description-input"
-                        [placeholder]="t.profile_management?.form?.description_placeholder"></ion-textarea>
+                        [placeholder]="$safeNavigationMigration(t.profile_management?.form?.description_placeholder)"></ion-textarea>
                       </ion-item>
                     </ion-col>
                   </ion-row>
@@ -171,7 +171,7 @@
                           [(ngModel)]="profileForm.phone"
                           (ionInput)="onPhoneInput($event)"
                           (ionChange)="updateProfileField('phone', $event.detail.value)"
-                        [placeholder]="t.profile_management?.form?.phone_placeholder"></ion-input>
+                        [placeholder]="$safeNavigationMigration(t.profile_management?.form?.phone_placeholder)"></ion-input>
                       </ion-item>
                     </ion-col>
                     <!-- Date de Naissance -->
@@ -189,7 +189,7 @@
                     <!-- Silhouette -->
                     <ion-col size="12" size-md="4">
                       <ion-item lines="none" class="venus-input">
-                        <ion-select [label]="t.profile_management?.form?.body_type"
+                        <ion-select [label]="$safeNavigationMigration(t.profile_management?.form?.body_type)"
                           label-placement="stacked"
                           interface="popover"
                           [(ngModel)]="profileForm.bodyType"
@@ -205,7 +205,7 @@
                     <!-- Cheveux -->
                     <ion-col size="12" size-md="4">
                       <ion-item lines="none" class="venus-input">
-                        <ion-select [label]="t.profile_management?.form?.hair_color"
+                        <ion-select [label]="$safeNavigationMigration(t.profile_management?.form?.hair_color)"
                           label-placement="stacked"
                           interface="popover"
                           [(ngModel)]="profileForm.hairColor"
@@ -221,7 +221,7 @@
                     <!-- Yeux -->
                     <ion-col size="12" size-md="4">
                       <ion-item lines="none" class="venus-input">
-                        <ion-select [label]="t.profile_management?.form?.eye_color"
+                        <ion-select [label]="$safeNavigationMigration(t.profile_management?.form?.eye_color)"
                           label-placement="stacked"
                           interface="popover"
                           [(ngModel)]="profileForm.eyeColor"

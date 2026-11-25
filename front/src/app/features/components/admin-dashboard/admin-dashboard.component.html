@@ -40,14 +40,14 @@
               pInputText
               type="text"
               (input)="dt.filterGlobal($any($event.target).value, 'contains')"
-              [placeholder]="t.admin?.users_tab?.search_placeholder"
+              [placeholder]="$safeNavigationMigration(t.admin?.users_tab?.search_placeholder)"
               class="global-search-input" />
           </span>
           <p-select
             [options]="roleOptions"
             [(ngModel)]="selectedRole"
             (onChange)="dt.filter($event.value, 'role', 'equals')"
-            [placeholder]="t.admin?.users_tab?.filter_role_placeholder"
+            [placeholder]="$safeNavigationMigration(t.admin?.users_tab?.filter_role_placeholder)"
             [showClear]="true">
           </p-select>
         </div>
@@ -60,22 +60,22 @@
           [globalFilterFields]="['username', 'email', 'description', 'id']"
           styleClass="p-datatable-gridlines p-datatable-sm"
           [tableStyle]="{'min-width': '65rem'}">
-          <ng-template pTemplate="header">
+          <ng-template #header>
             <tr>
-              <th pSortableColumn="username">{{ t.admin?.users_tab?.col_user }} <p-sortIcon field="username"></p-sortIcon></th>
-              <th pSortableColumn="email">{{ t.common?.email }}<p-sortIcon field="email"></p-sortIcon></th>
-              <th pSortableColumn="role">{{ t.common?.role }}<p-sortIcon field="role"></p-sortIcon></th>
-              <th pSortableColumn="birthdate">{{ t.common?.birthdate }}<p-sortIcon field="birthdate"></p-sortIcon></th>
-              <th pSortableColumn="banned">{{ t.common?.banned }}<p-sortIcon field="banned"></p-sortIcon></th>
-              <th pSortableColumn="locked">{{ t.common?.locked }}<p-sortIcon field="locked"></p-sortIcon></th>
-              <th pSortableColumn="available">{{ t.common?.available }}<p-sortIcon field="available"></p-sortIcon></th>
-              <th pSortableColumn="hidden">{{ t.common?.hidden }}<p-sortIcon field="hidden"></p-sortIcon></th>
+              <th pSortableColumn="username">{{ t.admin?.users_tab?.col_user }} <p-sort-icon field="username"></p-sort-icon></th>
+              <th pSortableColumn="email">{{ t.common?.email }}<p-sort-icon field="email"></p-sort-icon></th>
+              <th pSortableColumn="role">{{ t.common?.role }}<p-sort-icon field="role"></p-sort-icon></th>
+              <th pSortableColumn="birthdate">{{ t.common?.birthdate }}<p-sort-icon field="birthdate"></p-sort-icon></th>
+              <th pSortableColumn="banned">{{ t.common?.banned }}<p-sort-icon field="banned"></p-sort-icon></th>
+              <th pSortableColumn="locked">{{ t.common?.locked }}<p-sort-icon field="locked"></p-sort-icon></th>
+              <th pSortableColumn="available">{{ t.common?.available }}<p-sort-icon field="available"></p-sort-icon></th>
+              <th pSortableColumn="hidden">{{ t.common?.hidden }}<p-sort-icon field="hidden"></p-sort-icon></th>
               <th>{{ t.admin?.users_tab?.col_certification }}</th>
-              <th pSortableColumn="certifiedAt">{{ t.admin?.users_tab?.col_certif_date }}<p-sortIcon field="certifiedAt"></p-sortIcon></th>
+              <th pSortableColumn="certifiedAt">{{ t.admin?.users_tab?.col_certif_date }}<p-sort-icon field="certifiedAt"></p-sort-icon></th>
               <th class="col-center-width-70">{{ t.common?.actions }}</th>
             </tr>
           </ng-template>
-          <ng-template pTemplate="body" let-user>
+          <ng-template #body let-user>
             <tr>
               <!-- Pseudo cliquable pour consulter le profil -->
               <td>
@@ -99,7 +99,7 @@
                   [fill]="user.banned ? 'solid' : 'outline'"
                   [color]="user.banned ? 'danger' : 'medium'"
                   (click)="banUser(user, user.banned)"
-                  [title]="t.admin?.users_tab?.tooltip_banned"
+                  [title]="$safeNavigationMigration(t.admin?.users_tab?.tooltip_banned)"
                   class="admin-action-btn">
                   {{ user.banned ? t.common?.banned : t.admin?.users_tab?.btn_ban }}
                 </ion-button>
@@ -110,7 +110,7 @@
                   [fill]="user.locked ? 'solid' : 'outline'"
                   [color]="user.locked ? 'warning' : 'medium'"
                   (click)="setLocked(user, !user.locked)"
-                  [title]="t.admin?.users_tab?.tooltip_locked"
+                  [title]="$safeNavigationMigration(t.admin?.users_tab?.tooltip_locked)"
                   class="admin-action-btn">
                   {{ user.locked ? t.common?.locked : t.admin?.users_tab?.btn_lock }}
                 </ion-button>
@@ -135,7 +135,7 @@
                       fill="outline"
                       color="danger"
                       (click)="revokeCertification(user)"
-                      [title]="t.admin?.users_tab?.btn_revoke"
+                      [title]="$safeNavigationMigration(t.admin?.users_tab?.btn_revoke)"
                       class="admin-action-btn">
                       {{ t.admin?.users_tab?.btn_revoke }}
                     </ion-button>
@@ -144,13 +144,13 @@
               </td>
               <td>{{ (user.certifiedAt | date:'yyyy-MM-dd') || '' }}</td>
               <td class="ion-text-center">
-                <ion-button size="small" fill="clear" color="danger" (click)="deleteUser(user)" [title]="t.common?.delete">
+                <ion-button size="small" fill="clear" color="danger" (click)="deleteUser(user)" [title]="$safeNavigationMigration(t.common?.delete)">
                   <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
                 </ion-button>
               </td>
             </tr>
           </ng-template>
-          <ng-template pTemplate="emptymessage">
+          <ng-template #emptymessage>
             <tr>
               <td colspan="12" class="ion-text-center ion-padding">{{ t.admin?.users_tab?.empty_users }}</td>
             </tr>
@@ -214,7 +214,7 @@
             <hr class="modal-divider" />
             <!-- Photo de certification -->
             <div class="image-verification-box ion-margin-bottom">
-              <img [src]="selectedWorkerDetails.certificationRequest?.certificationPhotoUrl"
+              <img [src]="$safeNavigationMigration(selectedWorkerDetails.certificationRequest?.certificationPhotoUrl)"
                 (click)="openImagePreview(selectedWorkerDetails.certificationRequest?.certificationPhotoUrl ?? '', certificationPreviewList)"
                 class="certif-preview-img"
                 alt="Photo de certification" />
@@ -240,10 +240,10 @@
             <hr class="modal-divider" />
             <div class="ion-margin-bottom">
               <ion-item class="ion-margin-bottom">
-                <ion-select [label]="t.admin?.certif_tab?.frequent_reasons_label"
+                <ion-select [label]="$safeNavigationMigration(t.admin?.certif_tab?.frequent_reasons_label)"
                   labelPlacement="stacked"
                   fill="outline"
-                  [placeholder]="t.admin?.certif_tab?.frequent_reasons_placeholder"
+                  [placeholder]="$safeNavigationMigration(t.admin?.certif_tab?.frequent_reasons_placeholder)"
                   (ionChange)="onPredefinedReasonSelected($event)"
                   [interface]="'popover'">
                   @for (reason of predefinedReasons; track reason) {
@@ -255,10 +255,10 @@
               </ion-item>
               <ion-item>
                 <ion-input [(ngModel)]="adminComment"
-                  [label]="t.admin?.certif_tab?.comment_label"
+                  [label]="$safeNavigationMigration(t.admin?.certif_tab?.comment_label)"
                   labelPlacement="stacked"
                   fill="outline"
-                  [placeholder]="t.admin?.certif_tab?.comment_placeholder">
+                  [placeholder]="$safeNavigationMigration(t.admin?.certif_tab?.comment_placeholder)">
                 </ion-input>
               </ion-item>
             </div>
@@ -310,15 +310,15 @@
           <p class="reports-subtitle">{{ t.admin?.reports_tab?.subtitle }}</p>
         </div>
         <p-table [value]="(reportsSummary$ | async) || []" styleClass="p-datatable-gridlines p-datatable-sm" [tableStyle]="{'min-width': '50rem'}">
-          <ng-template pTemplate="header">
+          <ng-template #header>
             <tr>
-              <th pSortableColumn="workerUsername">{{ t.admin?.reports_tab?.col_advertiser }} <p-sortIcon field="workerUsername"></p-sortIcon></th>
+              <th pSortableColumn="workerUsername">{{ t.admin?.reports_tab?.col_advertiser }} <p-sort-icon field="workerUsername"></p-sort-icon></th>
               <th>{{ t.common?.email }}</th>
-              <th pSortableColumn="reportCount">{{ t.admin?.reports_tab?.col_count }} <p-sortIcon field="reportCount"></p-sortIcon></th>
+              <th pSortableColumn="reportCount">{{ t.admin?.reports_tab?.col_count }} <p-sort-icon field="reportCount"></p-sort-icon></th>
               <th class="ion-text-center">{{ t.common?.actions }}</th>
             </tr>
           </ng-template>
-          <ng-template pTemplate="body" let-item>
+          <ng-template #body let-item>
             <tr>
               <td><strong>{{ item.workerUsername }}</strong></td>
               <td>{{ item.workerEmail }}</td>
@@ -332,7 +332,7 @@
               </td>
             </tr>
           </ng-template>
-          <ng-template pTemplate="emptymessage">
+          <ng-template #emptymessage>
             <tr>
               <td colspan="4" class="ion-text-center ion-padding">{{ t.admin?.reports_tab?.empty_reports }}</td>
             </tr>
@@ -405,30 +405,30 @@
           </ion-button>
         </div>
         <p-table [value]="(services$ | async) || []" styleClass="p-datatable-gridlines p-datatable-sm" [tableStyle]="{'min-width': '40rem'}">
-          <ng-template pTemplate="header">
+          <ng-template #header>
             <tr>
               <th>{{ t.admin?.services_tab?.col_name }}</th>
               <th>{{ t.admin?.services_tab?.col_desc }}</th>
               <th class="ion-text-center width-140">{{ t.common?.actions }}</th>
             </tr>
           </ng-template>
-          <ng-template pTemplate="body" let-service>
+          <ng-template #body let-service>
             <tr>
               <td>
                 <span class="font-weight-500">{{ service.name }}</span>
               </td>
               <td>{{ service.description || '—' }}</td>
               <td class="ion-text-center nowrap-cell">
-                <ion-button size="small" fill="clear" color="medium" (click)="editServiceModal(service)" [title]="t.common?.edit">
+                <ion-button size="small" fill="clear" color="medium" (click)="editServiceModal(service)" [title]="$safeNavigationMigration(t.common?.edit)">
                   <ion-icon name="pencil-outline" slot="icon-only"></ion-icon>
                 </ion-button>
-                <ion-button size="small" fill="clear" color="danger" (click)="deleteService(service.id)" [title]="t.common?.delete">
+                <ion-button size="small" fill="clear" color="danger" (click)="deleteService(service.id)" [title]="$safeNavigationMigration(t.common?.delete)">
                   <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
                 </ion-button>
               </td>
             </tr>
           </ng-template>
-          <ng-template pTemplate="emptymessage">
+          <ng-template #emptymessage>
             <tr>
               <td colspan="3" class="ion-text-center ion-padding">{{ t.admin?.services_tab?.empty_services }}</td>
             </tr>
@@ -447,13 +447,13 @@
           </ion-button>
         </div>
         <p-table [value]="(flatZones$ | async) || []" styleClass="p-datatable-gridlines p-datatable-sm" [tableStyle]="{'min-width': '40rem'}">
-          <ng-template pTemplate="header">
+          <ng-template #header>
             <tr>
               <th>{{ t.admin?.zones_tab?.col_name }}</th>
               <th class="ion-text-center width-160">{{ t.common?.actions }}</th>
             </tr>
           </ng-template>
-          <ng-template pTemplate="body" let-zone>
+          <ng-template #body let-zone>
             <tr [ngClass]="{'parent-zone-row': zone.level === 0}">
               <td [style.padding-left.px]="15 + (zone.level * 25)">
                 @if (zone.level > 0) {
@@ -465,20 +465,20 @@
               </td>
               <td class="ion-text-center nowrap-cell">
                 @if (zone.level === 0) {
-                  <ion-button size="small" fill="clear" color="primary" (click)="openZoneModal(zone.id)" [title]="t.admin?.zones_tab?.tooltip_add_child">
+                  <ion-button size="small" fill="clear" color="primary" (click)="openZoneModal(zone.id)" [title]="$safeNavigationMigration(t.admin?.zones_tab?.tooltip_add_child)">
                     <ion-icon name="add-outline" slot="icon-only"></ion-icon>
                   </ion-button>
                 }
-                <ion-button size="small" fill="clear" color="medium" (click)="editZoneName(zone)" [title]="t.common?.edit">
+                <ion-button size="small" fill="clear" color="medium" (click)="editZoneName(zone)" [title]="$safeNavigationMigration(t.common?.edit)">
                   <ion-icon name="pencil-outline" slot="icon-only"></ion-icon>
                 </ion-button>
-                <ion-button size="small" fill="clear" color="danger" (click)="deleteZone(zone.id)" [title]="t.common?.delete">
+                <ion-button size="small" fill="clear" color="danger" (click)="deleteZone(zone.id)" [title]="$safeNavigationMigration(t.common?.delete)">
                   <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
                 </ion-button>
               </td>
             </tr>
           </ng-template>
-          <ng-template pTemplate="emptymessage">
+          <ng-template #emptymessage>
             <tr><td colspan="2" class="ion-text-center ion-padding">{{ t.admin?.zones_tab?.empty_zones }}</td></tr>
           </ng-template>
         </p-table>

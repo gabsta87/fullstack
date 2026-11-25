@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withXhr } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { AdminService } from './admin-service';
 import { AuthService } from './auth.service';
@@ -16,7 +16,7 @@ describe('AdminService.loadCertificationPhoto', () => {
     restore = FakeEventSource.install();
     TestBed.configureTestingModule({
       providers: [
-        provideHttpClient(),
+        provideHttpClient(withXhr()),
         provideHttpClientTesting(),
         { provide: AuthService, useValue: { isAuthenticated$: of(true), getUser: () => null } },
       ],

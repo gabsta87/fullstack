@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {AuthService} from "../../services/auth.service";
 import {IonButton, IonContent, IonInput, IonItem, LoadingController, ModalController} from "@ionic/angular/standalone";
 import {AlertController} from "@ionic/angular";
@@ -10,6 +10,7 @@ import { AsyncPipe } from "@angular/common";
     selector: 'app-forgot-password',
     templateUrl: './forgot-password.component.html',
     styleUrls: ['./forgot-password.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [IonContent, FormsModule, IonItem, IonInput, IonButton, AsyncPipe]
 })
 export class ForgotPasswordComponent implements OnInit {

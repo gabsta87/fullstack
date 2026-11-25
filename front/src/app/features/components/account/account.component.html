@@ -62,11 +62,11 @@
                       <span class="mc-date">{{ comment.date | date:'dd.MM.yyyy' }}</span>
                       @if (editingCommentId !== comment.id) {
                         <div class="mc-actions">
-                          <button type="button" class="mc-icon-btn" [title]="t.common?.edit" [attr.aria-label]="t.common?.edit"
+                          <button type="button" class="mc-icon-btn" [title]="$safeNavigationMigration(t.common?.edit)" [attr.aria-label]="t.common?.edit"
                             (click)="startEditComment(comment)">
                             <ion-icon name="create-outline"></ion-icon>
                           </button>
-                          <button type="button" class="mc-icon-btn danger" [title]="t.common?.delete" [attr.aria-label]="t.common?.delete"
+                          <button type="button" class="mc-icon-btn danger" [title]="$safeNavigationMigration(t.common?.delete)" [attr.aria-label]="t.common?.delete"
                             (click)="deleteComment(comment.id, user)">
                             <ion-icon name="trash-outline"></ion-icon>
                           </button>

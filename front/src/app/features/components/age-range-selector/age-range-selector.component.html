@@ -2,7 +2,7 @@
   <ion-item lines="none" class="filter-input-item age-range-item">
     <ion-range
       labelPlacement="start"
-      [label]="(t.common?.age) + ' ' + currentLower + ' - ' + (currentUpper === 60 ? '60+' : currentUpper + ' ' + (t.common?.years))"
+      [label]="($safeNavigationMigration(t.common?.age)) + ' ' + currentLower + ' - ' + (currentUpper === 60 ? '60+' : currentUpper + ' ' + ($safeNavigationMigration(t.common?.years)))"
       [dualKnobs]="true"
       [min]="18"
       [max]="60"

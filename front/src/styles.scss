@@ -80,3 +80,10 @@ ion-modal::part(content) {
     }
   }
 }
+
+/* PrimeNG 20+ injects structural CSS driven by theme variables. No PrimeNG theme preset is used,
+   so undefined variables fall back to browser defaults (e.g. a 3px black border under the table
+   paginator). Neutralize the ones that show up. */
+:root {
+  --p-datatable-paginator-bottom-border-width: 0;
+}

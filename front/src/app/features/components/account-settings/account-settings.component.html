@@ -6,13 +6,13 @@
         <ion-col size="12" size-md="6">
           <ion-item lines="none" class="venus-input">
             <ion-label position="stacked">{{ t.account_settings?.email_label || t.common?.email }}</ion-label>
-            <ion-input type="email" name="email" [(ngModel)]="form.email" [required]="true" [placeholder]="t.account_settings?.email_placeholder"></ion-input>
+            <ion-input type="email" name="email" [(ngModel)]="form.email" [required]="true" [placeholder]="$safeNavigationMigration(t.account_settings?.email_placeholder)"></ion-input>
           </ion-item>
         </ion-col>
         <ion-col size="12" size-md="6">
           <ion-item lines="none" class="venus-input">
             <ion-label position="stacked">{{ t.account_settings?.current_password_label }}</ion-label>
-            <ion-input type="password" name="oldPassword" [(ngModel)]="form.oldPassword" [required]="true" [placeholder]="t.account_settings?.current_password_placeholder"></ion-input>
+            <ion-input type="password" name="oldPassword" [(ngModel)]="form.oldPassword" [required]="true" [placeholder]="$safeNavigationMigration(t.account_settings?.current_password_placeholder)"></ion-input>
           </ion-item>
         </ion-col>
       </ion-row>
@@ -20,13 +20,13 @@
         <ion-col size="12" size-md="6">
           <ion-item lines="none" class="venus-input">
             <ion-label position="stacked">{{ t.account_settings?.new_password_label }}</ion-label>
-            <ion-input type="password" name="password" [(ngModel)]="form.password" [placeholder]="t.account_settings?.new_password_placeholder"></ion-input>
+            <ion-input type="password" name="password" [(ngModel)]="form.password" [placeholder]="$safeNavigationMigration(t.account_settings?.new_password_placeholder)"></ion-input>
           </ion-item>
         </ion-col>
         <ion-col size="12" size-md="6">
           <ion-item lines="none" class="venus-input">
             <ion-label position="stacked">{{ t.common?.confirm_password }}</ion-label>
-            <ion-input type="password" name="confirmPassword" [(ngModel)]="form.confirmPassword" [placeholder]="t.account_settings?.confirm_password_placeholder"></ion-input>
+            <ion-input type="password" name="confirmPassword" [(ngModel)]="form.confirmPassword" [placeholder]="$safeNavigationMigration(t.account_settings?.confirm_password_placeholder)"></ion-input>
           </ion-item>
         </ion-col>
         @if (errorMessage) {

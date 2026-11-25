@@ -4,7 +4,7 @@
     <div class="wcard-photo" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
       <img [src]="displayUrl ? displayUrl : 'assets/images/default-avatar.jpg'" [alt]="worker.username" class="wcard-img" loading="lazy" />
       @if (isFavorite$ | async) {
-        <span class="favorite-mark" [attr.aria-label]="t.worker_profile?.favorite" [title]="t.worker_profile?.favorite">
+        <span class="favorite-mark" [attr.aria-label]="t.worker_profile?.favorite" [title]="$safeNavigationMigration(t.worker_profile?.favorite)">
           <ion-icon name="heart"></ion-icon>
         </span>
       }

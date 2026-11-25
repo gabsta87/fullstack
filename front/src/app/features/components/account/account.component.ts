@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {IonicModule} from '@ionic/angular';
@@ -22,6 +22,7 @@ import {Comment} from "../../models/items.model";
     selector: 'app-account',
     imports: [CommonModule, FormsModule, IonicModule, WorkerCardComponent, HeaderComponent, AccountSettingsComponent],
     templateUrl: './account.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./account.component.scss']
 })
 export class AccountComponent implements OnInit {

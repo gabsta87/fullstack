@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import {InputLimits} from "../../utils/input-limits";
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {AlertController, IonicModule, ModalController} from '@ionic/angular';
@@ -15,6 +15,7 @@ import {LanguageManagerService} from "../../services/language-manager.service";
     selector: 'app-auth-modal',
     imports: [CommonModule, ReactiveFormsModule, FormsModule, IonicModule],
     templateUrl: './auth-modal.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./auth-modal.component.scss']
 })
 export class AuthModalComponent implements OnInit {
