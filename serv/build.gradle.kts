@@ -29,11 +29,9 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-mail")
-	implementation("org.springframework.boot:spring-boot-starter-oauth2-authorization-server")
-	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+	// JWT validation only (the authorization server starter brought unused endpoints and dependencies)
+	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
-	implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
-	implementation("org.springframework.session:spring-session-core")
 
 	// Outils de dev
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
