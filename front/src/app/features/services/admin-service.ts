@@ -1,12 +1,13 @@
 import {Injectable, NgZone} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {BehaviorSubject, firstValueFrom, Observable} from 'rxjs';
-import {shareReplay, switchMap, tap} from 'rxjs/operators';
+import {BehaviorSubject, firstValueFrom, Observable, Subject} from 'rxjs';
+import {auditTime, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {environment} from "../../../environments/environment";
 import {AdminUser, WorkerPrivateProfile} from "../models/user.model";
 import {GeographicZoneWithParent} from "../models/filter.model";
 import {AdminLog, CertificationRequest, Service} from "../models/common.model";
 import {AuthService} from "./auth.service";
+import {UserRole} from "../models/roles";
 import {AdminWorkerReport} from "../models/items.model";
 
 @Injectable({
@@ -30,14 +31,25 @@ export class AdminService {
   }
   private adminEventSource: EventSource | null = null;
 
-  private usersRefresh$ = new BehaviorSubject<void>(undefined);
+  private usersRefresh$ = new Subject<void>();
   private certificationRefresh$ = new BehaviorSubject<void>(undefined);
   private servicesRefresh$ = new BehaviorSubject<void>(undefined);
   private zonesRefresh$ = new BehaviorSubject<void>(undefined);
   private reportsRefresh$ = new BehaviorSubject<void>(undefined);
+  private auditLogsRefresh$ = new Subject<void>();
 
+  // The users list is heavy: one reload per second at most, whatever the number of events
   public users$: Observable<AdminUser[]> = this.usersRefresh$.pipe(
+    auditTime(1000),
+    startWith(undefined),
     switchMap(() => this.http.get<AdminUser[]>(`${this.apiUrl}/users`)),
+    shareReplay(1)
+  );
+
+  public auditLogs$: Observable<AdminLog[]> = this.auditLogsRefresh$.pipe(
+    auditTime(1000),
+    startWith(undefined),
+    switchMap(() => this.http.get<AdminLog[]>(`${this.apiUrl}/logs`)),
     shareReplay(1)
   );
 
@@ -62,12 +74,15 @@ export class AdminService {
   );
 
   constructor(private http: HttpClient, private zone: NgZone, private authService: AuthService) {
+    // (Re)open the stream on every admin login, close it on logout
     this.authService.isAuthenticated$.subscribe(isAuth => {
-      if (!isAuth) {
+      const role = this.authService.getUser()?.role;
+      if (isAuth && (role === UserRole.ADMIN || role === UserRole.SUPER_ADMIN)) {
+        this.initAdminSseListener();
+      } else if (!isAuth) {
         this.closeAdminStream();
       }
     });
-    this.initAdminSseListener();
   }
 
   private initAdminSseListener() {
@@ -87,8 +102,21 @@ export class AdminService {
 
     certificationEvents.forEach(eventName => {
       this.adminEventSource?.addEventListener(eventName, () => {
-        this.zone.run(() => this.refreshCertifications());
+        this.zone.run(() => {
+          this.refreshCertifications();
+          this.refreshUsers(); // The users table shows the certification status
+        });
       });
+    });
+
+    // Bans, locks, deletions, invitations made by another admin
+    this.adminEventSource.addEventListener('USERS_UPDATED', () => {
+      this.zone.run(() => this.refreshUsers());
+    });
+
+    // Any admin action adds a line to the audit log
+    this.adminEventSource.addEventListener('AUDIT_LOG_UPDATED', () => {
+      this.zone.run(() => this.auditLogsRefresh$.next());
     });
 
     this.adminEventSource.addEventListener('REPORT_UPDATED', () => {
@@ -108,18 +136,9 @@ export class AdminService {
       });
     });
 
-    // More event types can be added here
-    /*
-    const userEvents = ['USER_LOCKED', 'USER_UPDATED', 'USER_BANNED'];
-    userEvents.forEach(eventName => {
-      eventSource.addEventListener(eventName, () => {
-        this.zone.run(() => this.refreshUsers());
-      });
-    });
-    */
 
     this.adminEventSource.onerror = (err) => {
-      console.warn("Connexion SSE Admin interrompue...", err);
+      console.warn('Admin SSE stream interrupted', err);
       if (this.adminEventSource?.readyState === EventSource.CLOSED) {
         this.closeAdminStream();
       }
@@ -217,7 +236,7 @@ export class AdminService {
   }
 
   getAuditLogs(): Observable<AdminLog[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/logs`);
+    return this.auditLogs$;
   }
 
   // ── SERVICES ──────────────────────────────────────────

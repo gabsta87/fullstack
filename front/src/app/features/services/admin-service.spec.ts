@@ -5,7 +5,9 @@ import { AdminService } from './admin-service';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
 import { FakeEventSource } from '../../../testing/fake-event-source';
-import { of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
+import { fakeAsync, tick } from '@angular/core/testing';
+import { UserRole } from '../models/roles';
 
 describe('AdminService.loadCertificationPhoto', () => {
   let service: AdminService;
@@ -45,5 +47,70 @@ describe('AdminService.loadCertificationPhoto', () => {
     expect(await service.loadCertificationPhoto('/media/w1/certification/a.jpg')).toBe('/media/w1/certification/a.jpg');
     expect(await service.loadCertificationPhoto(null)).toBe('');
     httpMock.expectNone(() => true);
+  });
+});
+
+describe('AdminService live updates (SSE)', () => {
+  let service: AdminService;
+  let httpMock: HttpTestingController;
+  let restore: () => void;
+  let auth$: BehaviorSubject<boolean>;
+  let user: any;
+  const api = `${environment.apiBase}/admin`;
+
+  beforeEach(() => {
+    restore = FakeEventSource.install();
+    localStorage.setItem('auth_token', 'admin-token');
+    auth$ = new BehaviorSubject<boolean>(true);
+    user = { role: UserRole.ADMIN };
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(withXhr()),
+        provideHttpClientTesting(),
+        { provide: AuthService, useValue: { isAuthenticated$: auth$, getUser: () => user } },
+      ],
+    });
+    service = TestBed.inject(AdminService);
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpMock.verify();
+    restore();
+    localStorage.removeItem('auth_token');
+  });
+
+  it('reloads the users once when other admins change accounts, and the audit log on any action', fakeAsync(() => {
+    const seen: number[] = [];
+    service.users$.subscribe(users => seen.push(users.length));
+    service.auditLogs$.subscribe();
+    httpMock.expectOne(`${api}/users`).flush([{}]);
+    httpMock.expectOne(`${api}/logs`).flush([]);
+
+    const stream = FakeEventSource.instances[0];
+    stream.emit('USERS_UPDATED', 'a');
+    stream.emit('USERS_UPDATED', 'b');
+    stream.emit('CERTIFICATION_UPDATED', 1);
+    stream.emit('AUDIT_LOG_UPDATED', 'BAN');
+    tick(1000);
+    httpMock.expectOne(`${api}/users`).flush([{}, {}]);
+    httpMock.expectOne(`${api}/logs`).flush([]);
+    httpMock.match(`${api}/certification-requests`).forEach(r => r.flush([]));
+    expect(seen).toEqual([1, 2]);
+  }));
+
+  it('reopens the stream after a logout and a new admin login', () => {
+    expect(FakeEventSource.instances.length).toBe(1);
+    auth$.next(false);
+    expect(FakeEventSource.instances[0].closed).toBeTrue();
+    auth$.next(true);
+    expect(FakeEventSource.instances.length).toBe(2);
+  });
+
+  it('never opens the admin stream for another role', () => {
+    auth$.next(false);
+    user = { role: UserRole.WORKER };
+    auth$.next(true);
+    expect(FakeEventSource.instances.length).toBe(1);
   });
 });

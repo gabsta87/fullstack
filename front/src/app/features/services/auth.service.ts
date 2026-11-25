@@ -101,7 +101,7 @@ export class AuthService {
     this.eventSource.addEventListener('session-expired', () => {
       this.zone.run(() => {
         this.handleLocalLogout();
-        this.router.navigate(['/login']);
+        this.router.navigate(['/']); // Banned or deleted account
       });
     });
 
