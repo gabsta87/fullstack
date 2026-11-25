@@ -206,7 +206,7 @@ export class HomepageComponent implements OnInit {
         this.loadPage(true);
       }
     } catch (error) {
-      console.error("Impossible de charger les préférences :", error);
+      console.error('Could not load the preferences', error);
     }
   }
 
@@ -279,6 +279,13 @@ export class HomepageComponent implements OnInit {
   onSearchInput(event: any) {
     const value = event.target.value || '';
     this.searchSubject.next(value.trim());
+  }
+
+  /** Escape in the name field clears it (the debounced search then reloads the gallery). */
+  clearNameSearch(): void {
+    if (!this.filters.username) return;
+    this.filters.username = '';
+    this.searchSubject.next('');
   }
 
   async ionViewWillLeave() {

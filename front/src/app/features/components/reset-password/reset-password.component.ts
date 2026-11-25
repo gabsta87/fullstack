@@ -68,7 +68,7 @@ export class ResetPasswordComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMsg = err.error || "Une erreur est survenue.";
+        this.errorMsg = this.languageService.msg(err?.status === 400 ? 'reset_error' : 'generic_error');
       }
     });
   }

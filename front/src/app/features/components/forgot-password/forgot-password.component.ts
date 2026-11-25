@@ -38,32 +38,32 @@ export class ForgotPasswordComponent implements OnInit {
     if (!this.email || !this.email.trim()) return;
 
     const loading = await this.loadingCtrl.create({
-      message: 'Envoi du lien...',
+      message: this.languageService.msg('forgot_sending'),
       spinner: 'crescent'
     });
     await loading.present();
 
     this.authService.requestPasswordReset(this.email).subscribe({
-      next: async (response) => {
+      next: async () => {
         await loading.dismiss();
-        await this.showConfirmationAlert(response);
+        await this.showConfirmationAlert(this.languageService.msg('forgot_sent'));
       },
       error: async () => {
         await loading.dismiss();
         // Same answer whatever the email (no account enumeration)
-        await this.showConfirmationAlert("Si cette adresse est enregistrée chez nous, un e-mail de réinitialisation vient de vous être envoyé.");
+        await this.showConfirmationAlert(this.languageService.msg('forgot_sent'));
       }
     });
   }
 
   private async showConfirmationAlert(message: string) {
     const alert = await this.alertCtrl.create({
-      header: 'E-mail envoyé',
+      header: this.languageService.msg('forgot_sent_title'),
       message: message,
       backdropDismiss: false, // The user must click the button.
       buttons: [
         {
-          text: 'Fermer',
+          text: this.languageService.currentLanguage$.value?.common?.close || 'Close',
           handler: () => {
             this.modalCtrl.dismiss();
           }

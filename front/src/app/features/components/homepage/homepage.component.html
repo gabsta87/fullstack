@@ -23,23 +23,24 @@
             </ion-col>
             <ion-col size-md="3" class="filter-col name-col">
               <ion-item lines="none" class="filter-input-item name-input-item">
-                <ion-input aria-label="Nom"
+                <ion-input [attr.aria-label]="t.filters?.placeholder_name"
                   [placeholder]="$safeNavigationMigration(t.filters?.placeholder_name)"
                   [(ngModel)]="filters.username"
                   (ionInput)="onSearchInput($event)"
-                  (keyup.enter)="loadPage(true)">
+                  (keyup.enter)="loadPage(true)"
+                  (keydown.escape)="clearNameSearch()">
                 </ion-input>
               </ion-item>
             </ion-col>
             <ion-col size="auto" size-md="3" class="filter-col filter-actions ion-text-end">
               @if (hasActiveFilters()) {
                 <ion-button fill="outline" class="more-filters-btn clear-btn"
-                  size="small" aria-label="Effacer les filtres" (click)="clearFilters()">
+                  size="small" [attr.aria-label]="t.common?.clear" (click)="clearFilters()">
                   <ion-icon slot="start" name="trash-outline"></ion-icon>
                   <span class="btn-label">{{ t.common?.clear || t.filters?.clear }}</span>
                 </ion-button>
               }
-              <ion-button fill="outline" class="more-filters-btn" aria-label="Filtres" (click)="toggleMoreFilters()">
+              <ion-button fill="outline" class="more-filters-btn" [attr.aria-label]="t.filters?.filters_btn" (click)="toggleMoreFilters()">
                 <ion-icon slot="start" [name]="showMoreFilters ? 'close-outline' : 'options-outline'"></ion-icon>
                 <span class="btn-label">{{ t.filters?.filters_btn }}</span>
               </ion-button>

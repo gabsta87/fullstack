@@ -58,6 +58,19 @@ export class LanguageManagerService {
     localStorage.setItem(this.STORAGE_KEY, lang.code);
   }
 
+  /**
+   * Translated UI message (`messages.<key>` in data.json), for texts built in code:
+   * alerts, confirmations, error messages. Falls back to English, then to the key itself.
+   * `{name}` placeholders are replaced with `params.name`.
+   */
+  msg(key: string, params: Record<string, string | number> = {}): string {
+    const current = this.currentLanguage$.value?.messages ?? {};
+    const english = (languageData.en as any).messages ?? {};
+    const template: string = current[key] ?? english[key] ?? key;
+    return template.replace(/\{(\w+)\}/g, (match, name) =>
+      params[name] !== undefined ? String(params[name]) : match);
+  }
+
   getLanguageMeta(code: string) {
     return this.availableLanguages.find(l => l.code === code) || {
       code,

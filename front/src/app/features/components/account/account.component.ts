@@ -15,6 +15,7 @@ import {ZoneSelectorComponent} from "../zone-selector/zone-selector.component";
 import { addIcons } from 'ionicons';
 import { heartDislikeOutline, checkmarkCircle, chatbubblesOutline, trashOutline, createOutline, openOutline } from 'ionicons/icons';
 import {LanguageManagerService} from "../../services/language-manager.service";
+import {settingsErrorKey} from "../../utils/error-messages";
 import {AccountService} from "../../services/account-service";
 import {Comment} from "../../models/items.model";
 
@@ -81,9 +82,9 @@ export class AccountComponent implements OnInit {
 
     try {
       await this.accountService.updateSettings(payload);
-      setSuccess('Account updated successfully');
+      setSuccess(this.languageService.msg('settings_saved'));
     } catch (err: any) {
-      setError(err?.error?.message || 'An error occured while updating');
+      setError(this.languageService.msg(settingsErrorKey(err)));
     } finally {
       setLoading(false);
     }
@@ -119,23 +120,23 @@ export class AccountComponent implements OnInit {
 
       this.cancelEditComment();
     } catch (err) {
-      console.error("Erreur lors de la modification du commentaire", err);
-      alert("Erreur lors de la mise à jour.");
+      console.error('Could not update the review', err);
+      alert(this.languageService.msg('comment_update_error'));
     } finally {
       this.isSavingComment = false;
     }
   }
 
   async deleteComment(commentId: number, user: ClientProfile): Promise<void> {
-    if (!confirm("Voulez-vous vraiment supprimer ce commentaire ?")) return;
+    if (!confirm(this.languageService.msg('comment_delete_confirm'))) return;
 
     try {
       await this.clientAccountService.deleteComment(commentId);
       // Remove locally: synchronous update without reloading
       user.reviews = user.reviews.filter(c => c.id !== commentId);
     } catch (err) {
-      console.error("Erreur lors de la suppression", err);
-      alert("Impossible de supprimer le commentaire.");
+      console.error('Could not delete the review', err);
+      alert(this.languageService.msg('comment_delete_error'));
     }
   }
 }

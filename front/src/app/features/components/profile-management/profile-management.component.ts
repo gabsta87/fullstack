@@ -26,6 +26,7 @@ import {CertificationModalComponent} from "../certification-modal/certification-
 import {LanguageManagerService} from "../../services/language-manager.service";
 import {AccountService} from "../../services/account-service";
 import {sanitizePhone} from "../../utils/input-limits";
+import {settingsErrorKey} from "../../utils/error-messages";
 
 @Component({
     selector: 'app-profile-management',
@@ -182,14 +183,14 @@ export class ProfileManagementComponent implements OnInit {
     const missing: string[] = [];
     if (!me) return missing;
 
-    if (this.isFieldMissing('username', me)) missing.push("Nom d'utilisateur");
-    if (this.isFieldMissing('email', me)) missing.push('Email');
-    if (this.isFieldMissing('description', me)) missing.push('Description');
-    if (this.isFieldMissing('geographicZoneId', me)) missing.push('Localisation');
-    if (this.isFieldMissing('phone', me)) missing.push('Téléphone');
-    if (this.isFieldMissing('birthday', me)) missing.push('Date de naissance');
-    if (this.isFieldMissing('services', me)) missing.push('Au moins 1 service');
-    if (this.isFieldMissing('photos', me)) missing.push('Au moins 1 photo');
+    const checks: [string, string][] = [
+      ['username', 'missing_username'], ['email', 'missing_email'], ['description', 'missing_description'],
+      ['geographicZoneId', 'missing_location'], ['phone', 'missing_phone'], ['birthday', 'missing_birthdate'],
+      ['services', 'missing_service'], ['photos', 'missing_photo'],
+    ];
+    for (const [field, key] of checks) {
+      if (this.isFieldMissing(field, me)) missing.push(this.languageService.msg(key));
+    }
 
     return missing;
   }
@@ -218,8 +219,8 @@ export class ProfileManagementComponent implements OnInit {
     if (status === CertificationStatus.PENDING_PHOTO || !status || status === CertificationStatus.NOT_CERTIFIED) {
       return {
         color: 'tertiary',
-        label: t.certification?.title || 'Certification du profil',
-        buttonText: t.certification?.title || 'Certifier',
+        label: t.certification?.title || 'Certification',
+        buttonText: t.certification?.title || 'Certification',
         icon: 'camera-outline',
         isCert: false,
         hasNotification: false,
@@ -231,8 +232,10 @@ export class ProfileManagementComponent implements OnInit {
     if (status === CertificationStatus.NEEDS_REVISION || status === CertificationStatus.REJECTED) {
       return {
         color: 'danger',
-        label: me.adminCertificationFeedback ? `Refusé : ${me.adminCertificationFeedback}` : 'Correction requise.',
-        buttonText: t.certification?.title || 'Certifier',
+        label: me.adminCertificationFeedback
+          ? this.languageService.msg('cert_rejected', { reason: me.adminCertificationFeedback })
+          : this.languageService.msg('cert_revision_required'),
+        buttonText: t.certification?.title || 'Certification',
         icon: 'alert-circle-outline',
         isCert: false,
         hasNotification: true,
@@ -261,18 +264,18 @@ export class ProfileManagementComponent implements OnInit {
       const diffInMonths = diffInDays / 30.44;
 
       if (diffInMonths > 8) {
-        return { color: 'danger', label: 'Certification expirée', buttonText: t.certification?.title || 'Certifier', icon: 'camera-outline', isCert: false, hasNotification: false, isDisabled: false };
+        return { color: 'danger', label: this.languageService.msg('cert_expired'), buttonText: t.certification?.title || 'Certification', icon: 'camera-outline', isCert: false, hasNotification: false, isDisabled: false };
       } else if (diffInMonths >= 6) {
-        return { color: 'warning', label: 'Expire bientôt', buttonText: 'Certifié (Expire)', icon: 'shield-outline', isCert: true, hasNotification: false, isDisabled: false };
+        return { color: 'warning', label: this.languageService.msg('cert_expiring'), buttonText: this.languageService.msg('cert_expiring_btn'), icon: 'shield-outline', isCert: true, hasNotification: false, isDisabled: false };
       } else {
-        return { color: 'success', label: 'Profil certifié', buttonText: 'Certifié', icon: 'shield-checkmark-outline', isCert: true, hasNotification: false, isDisabled: true };
+        return { color: 'success', label: this.languageService.msg('cert_certified'), buttonText: this.languageService.msg('cert_certified_btn'), icon: 'shield-checkmark-outline', isCert: true, hasNotification: false, isDisabled: true };
       }
     }
 
     return {
       color: 'danger',
       label: 'Certification',
-      buttonText: t.certification?.title || 'Certifier',
+      buttonText: t.certification?.title || 'Certification',
       icon: 'shield-outline',
       isCert: false,
       hasNotification: false,
@@ -293,7 +296,7 @@ export class ProfileManagementComponent implements OnInit {
       await this.presentModal(me);
 
     } catch (err) {
-      console.error("Erreur lors de la demande de certification", err);
+      console.error('Certification request failed', err);
     }
   }
 
@@ -320,7 +323,7 @@ export class ProfileManagementComponent implements OnInit {
         // The service emits the updated profile
         await this.workerAccountService.uploadCertificationPhoto(formData);
       } catch (err) {
-        console.error("Erreur lors de l'envoi de la photo de certification", err);
+        console.error('Certification photo upload failed', err);
       }
     }
   }
@@ -410,7 +413,7 @@ export class ProfileManagementComponent implements OnInit {
       await this.workerAccountService.updateProfile({ [field]: value });
       this.lastServerState[field] = value;
     } catch (error) {
-      console.error(`Échec de la mise à jour pour ${field}`, error);
+      console.error(`Update failed for ${field}`, error);
       (this.profileForm as any)[field] = this.lastServerState[field];
     }
   }
@@ -454,7 +457,7 @@ export class ProfileManagementComponent implements OnInit {
       const isImage = allowedImageTypes.includes(file.type);
 
       if (!isImage && !isVideo) {
-        console.warn(`Fichier refusé (format non supporté) : ${file.name}`);
+        console.warn(`File rejected (unsupported format): ${file.name}`);
         return;
       }
     }
@@ -501,7 +504,7 @@ export class ProfileManagementComponent implements OnInit {
     try {
       await this.workerAccountService.reorderPhotos(orderedIds);
     } catch (error) {
-      console.error("Erreur lors de la sauvegarde de l'ordre des photos", error);
+      console.error('Could not save the photo order', error);
     }
   }
 
@@ -517,9 +520,9 @@ export class ProfileManagementComponent implements OnInit {
 
     try {
       await this.accountService.updateSettings(payload);
-      setSuccess('Vos paramètres de compte ont été mis à jour avec succès.');
+      setSuccess(this.languageService.msg('settings_saved'));
     } catch (err: any) {
-      setError(err?.error?.message || 'Une erreur est survenue lors de la mise à jour.');
+      setError(this.languageService.msg(settingsErrorKey(err)));
     } finally {
       setLoading(false);
     }
@@ -561,15 +564,15 @@ export class ProfileManagementComponent implements OnInit {
     return this.subscriptionHoursLeft$.pipe(
       map(hours => {
         if (hours <= 0) {
-          return 'Abonnement expiré';
+          return this.languageService.msg('subscription_expired');
         }
 
         if (hours > 48) {
           const days = Math.floor(hours / 24);
-          return `${days} jour${days > 1 ? 's' : ''} restant${days > 1 ? 's' : ''}`;
+          return this.languageService.msg(days > 1 ? 'days_left_other' : 'days_left_one', { n: days });
         }
 
-        return `${hours} heure${hours > 1 ? 's' : ''} restante${hours > 1 ? 's' : ''}`;
+        return this.languageService.msg(hours > 1 ? 'hours_left_other' : 'hours_left_one', { n: hours });
       })
     );
   }

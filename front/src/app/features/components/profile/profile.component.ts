@@ -112,7 +112,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
           // Favorite state, live from the local cache
           this.isFavorite = clientAccount?.favorites?.some(f => f.id === this.worker?.id) ?? false;
         },
-        error: (err) => console.error("Erreur du flux de favoris client", err)
+        error: (err) => console.error('Client favorites stream error', err)
       });
     }
   }
@@ -210,7 +210,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
         await this.clientAccountService.addFavorite(this.worker.id);
       }
     } catch (error) {
-      console.error("Impossible de modifier le favori :", error);
+      console.error('Could not toggle the favorite', error);
     }
   }
 
@@ -221,13 +221,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   async report(): Promise<void> {
-    const reason = prompt("Raison du signalement :");
+    const reason = prompt(this.languageService.msg('report_reason_prompt'));
 
     if(reason && this.worker?.id){
       await this.clientAccountService.reportAccount(reason,this.worker?.id);
-      alert('Signalement envoyé.');
+      alert(this.languageService.msg('report_sent'));
     }else{
-      alert('Impossible de signaler sans fournir une raison valide');
+      alert(this.languageService.msg('report_reason_required'));
     }
   }
 
@@ -268,8 +268,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.sortAndPrepareComments(currentUser?.id);
 
     } catch (err) {
-      console.error("Erreur lors de l'envoi du commentaire :", err);
-      alert("Impossible d'enregistrer le commentaire.");
+      console.error('Could not post the review', err);
+      alert(this.languageService.msg('comment_save_error'));
     } finally {
       this.isSubmittingReview = false;
     }

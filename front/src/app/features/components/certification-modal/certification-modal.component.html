@@ -32,7 +32,7 @@
       <!-- Selected or existing image: preview -->
       @if (previewUrl) {
         <div class="image-preview-container">
-          <img [src]="previewUrl" alt="Aperçu certification" class="certification-preview-img" />
+          <img [src]="previewUrl" [alt]="t.certification?.title" class="certification-preview-img" />
           <ion-button fill="outline" color="medium" size="small" (click)="fileInput.click()">
             <ion-icon name="refresh-outline" slot="start"></ion-icon>
             {{ t.certification?.change_photo_btn || 'Changer la photo' }}

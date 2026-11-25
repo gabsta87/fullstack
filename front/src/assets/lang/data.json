@@ -55,6 +55,12 @@
         "grey": "Grey",
         "ginger": "Ginger",
         "colored": "Colored"
+      },
+      "mastery_levels": {
+        "beginner": "Beginner",
+        "intermediate": "Intermediate",
+        "good": "Good",
+        "native": "Native"
       }
     },
     "header": {
@@ -77,8 +83,8 @@
     },
     "zones": {
       "region_label": "Region",
-      "precise_location_label": "Precise location",
-      "select_region": "Select a region...",
+      "precise_location_label": "Location",
+      "select_region": "Region",
       "select_location": "Select a location..."
     },
     "account": {
@@ -89,7 +95,6 @@
         "comments": "My comments"
       },
       "favorites": {
-        "title": "Your favorites",
         "empty": "You have no favorites yet."
       },
       "comments": {
@@ -131,7 +136,7 @@
       "forgot_password": "Forgot password?"
     },
     "certification": {
-      "title": "Profile Certification",
+      "title": "Certification",
       "admin_message_title": "Admin message",
       "step1_title": "Step 1: Write down your secret code",
       "step1_desc": "Take a photo of yourself (uncovered face) holding a paper or phone clearly displaying this code",
@@ -159,7 +164,8 @@
       "details": "Details",
       "languages": "Languages",
       "eye_color": "Eyes",
-      "hair_color": "Hair"
+      "hair_color": "Hair",
+      "write_review_placeholder": "Write or edit your review..."
     },
     "reset_password": {
       "title": "New password",
@@ -297,6 +303,89 @@
       "preview": {
         "title": "Preview"
       }
+    },
+    "messages": {
+      "generic_error": "An error occurred. Please try again.",
+      "login_invalid": "Wrong email or password.",
+      "login_forbidden": "Request refused.",
+      "login_too_many": "Too many attempts. Please try again in a few minutes.",
+      "login_failed": "An error occurred while logging in.",
+      "register_autologin_failed": "Account created, but automatic login failed. Please log in manually.",
+      "email_taken": "An account already exists with this email.",
+      "register_invalid": "Invalid email, or password not between 8 and 72 characters.",
+      "settings_saved": "Your account settings have been updated.",
+      "settings_error": "An error occurred while updating.",
+      "wrong_password": "Wrong current password.",
+      "forgot_sending": "Sending the link...",
+      "forgot_sent_title": "Email sent",
+      "forgot_sent": "If this address is registered, a reset email has just been sent to you.",
+      "reset_error": "Invalid or expired link, or password not between 8 and 72 characters.",
+      "report_reason_prompt": "Reason for the report:",
+      "report_sent": "Report sent.",
+      "report_reason_required": "A valid reason is required to report.",
+      "your_review": "Your review",
+      "comment_save_error": "Could not save the review.",
+      "comment_update_error": "Could not update the review.",
+      "comment_delete_confirm": "Do you really want to delete this review?",
+      "comment_delete_error": "Could not delete the review.",
+      "admin_request_error": "An error occurred while processing the request.",
+      "admin_delete_user_confirm": "Only delete accounts when necessary (creation error); banning is preferred.\nDo you really want to delete the account of {name}?",
+      "admin_service_name_prompt": "Name of the new service:",
+      "admin_service_desc_prompt": "Description (optional):",
+      "admin_service_rename_prompt": "Service name:",
+      "admin_service_edit_desc_prompt": "Description:",
+      "admin_service_name_empty": "The service name cannot be empty.",
+      "admin_service_create_error": "Could not create the service.",
+      "admin_service_update_error": "Could not update the service.",
+      "admin_service_delete_confirm": "Do you really want to delete this service?",
+      "admin_service_delete_error": "Could not delete the service.",
+      "admin_zone_child_prompt": "Name of the new sub-region:",
+      "admin_zone_parent_prompt": "Name of the new region:",
+      "admin_zone_rename_prompt": "Region name:",
+      "admin_zone_create_error": "Could not create the region.",
+      "admin_zone_update_error": "Could not update the region.",
+      "admin_zone_delete_confirm": "Do you really want to delete this region?",
+      "admin_zone_delete_error": "Could not delete this region.",
+      "admin_zone_in_use": "Advertisers are still attached to this region (or one of its sub-regions): it cannot be deleted.",
+      "admin_request_locked": "This request is already being handled by another administrator.",
+      "admin_request_open_error": "Could not open this request.",
+      "admin_request_missing_id": "No request id found.",
+      "admin_comment_required": "Please enter a comment or a reason for the rejection / revision request.",
+      "admin_report_dismiss_error": "Could not dismiss this report.",
+      "admin_revoke_prompt": "Reason for revoking the certification of {name} (required):",
+      "admin_revoke_reason_required": "A valid reason is required to revoke a certification.",
+      "admin_revoke_success": "Certification revoked.",
+      "admin_revoke_error": "Could not revoke the certification.",
+      "admin_not_worker": "This user is a {role}: they have no advertiser profile.",
+      "admin_invite_title": "Invite a new administrator",
+      "admin_invite_placeholder": "Email address of the new admin",
+      "admin_invite_send": "Send the invitation",
+      "admin_invite_email_required": "Please enter an email address.",
+      "admin_invite_success": "Invitation sent: an activation email has been generated.",
+      "admin_invite_error": "Could not invite this administrator.",
+      "missing_username": "Username",
+      "missing_email": "Email",
+      "missing_description": "Description",
+      "missing_location": "Location",
+      "missing_phone": "Phone",
+      "missing_birthdate": "Birthdate",
+      "missing_service": "At least 1 service",
+      "missing_photo": "At least 1 photo",
+      "missing_fields_title": "Missing for a valid profile:",
+      "profile_valid": "Profile complete",
+      "cert_rejected": "Rejected: {reason}",
+      "cert_revision_required": "Correction required.",
+      "cert_expired": "Certification expired",
+      "cert_expiring": "Expires soon",
+      "cert_expiring_btn": "Certified (expiring)",
+      "cert_certified": "Profile certified",
+      "cert_certified_btn": "Certified",
+      "subscription_expired": "Subscription expired",
+      "days_left_one": "{n} day left",
+      "days_left_other": "{n} days left",
+      "hours_left_one": "{n} hour left",
+      "hours_left_other": "{n} hours left",
+      "storage_used": "Storage used: {used} MB of {total} MB ({percent} %)"
     }
   },
   "fr": {
@@ -333,12 +422,12 @@
       "online": "En ligne",
       "offline": "Hors ligne",
       "contact_us": "Nous contacter",
-      "body_types" : {
-        "slim" : "Mince",
-        "athletic" : "Athlétique",
-        "average" : "Moyenne",
-        "curvy" : "Voluptueuse",
-        "round" : "Ronde"
+      "body_types": {
+        "slim": "Mince",
+        "athletic": "Athlétique",
+        "average": "Moyenne",
+        "curvy": "Voluptueuse",
+        "round": "Ronde"
       },
       "eye_colors": {
         "brown": "Marron",
@@ -355,6 +444,12 @@
         "grey": "Gris",
         "ginger": "Roux",
         "colored": "Teint"
+      },
+      "mastery_levels": {
+        "beginner": "Débutant",
+        "intermediate": "Intermédiaire",
+        "good": "Bon",
+        "native": "Langue maternelle"
       }
     },
     "header": {
@@ -377,8 +472,8 @@
     },
     "zones": {
       "region_label": "Région",
-      "precise_location_label": "Localisation précise",
-      "select_region": "Choisir une région...",
+      "precise_location_label": "Localisation",
+      "select_region": "Région",
       "select_location": "Choisir une localisation..."
     },
     "account": {
@@ -389,7 +484,6 @@
         "comments": "Mes commentaires"
       },
       "favorites": {
-        "title": "Vos favoris",
         "empty": "Vous n'avez pas encore de favoris."
       },
       "comments": {
@@ -431,7 +525,7 @@
       "forgot_password": "Mot de passe oublié ?"
     },
     "certification": {
-      "title": "Certification du profil",
+      "title": "Certification",
       "admin_message_title": "Message de l'administration ",
       "step1_title": "Étape 1 : Notez votre code secret",
       "step1_desc": "Prenez une photo de vous (visage découvert) en tenant un support (papier, téléphone) sur lequel est clairement écrit ce code ",
@@ -459,7 +553,8 @@
       "details": "Détails",
       "languages": "Langues",
       "eye_color": "Yeux",
-      "hair_color": "Cheveux"
+      "hair_color": "Cheveux",
+      "write_review_placeholder": "Rédigez ou modifiez votre avis..."
     },
     "reset_password": {
       "title": "Nouveau mot de passe",
@@ -597,6 +692,89 @@
       "preview": {
         "title": "Visualisation"
       }
+    },
+    "messages": {
+      "generic_error": "Une erreur est survenue. Veuillez réessayer.",
+      "login_invalid": "E-mail ou mot de passe incorrect.",
+      "login_forbidden": "Requête refusée.",
+      "login_too_many": "Trop de tentatives. Réessayez dans quelques minutes.",
+      "login_failed": "Une erreur est survenue lors de la connexion.",
+      "register_autologin_failed": "Compte créé, mais la connexion automatique a échoué. Veuillez vous connecter manuellement.",
+      "email_taken": "Un compte existe déjà avec cet e-mail.",
+      "register_invalid": "E-mail invalide, ou mot de passe hors de 8 à 72 caractères.",
+      "settings_saved": "Vos paramètres de compte ont été mis à jour.",
+      "settings_error": "Une erreur est survenue lors de la mise à jour.",
+      "wrong_password": "Mot de passe actuel incorrect.",
+      "forgot_sending": "Envoi du lien...",
+      "forgot_sent_title": "E-mail envoyé",
+      "forgot_sent": "Si cette adresse est enregistrée chez nous, un e-mail de réinitialisation vient de vous être envoyé.",
+      "reset_error": "Lien invalide ou expiré, ou mot de passe hors de 8 à 72 caractères.",
+      "report_reason_prompt": "Raison du signalement :",
+      "report_sent": "Signalement envoyé.",
+      "report_reason_required": "Une raison valide est nécessaire pour signaler.",
+      "your_review": "Votre avis",
+      "comment_save_error": "Impossible d'enregistrer l'avis.",
+      "comment_update_error": "Impossible de modifier l'avis.",
+      "comment_delete_confirm": "Voulez-vous vraiment supprimer cet avis ?",
+      "comment_delete_error": "Impossible de supprimer l'avis.",
+      "admin_request_error": "Une erreur est survenue lors du traitement de la requête.",
+      "admin_delete_user_confirm": "Ne supprimer les comptes qu'en cas de nécessité (erreur de création) ; privilégier le bannissement.\nVoulez-vous vraiment supprimer le compte de {name} ?",
+      "admin_service_name_prompt": "Nom du nouveau service :",
+      "admin_service_desc_prompt": "Description (optionnelle) :",
+      "admin_service_rename_prompt": "Nom du service :",
+      "admin_service_edit_desc_prompt": "Description :",
+      "admin_service_name_empty": "Le nom du service ne peut pas être vide.",
+      "admin_service_create_error": "Impossible de créer le service.",
+      "admin_service_update_error": "Impossible de modifier le service.",
+      "admin_service_delete_confirm": "Voulez-vous vraiment supprimer ce service ?",
+      "admin_service_delete_error": "Impossible de supprimer le service.",
+      "admin_zone_child_prompt": "Nom de la nouvelle sous-région :",
+      "admin_zone_parent_prompt": "Nom de la nouvelle région :",
+      "admin_zone_rename_prompt": "Nom de la région :",
+      "admin_zone_create_error": "Impossible de créer la région.",
+      "admin_zone_update_error": "Impossible de modifier la région.",
+      "admin_zone_delete_confirm": "Voulez-vous vraiment supprimer cette région ?",
+      "admin_zone_delete_error": "Impossible de supprimer cette région.",
+      "admin_zone_in_use": "Des annonceurs sont encore rattachés à cette région (ou à l'une de ses sous-régions) : elle ne peut pas être supprimée.",
+      "admin_request_locked": "Cette requête est déjà traitée par un autre administrateur.",
+      "admin_request_open_error": "Impossible d'ouvrir cette requête.",
+      "admin_request_missing_id": "Aucun identifiant de requête trouvé.",
+      "admin_comment_required": "Veuillez saisir un commentaire ou un motif pour le refus / la demande de complément.",
+      "admin_report_dismiss_error": "Impossible de classer ce signalement.",
+      "admin_revoke_prompt": "Motif de la révocation de la certification de {name} (requis) :",
+      "admin_revoke_reason_required": "Un motif valide est obligatoire pour révoquer une certification.",
+      "admin_revoke_success": "Certification révoquée.",
+      "admin_revoke_error": "Impossible de révoquer la certification.",
+      "admin_not_worker": "Cet utilisateur est un {role} : il n'a pas de profil annonceur.",
+      "admin_invite_title": "Inviter un nouvel administrateur",
+      "admin_invite_placeholder": "Adresse e-mail du nouvel admin",
+      "admin_invite_send": "Envoyer l'invitation",
+      "admin_invite_email_required": "Veuillez saisir une adresse e-mail.",
+      "admin_invite_success": "Invitation envoyée : un e-mail d'activation a été généré.",
+      "admin_invite_error": "Impossible d'inviter cet administrateur.",
+      "missing_username": "Nom d'utilisateur",
+      "missing_email": "E-mail",
+      "missing_description": "Description",
+      "missing_location": "Localisation",
+      "missing_phone": "Téléphone",
+      "missing_birthdate": "Date de naissance",
+      "missing_service": "Au moins 1 service",
+      "missing_photo": "Au moins 1 photo",
+      "missing_fields_title": "Manquant pour un profil valide :",
+      "profile_valid": "Profil complet",
+      "cert_rejected": "Refusé : {reason}",
+      "cert_revision_required": "Correction requise.",
+      "cert_expired": "Certification expirée",
+      "cert_expiring": "Expire bientôt",
+      "cert_expiring_btn": "Certifié (expire bientôt)",
+      "cert_certified": "Profil certifié",
+      "cert_certified_btn": "Certifié",
+      "subscription_expired": "Abonnement expiré",
+      "days_left_one": "{n} jour restant",
+      "days_left_other": "{n} jours restants",
+      "hours_left_one": "{n} heure restante",
+      "hours_left_other": "{n} heures restantes",
+      "storage_used": "Espace utilisé : {used} Mo sur {total} Mo ({percent} %)"
     }
   },
   "de": {
@@ -655,6 +833,12 @@
         "grey": "Grau",
         "ginger": "Rot",
         "colored": "Gefärbt"
+      },
+      "mastery_levels": {
+        "beginner": "Anfänger",
+        "intermediate": "Mittelstufe",
+        "good": "Gut",
+        "native": "Muttersprache"
       }
     },
     "header": {
@@ -677,8 +861,8 @@
     },
     "zones": {
       "region_label": "Region",
-      "precise_location_label": "Genauer Standort",
-      "select_region": "Region auswählen...",
+      "precise_location_label": "Standort",
+      "select_region": "Region",
       "select_location": "Standort auswählen..."
     },
     "account": {
@@ -689,7 +873,6 @@
         "comments": "meine Kommentare"
       },
       "favorites": {
-        "title": "Ihre Favoriten",
         "empty": "Sie haben noch keine Favoriten."
       },
       "comments": {
@@ -726,7 +909,7 @@
       "forgot_password": "Passwort vergessen?"
     },
     "certification": {
-      "title": "Profil-Zertifizierung",
+      "title": "Zertifizierung",
       "admin_message_title": "Nachricht der Administration",
       "step1_title": "Schritt 1: Notieren Sie Ihren Geheimcode",
       "step1_desc": "Machen Sie ein Foto von sich (Gesicht unbedeckt) mit einem Papier oder Telefon, auf dem dieser Code gut lesbar ist",
@@ -734,7 +917,7 @@
       "drop_zone_text": "Ziehen Sie Ihr Foto hierher oder klicken Sie zum Durchsuchen",
       "format_hint": "Akzeptierte Formate: JPG, PNG",
       "submit_btn": "Zur Überprüfung senden",
-      "preview_helper_text":"Sobald Sie die Zertifizierung erhalten haben, müssen Sie den Zertifizierungsprozess erneut durchlaufen, wenn Sie neue Fotos oder Videos hinzufügen. Denken Sie daran, alle Ihre Fotos auf der Website hochzuladen, bevor Sie eine Zertifizierung beantragen."
+      "preview_helper_text": "Sobald Sie die Zertifizierung erhalten haben, müssen Sie den Zertifizierungsprozess erneut durchlaufen, wenn Sie neue Fotos oder Videos hinzufügen. Denken Sie daran, alle Ihre Fotos auf der Website hochzuladen, bevor Sie eine Zertifizierung beantragen."
     },
     "forgot_password": {
       "title": "Passwort vergessen",
@@ -754,7 +937,8 @@
       "details": "Details",
       "languages": "Sprachen",
       "eye_color": "Augen",
-      "hair_color": "Haare"
+      "hair_color": "Haare",
+      "write_review_placeholder": "Bewertung schreiben oder bearbeiten..."
     },
     "reset_password": {
       "title": "Neues Passwort",
@@ -892,6 +1076,89 @@
       "preview": {
         "title": "Vorschau"
       }
+    },
+    "messages": {
+      "generic_error": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+      "login_invalid": "E-Mail oder Passwort falsch.",
+      "login_forbidden": "Anfrage abgelehnt.",
+      "login_too_many": "Zu viele Versuche. Bitte versuchen Sie es in einigen Minuten erneut.",
+      "login_failed": "Bei der Anmeldung ist ein Fehler aufgetreten.",
+      "register_autologin_failed": "Konto erstellt, aber die automatische Anmeldung ist fehlgeschlagen. Bitte melden Sie sich manuell an.",
+      "email_taken": "Mit dieser E-Mail existiert bereits ein Konto.",
+      "register_invalid": "Ungültige E-Mail oder Passwort nicht zwischen 8 und 72 Zeichen.",
+      "settings_saved": "Ihre Kontoeinstellungen wurden aktualisiert.",
+      "settings_error": "Beim Aktualisieren ist ein Fehler aufgetreten.",
+      "wrong_password": "Aktuelles Passwort falsch.",
+      "forgot_sending": "Link wird gesendet...",
+      "forgot_sent_title": "E-Mail gesendet",
+      "forgot_sent": "Falls diese Adresse bei uns registriert ist, wurde Ihnen soeben eine E-Mail zum Zurücksetzen gesendet.",
+      "reset_error": "Ungültiger oder abgelaufener Link, oder Passwort nicht zwischen 8 und 72 Zeichen.",
+      "report_reason_prompt": "Grund der Meldung:",
+      "report_sent": "Meldung gesendet.",
+      "report_reason_required": "Für eine Meldung ist ein gültiger Grund erforderlich.",
+      "your_review": "Ihre Bewertung",
+      "comment_save_error": "Die Bewertung konnte nicht gespeichert werden.",
+      "comment_update_error": "Die Bewertung konnte nicht geändert werden.",
+      "comment_delete_confirm": "Möchten Sie diese Bewertung wirklich löschen?",
+      "comment_delete_error": "Die Bewertung konnte nicht gelöscht werden.",
+      "admin_request_error": "Bei der Bearbeitung der Anfrage ist ein Fehler aufgetreten.",
+      "admin_delete_user_confirm": "Konten nur bei Bedarf löschen (Fehler bei der Erstellung); Sperren ist vorzuziehen.\nMöchten Sie das Konto von {name} wirklich löschen?",
+      "admin_service_name_prompt": "Name des neuen Dienstes:",
+      "admin_service_desc_prompt": "Beschreibung (optional):",
+      "admin_service_rename_prompt": "Name des Dienstes:",
+      "admin_service_edit_desc_prompt": "Beschreibung:",
+      "admin_service_name_empty": "Der Name des Dienstes darf nicht leer sein.",
+      "admin_service_create_error": "Der Dienst konnte nicht erstellt werden.",
+      "admin_service_update_error": "Der Dienst konnte nicht geändert werden.",
+      "admin_service_delete_confirm": "Möchten Sie diesen Dienst wirklich löschen?",
+      "admin_service_delete_error": "Der Dienst konnte nicht gelöscht werden.",
+      "admin_zone_child_prompt": "Name der neuen Unterregion:",
+      "admin_zone_parent_prompt": "Name der neuen Region:",
+      "admin_zone_rename_prompt": "Name der Region:",
+      "admin_zone_create_error": "Die Region konnte nicht erstellt werden.",
+      "admin_zone_update_error": "Die Region konnte nicht geändert werden.",
+      "admin_zone_delete_confirm": "Möchten Sie diese Region wirklich löschen?",
+      "admin_zone_delete_error": "Diese Region konnte nicht gelöscht werden.",
+      "admin_zone_in_use": "Dieser Region (oder einer ihrer Unterregionen) sind noch Anbieter zugeordnet: Sie kann nicht gelöscht werden.",
+      "admin_request_locked": "Diese Anfrage wird bereits von einem anderen Administrator bearbeitet.",
+      "admin_request_open_error": "Diese Anfrage konnte nicht geöffnet werden.",
+      "admin_request_missing_id": "Keine Anfrage-ID gefunden.",
+      "admin_comment_required": "Bitte geben Sie einen Kommentar oder einen Grund für die Ablehnung / Nachforderung ein.",
+      "admin_report_dismiss_error": "Diese Meldung konnte nicht abgelegt werden.",
+      "admin_revoke_prompt": "Grund für den Widerruf der Zertifizierung von {name} (erforderlich):",
+      "admin_revoke_reason_required": "Für den Widerruf einer Zertifizierung ist ein gültiger Grund erforderlich.",
+      "admin_revoke_success": "Zertifizierung widerrufen.",
+      "admin_revoke_error": "Die Zertifizierung konnte nicht widerrufen werden.",
+      "admin_not_worker": "Dieser Benutzer ist ein {role}: Er hat kein Anbieterprofil.",
+      "admin_invite_title": "Neuen Administrator einladen",
+      "admin_invite_placeholder": "E-Mail-Adresse des neuen Admins",
+      "admin_invite_send": "Einladung senden",
+      "admin_invite_email_required": "Bitte geben Sie eine E-Mail-Adresse ein.",
+      "admin_invite_success": "Einladung gesendet: Eine Aktivierungs-E-Mail wurde erstellt.",
+      "admin_invite_error": "Dieser Administrator konnte nicht eingeladen werden.",
+      "missing_username": "Benutzername",
+      "missing_email": "E-Mail",
+      "missing_description": "Beschreibung",
+      "missing_location": "Standort",
+      "missing_phone": "Telefon",
+      "missing_birthdate": "Geburtsdatum",
+      "missing_service": "Mindestens 1 Dienst",
+      "missing_photo": "Mindestens 1 Foto",
+      "missing_fields_title": "Fehlt für ein gültiges Profil:",
+      "profile_valid": "Profil vollständig",
+      "cert_rejected": "Abgelehnt: {reason}",
+      "cert_revision_required": "Korrektur erforderlich.",
+      "cert_expired": "Zertifizierung abgelaufen",
+      "cert_expiring": "Läuft bald ab",
+      "cert_expiring_btn": "Zertifiziert (läuft bald ab)",
+      "cert_certified": "Profil zertifiziert",
+      "cert_certified_btn": "Zertifiziert",
+      "subscription_expired": "Abonnement abgelaufen",
+      "days_left_one": "Noch {n} Tag",
+      "days_left_other": "Noch {n} Tage",
+      "hours_left_one": "Noch {n} Stunde",
+      "hours_left_other": "Noch {n} Stunden",
+      "storage_used": "Belegter Speicher: {used} MB von {total} MB ({percent} %)"
     }
   },
   "es": {
@@ -950,6 +1217,12 @@
         "grey": "Gris",
         "ginger": "Pelirrojo",
         "colored": "Teñido"
+      },
+      "mastery_levels": {
+        "beginner": "Principiante",
+        "intermediate": "Intermedio",
+        "good": "Bueno",
+        "native": "Nativo"
       }
     },
     "header": {
@@ -972,8 +1245,8 @@
     },
     "zones": {
       "region_label": "Región",
-      "precise_location_label": "Ubicación precisa",
-      "select_region": "Seleccionar una región...",
+      "precise_location_label": "Ubicación",
+      "select_region": "Región",
       "select_location": "Seleccionar una ubicación..."
     },
     "account": {
@@ -984,7 +1257,6 @@
         "comments": "mis comentarios"
       },
       "favorites": {
-        "title": "Tus favoritos",
         "empty": "Aún no tienes favoritos."
       },
       "comments": {
@@ -1021,7 +1293,7 @@
       "forgot_password": "¿Olvidaste tu contraseña?"
     },
     "certification": {
-      "title": "Certificación del perfil",
+      "title": "Certificación",
       "admin_message_title": "Mensaje de la administración",
       "step1_title": "Paso 1: Anota tu código secreto",
       "step1_desc": "Tómate una foto (rostro descubierto) sosteniendo un papel o teléfono donde se lea claramente este código",
@@ -1049,7 +1321,8 @@
       "details": "Detalles",
       "languages": "Idiomas",
       "eye_color": "Ojos",
-      "hair_color": "Cabello"
+      "hair_color": "Cabello",
+      "write_review_placeholder": "Escriba o modifique su opinión..."
     },
     "reset_password": {
       "title": "Nueva contraseña",
@@ -1187,6 +1460,89 @@
       "preview": {
         "title": "Vista previa"
       }
+    },
+    "messages": {
+      "generic_error": "Se ha producido un error. Inténtelo de nuevo.",
+      "login_invalid": "Correo o contraseña incorrectos.",
+      "login_forbidden": "Solicitud rechazada.",
+      "login_too_many": "Demasiados intentos. Inténtelo de nuevo en unos minutos.",
+      "login_failed": "Se ha producido un error al iniciar sesión.",
+      "register_autologin_failed": "Cuenta creada, pero el inicio de sesión automático ha fallado. Inicie sesión manualmente.",
+      "email_taken": "Ya existe una cuenta con este correo.",
+      "register_invalid": "Correo no válido, o contraseña fuera de 8 a 72 caracteres.",
+      "settings_saved": "Los ajustes de su cuenta se han actualizado.",
+      "settings_error": "Se ha producido un error durante la actualización.",
+      "wrong_password": "Contraseña actual incorrecta.",
+      "forgot_sending": "Enviando el enlace...",
+      "forgot_sent_title": "Correo enviado",
+      "forgot_sent": "Si esta dirección está registrada, se le acaba de enviar un correo de restablecimiento.",
+      "reset_error": "Enlace no válido o caducado, o contraseña fuera de 8 a 72 caracteres.",
+      "report_reason_prompt": "Motivo de la denuncia:",
+      "report_sent": "Denuncia enviada.",
+      "report_reason_required": "Se necesita un motivo válido para denunciar.",
+      "your_review": "Su opinión",
+      "comment_save_error": "No se pudo guardar la opinión.",
+      "comment_update_error": "No se pudo modificar la opinión.",
+      "comment_delete_confirm": "¿Seguro que quiere eliminar esta opinión?",
+      "comment_delete_error": "No se pudo eliminar la opinión.",
+      "admin_request_error": "Se ha producido un error al procesar la solicitud.",
+      "admin_delete_user_confirm": "Elimine cuentas solo si es necesario (error de creación); es preferible el bloqueo.\n¿Seguro que quiere eliminar la cuenta de {name}?",
+      "admin_service_name_prompt": "Nombre del nuevo servicio:",
+      "admin_service_desc_prompt": "Descripción (opcional):",
+      "admin_service_rename_prompt": "Nombre del servicio:",
+      "admin_service_edit_desc_prompt": "Descripción:",
+      "admin_service_name_empty": "El nombre del servicio no puede estar vacío.",
+      "admin_service_create_error": "No se pudo crear el servicio.",
+      "admin_service_update_error": "No se pudo modificar el servicio.",
+      "admin_service_delete_confirm": "¿Seguro que quiere eliminar este servicio?",
+      "admin_service_delete_error": "No se pudo eliminar el servicio.",
+      "admin_zone_child_prompt": "Nombre de la nueva subregión:",
+      "admin_zone_parent_prompt": "Nombre de la nueva región:",
+      "admin_zone_rename_prompt": "Nombre de la región:",
+      "admin_zone_create_error": "No se pudo crear la región.",
+      "admin_zone_update_error": "No se pudo modificar la región.",
+      "admin_zone_delete_confirm": "¿Seguro que quiere eliminar esta región?",
+      "admin_zone_delete_error": "No se pudo eliminar esta región.",
+      "admin_zone_in_use": "Todavía hay anunciantes vinculados a esta región (o a una de sus subregiones): no se puede eliminar.",
+      "admin_request_locked": "Otro administrador ya está tratando esta solicitud.",
+      "admin_request_open_error": "No se pudo abrir esta solicitud.",
+      "admin_request_missing_id": "No se ha encontrado ningún identificador de solicitud.",
+      "admin_comment_required": "Introduzca un comentario o un motivo para el rechazo / la solicitud de corrección.",
+      "admin_report_dismiss_error": "No se pudo archivar esta denuncia.",
+      "admin_revoke_prompt": "Motivo de la revocación de la certificación de {name} (obligatorio):",
+      "admin_revoke_reason_required": "Se necesita un motivo válido para revocar una certificación.",
+      "admin_revoke_success": "Certificación revocada.",
+      "admin_revoke_error": "No se pudo revocar la certificación.",
+      "admin_not_worker": "Este usuario es un {role}: no tiene perfil de anunciante.",
+      "admin_invite_title": "Invitar a un nuevo administrador",
+      "admin_invite_placeholder": "Correo del nuevo admin",
+      "admin_invite_send": "Enviar la invitación",
+      "admin_invite_email_required": "Introduzca una dirección de correo.",
+      "admin_invite_success": "Invitación enviada: se ha generado un correo de activación.",
+      "admin_invite_error": "No se pudo invitar a este administrador.",
+      "missing_username": "Nombre de usuario",
+      "missing_email": "Correo",
+      "missing_description": "Descripción",
+      "missing_location": "Ubicación",
+      "missing_phone": "Teléfono",
+      "missing_birthdate": "Fecha de nacimiento",
+      "missing_service": "Al menos 1 servicio",
+      "missing_photo": "Al menos 1 foto",
+      "missing_fields_title": "Falta para un perfil válido:",
+      "profile_valid": "Perfil completo",
+      "cert_rejected": "Rechazado: {reason}",
+      "cert_revision_required": "Corrección necesaria.",
+      "cert_expired": "Certificación caducada",
+      "cert_expiring": "Caduca pronto",
+      "cert_expiring_btn": "Certificado (caduca pronto)",
+      "cert_certified": "Perfil certificado",
+      "cert_certified_btn": "Certificado",
+      "subscription_expired": "Suscripción caducada",
+      "days_left_one": "Queda {n} día",
+      "days_left_other": "Quedan {n} días",
+      "hours_left_one": "Queda {n} hora",
+      "hours_left_other": "Quedan {n} horas",
+      "storage_used": "Espacio usado: {used} MB de {total} MB ({percent} %)"
     }
   },
   "pt": {
@@ -1245,6 +1601,12 @@
         "grey": "Cinzento",
         "ginger": "Ruivo",
         "colored": "Pintado"
+      },
+      "mastery_levels": {
+        "beginner": "Iniciante",
+        "intermediate": "Intermédio",
+        "good": "Bom",
+        "native": "Nativo"
       }
     },
     "header": {
@@ -1267,8 +1629,8 @@
     },
     "zones": {
       "region_label": "Região",
-      "precise_location_label": "Localização precisa",
-      "select_region": "Selecionar uma região...",
+      "precise_location_label": "Localização",
+      "select_region": "Região",
       "select_location": "Selecionar uma localização..."
     },
     "account": {
@@ -1279,7 +1641,6 @@
         "comments": "os meus comentários"
       },
       "favorites": {
-        "title": "Os seus favoritos",
         "empty": "Ainda não tem favoritos."
       },
       "comments": {
@@ -1316,7 +1677,7 @@
       "forgot_password": "Esqueceu-se da palavra-passe?"
     },
     "certification": {
-      "title": "Certificação do perfil",
+      "title": "Certificação",
       "admin_message_title": "Mensagem da administração",
       "step1_title": "Passo 1: Anote o seu código secreto",
       "step1_desc": "Tire uma foto sua (rosto descoberto) a segurar num papel ou telemóvel onde se leia claramente este código",
@@ -1344,7 +1705,8 @@
       "details": "Detalhes",
       "languages": "Idiomas",
       "eye_color": "Olhos",
-      "hair_color": "Cabelo"
+      "hair_color": "Cabelo",
+      "write_review_placeholder": "Escreva ou altere a sua avaliação..."
     },
     "reset_password": {
       "title": "Nova palavra-passe",
@@ -1482,6 +1844,89 @@
       "preview": {
         "title": "Visualização"
       }
+    },
+    "messages": {
+      "generic_error": "Ocorreu um erro. Tente novamente.",
+      "login_invalid": "E-mail ou palavra-passe incorretos.",
+      "login_forbidden": "Pedido recusado.",
+      "login_too_many": "Demasiadas tentativas. Tente novamente dentro de alguns minutos.",
+      "login_failed": "Ocorreu um erro ao iniciar sessão.",
+      "register_autologin_failed": "Conta criada, mas o início de sessão automático falhou. Inicie sessão manualmente.",
+      "email_taken": "Já existe uma conta com este e-mail.",
+      "register_invalid": "E-mail inválido, ou palavra-passe fora de 8 a 72 caracteres.",
+      "settings_saved": "As definições da sua conta foram atualizadas.",
+      "settings_error": "Ocorreu um erro durante a atualização.",
+      "wrong_password": "Palavra-passe atual incorreta.",
+      "forgot_sending": "A enviar a ligação...",
+      "forgot_sent_title": "E-mail enviado",
+      "forgot_sent": "Se este endereço estiver registado, acabou de lhe ser enviado um e-mail de reposição.",
+      "reset_error": "Ligação inválida ou expirada, ou palavra-passe fora de 8 a 72 caracteres.",
+      "report_reason_prompt": "Motivo da denúncia:",
+      "report_sent": "Denúncia enviada.",
+      "report_reason_required": "É necessário um motivo válido para denunciar.",
+      "your_review": "A sua avaliação",
+      "comment_save_error": "Não foi possível guardar a avaliação.",
+      "comment_update_error": "Não foi possível alterar a avaliação.",
+      "comment_delete_confirm": "Quer mesmo eliminar esta avaliação?",
+      "comment_delete_error": "Não foi possível eliminar a avaliação.",
+      "admin_request_error": "Ocorreu um erro ao processar o pedido.",
+      "admin_delete_user_confirm": "Elimine contas apenas quando necessário (erro de criação); é preferível o banimento.\nQuer mesmo eliminar a conta de {name}?",
+      "admin_service_name_prompt": "Nome do novo serviço:",
+      "admin_service_desc_prompt": "Descrição (opcional):",
+      "admin_service_rename_prompt": "Nome do serviço:",
+      "admin_service_edit_desc_prompt": "Descrição:",
+      "admin_service_name_empty": "O nome do serviço não pode estar vazio.",
+      "admin_service_create_error": "Não foi possível criar o serviço.",
+      "admin_service_update_error": "Não foi possível alterar o serviço.",
+      "admin_service_delete_confirm": "Quer mesmo eliminar este serviço?",
+      "admin_service_delete_error": "Não foi possível eliminar o serviço.",
+      "admin_zone_child_prompt": "Nome da nova sub-região:",
+      "admin_zone_parent_prompt": "Nome da nova região:",
+      "admin_zone_rename_prompt": "Nome da região:",
+      "admin_zone_create_error": "Não foi possível criar a região.",
+      "admin_zone_update_error": "Não foi possível alterar a região.",
+      "admin_zone_delete_confirm": "Quer mesmo eliminar esta região?",
+      "admin_zone_delete_error": "Não foi possível eliminar esta região.",
+      "admin_zone_in_use": "Ainda há anunciantes associados a esta região (ou a uma das suas sub-regiões): não pode ser eliminada.",
+      "admin_request_locked": "Este pedido já está a ser tratado por outro administrador.",
+      "admin_request_open_error": "Não foi possível abrir este pedido.",
+      "admin_request_missing_id": "Nenhum identificador de pedido encontrado.",
+      "admin_comment_required": "Introduza um comentário ou um motivo para a recusa / o pedido de correção.",
+      "admin_report_dismiss_error": "Não foi possível arquivar esta denúncia.",
+      "admin_revoke_prompt": "Motivo da revogação da certificação de {name} (obrigatório):",
+      "admin_revoke_reason_required": "É necessário um motivo válido para revogar uma certificação.",
+      "admin_revoke_success": "Certificação revogada.",
+      "admin_revoke_error": "Não foi possível revogar a certificação.",
+      "admin_not_worker": "Este utilizador é um {role}: não tem perfil de anunciante.",
+      "admin_invite_title": "Convidar um novo administrador",
+      "admin_invite_placeholder": "E-mail do novo admin",
+      "admin_invite_send": "Enviar o convite",
+      "admin_invite_email_required": "Introduza um endereço de e-mail.",
+      "admin_invite_success": "Convite enviado: foi gerado um e-mail de ativação.",
+      "admin_invite_error": "Não foi possível convidar este administrador.",
+      "missing_username": "Nome de utilizador",
+      "missing_email": "E-mail",
+      "missing_description": "Descrição",
+      "missing_location": "Localização",
+      "missing_phone": "Telefone",
+      "missing_birthdate": "Data de nascimento",
+      "missing_service": "Pelo menos 1 serviço",
+      "missing_photo": "Pelo menos 1 foto",
+      "missing_fields_title": "Em falta para um perfil válido:",
+      "profile_valid": "Perfil completo",
+      "cert_rejected": "Recusado: {reason}",
+      "cert_revision_required": "Correção necessária.",
+      "cert_expired": "Certificação expirada",
+      "cert_expiring": "Expira em breve",
+      "cert_expiring_btn": "Certificado (expira em breve)",
+      "cert_certified": "Perfil certificado",
+      "cert_certified_btn": "Certificado",
+      "subscription_expired": "Subscrição expirada",
+      "days_left_one": "Falta {n} dia",
+      "days_left_other": "Faltam {n} dias",
+      "hours_left_one": "Falta {n} hora",
+      "hours_left_other": "Faltam {n} horas",
+      "storage_used": "Espaço usado: {used} MB de {total} MB ({percent} %)"
     }
   },
   "it": {
@@ -1540,6 +1985,12 @@
         "grey": "Grigio",
         "ginger": "Rosso",
         "colored": "Tinto"
+      },
+      "mastery_levels": {
+        "beginner": "Principiante",
+        "intermediate": "Intermedio",
+        "good": "Buono",
+        "native": "Madrelingua"
       }
     },
     "header": {
@@ -1562,8 +2013,8 @@
     },
     "zones": {
       "region_label": "Regione",
-      "precise_location_label": "Posizione precisa",
-      "select_region": "Seleziona una regione...",
+      "precise_location_label": "Località",
+      "select_region": "Regione",
       "select_location": "Seleziona una località..."
     },
     "account": {
@@ -1574,7 +2025,6 @@
         "comments": "I miei commenti"
       },
       "favorites": {
-        "title": "I tuoi preferiti",
         "empty": "Non hai ancora nessun preferito."
       },
       "comments": {
@@ -1611,7 +2061,7 @@
       "forgot_password": "Password dimenticata?"
     },
     "certification": {
-      "title": "Certificazione del profilo",
+      "title": "Certificazione",
       "admin_message_title": "Messaggio dall'amministrazione",
       "step1_title": "Passo 1: Annota il tuo codice segreto",
       "step1_desc": "Scattati una foto (viso scoperto) tenendo un foglio o un telefono su cui sia chiaramente leggibile questo codice",
@@ -1639,7 +2089,8 @@
       "details": "Dettagli",
       "languages": "Lingue",
       "eye_color": "Occhi",
-      "hair_color": "Capelli"
+      "hair_color": "Capelli",
+      "write_review_placeholder": "Scrivi o modifica la tua recensione..."
     },
     "reset_password": {
       "title": "Nuova password",
@@ -1777,6 +2228,89 @@
       "preview": {
         "title": "Anteprima"
       }
+    },
+    "messages": {
+      "generic_error": "Si è verificato un errore. Riprova.",
+      "login_invalid": "E-mail o password errati.",
+      "login_forbidden": "Richiesta rifiutata.",
+      "login_too_many": "Troppi tentativi. Riprova tra qualche minuto.",
+      "login_failed": "Si è verificato un errore durante l'accesso.",
+      "register_autologin_failed": "Account creato, ma l'accesso automatico non è riuscito. Accedi manualmente.",
+      "email_taken": "Esiste già un account con questa e-mail.",
+      "register_invalid": "E-mail non valida, o password non compresa tra 8 e 72 caratteri.",
+      "settings_saved": "Le impostazioni del tuo account sono state aggiornate.",
+      "settings_error": "Si è verificato un errore durante l'aggiornamento.",
+      "wrong_password": "Password attuale errata.",
+      "forgot_sending": "Invio del link...",
+      "forgot_sent_title": "E-mail inviata",
+      "forgot_sent": "Se questo indirizzo è registrato, ti è appena stata inviata un'e-mail di reimpostazione.",
+      "reset_error": "Link non valido o scaduto, o password non compresa tra 8 e 72 caratteri.",
+      "report_reason_prompt": "Motivo della segnalazione:",
+      "report_sent": "Segnalazione inviata.",
+      "report_reason_required": "Serve un motivo valido per segnalare.",
+      "your_review": "La tua recensione",
+      "comment_save_error": "Impossibile salvare la recensione.",
+      "comment_update_error": "Impossibile modificare la recensione.",
+      "comment_delete_confirm": "Vuoi davvero eliminare questa recensione?",
+      "comment_delete_error": "Impossibile eliminare la recensione.",
+      "admin_request_error": "Si è verificato un errore durante l'elaborazione della richiesta.",
+      "admin_delete_user_confirm": "Elimina gli account solo se necessario (errore di creazione); è preferibile il ban.\nVuoi davvero eliminare l'account di {name}?",
+      "admin_service_name_prompt": "Nome del nuovo servizio:",
+      "admin_service_desc_prompt": "Descrizione (facoltativa):",
+      "admin_service_rename_prompt": "Nome del servizio:",
+      "admin_service_edit_desc_prompt": "Descrizione:",
+      "admin_service_name_empty": "Il nome del servizio non può essere vuoto.",
+      "admin_service_create_error": "Impossibile creare il servizio.",
+      "admin_service_update_error": "Impossibile modificare il servizio.",
+      "admin_service_delete_confirm": "Vuoi davvero eliminare questo servizio?",
+      "admin_service_delete_error": "Impossibile eliminare il servizio.",
+      "admin_zone_child_prompt": "Nome della nuova sottoregione:",
+      "admin_zone_parent_prompt": "Nome della nuova regione:",
+      "admin_zone_rename_prompt": "Nome della regione:",
+      "admin_zone_create_error": "Impossibile creare la regione.",
+      "admin_zone_update_error": "Impossibile modificare la regione.",
+      "admin_zone_delete_confirm": "Vuoi davvero eliminare questa regione?",
+      "admin_zone_delete_error": "Impossibile eliminare questa regione.",
+      "admin_zone_in_use": "Ci sono ancora inserzionisti collegati a questa regione (o a una delle sue sottoregioni): non può essere eliminata.",
+      "admin_request_locked": "Questa richiesta è già gestita da un altro amministratore.",
+      "admin_request_open_error": "Impossibile aprire questa richiesta.",
+      "admin_request_missing_id": "Nessun identificativo di richiesta trovato.",
+      "admin_comment_required": "Inserisci un commento o un motivo per il rifiuto / la richiesta di integrazione.",
+      "admin_report_dismiss_error": "Impossibile archiviare questa segnalazione.",
+      "admin_revoke_prompt": "Motivo della revoca della certificazione di {name} (obbligatorio):",
+      "admin_revoke_reason_required": "Serve un motivo valido per revocare una certificazione.",
+      "admin_revoke_success": "Certificazione revocata.",
+      "admin_revoke_error": "Impossibile revocare la certificazione.",
+      "admin_not_worker": "Questo utente è un {role}: non ha un profilo inserzionista.",
+      "admin_invite_title": "Invita un nuovo amministratore",
+      "admin_invite_placeholder": "Indirizzo e-mail del nuovo admin",
+      "admin_invite_send": "Invia l'invito",
+      "admin_invite_email_required": "Inserisci un indirizzo e-mail.",
+      "admin_invite_success": "Invito inviato: è stata generata un'e-mail di attivazione.",
+      "admin_invite_error": "Impossibile invitare questo amministratore.",
+      "missing_username": "Nome utente",
+      "missing_email": "E-mail",
+      "missing_description": "Descrizione",
+      "missing_location": "Località",
+      "missing_phone": "Telefono",
+      "missing_birthdate": "Data di nascita",
+      "missing_service": "Almeno 1 servizio",
+      "missing_photo": "Almeno 1 foto",
+      "missing_fields_title": "Manca per un profilo valido:",
+      "profile_valid": "Profilo completo",
+      "cert_rejected": "Rifiutato: {reason}",
+      "cert_revision_required": "Correzione richiesta.",
+      "cert_expired": "Certificazione scaduta",
+      "cert_expiring": "Scade a breve",
+      "cert_expiring_btn": "Certificato (scade a breve)",
+      "cert_certified": "Profilo certificato",
+      "cert_certified_btn": "Certificato",
+      "subscription_expired": "Abbonamento scaduto",
+      "days_left_one": "Manca {n} giorno",
+      "days_left_other": "Mancano {n} giorni",
+      "hours_left_one": "Manca {n} ora",
+      "hours_left_other": "Mancano {n} ore",
+      "storage_used": "Spazio usato: {used} MB su {total} MB ({percent} %)"
     }
   },
   "ru": {
@@ -1835,6 +2369,12 @@
         "grey": "Седой",
         "ginger": "Рыжий",
         "colored": "Окрашенный"
+      },
+      "mastery_levels": {
+        "beginner": "Начальный",
+        "intermediate": "Средний",
+        "good": "Хороший",
+        "native": "Родной"
       }
     },
     "header": {
@@ -1857,8 +2397,8 @@
     },
     "zones": {
       "region_label": "Регион",
-      "precise_location_label": "Точное местоположение",
-      "select_region": "Выберите регион...",
+      "precise_location_label": "Местоположение",
+      "select_region": "Регион",
       "select_location": "Выберите местоположение..."
     },
     "account": {
@@ -1869,7 +2409,6 @@
         "comments": "мои комментарии"
       },
       "favorites": {
-        "title": "Ваше избранное",
         "empty": "У вас пока нет избранных профилей."
       },
       "comments": {
@@ -1906,7 +2445,7 @@
       "forgot_password": "Забыли пароль?"
     },
     "certification": {
-      "title": "Сертификация профиля",
+      "title": "Сертификация",
       "admin_message_title": "Сообщение от администрации",
       "step1_title": "Шаг 1: Запишите ваш секретный код",
       "step1_desc": "Сделайте свое фото (с открытым лицом), держа бумагу или телефон с четко написанным кодом",
@@ -1934,7 +2473,8 @@
       "details": "Подробности",
       "languages": "Языки",
       "eye_color": "Глаза",
-      "hair_color": "Волосы"
+      "hair_color": "Волосы",
+      "write_review_placeholder": "Напишите или измените отзыв..."
     },
     "reset_password": {
       "title": "Новый пароль",
@@ -2072,6 +2612,89 @@
       "preview": {
         "title": "Просмотр"
       }
+    },
+    "messages": {
+      "generic_error": "Произошла ошибка. Попробуйте ещё раз.",
+      "login_invalid": "Неверный e-mail или пароль.",
+      "login_forbidden": "Запрос отклонён.",
+      "login_too_many": "Слишком много попыток. Попробуйте через несколько минут.",
+      "login_failed": "Ошибка при входе.",
+      "register_autologin_failed": "Аккаунт создан, но автоматический вход не удался. Войдите вручную.",
+      "email_taken": "Аккаунт с этим e-mail уже существует.",
+      "register_invalid": "Неверный e-mail или пароль не от 8 до 72 символов.",
+      "settings_saved": "Настройки аккаунта обновлены.",
+      "settings_error": "Ошибка при обновлении.",
+      "wrong_password": "Неверный текущий пароль.",
+      "forgot_sending": "Отправка ссылки...",
+      "forgot_sent_title": "Письмо отправлено",
+      "forgot_sent": "Если этот адрес зарегистрирован, вам только что отправлено письмо для сброса пароля.",
+      "reset_error": "Ссылка недействительна или устарела, или пароль не от 8 до 72 символов.",
+      "report_reason_prompt": "Причина жалобы:",
+      "report_sent": "Жалоба отправлена.",
+      "report_reason_required": "Для жалобы нужна причина.",
+      "your_review": "Ваш отзыв",
+      "comment_save_error": "Не удалось сохранить отзыв.",
+      "comment_update_error": "Не удалось изменить отзыв.",
+      "comment_delete_confirm": "Вы действительно хотите удалить этот отзыв?",
+      "comment_delete_error": "Не удалось удалить отзыв.",
+      "admin_request_error": "Ошибка при обработке запроса.",
+      "admin_delete_user_confirm": "Удаляйте аккаунты только при необходимости (ошибка создания); предпочтительна блокировка.\nВы действительно хотите удалить аккаунт {name}?",
+      "admin_service_name_prompt": "Название новой услуги:",
+      "admin_service_desc_prompt": "Описание (необязательно):",
+      "admin_service_rename_prompt": "Название услуги:",
+      "admin_service_edit_desc_prompt": "Описание:",
+      "admin_service_name_empty": "Название услуги не может быть пустым.",
+      "admin_service_create_error": "Не удалось создать услугу.",
+      "admin_service_update_error": "Не удалось изменить услугу.",
+      "admin_service_delete_confirm": "Вы действительно хотите удалить эту услугу?",
+      "admin_service_delete_error": "Не удалось удалить услугу.",
+      "admin_zone_child_prompt": "Название нового подрегиона:",
+      "admin_zone_parent_prompt": "Название нового региона:",
+      "admin_zone_rename_prompt": "Название региона:",
+      "admin_zone_create_error": "Не удалось создать регион.",
+      "admin_zone_update_error": "Не удалось изменить регион.",
+      "admin_zone_delete_confirm": "Вы действительно хотите удалить этот регион?",
+      "admin_zone_delete_error": "Не удалось удалить этот регион.",
+      "admin_zone_in_use": "К этому региону (или одному из его подрегионов) ещё привязаны рекламодатели: удалить его нельзя.",
+      "admin_request_locked": "Этот запрос уже обрабатывает другой администратор.",
+      "admin_request_open_error": "Не удалось открыть этот запрос.",
+      "admin_request_missing_id": "Идентификатор запроса не найден.",
+      "admin_comment_required": "Введите комментарий или причину отказа / запроса исправлений.",
+      "admin_report_dismiss_error": "Не удалось закрыть эту жалобу.",
+      "admin_revoke_prompt": "Причина отзыва сертификации {name} (обязательно):",
+      "admin_revoke_reason_required": "Для отзыва сертификации нужна причина.",
+      "admin_revoke_success": "Сертификация отозвана.",
+      "admin_revoke_error": "Не удалось отозвать сертификацию.",
+      "admin_not_worker": "Этот пользователь — {role}: у него нет профиля рекламодателя.",
+      "admin_invite_title": "Пригласить нового администратора",
+      "admin_invite_placeholder": "E-mail нового админа",
+      "admin_invite_send": "Отправить приглашение",
+      "admin_invite_email_required": "Введите адрес e-mail.",
+      "admin_invite_success": "Приглашение отправлено: создано письмо для активации.",
+      "admin_invite_error": "Не удалось пригласить этого администратора.",
+      "missing_username": "Имя пользователя",
+      "missing_email": "E-mail",
+      "missing_description": "Описание",
+      "missing_location": "Местоположение",
+      "missing_phone": "Телефон",
+      "missing_birthdate": "Дата рождения",
+      "missing_service": "Хотя бы 1 услуга",
+      "missing_photo": "Хотя бы 1 фото",
+      "missing_fields_title": "Не хватает для действительного профиля:",
+      "profile_valid": "Профиль заполнен",
+      "cert_rejected": "Отклонено: {reason}",
+      "cert_revision_required": "Требуется исправление.",
+      "cert_expired": "Сертификация истекла",
+      "cert_expiring": "Скоро истекает",
+      "cert_expiring_btn": "Сертифицирован (скоро истекает)",
+      "cert_certified": "Профиль сертифицирован",
+      "cert_certified_btn": "Сертифицирован",
+      "subscription_expired": "Подписка истекла",
+      "days_left_one": "Осталось дней: {n}",
+      "days_left_other": "Осталось дней: {n}",
+      "hours_left_one": "Осталось часов: {n}",
+      "hours_left_other": "Осталось часов: {n}",
+      "storage_used": "Занято: {used} МБ из {total} МБ ({percent} %)"
     }
   },
   "ua": {
@@ -2130,6 +2753,12 @@
         "grey": "Сірий",
         "ginger": "Рудий",
         "colored": "Фарбований"
+      },
+      "mastery_levels": {
+        "beginner": "Початковий",
+        "intermediate": "Середній",
+        "good": "Добрий",
+        "native": "Рідна"
       }
     },
     "header": {
@@ -2152,8 +2781,8 @@
     },
     "zones": {
       "region_label": "Регіон",
-      "precise_location_label": "Точне місцерозташування",
-      "select_region": "Оберіть регіон...",
+      "precise_location_label": "Місцерозташування",
+      "select_region": "Регіон",
       "select_location": "Оберіть місцерозташування..."
     },
     "account": {
@@ -2164,7 +2793,6 @@
         "comments": "мої коментарі"
       },
       "favorites": {
-        "title": "Ваше обране",
         "empty": "У вас поки немає обраних профілів."
       },
       "comments": {
@@ -2201,7 +2829,7 @@
       "forgot_password": "Забули пароль?"
     },
     "certification": {
-      "title": "Сертифікація профілю",
+      "title": "Сертифікація",
       "admin_message_title": "Повідомлення від адміністрації",
       "step1_title": "Крок 1: Запишіть ваш секретний код",
       "step1_desc": "Зробіть своє фото (з відкритим обличчям), тримаючи папір або телефон з чітко написаним кодом",
@@ -2229,7 +2857,8 @@
       "details": "Деталі",
       "languages": "Мови",
       "eye_color": "Очі",
-      "hair_color": "Волосся"
+      "hair_color": "Волосся",
+      "write_review_placeholder": "Напишіть або змініть відгук..."
     },
     "reset_password": {
       "title": "Новий пароль",
@@ -2367,6 +2996,89 @@
       "preview": {
         "title": "Перегляд"
       }
+    },
+    "messages": {
+      "generic_error": "Сталася помилка. Спробуйте ще раз.",
+      "login_invalid": "Неправильний e-mail або пароль.",
+      "login_forbidden": "Запит відхилено.",
+      "login_too_many": "Забагато спроб. Спробуйте за кілька хвилин.",
+      "login_failed": "Помилка під час входу.",
+      "register_autologin_failed": "Обліковий запис створено, але автоматичний вхід не вдався. Увійдіть вручну.",
+      "email_taken": "Обліковий запис із цим e-mail уже існує.",
+      "register_invalid": "Неправильний e-mail або пароль не від 8 до 72 символів.",
+      "settings_saved": "Налаштування облікового запису оновлено.",
+      "settings_error": "Помилка під час оновлення.",
+      "wrong_password": "Неправильний поточний пароль.",
+      "forgot_sending": "Надсилання посилання...",
+      "forgot_sent_title": "Лист надіслано",
+      "forgot_sent": "Якщо цю адресу зареєстровано, вам щойно надіслано лист для скидання пароля.",
+      "reset_error": "Посилання недійсне або застаріле, або пароль не від 8 до 72 символів.",
+      "report_reason_prompt": "Причина скарги:",
+      "report_sent": "Скаргу надіслано.",
+      "report_reason_required": "Для скарги потрібна причина.",
+      "your_review": "Ваш відгук",
+      "comment_save_error": "Не вдалося зберегти відгук.",
+      "comment_update_error": "Не вдалося змінити відгук.",
+      "comment_delete_confirm": "Ви справді хочете видалити цей відгук?",
+      "comment_delete_error": "Не вдалося видалити відгук.",
+      "admin_request_error": "Помилка під час обробки запиту.",
+      "admin_delete_user_confirm": "Видаляйте облікові записи лише за потреби (помилка створення); краще заблокувати.\nВи справді хочете видалити обліковий запис {name}?",
+      "admin_service_name_prompt": "Назва нової послуги:",
+      "admin_service_desc_prompt": "Опис (необов'язково):",
+      "admin_service_rename_prompt": "Назва послуги:",
+      "admin_service_edit_desc_prompt": "Опис:",
+      "admin_service_name_empty": "Назва послуги не може бути порожньою.",
+      "admin_service_create_error": "Не вдалося створити послугу.",
+      "admin_service_update_error": "Не вдалося змінити послугу.",
+      "admin_service_delete_confirm": "Ви справді хочете видалити цю послугу?",
+      "admin_service_delete_error": "Не вдалося видалити послугу.",
+      "admin_zone_child_prompt": "Назва нового підрегіону:",
+      "admin_zone_parent_prompt": "Назва нового регіону:",
+      "admin_zone_rename_prompt": "Назва регіону:",
+      "admin_zone_create_error": "Не вдалося створити регіон.",
+      "admin_zone_update_error": "Не вдалося змінити регіон.",
+      "admin_zone_delete_confirm": "Ви справді хочете видалити цей регіон?",
+      "admin_zone_delete_error": "Не вдалося видалити цей регіон.",
+      "admin_zone_in_use": "До цього регіону (або одного з його підрегіонів) ще прив'язані рекламодавці: видалити його неможливо.",
+      "admin_request_locked": "Цей запит уже обробляє інший адміністратор.",
+      "admin_request_open_error": "Не вдалося відкрити цей запит.",
+      "admin_request_missing_id": "Ідентифікатор запиту не знайдено.",
+      "admin_comment_required": "Введіть коментар або причину відмови / запиту виправлень.",
+      "admin_report_dismiss_error": "Не вдалося закрити цю скаргу.",
+      "admin_revoke_prompt": "Причина відкликання сертифікації {name} (обов'язково):",
+      "admin_revoke_reason_required": "Для відкликання сертифікації потрібна причина.",
+      "admin_revoke_success": "Сертифікацію відкликано.",
+      "admin_revoke_error": "Не вдалося відкликати сертифікацію.",
+      "admin_not_worker": "Цей користувач — {role}: у нього немає профілю рекламодавця.",
+      "admin_invite_title": "Запросити нового адміністратора",
+      "admin_invite_placeholder": "E-mail нового адміна",
+      "admin_invite_send": "Надіслати запрошення",
+      "admin_invite_email_required": "Введіть адресу e-mail.",
+      "admin_invite_success": "Запрошення надіслано: створено лист для активації.",
+      "admin_invite_error": "Не вдалося запросити цього адміністратора.",
+      "missing_username": "Ім'я користувача",
+      "missing_email": "E-mail",
+      "missing_description": "Опис",
+      "missing_location": "Місцерозташування",
+      "missing_phone": "Телефон",
+      "missing_birthdate": "Дата народження",
+      "missing_service": "Щонайменше 1 послуга",
+      "missing_photo": "Щонайменше 1 фото",
+      "missing_fields_title": "Бракує для дійсного профілю:",
+      "profile_valid": "Профіль заповнено",
+      "cert_rejected": "Відхилено: {reason}",
+      "cert_revision_required": "Потрібне виправлення.",
+      "cert_expired": "Сертифікація закінчилася",
+      "cert_expiring": "Скоро закінчується",
+      "cert_expiring_btn": "Сертифіковано (скоро закінчується)",
+      "cert_certified": "Профіль сертифіковано",
+      "cert_certified_btn": "Сертифіковано",
+      "subscription_expired": "Підписка закінчилася",
+      "days_left_one": "Залишилося днів: {n}",
+      "days_left_other": "Залишилося днів: {n}",
+      "hours_left_one": "Залишилося годин: {n}",
+      "hours_left_other": "Залишилося годин: {n}",
+      "storage_used": "Зайнято: {used} МБ із {total} МБ ({percent} %)"
     }
   },
   "ar": {
@@ -2425,6 +3137,12 @@
         "grey": "رمادي",
         "ginger": "أحمر",
         "colored": "ملون"
+      },
+      "mastery_levels": {
+        "beginner": "مبتدئ",
+        "intermediate": "متوسط",
+        "good": "جيد",
+        "native": "لغة أم"
       }
     },
     "header": {
@@ -2447,8 +3165,8 @@
     },
     "zones": {
       "region_label": "المنطقة",
-      "precise_location_label": "الموقع الدقيق",
-      "select_region": "اختر منطقة...",
+      "precise_location_label": "الموقع",
+      "select_region": "المنطقة",
       "select_location": "اختر موقعًا..."
     },
     "account": {
@@ -2459,7 +3177,6 @@
         "comments": "تعليقاتي"
       },
       "favorites": {
-        "title": "المفضلة لديك",
         "empty": "ليس لديك أي مفضلة حتى الآن."
       },
       "comments": {
@@ -2496,7 +3213,7 @@
       "forgot_password": "هل نسيت كلمة المرور؟"
     },
     "certification": {
-      "title": "شهادة الملف الشخصي",
+      "title": "الشهادة",
       "admin_message_title": "رسالة من المسؤول",
       "step1_title": "الخطوة 1: اكتب الرمز السري الخاص بك",
       "step1_desc": "التقط صورة لنفسك (بوجه مكشوف) وأنت تحمل ورقة أو هاتفًا يظهر عليه هذا الرمز بوضوح",
@@ -2524,7 +3241,8 @@
       "details": "التفاصيل",
       "languages": "اللغات",
       "eye_color": "العيون",
-      "hair_color": "الشعر"
+      "hair_color": "الشعر",
+      "write_review_placeholder": "اكتب تقييمك أو عدّله..."
     },
     "reset_password": {
       "title": "كلمة مرور جديدة",
@@ -2662,6 +3380,89 @@
       "preview": {
         "title": "معاينة"
       }
+    },
+    "messages": {
+      "generic_error": "حدث خطأ. يرجى المحاولة مرة أخرى.",
+      "login_invalid": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+      "login_forbidden": "تم رفض الطلب.",
+      "login_too_many": "محاولات كثيرة جدًا. حاول مرة أخرى بعد بضع دقائق.",
+      "login_failed": "حدث خطأ أثناء تسجيل الدخول.",
+      "register_autologin_failed": "تم إنشاء الحساب، لكن تسجيل الدخول التلقائي فشل. يرجى تسجيل الدخول يدويًا.",
+      "email_taken": "يوجد حساب بهذا البريد الإلكتروني بالفعل.",
+      "register_invalid": "بريد إلكتروني غير صالح، أو كلمة مرور ليست بين 8 و72 حرفًا.",
+      "settings_saved": "تم تحديث إعدادات حسابك.",
+      "settings_error": "حدث خطأ أثناء التحديث.",
+      "wrong_password": "كلمة المرور الحالية غير صحيحة.",
+      "forgot_sending": "جارٍ إرسال الرابط...",
+      "forgot_sent_title": "تم إرسال البريد",
+      "forgot_sent": "إذا كان هذا العنوان مسجلًا لدينا، فقد أُرسل إليك للتو بريد لإعادة التعيين.",
+      "reset_error": "رابط غير صالح أو منتهي الصلاحية، أو كلمة مرور ليست بين 8 و72 حرفًا.",
+      "report_reason_prompt": "سبب البلاغ:",
+      "report_sent": "تم إرسال البلاغ.",
+      "report_reason_required": "يلزم سبب صالح للإبلاغ.",
+      "your_review": "تقييمك",
+      "comment_save_error": "تعذر حفظ التقييم.",
+      "comment_update_error": "تعذر تعديل التقييم.",
+      "comment_delete_confirm": "هل تريد حقًا حذف هذا التقييم؟",
+      "comment_delete_error": "تعذر حذف التقييم.",
+      "admin_request_error": "حدث خطأ أثناء معالجة الطلب.",
+      "admin_delete_user_confirm": "لا تحذف الحسابات إلا عند الضرورة (خطأ في الإنشاء)؛ يُفضَّل الحظر.\nهل تريد حقًا حذف حساب {name}؟",
+      "admin_service_name_prompt": "اسم الخدمة الجديدة:",
+      "admin_service_desc_prompt": "الوصف (اختياري):",
+      "admin_service_rename_prompt": "اسم الخدمة:",
+      "admin_service_edit_desc_prompt": "الوصف:",
+      "admin_service_name_empty": "لا يمكن أن يكون اسم الخدمة فارغًا.",
+      "admin_service_create_error": "تعذر إنشاء الخدمة.",
+      "admin_service_update_error": "تعذر تعديل الخدمة.",
+      "admin_service_delete_confirm": "هل تريد حقًا حذف هذه الخدمة؟",
+      "admin_service_delete_error": "تعذر حذف الخدمة.",
+      "admin_zone_child_prompt": "اسم المنطقة الفرعية الجديدة:",
+      "admin_zone_parent_prompt": "اسم المنطقة الجديدة:",
+      "admin_zone_rename_prompt": "اسم المنطقة:",
+      "admin_zone_create_error": "تعذر إنشاء المنطقة.",
+      "admin_zone_update_error": "تعذر تعديل المنطقة.",
+      "admin_zone_delete_confirm": "هل تريد حقًا حذف هذه المنطقة؟",
+      "admin_zone_delete_error": "تعذر حذف هذه المنطقة.",
+      "admin_zone_in_use": "لا يزال هناك معلنون مرتبطون بهذه المنطقة (أو بإحدى مناطقها الفرعية): لا يمكن حذفها.",
+      "admin_request_locked": "يعالج مسؤول آخر هذا الطلب بالفعل.",
+      "admin_request_open_error": "تعذر فتح هذا الطلب.",
+      "admin_request_missing_id": "لم يتم العثور على معرّف الطلب.",
+      "admin_comment_required": "يرجى إدخال تعليق أو سبب للرفض / لطلب الاستكمال.",
+      "admin_report_dismiss_error": "تعذر حفظ هذا البلاغ.",
+      "admin_revoke_prompt": "سبب إلغاء شهادة {name} (مطلوب):",
+      "admin_revoke_reason_required": "يلزم سبب صالح لإلغاء الشهادة.",
+      "admin_revoke_success": "تم إلغاء الشهادة.",
+      "admin_revoke_error": "تعذر إلغاء الشهادة.",
+      "admin_not_worker": "هذا المستخدم {role}: ليس لديه ملف معلن.",
+      "admin_invite_title": "دعوة مسؤول جديد",
+      "admin_invite_placeholder": "البريد الإلكتروني للمسؤول الجديد",
+      "admin_invite_send": "إرسال الدعوة",
+      "admin_invite_email_required": "يرجى إدخال عنوان بريد إلكتروني.",
+      "admin_invite_success": "تم إرسال الدعوة: أُنشئ بريد التفعيل.",
+      "admin_invite_error": "تعذر دعوة هذا المسؤول.",
+      "missing_username": "اسم المستخدم",
+      "missing_email": "البريد الإلكتروني",
+      "missing_description": "الوصف",
+      "missing_location": "الموقع",
+      "missing_phone": "الهاتف",
+      "missing_birthdate": "تاريخ الميلاد",
+      "missing_service": "خدمة واحدة على الأقل",
+      "missing_photo": "صورة واحدة على الأقل",
+      "missing_fields_title": "ناقص لملف صالح:",
+      "profile_valid": "الملف مكتمل",
+      "cert_rejected": "مرفوض: {reason}",
+      "cert_revision_required": "مطلوب تصحيح.",
+      "cert_expired": "انتهت صلاحية الشهادة",
+      "cert_expiring": "تنتهي قريبًا",
+      "cert_expiring_btn": "معتمد (ينتهي قريبًا)",
+      "cert_certified": "ملف معتمد",
+      "cert_certified_btn": "معتمد",
+      "subscription_expired": "انتهى الاشتراك",
+      "days_left_one": "الأيام المتبقية: {n}",
+      "days_left_other": "الأيام المتبقية: {n}",
+      "hours_left_one": "الساعات المتبقية: {n}",
+      "hours_left_other": "الساعات المتبقية: {n}",
+      "storage_used": "المساحة المستخدمة: {used} م.ب من {total} م.ب ({percent} %)"
     }
   }
 }

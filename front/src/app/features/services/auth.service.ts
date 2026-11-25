@@ -107,7 +107,7 @@ export class AuthService {
 
     this.eventSource.onerror = () => {
       this.zone.run(() => {
-        console.warn("Le flux SSE a subitement tressauté ou s'est coupé (reconnexion automatique en cours)...");
+        console.warn('SSE stream interrupted (reconnecting automatically)');
       });
     };
   }

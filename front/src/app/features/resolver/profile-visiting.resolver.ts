@@ -15,7 +15,7 @@ export const profileVisitingResolver: ResolveFn<WorkerPublicFullProfile | null> 
 
   return workerService.getProfile(id).pipe(
     catchError((err) => {
-      console.error("Erreur lors de la récupération du profil :", err);
+      console.error('Could not load the profile', err);
       return of(null);
     })
   );

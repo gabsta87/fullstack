@@ -148,7 +148,7 @@
                 <div class="review-form">
                   <ion-textarea class="review-input"
                     [(ngModel)]="newCommentText"
-                    [placeholder]="t.worker_profile?.write_review_placeholder || 'Rédigez ou modifiez votre avis...'"
+                    [placeholder]="t.worker_profile?.write_review_placeholder || 'Write or edit your review...'"
                     [rows]="3"
                     [autoGrow]="true">
                   </ion-textarea>
@@ -171,7 +171,7 @@
                         <span class="author">
                           {{ comment.authorUsername }}
                           @if (comment.authorId === authService.getUser()?.id) {
-                            <span class="mine-badge">Votre avis</span>
+                            <span class="mine-badge">{{ languageService.msg('your_review') }}</span>
                           }
                         </span>
                         <span class="date">{{ comment.date | date:'shortDate' }}</span>

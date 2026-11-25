@@ -166,8 +166,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       )
     ).subscribe({
       error: (err) => {
-        console.error('Échec traitement certification', err);
-        alert("Une erreur est survenue lors du traitement de la requête.");
+        console.error('Certification processing failed', err);
+        alert(this.languageService.msg('admin_request_error'));
       }
     });
 
@@ -200,26 +200,23 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     try {
       await firstValueFrom(this.adminService.updateWorkerStatus(user.id, { locked: lockState }));
     } catch (err) {
-      console.error('Échec de la modification du verrouillage', err);
+      console.error('Lock change failed', err);
     }
   }
 
   async deleteUser(user:any){
-    if (!confirm(`
-    Ne supprimer les comptes que dans les cas nécessaires (erreur de création).
-    Veuillez prioriser le banissement.
-    Voulez-vous vraiment supprimer le compte de ${user.username} ?`)) return;
+    if (!confirm(this.languageService.msg('admin_delete_user_confirm', { name: user.username }))) return;
     try {
       await firstValueFrom(this.adminService.deleteUser(user.id));
     } catch (err) {
-      console.error('Échec de la suppression de l\'utilisateur ', user.email , err);
+      console.error('User deletion failed', user.id, err);
     }
   }
 
   async openServiceModal() {
-    const name = prompt("Nom du nouveau service :");
+    const name = prompt(this.languageService.msg('admin_service_name_prompt'));
     if (!name || name.trim() === '') return;
-    const description = prompt("Description (optionnelle) :") || undefined;
+    const description = prompt(this.languageService.msg('admin_service_desc_prompt')) || undefined;
 
     try {
       await firstValueFrom(this.adminService.updateService({
@@ -227,19 +224,19 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         description: description ? description.trim() : undefined
       }));
     } catch (err: any) {
-      alert("Erreur : " + (err.error || "Impossible de créer le service"));
+      alert(this.languageService.msg('admin_service_create_error'));
     }
   }
 
   async editServiceModal(service: any) {
-    const name = prompt("Modifier le nom du service :", service.name);
+    const name = prompt(this.languageService.msg('admin_service_rename_prompt'), service.name);
     if (name === null) return;
     if (name.trim() === '') {
-      alert("Le nom du service ne peut pas être vide.");
+      alert(this.languageService.msg('admin_service_name_empty'));
       return;
     }
 
-    const description = prompt("Modifier la description :", service.description || '');
+    const description = prompt(this.languageService.msg('admin_service_edit_desc_prompt'), service.description || '');
     if (description === null) return;
 
     try {
@@ -249,22 +246,22 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         description: description.trim()
       }));
     } catch (err:any) {
-      alert("Erreur : " + (err.error || "Impossible de modifier le service"));
+      alert(this.languageService.msg('admin_service_update_error'));
     }
   }
 
   async deleteService(id: number) {
-    if (confirm('Voulez-vous vraiment supprimer ce service ?')) {
+    if (confirm(this.languageService.msg('admin_service_delete_confirm'))) {
       try {
         await firstValueFrom(this.adminService.deleteService(id));
       } catch (err: any) {
-        alert("Erreur lors de la suppression du service : " + (err.error?.error || "Erreur inconnue"));
+        alert(this.languageService.msg('admin_service_delete_error'));
       }
     }
   }
 
   async openZoneModal(parentId: number | null = null) {
-    const title = parentId ? "Nom de la nouvelle sous-zone :" : "Nom de la nouvelle zone parente :";
+    const title = this.languageService.msg(parentId ? 'admin_zone_child_prompt' : 'admin_zone_parent_prompt');
     const name = prompt(title);
     if (!name || name.trim() === '') return;
 
@@ -274,12 +271,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         ...(parentId !== null ? { parentId } : {})
       }));
     } catch (err: any) {
-      alert(err.error?.error || "Erreur lors de la création de la zone");
+      alert(this.languageService.msg('admin_zone_create_error'));
     }
   }
 
   async editZoneName(zone: any) {
-    const newName = prompt("Modifier le nom de la zone :", zone.name);
+    const newName = prompt(this.languageService.msg('admin_zone_rename_prompt'), zone.name);
     if (!newName || newName.trim() === '' || newName === zone.name) return;
 
     try {
@@ -289,16 +286,16 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         parentId: zone.parentId
       }));
     } catch (err: any) {
-      alert(err.error?.error || "Erreur lors de la modification de la zone");
+      alert(this.languageService.msg('admin_zone_update_error'));
     }
   }
 
   async deleteZone(id: number) {
-    if (confirm('Voulez-vous vraiment supprimer cette zone ?')) {
+    if (confirm(this.languageService.msg('admin_zone_delete_confirm'))) {
       try {
         await firstValueFrom(this.adminService.deleteRegion(id));
       } catch (err: any) {
-        alert(err.error?.error || "Impossible de supprimer cette zone.");
+        alert(this.languageService.msg(err?.status === 409 ? 'admin_zone_in_use' : 'admin_zone_delete_error'));
       }
     }
   }
@@ -309,7 +306,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     const isLockedByOther = request.underReview && request.lockedByAdminId && request.lockedByAdminId !== currentAdminId;
 
     if (isLockedByOther) {
-      alert("Cette requête est déjà en cours de traitement par un autre administrateur.");
+      alert(this.languageService.msg('admin_request_locked'));
       return;
     }
 
@@ -341,8 +338,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
       this.isCertifModalOpen = true;
     } catch (err) {
-      console.error("Erreur lors du verrouillage ou du chargement de la requête", err);
-      alert("Impossible d'ouvrir cette requête.");
+      console.error('Could not lock or load the request', err);
+      alert(this.languageService.msg('admin_request_open_error'));
       this.currentCertifRequestId = null;
     }
   }
@@ -352,7 +349,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       try {
         await firstValueFrom(this.adminService.unlockCertificationReview(this.currentCertifRequestId));
       } catch (err) {
-        console.error("Erreur lors du déverrouillage de la requête", err);
+        console.error('Could not unlock the request', err);
       }
     }
 
@@ -370,14 +367,14 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     const requestId = this.currentCertifRequestId || (this.selectedWorkerDetails as any)?.certificationRequestId;
 
     if (!requestId) {
-      alert("Erreur : Aucun identifiant de requête trouvé.");
+      alert(this.languageService.msg('admin_request_missing_id'));
       return;
     }
 
     const comment = this.adminComment.trim();
 
     if (!approved && !comment) {
-      alert("Veuillez saisir un commentaire ou un motif pour le refus / la demande de complément.");
+      alert(this.languageService.msg('admin_comment_required'));
       return;
     }
 
@@ -424,18 +421,18 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       await firstValueFrom(this.adminService.dismissReport(reportId));
       this.adminService.refreshReports();
     } catch (err) {
-      console.error("Erreur lors du classement du signalement", err);
-      alert("Impossible de classer ce signalement.");
+      console.error('Could not dismiss the report', err);
+      alert(this.languageService.msg('admin_report_dismiss_error'));
     }
   }
 
   async revokeCertification(user: any) {
     // 1. Ask for the reason
-    const reason = prompt(`Motif de la révocation de la certification pour ${user.username} (Requis) :`);
+    const reason = prompt(this.languageService.msg('admin_revoke_prompt', { name: user.username }));
 
 
     if (!reason || reason.trim() === '') {
-      alert("Un motif valide est obligatoire pour révoquer une certification.");
+      alert(this.languageService.msg('admin_revoke_reason_required'));
       return;
     }
 
@@ -443,10 +440,10 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       // 3. Call the service with the id and the reason
       await firstValueFrom(this.adminService.revokeCertification(user.id, reason.trim()));
       this.adminService.refreshUsers();
-      alert('Certification révoquée avec succès.');
+      alert(this.languageService.msg('admin_revoke_success'));
     } catch (err) {
-      console.error('Erreur révocation certification', err);
-      alert("Impossible de révoquer la certification.");
+      console.error('Certification revocation failed', err);
+      alert(this.languageService.msg('admin_revoke_error'));
     }
   }
 
@@ -456,7 +453,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       this.adminService.refreshReports();
       this.adminService.refreshUsers();
     } catch (err) {
-      console.error("Erreur modification ban", err);
+      console.error('Ban change failed', err);
     }
   }
 
@@ -467,33 +464,33 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         state: { from: this.router.url }
       });
     } else {
-      alert(`Cet utilisateur est un ${user.role}. Il ne possède pas de profil annonceur.`);
+      alert(this.languageService.msg('admin_not_worker', { role: user.role }));
     }
   }
 
   async inviteAdminModal() {
     const alertRef = await this.alertCtrl.create({
-      header: 'Inviter un nouvel administrateur',
+      header: this.languageService.msg('admin_invite_title'),
       inputs: [
-        { name: 'email', type: 'email', placeholder: 'Adresse email du nouvel admin' }
+        { name: 'email', type: 'email', placeholder: this.languageService.msg('admin_invite_placeholder') }
       ],
       buttons: [
-        { text: 'Annuler', role: 'cancel' },
+        { text: this.languageService.currentLanguage$.value?.common?.cancel || 'Cancel', role: 'cancel' },
         {
-          text: 'Envoyer l\'invitation',
+          text: this.languageService.msg('admin_invite_send'),
           handler: async (data) => {
             if (!data.email || data.email.trim() === '') {
-              alert('Veuillez saisir une adresse email.');
+              alert(this.languageService.msg('admin_invite_email_required'));
               return false;
             }
             try {
               await firstValueFrom(this.adminService.inviteAdmin(data.email.trim()));
-              alert('Invitation envoyée avec succès ! Un e-mail de réinitialisation a été généré.');
+              alert(this.languageService.msg('admin_invite_success'));
               this.adminService.refreshUsers();
               return true;
             } catch (err: any) {
-              console.error('Erreur lors de l\'invitation de l\'admin', err);
-              alert(err?.error?.error || 'Impossible d\'inviter cet administrateur.');
+              console.error('Admin invitation failed', err);
+              alert(this.languageService.msg(err?.status === 409 ? 'email_taken' : 'admin_invite_error'));
               return false;
             }
           }

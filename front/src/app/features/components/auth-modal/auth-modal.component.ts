@@ -83,17 +83,17 @@ export class AuthModalComponent implements OnInit {
           this.handleSuccess(user); // Pass the user to pick the redirection
         },
         error: (err) => {
-          console.error("Erreur reçue du serveur :", err);
+          console.error("Login failed", err);
           this.isLoading = false;
 
           if (err.status === 401) {
-            this.errorMsg = "Identifiant ou mot de passe incorrects.";
+            this.errorMsg = this.languageService.msg('login_invalid');
           } else if(err.status == 403){
-            this.errorMsg = "Requête interdite.";
+            this.errorMsg = this.languageService.msg('login_forbidden');
           } else if (err.status === 429) {
-            this.errorMsg = "Trop de tentatives. Réessayez dans quelques minutes.";
+            this.errorMsg = this.languageService.msg('login_too_many');
           } else {
-            this.errorMsg = "Une erreur est survenue lors de la connexion.";
+            this.errorMsg = this.languageService.msg('login_failed');
           }
         }
       });
@@ -111,8 +111,8 @@ export class AuthModalComponent implements OnInit {
               this.handleSuccess(loggedInUser);
             },
             error: (err) => {
-              console.error("Erreur lors de la connexion automatique après inscription :", err);
-              this.errorMsg = "Compte créé avec succès, mais la connexion automatique a échoué. Veuillez vous connecter manuellement.";
+              console.error("Automatic login after registration failed", err);
+              this.errorMsg = this.languageService.msg('register_autologin_failed');
               this.isLoading = false;
             }
           });
@@ -144,7 +144,10 @@ export class AuthModalComponent implements OnInit {
 
   private handleError(err: any) {
     this.isLoading = false;
-    this.errorMsg = err.error || "Une erreur est survenue.";
+    this.errorMsg = this.languageService.msg(err?.status === 409 ? 'email_taken'
+      : err?.status === 400 ? 'register_invalid'
+      : err?.status === 429 ? 'login_too_many'
+      : 'generic_error');
   }
 
   dismiss() { this.modalCtrl.dismiss(); }

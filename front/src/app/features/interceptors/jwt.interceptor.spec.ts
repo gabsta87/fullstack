@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { isApiRequest, JwtInterceptor, NEW_TOKEN_HEADER, TOKEN_STORAGE_KEY } from './jwt.interceptor';
+import { isApiRequest, JwtInterceptor, NEW_TOKEN_HEADER, SITE_LANGUAGE_KEY, TOKEN_STORAGE_KEY } from './jwt.interceptor';
 import { environment } from '../../../environments/environment';
 
 describe('JwtInterceptor', () => {
@@ -50,6 +50,19 @@ describe('JwtInterceptor', () => {
       expect(req.request.headers.has('Authorization')).withContext(url).toBeFalse();
       req.flush({});
     }
+  });
+
+  it('sends the site language to the API only (used for the emails)', () => {
+    localStorage.setItem(SITE_LANGUAGE_KEY, 'UA');
+    http.post(`${api}/auth/forgot-password`, {}).subscribe();
+    const req = httpMock.expectOne(`${api}/auth/forgot-password`);
+    expect(req.request.headers.get('Accept-Language')).toBe('uk');
+    req.flush({});
+
+    http.get('https://cdn.example.com/x').subscribe();
+    const external = httpMock.expectOne('https://cdn.example.com/x');
+    expect(external.request.headers.has('Accept-Language')).toBeFalse();
+    external.flush({});
   });
 
   it('stores the renewed token sent after a credential change', () => {

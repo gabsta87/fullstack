@@ -46,7 +46,7 @@ export class ClientAccountService {
     this.loadingAccount = true;
     this.getCurrentAccount()
       .pipe(finalize(() => this.loadingAccount = false))
-      .subscribe({ error: (err) => console.error('Impossible de charger le compte client', err) });
+      .subscribe({ error: (err) => console.error('Could not load the client account', err) });
   }
 
   /** true when the worker is one of the client's favorites (updated live). */

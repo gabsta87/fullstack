@@ -2,6 +2,7 @@ import { FormBuilder } from '@angular/forms';
 import { of, throwError } from 'rxjs';
 import { AuthModalComponent } from './auth-modal.component';
 import { UserRole } from '../../models/roles';
+import { LanguageManagerService } from '../../services/language-manager.service';
 
 /** Form logic is tested on the class directly: no Ionic rendering needed. */
 describe('AuthModalComponent (form logic)', () => {
@@ -16,7 +17,8 @@ describe('AuthModalComponent (form logic)', () => {
     registerService = jasmine.createSpyObj('RegisterService', ['registerClient', 'registerWorker']);
     modalCtrl = jasmine.createSpyObj('ModalController', ['dismiss']);
     router = jasmine.createSpyObj('Router', ['navigate']);
-    component = new AuthModalComponent(new FormBuilder(), authService, registerService, modalCtrl, router, {} as any);
+    localStorage.removeItem('site_lang'); // French, the default site language
+    component = new AuthModalComponent(new FormBuilder(), authService, registerService, modalCtrl, router, new LanguageManagerService());
     component.mode = mode;
     component.ngOnInit();
   }
@@ -67,6 +69,16 @@ describe('AuthModalComponent (form logic)', () => {
       expect(registerService.registerWorker).toHaveBeenCalledWith('new@venus.test', 'Correct-Horse-42');
       expect(router.navigate).toHaveBeenCalledWith(['/profile-management']);
     });
+
+    it('translates registration errors instead of showing the server text', () => {
+      const cases: [number, string][] = [[409, 'existe déjà'], [400, '8 à 72'], [500, 'erreur']];
+      for (const [status, fragment] of cases) {
+        fill('new@venus.test', 'Correct-Horse-42');
+        registerService.registerClient.and.returnValue(throwError(() => ({ status, error: { error: 'Email already taken.' } })));
+        component.onSubmit();
+        expect(component.errorMsg).withContext(String(status)).toContain(fragment);
+      }
+    });
   });
 
   describe('login', () => {
@@ -86,7 +98,7 @@ describe('AuthModalComponent (form logic)', () => {
     });
 
     it('shows a specific message for each server error', () => {
-      const cases: [number, string][] = [[401, 'incorrects'], [403, 'interdite'], [429, 'Trop de tentatives'], [500, 'erreur']];
+      const cases: [number, string][] = [[401, 'incorrect'], [403, 'refusée'], [429, 'Trop de tentatives'], [500, 'erreur']];
       for (const [status, fragment] of cases) {
         component.authForm.patchValue({ email: 'a@venus.test', password: 'x' });
         authService.login.and.returnValue(throwError(() => ({ status })));

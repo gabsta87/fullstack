@@ -6,6 +6,14 @@ import { environment } from '../../../environments/environment';
 export const TOKEN_STORAGE_KEY = 'auth_token';
 /** Sent by the backend after a password / email change, which revokes the previous token. */
 export const NEW_TOKEN_HEADER = 'X-Auth-Token';
+/** Same key as LanguageManagerService: the site language, used by the backend for emails. */
+export const SITE_LANGUAGE_KEY = 'site_lang';
+
+/** ISO 639-1 code of the site language ('UA' is the site's code for Ukrainian). */
+export function siteLanguageTag(): string {
+  const code = (localStorage.getItem(SITE_LANGUAGE_KEY) || 'FR').toLowerCase();
+  return code === 'ua' ? 'uk' : code;
+}
 
 /** True only for requests to our own API: the token must never be sent to third parties. */
 export function isApiRequest(url: string): boolean {
@@ -20,10 +28,12 @@ export class JwtInterceptor implements HttpInterceptor {
       return next.handle(request);
     }
 
+    const headers: Record<string, string> = { 'Accept-Language': siteLanguageTag() };
     const token = localStorage.getItem(TOKEN_STORAGE_KEY);
     if (token) {
-      request = request.clone({ setHeaders: { Authorization: `Bearer ${token}` } });
+      headers['Authorization'] = `Bearer ${token}`;
     }
+    request = request.clone({ setHeaders: headers });
 
     return next.handle(request).pipe(
       tap(event => {

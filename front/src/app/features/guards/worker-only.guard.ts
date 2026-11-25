@@ -25,14 +25,14 @@ export const workerOnlyGuard: CanActivateFn = (route, state) => {
 
         // 401 (not logged in) or 403 (forbidden / session expired)
         if (error.status === 401 || error.status === 403) {
-          console.warn(`Accès refusé : utilisateur non connecté ou session expirée (Code ${error.status})`);
+          console.warn(`Access denied: not logged in or session expired (status ${error.status})`);
           authService.setRedirectUrl(state.url);
           router.navigate(['/login']);
           return of(false);
         }
 
         // 500 (server error) or other codes (e.g. 503, 0 for network)
-        console.error(`Erreur technique serveur (Code ${error.status}) lors de la validation du profil :`, error.message);
+        console.error(`Server error (status ${error.status}) while checking the profile`, error.message);
         // Not a login problem: send to the default space instead of the login page
         router.navigate(['/account']);
         return of(false);

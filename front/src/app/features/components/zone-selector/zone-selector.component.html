@@ -8,7 +8,7 @@
         @if (!isFilterBanner) {
           <ion-label position="stacked">{{ t.zones?.region_label }}</ion-label>
         }
-        <ion-select aria-label="Région" interface="popover"
+        <ion-select [attr.aria-label]="t.zones?.region_label" interface="popover"
           [(ngModel)]="parentZoneId"
           (ionChange)="onParentChange()"
           [placeholder]="parentPlaceholder || (isFilterBanner ? (t.zones?.region_label || t.zones?.select_region) : t.zones?.select_region)">
@@ -35,7 +35,7 @@
         @if (!isFilterBanner) {
           <ion-label position="stacked">{{ t.zones?.precise_location_label }}</ion-label>
         }
-        <ion-select aria-label="Localisation" interface="popover"
+        <ion-select [attr.aria-label]="t.zones?.precise_location_label" interface="popover"
           [(ngModel)]="childZoneId"
           (ionChange)="onChildChange()"
           [placeholder]="childPlaceholder || (isFilterBanner ? (t.zones?.precise_location_label || t.zones?.select_location) : t.zones?.select_location)">
