@@ -247,9 +247,9 @@
                   <div class="contact-actions">
                     <a class="contact-btn call-btn" [href]="'tel:' + worker.phone">
                       <ion-icon name="call-outline"></ion-icon>
-                      <span>{{ worker.phone }}</span>
+                      <span>{{ formatPhone(worker.phone) }}</span>
                     </a>
-                    <a class="contact-btn whatsapp-btn" [href]="'https://wa.me/' + worker.phone" target="_blank">
+                    <a class="contact-btn whatsapp-btn" [href]="'https://wa.me/' + whatsappNumber(worker.phone)" target="_blank" rel="noopener noreferrer">
                       <ion-icon name="logo-whatsapp"></ion-icon>
                       <span>WhatsApp</span>
                     </a>

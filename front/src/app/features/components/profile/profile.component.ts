@@ -39,6 +39,7 @@ import {ClientAccountService} from "../../services/client-account.service";
 import {AuthService} from "../../services/auth.service";
 import {Service} from "../../models/common.model";
 import {LanguageManagerService} from "../../services/language-manager.service";
+import {formatPhone, whatsappNumber} from "../../utils/phone";
 import {Subscription} from "rxjs";
 
 @Component({
@@ -307,4 +308,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     document.body.style.overflow = '';
   }
+
+  protected readonly formatPhone = formatPhone;
+  protected readonly whatsappNumber = whatsappNumber;
 }
