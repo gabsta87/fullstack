@@ -1,13 +1,15 @@
-<ion-item lines="none" class="filter-input-item age-range-item" *ngIf="languageService.currentLanguage$ | async as t">
-  <ion-range
-    labelPlacement="start"
-    [label]="(t.common?.age) + ' ' + currentLower + ' - ' + (currentUpper === 60 ? '60+' : currentUpper + ' ' + (t.common?.years))"
-    [dualKnobs]="true"
-    [min]="18"
-    [max]="60"
-    [pin]="true"
-    [value]="{ lower: currentLower, upper: currentUpper }"
-    (ionInput)="onRangeInput($event)"
-    (ionKnobMoveEnd)="onRangeChangeEnd($event)">
-  </ion-range>
-</ion-item>
+@if (languageService.currentLanguage$ | async; as t) {
+  <ion-item lines="none" class="filter-input-item age-range-item">
+    <ion-range
+      labelPlacement="start"
+      [label]="(t.common?.age) + ' ' + currentLower + ' - ' + (currentUpper === 60 ? '60+' : currentUpper + ' ' + (t.common?.years))"
+      [dualKnobs]="true"
+      [min]="18"
+      [max]="60"
+      [pin]="true"
+      [value]="{ lower: currentLower, upper: currentUpper }"
+      (ionInput)="onRangeInput($event)"
+      (ionKnobMoveEnd)="onRangeChangeEnd($event)">
+    </ion-range>
+  </ion-item>
+}

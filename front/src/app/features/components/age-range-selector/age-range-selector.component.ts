@@ -1,13 +1,13 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { IonItem, IonLabel, IonRange } from '@ionic/angular/standalone';
 import {LanguageManagerService} from "../../services/language-manager.service";
-import {AsyncPipe, NgIf} from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 
 @Component({
     selector: 'age-range-selector',
     templateUrl: './age-range-selector.component.html',
     styleUrls: ['./age-range-selector.component.scss'],
-    imports: [IonItem, IonLabel, IonRange, NgIf, AsyncPipe]
+    imports: [IonItem, IonLabel, IonRange, AsyncPipe]
 })
 export class AgeRangeSelectorComponent implements OnInit, OnChanges {
   @Input() minAge: string | undefined = undefined;

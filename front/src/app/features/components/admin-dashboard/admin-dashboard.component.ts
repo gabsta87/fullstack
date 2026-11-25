@@ -85,7 +85,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  @HostListener('window:beforeunload', ['$event'])
+  @HostListener('window:beforeunload')
   unloadHandler() {
     if (this.currentCertifRequestId) {
       this.adminService.unlockCertificationReview(this.currentCertifRequestId).subscribe();

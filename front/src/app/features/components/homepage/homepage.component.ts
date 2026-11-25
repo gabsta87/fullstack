@@ -39,7 +39,7 @@ import {ZoneSelectorComponent} from "../zone-selector/zone-selector.component";
 import { GalleryStateService } from '../../services/gallery-state.service';
 import { sparklesOutline } from 'ionicons/icons';
 import {ClientAccountService} from "../../services/client-account.service";
-import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import {Service} from "../../models/common.model";
 import {LanguageManagerService} from "../../services/language-manager.service";
 import {BODY_TYPES_LIST, EYES_COLOR_LIST, HAIR_COLOR_LIST} from "../../models/items.model";
@@ -49,31 +49,29 @@ import {BODY_TYPES_LIST, EYES_COLOR_LIST, HAIR_COLOR_LIST} from "../../models/it
     templateUrl: './homepage.component.html',
     styleUrls: ['./homepage.component.scss'],
     imports: [
-        HeaderComponent,
-        IonContent,
-        IonRefresher,
-        IonRefresherContent,
-        IonGrid,
-        IonRow,
-        IonCol,
-        ZoneSelectorComponent,
-        IonItem,
-        IonIcon,
-        IonInput,
-        IonButton,
-        IonSelect,
-        IonSelectOption,
-        FormsModule,
-        WorkerCardComponent,
-        IonInfiniteScroll,
-        IonInfiniteScrollContent,
-        AgeRangeSelectorComponent,
-        NgForOf,
-        NgIf,
-        IonFab,
-        IonFabButton,
-        AsyncPipe
-    ]
+    HeaderComponent,
+    IonContent,
+    IonRefresher,
+    IonRefresherContent,
+    IonGrid,
+    IonRow,
+    IonCol,
+    ZoneSelectorComponent,
+    IonItem,
+    IonIcon,
+    IonInput,
+    IonButton,
+    IonSelect,
+    IonSelectOption,
+    FormsModule,
+    WorkerCardComponent,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent,
+    AgeRangeSelectorComponent,
+    IonFab,
+    IonFabButton,
+    AsyncPipe
+]
 })
 export class HomepageComponent implements OnInit {
   @ViewChild(IonContent, { static: false }) content!: IonContent;

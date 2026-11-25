@@ -1,33 +1,34 @@
-<ng-container *ngIf="languageService.currentLanguage$ | async as t">
+@if (languageService.currentLanguage$ | async; as t) {
   <ion-card class="wcard ion-activatable" mode="md" (click)="navigateToProfile()">
     <ion-ripple-effect></ion-ripple-effect>
-
     <div class="wcard-photo" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
       <img [src]="displayUrl ? displayUrl : 'assets/images/default-avatar.jpg'" [alt]="worker.username" class="wcard-img" loading="lazy" />
-
-      <span *ngIf="isFavorite$ | async" class="favorite-mark" [attr.aria-label]="t.worker_profile?.favorite" [title]="t.worker_profile?.favorite">
-        <ion-icon name="heart"></ion-icon>
-      </span>
-
-      <ion-badge *ngIf="!worker.available" class="online-pill" color="medium">
-        {{ t.common?.unavailable }}
-      </ion-badge>
-
+      @if (isFavorite$ | async) {
+        <span class="favorite-mark" [attr.aria-label]="t.worker_profile?.favorite" [title]="t.worker_profile?.favorite">
+          <ion-icon name="heart"></ion-icon>
+        </span>
+      }
+      @if (!worker.available) {
+        <ion-badge class="online-pill" color="medium">
+          {{ t.common?.unavailable }}
+        </ion-badge>
+      }
       <div class="wcard-overlay-info">
         <h3 class="wcard-overlay-title">
           {{ worker.username }}
-          <ion-icon *ngIf="worker.isCertified"
-                    name="shield-checkmark"
-                    color="success"
-                    class="certified-badge">
-          </ion-icon>
+          @if (worker.isCertified) {
+            <ion-icon
+              name="shield-checkmark"
+              color="success"
+              class="certified-badge">
+            </ion-icon>
+          }
         </h3>
         <p class="wcard-overlay-subtitle">{{ worker.geographicZone?.name }}</p>
       </div>
     </div>
-
     <ion-card-content class="wcard-description">
       {{ worker.shortDescription || '❤️❤️❤️' }}
     </ion-card-content>
   </ion-card>
-</ng-container>
+}

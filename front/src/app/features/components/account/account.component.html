@@ -1,146 +1,149 @@
 <app-header></app-header>
 
-<ng-container *ngIf="languageService.currentLanguage$ | async as t">
-  <ion-content *ngIf="currentUser$ | async as user" class="venus-content">
-    <ion-toolbar class="venus-tabs">
-      <ion-segment [(ngModel)]="activeTab" mode="md">
-        <ion-segment-button value="favorites">
-          <ion-label>{{ t.account?.tabs?.favorites }} ({{user.favorites.length}}) </ion-label>
-        </ion-segment-button>
-
-        <ion-segment-button value="comments">
-          <ion-label>{{ t.account?.tabs?.comments || 'My comments' }} ({{user.reviews.length}})</ion-label>
-        </ion-segment-button>
-<!--        <ion-segment-button value="settings">-->
-<!--          <ion-label>{{ t.account?.tabs?.settings }}</ion-label>-->
-<!--        </ion-segment-button>-->
+@if (languageService.currentLanguage$ | async; as t) {
+  @if (currentUser$ | async; as user) {
+    <ion-content class="venus-content">
+      <ion-toolbar class="venus-tabs">
+        <ion-segment [(ngModel)]="activeTab" mode="md">
+          <ion-segment-button value="favorites">
+            <ion-label>{{ t.account?.tabs?.favorites }} ({{user.favorites.length}}) </ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="comments">
+            <ion-label>{{ t.account?.tabs?.comments || 'My comments' }} ({{user.reviews.length}})</ion-label>
+          </ion-segment-button>
+          <!--        <ion-segment-button value="settings">-->
+          <!--          <ion-label>{{ t.account?.tabs?.settings }}</ion-label>-->
+        <!--        </ion-segment-button>-->
         <ion-segment-button value="account">
           <ion-label>{{ t.account?.tabs?.account }}</ion-label>
         </ion-segment-button>
       </ion-segment>
     </ion-toolbar>
-
     <ion-grid [fixed]="false" class="ion-no-padding">
-
       <!-- ONGLET FAVORIS -->
-      <div *ngIf="activeTab === 'favorites' && user.favorites" class="fade-in ion-padding">
-
-        <ion-row>
-          <ion-col size="6" size-sm="4" size-md="3" size-lg="2.4" size-xl="2"
-                   *ngFor="let f of user.favorites">
-            <worker-card [worker]="f"></worker-card>
-          </ion-col>
-        </ion-row>
-
-        <div *ngIf="user.favorites.length === 0" class="empty-favorites">
-          <ion-icon name="heart-dislike-outline"></ion-icon>
-          <p>{{ t.account?.favorites?.empty }}</p>
-        </div>
-      </div>
-
-      <!-- ONGLET MES COMMENTAIRES -->
-      <div *ngIf="activeTab === 'comments'" class="fade-in ion-padding">
-        <div class="section-header">
-          <h2>{{ t.account?.comments?.title }} ({{ user.reviews.length || 0 }})</h2>
-        </div>
-
-        <ul *ngIf="user.reviews && user.reviews.length > 0; else emptyComments" class="my-comments">
-          <li *ngFor="let comment of user.reviews" class="my-comment">
-
-            <!-- Profil commenté : vignette cliquable -->
-            <button type="button" class="mc-thumb" (click)="navigateToWorker(comment.workerId)"
-                    [attr.aria-label]="comment.workerUsername">
-              <img [src]="comment.workerThumbUrl || 'assets/images/default-avatar.jpg'" [alt]="comment.workerUsername" loading="lazy">
-            </button>
-
-            <div class="mc-body">
-              <div class="mc-head">
-                <button type="button" class="mc-name" (click)="navigateToWorker(comment.workerId)">
-                  {{ comment.workerUsername || t.account?.comments?.unknown_profile }}
-                </button>
-                <span class="mc-date">{{ comment.date | date:'dd.MM.yyyy' }}</span>
-
-                <div class="mc-actions" *ngIf="editingCommentId !== comment.id">
-                  <button type="button" class="mc-icon-btn" [title]="t.common?.edit" [attr.aria-label]="t.common?.edit"
-                          (click)="startEditComment(comment)">
-                    <ion-icon name="create-outline"></ion-icon>
-                  </button>
-                  <button type="button" class="mc-icon-btn danger" [title]="t.common?.delete" [attr.aria-label]="t.common?.delete"
-                          (click)="deleteComment(comment.id, user)">
-                    <ion-icon name="trash-outline"></ion-icon>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Lecture -->
-              <p class="mc-text" *ngIf="editingCommentId !== comment.id">{{ comment.content }}</p>
-
-              <!-- Édition en ligne -->
-              <div class="mc-edit" *ngIf="editingCommentId === comment.id">
-                <ion-textarea class="mc-textarea" [(ngModel)]="editingCommentText" [rows]="3" [autoGrow]="true"></ion-textarea>
-                <div class="mc-edit-actions">
-                  <ion-button size="small" fill="outline" color="medium" (click)="cancelEditComment()">
-                    {{ t.common?.cancel }}
-                  </ion-button>
-                  <ion-button size="small" [disabled]="isSavingComment || !editingCommentText.trim()" (click)="saveComment(comment)">
-                    <ion-spinner name="crescent" slot="start" *ngIf="isSavingComment"></ion-spinner>
-                    {{ t.common?.save }}
-                  </ion-button>
-                </div>
-              </div>
+      @if (activeTab === 'favorites' && user.favorites) {
+        <div class="fade-in ion-padding">
+          <ion-row>
+            @for (f of user.favorites; track f) {
+              <ion-col size="6" size-sm="4" size-md="3" size-lg="2.4" size-xl="2"
+                >
+                <worker-card [worker]="f"></worker-card>
+              </ion-col>
+            }
+          </ion-row>
+          @if (user.favorites.length === 0) {
+            <div class="empty-favorites">
+              <ion-icon name="heart-dislike-outline"></ion-icon>
+              <p>{{ t.account?.favorites?.empty }}</p>
             </div>
-          </li>
-        </ul>
-
-        <ng-template #emptyComments>
-          <div class="empty-favorites">
-            <ion-icon name="chatbubbles-outline"></ion-icon>
-            <p>{{ t.account?.comments?.empty }}</p>
+          }
+        </div>
+      }
+      <!-- ONGLET MES COMMENTAIRES -->
+      @if (activeTab === 'comments') {
+        <div class="fade-in ion-padding">
+          <div class="section-header">
+            <h2>{{ t.account?.comments?.title }} ({{ user.reviews.length || 0 }})</h2>
           </div>
-        </ng-template>
-      </div>
-
+          @if (user.reviews && user.reviews.length > 0) {
+            <ul class="my-comments">
+              @for (comment of user.reviews; track comment) {
+                <li class="my-comment">
+                  <!-- Profil commenté : vignette cliquable -->
+                  <button type="button" class="mc-thumb" (click)="navigateToWorker(comment.workerId)"
+                    [attr.aria-label]="comment.workerUsername">
+                    <img [src]="comment.workerThumbUrl || 'assets/images/default-avatar.jpg'" [alt]="comment.workerUsername" loading="lazy">
+                  </button>
+                  <div class="mc-body">
+                    <div class="mc-head">
+                      <button type="button" class="mc-name" (click)="navigateToWorker(comment.workerId)">
+                        {{ comment.workerUsername || t.account?.comments?.unknown_profile }}
+                      </button>
+                      <span class="mc-date">{{ comment.date | date:'dd.MM.yyyy' }}</span>
+                      @if (editingCommentId !== comment.id) {
+                        <div class="mc-actions">
+                          <button type="button" class="mc-icon-btn" [title]="t.common?.edit" [attr.aria-label]="t.common?.edit"
+                            (click)="startEditComment(comment)">
+                            <ion-icon name="create-outline"></ion-icon>
+                          </button>
+                          <button type="button" class="mc-icon-btn danger" [title]="t.common?.delete" [attr.aria-label]="t.common?.delete"
+                            (click)="deleteComment(comment.id, user)">
+                            <ion-icon name="trash-outline"></ion-icon>
+                          </button>
+                        </div>
+                      }
+                    </div>
+                    <!-- Lecture -->
+                    @if (editingCommentId !== comment.id) {
+                      <p class="mc-text">{{ comment.content }}</p>
+                    }
+                    <!-- Édition en ligne -->
+                    @if (editingCommentId === comment.id) {
+                      <div class="mc-edit">
+                        <ion-textarea class="mc-textarea" [(ngModel)]="editingCommentText" [rows]="3" [autoGrow]="true"></ion-textarea>
+                        <div class="mc-edit-actions">
+                          <ion-button size="small" fill="outline" color="medium" (click)="cancelEditComment()">
+                            {{ t.common?.cancel }}
+                          </ion-button>
+                          <ion-button size="small" [disabled]="isSavingComment || !editingCommentText.trim()" (click)="saveComment(comment)">
+                            @if (isSavingComment) {
+                              <ion-spinner name="crescent" slot="start"></ion-spinner>
+                            }
+                            {{ t.common?.save }}
+                          </ion-button>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </li>
+              }
+            </ul>
+          } @else {
+            <div class="empty-favorites">
+              <ion-icon name="chatbubbles-outline"></ion-icon>
+              <p>{{ t.account?.comments?.empty }}</p>
+            </div>
+          }
+        </div>
+      }
       <!-- ONGLET RÉGLAGES -->
-<!--      <div *ngIf="activeTab === 'settings'" class="fade-in ion-padding">-->
-<!--        <div class="settings-container">-->
-
-<!--          <ion-card class="settings-card">-->
-<!--            <ion-card-header>-->
-<!--              <ion-card-title>{{ t.account?.settings?.title }}</ion-card-title>-->
-<!--            </ion-card-header>-->
-
-<!--            <ion-card-content>-->
-<!--              <ion-list lines="none">-->
-<!--                &lt;!&ndash; Zone Selector &ndash;&gt;-->
-<!--                <zone-selector-->
-<!--                  [zones]="locations"-->
-<!--                  [selectedChildId]="selectedZoneId"-->
-<!--                  [allowAllOption]="true"-->
-<!--                  (onZoneSelected)="onZoneChange($event, user)">-->
-<!--                </zone-selector>-->
-
-<!--                <div class="field-label ion-margin-top">{{ t.account?.settings?.body_types_label }}</div>-->
-<!--                <div class="chips-group">-->
-<!--                  <ion-chip *ngFor="let b of bodyTypesList"-->
-<!--                            [outline]="!selectionStates.bodyType[b]"-->
-<!--                            [color]="selectionStates.bodyType[b] ? 'primary' : 'medium'"-->
-<!--                            (click)="selectionStates.bodyType[b] = !selectionStates.bodyType[b]">-->
-<!--                    <ion-label>{{ languageService.getBodyTypeLabel(b, t) }}</ion-label>-->
-<!--                    <ion-icon name="checkmark-circle" *ngIf="selectionStates.bodyType[b]"></ion-icon>-->
+      <!--      <div *ngIf="activeTab === 'settings'" class="fade-in ion-padding">-->
+      <!--        <div class="settings-container">-->
+      <!--          <ion-card class="settings-card">-->
+      <!--            <ion-card-header>-->
+      <!--              <ion-card-title>{{ t.account?.settings?.title }}</ion-card-title>-->
+    <!--            </ion-card-header>-->
+    <!--            <ion-card-content>-->
+    <!--              <ion-list lines="none">-->
+    <!--                &lt;!&ndash; Zone Selector &ndash;&gt;-->
+    <!--                <zone-selector-->
+    <!--                  [zones]="locations"-->
+    <!--                  [selectedChildId]="selectedZoneId"-->
+    <!--                  [allowAllOption]="true"-->
+    <!--                  (onZoneSelected)="onZoneChange($event, user)">-->
+  <!--                </zone-selector>-->
+  <!--                <div class="field-label ion-margin-top">{{ t.account?.settings?.body_types_label }}</div>-->
+  <!--                <div class="chips-group">-->
+  <!--                  <ion-chip *ngFor="let b of bodyTypesList"-->
+  <!--                            [outline]="!selectionStates.bodyType[b]"-->
+  <!--                            [color]="selectionStates.bodyType[b] ? 'primary' : 'medium'"-->
+  <!--                            (click)="selectionStates.bodyType[b] = !selectionStates.bodyType[b]">-->
+  <!--                    <ion-label>{{ languageService.getBodyTypeLabel(b, t) }}</ion-label>-->
+  <!--                    <ion-icon name="checkmark-circle" *ngIf="selectionStates.bodyType[b]"></ion-icon>-->
 <!--                  </ion-chip>-->
 <!--                </div>-->
 <!--              </ion-list>-->
 <!--            </ion-card-content>-->
 <!--          </ion-card>-->
-
 <!--        </div>-->
 <!--      </div>-->
-
-      <!-- ONGLET COMPTE -->
-      <div *ngIf="activeTab === 'account'" class="fade-in ion-padding">
-        <account-settings [initialEmail]="user.email ? user.email : ''"></account-settings>
-      </div>
-
-    </ion-grid>
-  </ion-content>
-</ng-container>
+<!-- ONGLET COMPTE -->
+@if (activeTab === 'account') {
+  <div class="fade-in ion-padding">
+    <account-settings [initialEmail]="user.email ? user.email : ''"></account-settings>
+  </div>
+}
+</ion-grid>
+</ion-content>
+}
+}

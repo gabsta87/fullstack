@@ -4,13 +4,13 @@ import {IonButton, IonContent, IonInput, IonItem, LoadingController, ModalContro
 import {AlertController} from "@ionic/angular";
 import {FormsModule} from "@angular/forms";
 import {LanguageManagerService} from "../../services/language-manager.service";
-import {AsyncPipe, NgIf} from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 
 @Component({
     selector: 'app-forgot-password',
     templateUrl: './forgot-password.component.html',
     styleUrls: ['./forgot-password.component.scss'],
-    imports: [IonContent, FormsModule, IonItem, IonInput, IonButton, NgIf, AsyncPipe]
+    imports: [IonContent, FormsModule, IonItem, IonInput, IonButton, AsyncPipe]
 })
 export class ForgotPasswordComponent implements OnInit {
   email = '';

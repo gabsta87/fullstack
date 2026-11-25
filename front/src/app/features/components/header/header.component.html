@@ -11,14 +11,14 @@
 
     <ion-buttons slot="end">
       <!-- 💡 Bouton de contact visible uniquement pour les personnes enregistrées -->
-      <ng-container *ngIf="(authService.isAuthenticated$ | async)">
-        <ng-container *ngIf="langService.currentLanguage$ | async as t">
+      @if ((authService.isAuthenticated$ | async)) {
+        @if (langService.currentLanguage$ | async; as t) {
           <ion-button [href]="'mailto:' + supportEmail" fill="clear" class="nav-link-btn">
             <ion-icon name="mail-outline" slot="start"></ion-icon>
             <span class="btn-label">{{ t.common?.contact_us }}</span>
           </ion-button>
-        </ng-container>
-      </ng-container>
+        }
+      }
 
       <!-- Sélecteur de langue -->
       <ion-button (click)="openLangPopover($event)" class="lang-button">
@@ -27,8 +27,8 @@
       </ion-button>
 
       <!-- Le reste des boutons (authentification) -->
-      <ng-container *ngIf="langService.currentLanguage$ | async as t">
-        <ng-container *ngIf="!(authService.isAuthenticated$ | async)">
+      @if (langService.currentLanguage$ | async; as t) {
+        @if (!(authService.isAuthenticated$ | async)) {
           <ion-button (click)="openAuth('login')" fill="clear" class="nav-link-btn">
             <ion-icon name="log-in-outline" slot="start"></ion-icon>
             <span class="btn-label">{{ t.header?.login }}</span>
@@ -37,26 +37,26 @@
             <ion-icon name="person-add-outline" slot="start"></ion-icon>
             <span class="btn-label">{{ t.header?.register }}</span>
           </ion-button>
-        </ng-container>
-
-        <ng-container *ngIf="authService.isAuthenticated$ | async">
-          <ng-container *ngIf="authService.isAdmin">
+        }
+        @if (authService.isAuthenticated$ | async) {
+          @if (authService.isAdmin) {
             <ion-button (click)="openAdmin()" fill="clear" class="nav-link-btn">
               <ion-icon name="build-outline" slot="start"></ion-icon>
               <span class="btn-label">{{ t.admin?.tabs?.admins || 'Administration' }}</span>
             </ion-button>
-          </ng-container>
-
-          <ion-button *ngIf="!authService.isAdmin" (click)="openAccount()" fill="clear" class="nav-link-btn">
-            <ion-icon name="person-circle-outline" slot="start"></ion-icon>
-            <span class="btn-label">{{ t.header?.account }}</span>
-          </ion-button>
+          }
+          @if (!authService.isAdmin) {
+            <ion-button (click)="openAccount()" fill="clear" class="nav-link-btn">
+              <ion-icon name="person-circle-outline" slot="start"></ion-icon>
+              <span class="btn-label">{{ t.header?.account }}</span>
+            </ion-button>
+          }
           <ion-button (click)="onLogout()" fill="clear" class="nav-link-btn">
             <ion-icon name="log-out-outline" slot="start"></ion-icon>
             <span class="btn-label">{{ t.header?.logout }}</span>
           </ion-button>
-        </ng-container>
-      </ng-container>
+        }
+      }
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -66,12 +66,14 @@
   <ng-template>
     <ion-content>
       <ion-list lines="none" class="lang-popover-list">
-        <ion-item *ngFor="let lang of langService.availableLanguages"
-                  (click)="changeLanguage(lang.code)"
-                  [class.active-lang]="lang.code === langService.currentCode">
-          <img slot="start" [src]="lang.flag" class="popover-flag-icon" [alt]="lang.label" />
-          <ion-label>{{ lang.label }}</ion-label>
-        </ion-item>
+        @for (lang of langService.availableLanguages; track lang) {
+          <ion-item
+            (click)="changeLanguage(lang.code)"
+            [class.active-lang]="lang.code === langService.currentCode">
+            <img slot="start" [src]="lang.flag" class="popover-flag-icon" [alt]="lang.label" />
+            <ion-label>{{ lang.label }}</ion-label>
+          </ion-item>
+        }
       </ion-list>
     </ion-content>
   </ng-template>

@@ -1,45 +1,56 @@
-<div [class.filter-banner-mode]="isFilterBanner" [class.form-profile-mode]="!isFilterBanner" *ngIf="langService.currentLanguage$ | async as t">
-
-  <div class="zone-col">
-    <ion-item lines="none" [class.filter-input-item]="isFilterBanner" [class.venus-input]="!isFilterBanner">
-      <ion-icon *ngIf="showIcons" name="location-outline" slot="start" class="filter-icon"></ion-icon>
-      <ion-label *ngIf="!isFilterBanner" position="stacked">{{ t.zones?.region_label }}</ion-label>
-      <ion-select aria-label="Région" interface="popover"
-                  [(ngModel)]="parentZoneId"
-                  (ionChange)="onParentChange()"
-                  [placeholder]="parentPlaceholder || (isFilterBanner ? (t.zones?.region_label || t.zones?.select_region) : t.zones?.select_region)">
-
-        <ion-select-option *ngIf="allowAllOption" [value]="undefined">
-          {{ allParentsLabel || t.filters?.all_regions }}
-        </ion-select-option>
-
-        <ion-select-option *ngFor="let zone of zones" [value]="zone.id">
-          {{ zone.name }}
-        </ion-select-option>
-      </ion-select>
-    </ion-item>
+@if (langService.currentLanguage$ | async; as t) {
+  <div [class.filter-banner-mode]="isFilterBanner" [class.form-profile-mode]="!isFilterBanner">
+    <div class="zone-col">
+      <ion-item lines="none" [class.filter-input-item]="isFilterBanner" [class.venus-input]="!isFilterBanner">
+        @if (showIcons) {
+          <ion-icon name="location-outline" slot="start" class="filter-icon"></ion-icon>
+        }
+        @if (!isFilterBanner) {
+          <ion-label position="stacked">{{ t.zones?.region_label }}</ion-label>
+        }
+        <ion-select aria-label="Région" interface="popover"
+          [(ngModel)]="parentZoneId"
+          (ionChange)="onParentChange()"
+          [placeholder]="parentPlaceholder || (isFilterBanner ? (t.zones?.region_label || t.zones?.select_region) : t.zones?.select_region)">
+          @if (allowAllOption) {
+            <ion-select-option [value]="undefined">
+              {{ allParentsLabel || t.filters?.all_regions }}
+            </ion-select-option>
+          }
+          @for (zone of zones; track zone) {
+            <ion-select-option [value]="zone.id">
+              {{ zone.name }}
+            </ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+    </div>
+    <!-- SÉLECTION DE LA VILLE -->
+    <div class="zone-col" [class.child-empty]="!parentZoneId || availableChildZones.length === 0">
+      <ion-item lines="none" [class.filter-input-item]="isFilterBanner" [class.venus-input]="!isFilterBanner"
+        [disabled]="!parentZoneId || availableChildZones.length === 0">
+        @if (showIcons) {
+          <ion-icon name="business-outline" slot="start" class="filter-icon"></ion-icon>
+        }
+        @if (!isFilterBanner) {
+          <ion-label position="stacked">{{ t.zones?.precise_location_label }}</ion-label>
+        }
+        <ion-select aria-label="Localisation" interface="popover"
+          [(ngModel)]="childZoneId"
+          (ionChange)="onChildChange()"
+          [placeholder]="childPlaceholder || (isFilterBanner ? (t.zones?.precise_location_label || t.zones?.select_location) : t.zones?.select_location)">
+          @if (allowAllOption) {
+            <ion-select-option [value]="-1">
+              {{ allChildrenLabel || t.filters?.all_locations }}
+            </ion-select-option>
+          }
+          @for (subZone of availableChildZones; track subZone) {
+            <ion-select-option [value]="subZone.id">
+              {{ subZone.name }}
+            </ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+    </div>
   </div>
-
-  <!-- SÉLECTION DE LA VILLE -->
-  <div class="zone-col" [class.child-empty]="!parentZoneId || availableChildZones.length === 0">
-    <ion-item lines="none" [class.filter-input-item]="isFilterBanner" [class.venus-input]="!isFilterBanner"
-              [disabled]="!parentZoneId || availableChildZones.length === 0">
-      <ion-icon *ngIf="showIcons" name="business-outline" slot="start" class="filter-icon"></ion-icon>
-      <ion-label *ngIf="!isFilterBanner" position="stacked">{{ t.zones?.precise_location_label }}</ion-label>
-      <ion-select aria-label="Localisation" interface="popover"
-                  [(ngModel)]="childZoneId"
-                  (ionChange)="onChildChange()"
-                  [placeholder]="childPlaceholder || (isFilterBanner ? (t.zones?.precise_location_label || t.zones?.select_location) : t.zones?.select_location)">
-
-        <ion-select-option *ngIf="allowAllOption" [value]="-1">
-          {{ allChildrenLabel || t.filters?.all_locations }}
-        </ion-select-option>
-
-        <ion-select-option *ngFor="let subZone of availableChildZones" [value]="subZone.id">
-          {{ subZone.name }}
-        </ion-select-option>
-      </ion-select>
-    </ion-item>
-  </div>
-
-</div>
+}

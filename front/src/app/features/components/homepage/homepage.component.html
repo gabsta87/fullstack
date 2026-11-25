@@ -1,140 +1,148 @@
 <app-header></app-header>
 
-<ion-content class="main-content content-with-bottom-spacing" [scrollEvents]="true" (ionScroll)="onScroll($event)" *ngIf="languageService.currentLanguage$ | async as t">
-  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
-
-  <!-- Bannière de filtres fixe en haut -->
-  <div class="filter-banner-sticky">
-    <div class="filter-banner">
-      <ion-grid class="ion-no-padding">
-        <ion-row class="ion-align-items-center filter-main-row">
-
-          <ion-col size="12" size-sm="6" size-md="6" class="filter-col">
-            <zone-selector
-              [zones]="parentZones"
-              [selectedParentId]="parentZoneId"
-              [selectedChildId]="childZoneId"
-              [allowAllOption]="true"
-              [showIcons]="true"
-              [isFilterBanner]="true"
-              (onZoneSelected)="parentZoneId = $event.parentZoneId; childZoneId = $event.childZoneId; loadPage(true)">
-            </zone-selector>
-          </ion-col>
-
-          <ion-col size-md="3" class="filter-col name-col">
-            <ion-item lines="none" class="filter-input-item name-input-item">
-              <ion-input aria-label="Nom"
-                         [placeholder]="t.filters?.placeholder_name"
-                         [(ngModel)]="filters.username"
-                         (ionInput)="onSearchInput($event)"
-                         (keyup.enter)="loadPage(true)">
-              </ion-input>
-            </ion-item>
-          </ion-col>
-
-          <ion-col size="auto" size-md="3" class="filter-col filter-actions ion-text-end">
-            <ion-button *ngIf="hasActiveFilters()" fill="outline" class="more-filters-btn clear-btn"
-                        size="small" aria-label="Effacer les filtres" (click)="clearFilters()">
-              <ion-icon slot="start" name="trash-outline"></ion-icon>
-              <span class="btn-label">{{ t.common?.clear || t.filters?.clear }}</span>
-            </ion-button>
-
-            <ion-button fill="outline" class="more-filters-btn" aria-label="Filtres" (click)="toggleMoreFilters()">
-              <ion-icon slot="start" [name]="showMoreFilters ? 'close-outline' : 'options-outline'"></ion-icon>
-              <span class="btn-label">{{ t.filters?.filters_btn }}</span>
-            </ion-button>
-          </ion-col>
-        </ion-row>
-
-        <div *ngIf="showMoreFilters" class="advanced-filters-wrapper fade-in">
-          <ion-row class="advanced-filters-row">
-            <ion-col size="12" size-sm="4" class="filter-col">
-              <ion-item lines="none" class="filter-input-item">
-                <ion-select aria-label="Silhouette" interface="popover" [(ngModel)]="filters.bodyType" (ionChange)="loadPage(true)" [placeholder]="t.filters?.all_body_types">
-                  <ion-select-option [value]="null">{{ t.filters?.all_body_types }}</ion-select-option>
-                  <ion-select-option *ngFor="let key of BODY_TYPES_LIST" [value]="key">
-                    {{ languageService.getBodyTypeLabel(key, t) }}
-                  </ion-select-option>
-                </ion-select>
+@if (languageService.currentLanguage$ | async; as t) {
+  <ion-content class="main-content content-with-bottom-spacing" [scrollEvents]="true" (ionScroll)="onScroll($event)">
+    <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+    <!-- Bannière de filtres fixe en haut -->
+    <div class="filter-banner-sticky">
+      <div class="filter-banner">
+        <ion-grid class="ion-no-padding">
+          <ion-row class="ion-align-items-center filter-main-row">
+            <ion-col size="12" size-sm="6" size-md="6" class="filter-col">
+              <zone-selector
+                [zones]="parentZones"
+                [selectedParentId]="parentZoneId"
+                [selectedChildId]="childZoneId"
+                [allowAllOption]="true"
+                [showIcons]="true"
+                [isFilterBanner]="true"
+                (onZoneSelected)="parentZoneId = $event.parentZoneId; childZoneId = $event.childZoneId; loadPage(true)">
+              </zone-selector>
+            </ion-col>
+            <ion-col size-md="3" class="filter-col name-col">
+              <ion-item lines="none" class="filter-input-item name-input-item">
+                <ion-input aria-label="Nom"
+                  [placeholder]="t.filters?.placeholder_name"
+                  [(ngModel)]="filters.username"
+                  (ionInput)="onSearchInput($event)"
+                  (keyup.enter)="loadPage(true)">
+                </ion-input>
               </ion-item>
             </ion-col>
-
-            <ion-col size="12" size-sm="4" class="filter-col">
-              <ion-item lines="none" class="filter-input-item">
-                <ion-select aria-label="Yeux" interface="popover" [(ngModel)]="filters.eyeColor" (ionChange)="loadPage(true)" [placeholder]="t.filters?.all_eye_colors">
-                  <ion-select-option [value]="null">{{ t.filters?.all_eye_colors }}</ion-select-option>
-                  <ion-select-option *ngFor="let key of EYES_COLOR_LIST" [value]="key">
-                    {{ languageService.getEyeColorLabel(key, t) }}
-                  </ion-select-option>
-                </ion-select>
-              </ion-item>
-            </ion-col>
-
-            <ion-col size="12" size-sm="4" class="filter-col">
-              <ion-item lines="none" class="filter-input-item">
-                <ion-select aria-label="Cheveux" interface="popover" [(ngModel)]="filters.hairColor" (ionChange)="loadPage(true)" [placeholder]="t.filters?.all_hair_colors">
-                  <ion-select-option [value]="null">{{ t.filters?.all_hair_colors }}</ion-select-option>
-                  <ion-select-option *ngFor="let key of HAIR_COLOR_LIST" [value]="key">
-                    {{ languageService.getHairColorLabel(key, t) }}
-                  </ion-select-option>
-                </ion-select>
-              </ion-item>
+            <ion-col size="auto" size-md="3" class="filter-col filter-actions ion-text-end">
+              @if (hasActiveFilters()) {
+                <ion-button fill="outline" class="more-filters-btn clear-btn"
+                  size="small" aria-label="Effacer les filtres" (click)="clearFilters()">
+                  <ion-icon slot="start" name="trash-outline"></ion-icon>
+                  <span class="btn-label">{{ t.common?.clear || t.filters?.clear }}</span>
+                </ion-button>
+              }
+              <ion-button fill="outline" class="more-filters-btn" aria-label="Filtres" (click)="toggleMoreFilters()">
+                <ion-icon slot="start" [name]="showMoreFilters ? 'close-outline' : 'options-outline'"></ion-icon>
+                <span class="btn-label">{{ t.filters?.filters_btn }}</span>
+              </ion-button>
             </ion-col>
           </ion-row>
-
-          <ion-row class="advanced-filters-row">
-            <ion-col size="12" size-sm="4" class="filter-col">
-              <ion-item lines="none" class="filter-input-item">
-                <ion-select aria-label="Services" interface="popover" [multiple]="true" [(ngModel)]="filters.services" (ionChange)="loadPage(true)" [placeholder]="t.filters?.all_services">
-                  <ion-select-option *ngFor="let service of allServices" [value]="service.name">{{ service.name }}</ion-select-option>
-                </ion-select>
-              </ion-item>
-            </ion-col>
-
-            <ion-col size="12" size-sm="4" class="filter-col">
-              <ion-item lines="none" class="filter-input-item">
-                <ion-select aria-label="Langues" interface="popover" [multiple]="true" [(ngModel)]="filters.languages" (ionChange)="loadPage(true)" [placeholder]="t.filters?.all_languages">
-                  <ion-select-option *ngFor="let lang of languageService.availableLanguages" [value]="lang.code">
-                    {{ lang.label }}
-                  </ion-select-option>
-                </ion-select>
-              </ion-item>
-            </ion-col>
-
-            <ion-col size="12" size-sm="4" class="filter-col">
-              <age-range-selector
-                class="filter-input-item"
-                [(minAge)]="filters.minAge"
-                [(maxAge)]="filters.maxAge"
-                (ageRangeChange)="filters.minAge = $event.minAge; filters.maxAge = $event.maxAge; loadPage(true)">
-              </age-range-selector>
-            </ion-col>
-          </ion-row>
-        </div>
-      </ion-grid>
+          @if (showMoreFilters) {
+            <div class="advanced-filters-wrapper fade-in">
+              <ion-row class="advanced-filters-row">
+                <ion-col size="12" size-sm="4" class="filter-col">
+                  <ion-item lines="none" class="filter-input-item">
+                    <ion-select aria-label="Silhouette" interface="popover" [(ngModel)]="filters.bodyType" (ionChange)="loadPage(true)" [placeholder]="t.filters?.all_body_types">
+                      <ion-select-option [value]="null">{{ t.filters?.all_body_types }}</ion-select-option>
+                      @for (key of BODY_TYPES_LIST; track key) {
+                        <ion-select-option [value]="key">
+                          {{ languageService.getBodyTypeLabel(key, t) }}
+                        </ion-select-option>
+                      }
+                    </ion-select>
+                  </ion-item>
+                </ion-col>
+                <ion-col size="12" size-sm="4" class="filter-col">
+                  <ion-item lines="none" class="filter-input-item">
+                    <ion-select aria-label="Yeux" interface="popover" [(ngModel)]="filters.eyeColor" (ionChange)="loadPage(true)" [placeholder]="t.filters?.all_eye_colors">
+                      <ion-select-option [value]="null">{{ t.filters?.all_eye_colors }}</ion-select-option>
+                      @for (key of EYES_COLOR_LIST; track key) {
+                        <ion-select-option [value]="key">
+                          {{ languageService.getEyeColorLabel(key, t) }}
+                        </ion-select-option>
+                      }
+                    </ion-select>
+                  </ion-item>
+                </ion-col>
+                <ion-col size="12" size-sm="4" class="filter-col">
+                  <ion-item lines="none" class="filter-input-item">
+                    <ion-select aria-label="Cheveux" interface="popover" [(ngModel)]="filters.hairColor" (ionChange)="loadPage(true)" [placeholder]="t.filters?.all_hair_colors">
+                      <ion-select-option [value]="null">{{ t.filters?.all_hair_colors }}</ion-select-option>
+                      @for (key of HAIR_COLOR_LIST; track key) {
+                        <ion-select-option [value]="key">
+                          {{ languageService.getHairColorLabel(key, t) }}
+                        </ion-select-option>
+                      }
+                    </ion-select>
+                  </ion-item>
+                </ion-col>
+              </ion-row>
+              <ion-row class="advanced-filters-row">
+                <ion-col size="12" size-sm="4" class="filter-col">
+                  <ion-item lines="none" class="filter-input-item">
+                    <ion-select aria-label="Services" interface="popover" [multiple]="true" [(ngModel)]="filters.services" (ionChange)="loadPage(true)" [placeholder]="t.filters?.all_services">
+                      @for (service of allServices; track service) {
+                        <ion-select-option [value]="service.name">{{ service.name }}</ion-select-option>
+                      }
+                    </ion-select>
+                  </ion-item>
+                </ion-col>
+                <ion-col size="12" size-sm="4" class="filter-col">
+                  <ion-item lines="none" class="filter-input-item">
+                    <ion-select aria-label="Langues" interface="popover" [multiple]="true" [(ngModel)]="filters.languages" (ionChange)="loadPage(true)" [placeholder]="t.filters?.all_languages">
+                      @for (lang of languageService.availableLanguages; track lang) {
+                        <ion-select-option [value]="lang.code">
+                          {{ lang.label }}
+                        </ion-select-option>
+                      }
+                    </ion-select>
+                  </ion-item>
+                </ion-col>
+                <ion-col size="12" size-sm="4" class="filter-col">
+                  <age-range-selector
+                    class="filter-input-item"
+                    [(minAge)]="filters.minAge"
+                    [(maxAge)]="filters.maxAge"
+                    (ageRangeChange)="filters.minAge = $event.minAge; filters.maxAge = $event.maxAge; loadPage(true)">
+                  </age-range-selector>
+                </ion-col>
+              </ion-row>
+            </div>
+          }
+        </ion-grid>
+      </div>
     </div>
-  </div>
-
-  <!-- Grille des cartes -->
-  <ion-grid class="cards-grid">
-    <section *ngIf="allWorkers.length > 0">
-      <ion-row class="ion-no-padding">
-        <ion-col size="6" size-sm="4" size-md="3" size-lg="2" *ngFor="let w of allWorkers" class="card-col">
-          <worker-card [worker]="w" [class.faded]="!w.available"></worker-card>
-        </ion-col>
-      </ion-row>
-    </section>
-  </ion-grid>
-
-  <ion-infinite-scroll threshold="50px" (ionInfinite)="onIonInfinite($event)" [disabled]="noMoreData">
-    <ion-infinite-scroll-content loadingSpinner="crescent" [loadingText]="t.common?.loading"></ion-infinite-scroll-content>
-  </ion-infinite-scroll>
-
-  <ion-fab slot="fixed" vertical="bottom" horizontal="center" *ngIf="showScrollTopButton" class="fade-in">
-    <ion-fab-button color="primary" (click)="scrollToTop()">
-      <ion-icon name="arrow-up-outline"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
-</ion-content>
+    <!-- Grille des cartes -->
+    <ion-grid class="cards-grid">
+      @if (allWorkers.length > 0) {
+        <section>
+          <ion-row class="ion-no-padding">
+            @for (w of allWorkers; track w) {
+              <ion-col size="6" size-sm="4" size-md="3" size-lg="2" class="card-col">
+                <worker-card [worker]="w" [class.faded]="!w.available"></worker-card>
+              </ion-col>
+            }
+          </ion-row>
+        </section>
+      }
+    </ion-grid>
+    <ion-infinite-scroll threshold="50px" (ionInfinite)="onIonInfinite($event)" [disabled]="noMoreData">
+      <ion-infinite-scroll-content loadingSpinner="crescent" [loadingText]="t.common?.loading"></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+    @if (showScrollTopButton) {
+      <ion-fab slot="fixed" vertical="bottom" horizontal="center" class="fade-in">
+        <ion-fab-button color="primary" (click)="scrollToTop()">
+          <ion-icon name="arrow-up-outline"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    }
+  </ion-content>
+}

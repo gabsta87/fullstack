@@ -1,158 +1,152 @@
 <app-header></app-header>
 
-<ion-content class="pm-main-container content-with-bottom-spacing"
-             *ngIf="languageService.currentLanguage$ | async as t">
-
-  <div class="pm-wrapper" *ngIf="currentUser$ | async as me">
-
-    <!-- Bannière d'alerte profil incomplet -->
-    <div class="profile-warning-banner" *ngIf="getMissingFieldsList(me).length > 0">
-      <ion-icon name="warning-outline" color="danger"></ion-icon>
-      <div class="banner-text">
-        <h3>{{ t.profile_management?.warning_title }}</h3>
-        <p>{{ t.profile_management?.warning_subtitle }}</p>
-        <div class="missing-tags">
-          <span class="tag" *ngFor="let label of getMissingFieldsList(me)">{{ label }}</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- En-tête : avatar + nom + statuts -->
-    <section class="pm-hero">
-      <div class="avatar-wrapper">
-        <ion-avatar>
+@if (languageService.currentLanguage$ | async; as t) {
+  <ion-content class="pm-main-container content-with-bottom-spacing"
+    >
+    @if (currentUser$ | async; as me) {
+      <div class="pm-wrapper">
+        <!-- Bannière d'alerte profil incomplet -->
+        @if (getMissingFieldsList(me).length > 0) {
+          <div class="profile-warning-banner">
+            <ion-icon name="warning-outline" color="danger"></ion-icon>
+            <div class="banner-text">
+              <h3>{{ t.profile_management?.warning_title }}</h3>
+              <p>{{ t.profile_management?.warning_subtitle }}</p>
+              <div class="missing-tags">
+                @for (label of getMissingFieldsList(me); track label) {
+                  <span class="tag">{{ label }}</span>
+                }
+              </div>
+            </div>
+          </div>
+        }
+        <!-- En-tête : avatar + nom + statuts -->
+        <section class="pm-hero">
+          <div class="avatar-wrapper">
+            <ion-avatar>
           <img [src]="me.mainThumbUrl
           ? (me.mainThumbUrl.startsWith('http') ? me.mainThumbUrl : environment.apiBase + me.mainThumbUrl)
           : 'assets/images/default-avatar.jpg'"/>
-        </ion-avatar>
-        <ion-fab-button size="small" class="edit-photo-btn">
-          <ion-icon name="camera"></ion-icon>
-        </ion-fab-button>
-      </div>
-
-      <div class="profile-title">
-        <h1>{{ me.username }}</h1>
-
-        <div class="badges-container">
-          <!-- Bouton Statut En Ligne / Hors Ligne -->
-          <ion-button [color]="me.available ? 'success' : 'medium'"
-                      class="status-badge"
-                      size="small"
-                      (click)="toggleAvailable(!me.available)">
-            <ion-icon [name]="me.available ? 'chevron-down-circle-outline' : 'close-circle-outline'"
-                      slot="start"></ion-icon>
-            {{ me.available ? t.common?.online : t.common?.offline }}
-          </ion-button>
-
-          <ion-button [color]="!me.hidden ? 'success' : 'medium'"
-                      class="status-badge"
-                      size="small"
-                      (click)="toggleVisible(!me.hidden)">
-            <ion-icon [name]="!me.hidden ? 'eye-outline' : 'eye-off-outline'" slot="start"></ion-icon>
-            {{ !me.hidden ? t.common?.visible : t.common?.invisible }}
-          </ion-button>
-
-          <!-- Pastille de Certification Dynamique -->
-          <ion-button
-            *ngIf="currentUser$ | async as me"
-            [color]="getCertificationBadge(me, t).color"
-            [disabled]="getCertificationBadge(me, t).isDisabled"
-            class="status-badge"
-            size="small"
-            [title]="getCertificationBadge(me, t).label"
-            (click)="openCertificationModal(me)">
-
-            <ion-icon [name]="getCertificationBadge(me, t).icon" slot="start"></ion-icon>
-
-            {{ getCertificationBadge(me, t).buttonText }}
-
-            <ion-badge *ngIf="getCertificationBadge(me, t).hasNotification" color="danger"
-                       class="notification-dot"></ion-badge>
-          </ion-button>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- Navigation par Onglets -->
-    <ion-toolbar class="venus-tabs">
-      <ion-segment [(ngModel)]="activeTab" mode="md">
-        <ion-segment-button value="profile">
-          <ion-label
-            [class.tab-error]="isFieldMissing('username', me) || isFieldMissing('description', me) || isFieldMissing('geographicZoneId', me) || isFieldMissing('phone', me) || isFieldMissing('birthday', me) || isFieldMissing('services', me)">
-            {{ t.profile_management?.tabs?.profile }}
-          </ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="photos">
-          <ion-label [class.tab-error]="isFieldMissing('photos', me)">{{ t.profile_management?.tabs?.media }}
-          </ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="settings">
-          <ion-label [class.tab-error]="isFieldMissing('email', me)">{{ t.profile_management?.tabs?.account }}
-          </ion-label>
-        </ion-segment-button>
-      </ion-segment>
-    </ion-toolbar>
-
-    <ion-card class="pm-card ion-no-margin">
-      <ion-card-content>
-
-        <!-- ONGLET PROFIL -->
-        <div *ngIf="activeTab === 'profile'" class="fade-in">
-          <ion-grid class="ion-no-padding">
-            <ion-row>
-              <!-- Username -->
-              <ion-col size="12" size-md="6">
-                <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('username', me)">
-                  <ion-label position="stacked">{{ t.profile_management?.form?.display_name }}</ion-label>
-                  <ion-input type="text"
-                             name="username"
-                             [(ngModel)]="profileForm.username"
-                             [required]="true"
-                             [debounce]="500"
-                             (ionChange)="updateProfileField('username', $event.detail.value)"
-                             [placeholder]="t.profile_management?.form?.display_name_placeholder"></ion-input>
-                </ion-item>
-              </ion-col>
-              <ion-col size="12" size-md="6">
-                <ion-item lines="none" class="venus-input">
-                  <ion-label position="stacked">{{ t.profile_management?.form?.short_desc }}</ion-label>
-                  <ion-input type="text"
-                             name="short description"
-                             [(ngModel)]="profileForm.shortDescription"
-                             [required]="true"
-                             [maxlength]="45"
-                             [debounce]="500"
-                             (ionChange)="updateProfileField('shortDescription', $event.detail.value)"
-                             [placeholder]="t.profile_management?.form?.short_desc_placeholder"></ion-input>
-                </ion-item>
-              </ion-col>
-            </ion-row>
-
-            <ion-row>
-              <!-- Description -->
-              <ion-col size="12">
-                <ion-item lines="none" class="description-container"
-                          [class.invalid-item]="isFieldMissing('description', me)">
-                  <ion-label position="stacked">{{ t.common?.description }} *</ion-label>
-                  <ion-textarea [(ngModel)]="profileForm.description"
-                                [debounce]="500"
-                                [autoGrow]="true"
-                                (ionChange)="updateProfileField('description', $event.detail.value)"
-                                class="description-input"
-                                [placeholder]="t.profile_management?.form?.description_placeholder"></ion-textarea>
-                </ion-item>
-              </ion-col>
-            </ion-row>
-
-            <ion-row>
-              <!-- Localisation -->
-              <ion-col size="12" [class.invalid-selector-box]="isFieldMissing('geographicZoneId', me)">
-                <zone-selector
-                  [zones]="allLocations"
-                  [allowAllOption]="true"
-                  [selectedParentId]="parentZoneId"
-                  [selectedChildId]="childZoneId"
+            </ion-avatar>
+            <ion-fab-button size="small" class="edit-photo-btn">
+              <ion-icon name="camera"></ion-icon>
+            </ion-fab-button>
+          </div>
+          <div class="profile-title">
+            <h1>{{ me.username }}</h1>
+            <div class="badges-container">
+              <!-- Bouton Statut En Ligne / Hors Ligne -->
+              <ion-button [color]="me.available ? 'success' : 'medium'"
+                class="status-badge"
+                size="small"
+                (click)="toggleAvailable(!me.available)">
+                <ion-icon [name]="me.available ? 'chevron-down-circle-outline' : 'close-circle-outline'"
+                slot="start"></ion-icon>
+                {{ me.available ? t.common?.online : t.common?.offline }}
+              </ion-button>
+              <ion-button [color]="!me.hidden ? 'success' : 'medium'"
+                class="status-badge"
+                size="small"
+                (click)="toggleVisible(!me.hidden)">
+                <ion-icon [name]="!me.hidden ? 'eye-outline' : 'eye-off-outline'" slot="start"></ion-icon>
+                {{ !me.hidden ? t.common?.visible : t.common?.invisible }}
+              </ion-button>
+              <!-- Pastille de Certification Dynamique -->
+              @if (currentUser$ | async; as me) {
+                <ion-button
+                  [color]="getCertificationBadge(me, t).color"
+                  [disabled]="getCertificationBadge(me, t).isDisabled"
+                  class="status-badge"
+                  size="small"
+                  [title]="getCertificationBadge(me, t).label"
+                  (click)="openCertificationModal(me)">
+                  <ion-icon [name]="getCertificationBadge(me, t).icon" slot="start"></ion-icon>
+                  {{ getCertificationBadge(me, t).buttonText }}
+                  @if (getCertificationBadge(me, t).hasNotification) {
+                    <ion-badge color="danger"
+                    class="notification-dot"></ion-badge>
+                  }
+                </ion-button>
+              }
+            </div>
+          </div>
+        </section>
+        <!-- Navigation par Onglets -->
+        <ion-toolbar class="venus-tabs">
+          <ion-segment [(ngModel)]="activeTab" mode="md">
+            <ion-segment-button value="profile">
+              <ion-label
+                [class.tab-error]="isFieldMissing('username', me) || isFieldMissing('description', me) || isFieldMissing('geographicZoneId', me) || isFieldMissing('phone', me) || isFieldMissing('birthday', me) || isFieldMissing('services', me)">
+                {{ t.profile_management?.tabs?.profile }}
+              </ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="photos">
+              <ion-label [class.tab-error]="isFieldMissing('photos', me)">{{ t.profile_management?.tabs?.media }}
+              </ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="settings">
+              <ion-label [class.tab-error]="isFieldMissing('email', me)">{{ t.profile_management?.tabs?.account }}
+              </ion-label>
+            </ion-segment-button>
+          </ion-segment>
+        </ion-toolbar>
+        <ion-card class="pm-card ion-no-margin">
+          <ion-card-content>
+            <!-- ONGLET PROFIL -->
+            @if (activeTab === 'profile') {
+              <div class="fade-in">
+                <ion-grid class="ion-no-padding">
+                  <ion-row>
+                    <!-- Username -->
+                    <ion-col size="12" size-md="6">
+                      <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('username', me)">
+                        <ion-label position="stacked">{{ t.profile_management?.form?.display_name }}</ion-label>
+                        <ion-input type="text"
+                          name="username"
+                          [(ngModel)]="profileForm.username"
+                          [required]="true"
+                          [debounce]="500"
+                          (ionChange)="updateProfileField('username', $event.detail.value)"
+                        [placeholder]="t.profile_management?.form?.display_name_placeholder"></ion-input>
+                      </ion-item>
+                    </ion-col>
+                    <ion-col size="12" size-md="6">
+                      <ion-item lines="none" class="venus-input">
+                        <ion-label position="stacked">{{ t.profile_management?.form?.short_desc }}</ion-label>
+                        <ion-input type="text"
+                          name="short description"
+                          [(ngModel)]="profileForm.shortDescription"
+                          [required]="true"
+                          [maxlength]="45"
+                          [debounce]="500"
+                          (ionChange)="updateProfileField('shortDescription', $event.detail.value)"
+                        [placeholder]="t.profile_management?.form?.short_desc_placeholder"></ion-input>
+                      </ion-item>
+                    </ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <!-- Description -->
+                    <ion-col size="12">
+                      <ion-item lines="none" class="description-container"
+                        [class.invalid-item]="isFieldMissing('description', me)">
+                        <ion-label position="stacked">{{ t.common?.description }} *</ion-label>
+                        <ion-textarea [(ngModel)]="profileForm.description"
+                          [debounce]="500"
+                          [autoGrow]="true"
+                          (ionChange)="updateProfileField('description', $event.detail.value)"
+                          class="description-input"
+                        [placeholder]="t.profile_management?.form?.description_placeholder"></ion-textarea>
+                      </ion-item>
+                    </ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <!-- Localisation -->
+                    <ion-col size="12" [class.invalid-selector-box]="isFieldMissing('geographicZoneId', me)">
+                      <zone-selector
+                        [zones]="allLocations"
+                        [allowAllOption]="true"
+                        [selectedParentId]="parentZoneId"
+                        [selectedChildId]="childZoneId"
                   (onZoneSelected)="
                     parentZoneId = $event.parentZoneId;
                     childZoneId = $event.childZoneId;
@@ -162,285 +156,284 @@
                         isNaN(parentZoneId)) ? -1 : ($event.childZoneId ||
                         $event.parentZoneId
                     ))"
-                ></zone-selector>
-              </ion-col>
-            </ion-row>
-
-            <ion-row>
-              <!-- Téléphone -->
-              <ion-col size="12" size-sm="6">
-                <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('phone', me)">
-                  <ion-label position="stacked">{{ t.common?.phone }} *</ion-label>
-                  <ion-input type="tel"
-                             inputmode="tel"
-                             autocomplete="tel"
-                             [maxlength]="20"
-                             [(ngModel)]="profileForm.phone"
-                             (ionInput)="onPhoneInput($event)"
-                             (ionChange)="updateProfileField('phone', $event.detail.value)"
-                             [placeholder]="t.profile_management?.form?.phone_placeholder"></ion-input>
-                </ion-item>
-              </ion-col>
-
-              <!-- Date de Naissance -->
-              <ion-col size="12" size-sm="6">
-                <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('birthday', me)">
-                  <ion-label position="stacked">{{ t.common?.birthdate }} *</ion-label>
-                  <ion-input type="date"
-                             [(ngModel)]="profileForm.birthdate"
-                             (ionInput)="updateProfileField('birthdate', $event.detail.value)">
-                  </ion-input>
-                </ion-item>
-              </ion-col>
-            </ion-row>
-
-            <ion-row>
-              <!-- Silhouette -->
-              <ion-col size="12" size-md="4">
-                <ion-item lines="none" class="venus-input">
-                  <ion-select [label]="t.profile_management?.form?.body_type"
-                              label-placement="stacked"
-                              interface="popover"
-                              [(ngModel)]="profileForm.bodyType"
-                              (ionChange)="updateProfileField('bodyType', $event.detail.value)">
-                    <ion-select-option *ngFor="let key of BODY_TYPES_LIST" [value]="key">
-                      {{ languageService.getBodyTypeLabel(key, t) }}
-                    </ion-select-option>
-                  </ion-select>
-                </ion-item>
-              </ion-col>
-
-              <!-- Cheveux -->
-              <ion-col size="12" size-md="4">
-                <ion-item lines="none" class="venus-input">
-                  <ion-select [label]="t.profile_management?.form?.hair_color"
-                              label-placement="stacked"
-                              interface="popover"
-                              [(ngModel)]="profileForm.hairColor"
-                              (ionChange)="updateProfileField('hairColor', $event.detail.value)">
-                    <ion-select-option *ngFor="let key of HAIR_COLOR_LIST" [value]="key">
-                      {{ languageService.getHairColorLabel(key, t) }}
-                    </ion-select-option>
-                  </ion-select>
-                </ion-item>
-              </ion-col>
-
-              <!-- Yeux -->
-              <ion-col size="12" size-md="4">
-                <ion-item lines="none" class="venus-input">
-                  <ion-select [label]="t.profile_management?.form?.eye_color"
-                              label-placement="stacked"
-                              interface="popover"
-                              [(ngModel)]="profileForm.eyeColor"
-                              (ionChange)="updateProfileField('eyeColor', $event.detail.value)">
-                    <ion-select-option *ngFor="let key of EYES_COLOR_LIST" [value]="key">
-                      {{ languageService.getEyeColorLabel(key, t) }}
-                    </ion-select-option>
-                  </ion-select>
-                </ion-item>
-              </ion-col>
-            </ion-row>
-
-            <ion-row>
-              <!-- Langues Parlées -->
-              <ion-col size="12">
-                <div class="languages-container">
-                  <ion-grid class="ion-no-padding">
-
-                    <ion-label class="section-box-title">
-                      {{ t.profile_management?.form?.languages_title || 'Known languages' }}
-                    </ion-label>
-
-                    <!-- Liste des langues déjà sélectionnées (Chips) -->
-                    <div class="selected-languages-chips ion-margin-bottom"
-                         *ngIf="profileLanguages && profileLanguages.length > 0">
-                      <ion-chip *ngFor="let item of profileLanguages; let i = index" color="primary"
-                                class="language-chip">
-                        <img [src]="languageService.getLanguageMeta(item.language).flag" [alt]="item.language"
-                             class="chip-flag"/>
-                        <ion-label>
-                          <strong>{{ languageService.getLanguageMeta(item.language).label }}</strong>
-                          <span class="chip-level">• {{ languageService.getMasteryLabel(item.level, t) }}</span>
-                        </ion-label>
-                        <button type="button" class="chip-remove"
-                                [attr.aria-label]="(t.common?.delete || 'Supprimer') + ' ' + languageService.getLanguageMeta(item.language).label"
-                                (click)="removeLanguage(i)">
-                          <ion-icon name="trash-outline"></ion-icon>
-                        </button>
-                      </ion-chip>
-                    </div>
-
-                    <p *ngIf="!profileLanguages || profileLanguages.length === 0" class="empty-languages-hint">
-                      {{ t.profile_management?.form?.no_languages || 'Aucune langue ajoutée pour le moment.' }}
-                    </p>
-
-                    <!-- Formulaire rapide pour ajouter une langue -->
-                    <ion-row class="add-language-row ion-align-items-center">
-                      <ion-col size="6" size-md="5">
-                        <ion-item lines="none" class="venus-input input-compact">
-                          <ion-select [(ngModel)]="newLangCode"
-                                      [placeholder]="t.profile_management?.form?.select_language || 'Choisir une langue'"
-                                      interface="popover">
-                            <ion-select-option *ngFor="let lang of languageService.availableLanguages"
-                                               [value]="lang.code"
-                                               [disabled]="isLanguageAlreadyAdded(lang.code)">
-                              {{ lang.label }}
+                      ></zone-selector>
+                    </ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <!-- Téléphone -->
+                    <ion-col size="12" size-sm="6">
+                      <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('phone', me)">
+                        <ion-label position="stacked">{{ t.common?.phone }} *</ion-label>
+                        <ion-input type="tel"
+                          inputmode="tel"
+                          autocomplete="tel"
+                          [maxlength]="20"
+                          [(ngModel)]="profileForm.phone"
+                          (ionInput)="onPhoneInput($event)"
+                          (ionChange)="updateProfileField('phone', $event.detail.value)"
+                        [placeholder]="t.profile_management?.form?.phone_placeholder"></ion-input>
+                      </ion-item>
+                    </ion-col>
+                    <!-- Date de Naissance -->
+                    <ion-col size="12" size-sm="6">
+                      <ion-item lines="none" class="venus-input" [class.invalid-item]="isFieldMissing('birthday', me)">
+                        <ion-label position="stacked">{{ t.common?.birthdate }} *</ion-label>
+                        <ion-input type="date"
+                          [(ngModel)]="profileForm.birthdate"
+                          (ionInput)="updateProfileField('birthdate', $event.detail.value)">
+                        </ion-input>
+                      </ion-item>
+                    </ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <!-- Silhouette -->
+                    <ion-col size="12" size-md="4">
+                      <ion-item lines="none" class="venus-input">
+                        <ion-select [label]="t.profile_management?.form?.body_type"
+                          label-placement="stacked"
+                          interface="popover"
+                          [(ngModel)]="profileForm.bodyType"
+                          (ionChange)="updateProfileField('bodyType', $event.detail.value)">
+                          @for (key of BODY_TYPES_LIST; track key) {
+                            <ion-select-option [value]="key">
+                              {{ languageService.getBodyTypeLabel(key, t) }}
                             </ion-select-option>
-                          </ion-select>
-                        </ion-item>
-                      </ion-col>
-
-                      <ion-col size="6" size-md="4">
-                        <ion-item lines="none" class="venus-input input-compact">
-                          <ion-select [(ngModel)]="newLangLevel"
-                                      [placeholder]="t.profile_management?.form?.select_level || 'Niveau de maîtrise'"
-                                      interface="popover">
-                            <ion-select-option *ngFor="let lvl of languageService.MASTERY_LEVELS" [value]="lvl.value">
-                              {{ languageService.getMasteryLabel(lvl.value, t) }}
+                          }
+                        </ion-select>
+                      </ion-item>
+                    </ion-col>
+                    <!-- Cheveux -->
+                    <ion-col size="12" size-md="4">
+                      <ion-item lines="none" class="venus-input">
+                        <ion-select [label]="t.profile_management?.form?.hair_color"
+                          label-placement="stacked"
+                          interface="popover"
+                          [(ngModel)]="profileForm.hairColor"
+                          (ionChange)="updateProfileField('hairColor', $event.detail.value)">
+                          @for (key of HAIR_COLOR_LIST; track key) {
+                            <ion-select-option [value]="key">
+                              {{ languageService.getHairColorLabel(key, t) }}
                             </ion-select-option>
-                          </ion-select>
-                        </ion-item>
-                      </ion-col>
-
-                      <ion-col size="12" size-md="3">
-                        <ion-button expand="block"
-                                    color="primary"
-                                    class="add-language-btn"
-                                    [disabled]="!newLangCode || !newLangLevel"
-                                    (click)="addLanguage()">
-                          <ion-icon name="add-outline" slot="start"></ion-icon>
-                          {{ t.profile_management?.form?.add_language }}
-                        </ion-button>
-                      </ion-col>
-                    </ion-row>
-
-                  </ion-grid>
-                </div>
-              </ion-col>
-            </ion-row>
-
-            <ion-row>
-              <!-- Services -->
-              <ion-col size="12">
-                <div class="services-container" [class.invalid-container]="isFieldMissing('services', me)">
-                  <ion-grid class="services-grid">
-                    <ion-label class="section-box-title">{{ t.profile_management?.form?.services_title }}</ion-label>
-                    <div class="services-list">
-                      <div class="service-item" *ngFor="let service of allServices">
-                        <ion-checkbox
-                          justify="start"
-                          labelPlacement="end"
-                          [checked]="me.servicesId.includes(service.id)"
-                          (ionChange)="toggleService(me, service.id, $event)">
-                          {{ service.name }}
-                        </ion-checkbox>
-                        <service-info [service]="service"></service-info>
+                          }
+                        </ion-select>
+                      </ion-item>
+                    </ion-col>
+                    <!-- Yeux -->
+                    <ion-col size="12" size-md="4">
+                      <ion-item lines="none" class="venus-input">
+                        <ion-select [label]="t.profile_management?.form?.eye_color"
+                          label-placement="stacked"
+                          interface="popover"
+                          [(ngModel)]="profileForm.eyeColor"
+                          (ionChange)="updateProfileField('eyeColor', $event.detail.value)">
+                          @for (key of EYES_COLOR_LIST; track key) {
+                            <ion-select-option [value]="key">
+                              {{ languageService.getEyeColorLabel(key, t) }}
+                            </ion-select-option>
+                          }
+                        </ion-select>
+                      </ion-item>
+                    </ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <!-- Langues Parlées -->
+                    <ion-col size="12">
+                      <div class="languages-container">
+                        <ion-grid class="ion-no-padding">
+                          <ion-label class="section-box-title">
+                            {{ t.profile_management?.form?.languages_title || 'Known languages' }}
+                          </ion-label>
+                          <!-- Liste des langues déjà sélectionnées (Chips) -->
+                          @if (profileLanguages && profileLanguages.length > 0) {
+                            <div class="selected-languages-chips ion-margin-bottom"
+                              >
+                              @for (item of profileLanguages; track item; let i = $index) {
+                                <ion-chip color="primary"
+                                  class="language-chip">
+                                  <img [src]="languageService.getLanguageMeta(item.language).flag" [alt]="item.language"
+                                    class="chip-flag"/>
+                                  <ion-label>
+                                    <strong>{{ languageService.getLanguageMeta(item.language).label }}</strong>
+                                    <span class="chip-level">• {{ languageService.getMasteryLabel(item.level, t) }}</span>
+                                  </ion-label>
+                                  <button type="button" class="chip-remove"
+                                    [attr.aria-label]="(t.common?.delete || 'Supprimer') + ' ' + languageService.getLanguageMeta(item.language).label"
+                                    (click)="removeLanguage(i)">
+                                    <ion-icon name="trash-outline"></ion-icon>
+                                  </button>
+                                </ion-chip>
+                              }
+                            </div>
+                          }
+                          @if (!profileLanguages || profileLanguages.length === 0) {
+                            <p class="empty-languages-hint">
+                              {{ t.profile_management?.form?.no_languages || 'Aucune langue ajoutée pour le moment.' }}
+                            </p>
+                          }
+                          <!-- Formulaire rapide pour ajouter une langue -->
+                          <ion-row class="add-language-row ion-align-items-center">
+                            <ion-col size="6" size-md="5">
+                              <ion-item lines="none" class="venus-input input-compact">
+                                <ion-select [(ngModel)]="newLangCode"
+                                  [placeholder]="t.profile_management?.form?.select_language || 'Choisir une langue'"
+                                  interface="popover">
+                                  @for (lang of languageService.availableLanguages; track lang) {
+                                    <ion-select-option
+                                      [value]="lang.code"
+                                      [disabled]="isLanguageAlreadyAdded(lang.code)">
+                                      {{ lang.label }}
+                                    </ion-select-option>
+                                  }
+                                </ion-select>
+                              </ion-item>
+                            </ion-col>
+                            <ion-col size="6" size-md="4">
+                              <ion-item lines="none" class="venus-input input-compact">
+                                <ion-select [(ngModel)]="newLangLevel"
+                                  [placeholder]="t.profile_management?.form?.select_level || 'Niveau de maîtrise'"
+                                  interface="popover">
+                                  @for (lvl of languageService.MASTERY_LEVELS; track lvl) {
+                                    <ion-select-option [value]="lvl.value">
+                                      {{ languageService.getMasteryLabel(lvl.value, t) }}
+                                    </ion-select-option>
+                                  }
+                                </ion-select>
+                              </ion-item>
+                            </ion-col>
+                            <ion-col size="12" size-md="3">
+                              <ion-button expand="block"
+                                color="primary"
+                                class="add-language-btn"
+                                [disabled]="!newLangCode || !newLangLevel"
+                                (click)="addLanguage()">
+                                <ion-icon name="add-outline" slot="start"></ion-icon>
+                                {{ t.profile_management?.form?.add_language }}
+                              </ion-button>
+                            </ion-col>
+                          </ion-row>
+                        </ion-grid>
                       </div>
+                    </ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <!-- Services -->
+                    <ion-col size="12">
+                      <div class="services-container" [class.invalid-container]="isFieldMissing('services', me)">
+                        <ion-grid class="services-grid">
+                          <ion-label class="section-box-title">{{ t.profile_management?.form?.services_title }}</ion-label>
+                          <div class="services-list">
+                            @for (service of allServices; track service) {
+                              <div class="service-item">
+                                <ion-checkbox
+                                  justify="start"
+                                  labelPlacement="end"
+                                  [checked]="me.servicesId.includes(service.id)"
+                                  (ionChange)="toggleService(me, service.id, $event)">
+                                  {{ service.name }}
+                                </ion-checkbox>
+                                <service-info [service]="service"></service-info>
+                              </div>
+                            }
+                          </div>
+                        </ion-grid>
+                      </div>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </div>
+            }
+            <!-- ONGLET PHOTOS / MÉDIAS -->
+            @if (activeTab === 'photos') {
+              <div class="fade-in">
+                <div class="drop-zone-container">
+                  <input type="file" #fileInput (change)="onFileSelected($event)"
+                    accept="image/jpeg, image/png, image/webp, video/mp4, video/quicktime, video/webm" multiple
+                    style="display: none">
+                  <div class="drop-zone"
+                    (dragover)="onZoneDragOver($event)"
+                    (dragleave)="onZoneDragLeave()"
+                    (drop)="onZoneDrop($event)"
+                    [class.drop-zone-active]="isZoneActive"
+                    (click)="fileInput.click()">
+                    <ion-icon name="cloud-upload-outline" size="large" color="primary"></ion-icon>
+                    <p>{{ t.profile_management?.media?.drop_title }}
+                      <strong>{{ t.profile_management?.media?.drop_click }}</strong></p>
+                      <p class="format-hint">{{ t.profile_management?.media?.format_hint }}</p>
                     </div>
+                    <ion-button expand="block" (click)="fileInput.click()"
+                      [color]="isFieldMissing('photos', me) ? 'danger' : 'primary'" class="ion-margin">
+                      <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+                      {{ t.profile_management?.media?.add_btn }}
+                    </ion-button>
+                  </div>
+                  <!-- Galerie Photos -->
+                  <div class="media-section-title">
+                    <h3>{{ t.common?.photos }} <span class="required-asterisk">*</span></h3>
+                  </div>
+                  <ion-grid class="ion-no-padding ion-padding-horizontal">
+                    <ion-row>
+                      @for (photo of (photos$ | async); track photo; let i = $index) {
+                        <ion-col size="4" size-md="3"
+                          class="ion-padding-tiny photo-col">
+                          <div class="gallery-item"
+                            draggable="true"
+                            (dragstart)="onDragStart(i)"
+                            (dragover)="onDragOver($event, i)"
+                            (drop)="onDrop(i)"
+                            (dragend)="onDragEnd()"
+                            [class.drag-over]="dragOverIndex === i">
+                            <img [src]="photo.mainThumbUrl ? photo.mainThumbUrl : 'assets/images/default-avatar.jpg'" class="gallery-img"/>
+                            <div class="gallery-actions-overlay">
+                              <ion-button [color]="photo.isMain ? 'warning' : 'light'" fill="clear" size="small"
+                                (click)="setMain(photo); $event.stopPropagation();">
+                                <ion-icon [name]="photo.isMain ? 'star' : 'star-outline'" slot="icon-only"></ion-icon>
+                              </ion-button>
+                              <ion-button color="danger" fill="clear" size="small"
+                                (click)="deletePhoto(photo); $event.stopPropagation();">
+                                <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                              </ion-button>
+                              <div class="drag-handle-icon">
+                                <ion-icon name="move" color="--ion-color-dark"></ion-icon>
+                              </div>
+                            </div>
+                          </div>
+                        </ion-col>
+                      }
+                    </ion-row>
+                  </ion-grid>
+                  <!-- Galerie Vidéos -->
+                  <div class="media-section-title ion-margin-top">
+                    <h3>{{ t.common?.videos }} <span class="optional-text">{{ t.common?.optional }}</span></h3>
+                  </div>
+                  <ion-grid class="ion-no-padding ion-padding-horizontal">
+                    <ion-row>
+                      @for (video of videos$ | async; track video; let i = $index) {
+                        <ion-col size="4" size-md="3"
+                          class="ion-padding-tiny photo-col">
+                          <div class="gallery-item video-gallery-item">
+                            <video [src]="video.url" class="gallery-img" controls preload="metadata"></video>
+                            <div class="gallery-actions-overlay">
+                              <ion-button color="danger" fill="clear" size="small"
+                                (click)="deleteVideo(video); $event.stopPropagation();">
+                                <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                              </ion-button>
+                            </div>
+                          </div>
+                        </ion-col>
+                      }
+                    </ion-row>
                   </ion-grid>
                 </div>
-              </ion-col>
-            </ion-row>
-
-          </ion-grid>
-        </div>
-
-        <!-- ONGLET PHOTOS / MÉDIAS -->
-        <div *ngIf="activeTab === 'photos'" class="fade-in">
-
-          <div class="drop-zone-container">
-            <input type="file" #fileInput (change)="onFileSelected($event)"
-                   accept="image/jpeg, image/png, image/webp, video/mp4, video/quicktime, video/webm" multiple
-                   style="display: none">
-
-            <div class="drop-zone"
-                 (dragover)="onZoneDragOver($event)"
-                 (dragleave)="onZoneDragLeave()"
-                 (drop)="onZoneDrop($event)"
-                 [class.drop-zone-active]="isZoneActive"
-                 (click)="fileInput.click()">
-
-              <ion-icon name="cloud-upload-outline" size="large" color="primary"></ion-icon>
-              <p>{{ t.profile_management?.media?.drop_title }}
-                <strong>{{ t.profile_management?.media?.drop_click }}</strong></p>
-              <p class="format-hint">{{ t.profile_management?.media?.format_hint }}</p>
-            </div>
-
-            <ion-button expand="block" (click)="fileInput.click()"
-                        [color]="isFieldMissing('photos', me) ? 'danger' : 'primary'" class="ion-margin">
-              <ion-icon slot="start" name="add-circle-outline"></ion-icon>
-              {{ t.profile_management?.media?.add_btn }}
-            </ion-button>
-          </div>
-
-          <!-- Galerie Photos -->
-          <div class="media-section-title">
-            <h3>{{ t.common?.photos }} <span class="required-asterisk">*</span></h3>
-          </div>
-          <ion-grid class="ion-no-padding ion-padding-horizontal">
-            <ion-row>
-              <ion-col size="4" size-md="3" *ngFor="let photo of (photos$ | async); let i = index"
-                       class="ion-padding-tiny photo-col">
-                <div class="gallery-item"
-                     draggable="true"
-                     (dragstart)="onDragStart(i)"
-                     (dragover)="onDragOver($event, i)"
-                     (drop)="onDrop(i)"
-                     (dragend)="onDragEnd()"
-                     [class.drag-over]="dragOverIndex === i">
-
-                  <img [src]="photo.mainThumbUrl ? photo.mainThumbUrl : 'assets/images/default-avatar.jpg'" class="gallery-img"/>
-
-                  <div class="gallery-actions-overlay">
-                    <ion-button [color]="photo.isMain ? 'warning' : 'light'" fill="clear" size="small"
-                                (click)="setMain(photo); $event.stopPropagation();">
-                      <ion-icon [name]="photo.isMain ? 'star' : 'star-outline'" slot="icon-only"></ion-icon>
-                    </ion-button>
-
-                    <ion-button color="danger" fill="clear" size="small"
-                                (click)="deletePhoto(photo); $event.stopPropagation();">
-                      <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
-                    </ion-button>
-
-                    <div class="drag-handle-icon">
-                      <ion-icon name="move" color="--ion-color-dark"></ion-icon>
-                    </div>
-                  </div>
+              }
+              <!-- ONGLET COMPTE -->
+              @if (activeTab === 'settings') {
+                <div class="fade-in">
+                  <account-settings [initialEmail]="me.email ? me.email : ''"></account-settings>
                 </div>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-
-          <!-- Galerie Vidéos -->
-          <div class="media-section-title ion-margin-top">
-            <h3>{{ t.common?.videos }} <span class="optional-text">{{ t.common?.optional }}</span></h3>
-          </div>
-          <ion-grid class="ion-no-padding ion-padding-horizontal">
-            <ion-row>
-              <ion-col size="4" size-md="3" *ngFor="let video of videos$ | async; let i = index"
-                       class="ion-padding-tiny photo-col">
-                <div class="gallery-item video-gallery-item">
-                  <video [src]="video.url" class="gallery-img" controls preload="metadata"></video>
-
-                  <div class="gallery-actions-overlay">
-                    <ion-button color="danger" fill="clear" size="small"
-                                (click)="deleteVideo(video); $event.stopPropagation();">
-                      <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
-                    </ion-button>
-                  </div>
-                </div>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
+              }
+            </ion-card-content>
+          </ion-card>
         </div>
-
-        <!-- ONGLET COMPTE -->
-        <div *ngIf="activeTab === 'settings'" class="fade-in">
-          <account-settings [initialEmail]="me.email ? me.email : ''"></account-settings>
-        </div>
-
-      </ion-card-content>
-    </ion-card>
-
-  </div>
-</ion-content>
+      }
+    </ion-content>
+  }

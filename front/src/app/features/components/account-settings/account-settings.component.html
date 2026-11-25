@@ -1,27 +1,21 @@
-<ng-container *ngIf="languageService.currentLanguage$ | async as t">
+@if (languageService.currentLanguage$ | async; as t) {
   <h3 class="section-title">{{ t.account_settings?.title }}</h3>
-
   <form (ngSubmit)="submitForm(t)">
     <ion-grid class="ion-no-padding">
-
       <ion-row>
-
         <ion-col size="12" size-md="6">
           <ion-item lines="none" class="venus-input">
             <ion-label position="stacked">{{ t.account_settings?.email_label || t.common?.email }}</ion-label>
             <ion-input type="email" name="email" [(ngModel)]="form.email" [required]="true" [placeholder]="t.account_settings?.email_placeholder"></ion-input>
           </ion-item>
         </ion-col>
-
         <ion-col size="12" size-md="6">
           <ion-item lines="none" class="venus-input">
             <ion-label position="stacked">{{ t.account_settings?.current_password_label }}</ion-label>
             <ion-input type="password" name="oldPassword" [(ngModel)]="form.oldPassword" [required]="true" [placeholder]="t.account_settings?.current_password_placeholder"></ion-input>
           </ion-item>
         </ion-col>
-
       </ion-row>
-
       <ion-row>
         <ion-col size="12" size-md="6">
           <ion-item lines="none" class="venus-input">
@@ -29,30 +23,31 @@
             <ion-input type="password" name="password" [(ngModel)]="form.password" [placeholder]="t.account_settings?.new_password_placeholder"></ion-input>
           </ion-item>
         </ion-col>
-
         <ion-col size="12" size-md="6">
           <ion-item lines="none" class="venus-input">
             <ion-label position="stacked">{{ t.common?.confirm_password }}</ion-label>
             <ion-input type="password" name="confirmPassword" [(ngModel)]="form.confirmPassword" [placeholder]="t.account_settings?.confirm_password_placeholder"></ion-input>
           </ion-item>
         </ion-col>
-
-        <ion-col size="12" *ngIf="errorMessage" class="ion-padding-top">
-          <div class="feedback-banner error">{{ errorMessage }}</div>
-        </ion-col>
-        <ion-col size="12" *ngIf="successMessage" class="ion-padding-top">
-          <div class="feedback-banner success">{{ successMessage }}</div>
-        </ion-col>
-
+        @if (errorMessage) {
+          <ion-col size="12" class="ion-padding-top">
+            <div class="feedback-banner error">{{ errorMessage }}</div>
+          </ion-col>
+        }
+        @if (successMessage) {
+          <ion-col size="12" class="ion-padding-top">
+            <div class="feedback-banner success">{{ successMessage }}</div>
+          </ion-col>
+        }
         <ion-col size="12" class="ion-text-end ion-margin-top">
           <ion-button type="submit" [disabled]="isSaving" class="save-settings-btn">
-            <ion-spinner name="crescent" slot="start" *ngIf="isSaving"></ion-spinner>
+            @if (isSaving) {
+              <ion-spinner name="crescent" slot="start"></ion-spinner>
+            }
             {{ t.account_settings?.save_btn || t.common?.save }}
           </ion-button>
         </ion-col>
-
       </ion-row>
-
     </ion-grid>
   </form>
-</ng-container>
+}

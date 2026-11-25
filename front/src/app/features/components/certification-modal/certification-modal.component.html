@@ -1,4 +1,4 @@
-<ng-container *ngIf="languageService.currentLanguage$ | async as t">
+@if (languageService.currentLanguage$ | async; as t) {
   <ion-header>
     <ion-toolbar>
       <ion-title>{{ t.certification?.title }}</ion-title>
@@ -7,63 +7,55 @@
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
-
   <ion-content class="ion-padding">
-
     <!-- 🛑 Alerte si l'admin demande une révision -->
-    <div *ngIf="adminMessage" class="admin-feedback-banner">
-      <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
-      <div>
-        <h4>{{ t.certification?.admin_message_title }}</h4>
-        <p>{{ adminMessage }}</p>
+    @if (adminMessage) {
+      <div class="admin-feedback-banner">
+        <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
+        <div>
+          <h4>{{ t.certification?.admin_message_title }}</h4>
+          <p>{{ adminMessage }}</p>
+        </div>
       </div>
-    </div>
-
+    }
     <!-- 📌 Affichage du Code de Vérification -->
     <div class="code-instruction-card">
       <h3>{{ t.certification?.step1_title }}</h3>
       <p>{{ t.certification?.step1_desc }}</p>
-
       <div class="big-verification-code">
         {{ verificationCode }}
       </div>
     </div>
-
     <!-- 📤 Espace d'upload ou Aperçu de la photo -->
     <div class="upload-section">
       <h3>{{ t.certification?.step2_title }}</h3>
-
       <!-- Si une image est sélectionnée ou existe déjà : Affichage de l'aperçu -->
-      <div *ngIf="previewUrl; else dropZoneTemplate" class="image-preview-container">
-        <img [src]="previewUrl" alt="Aperçu certification" class="certification-preview-img" />
-        <ion-button fill="outline" color="medium" size="small" (click)="fileInput.click()">
-          <ion-icon name="refresh-outline" slot="start"></ion-icon>
-          {{ t.certification?.change_photo_btn || 'Changer la photo' }}
-        </ion-button>
-      </div>
-
-      <!-- Sinon : Zone de dépôt classique -->
-      <ng-template #dropZoneTemplate>
+      @if (previewUrl) {
+        <div class="image-preview-container">
+          <img [src]="previewUrl" alt="Aperçu certification" class="certification-preview-img" />
+          <ion-button fill="outline" color="medium" size="small" (click)="fileInput.click()">
+            <ion-icon name="refresh-outline" slot="start"></ion-icon>
+            {{ t.certification?.change_photo_btn || 'Changer la photo' }}
+          </ion-button>
+        </div>
+      } @else {
         <div class="drop-zone" (click)="fileInput.click()">
           <ion-icon name="cloud-upload-outline" size="large"></ion-icon>
           <p>{{ t.certification?.drop_zone_text }}</p>
           <span class="format-hint">{{ t.certification?.format_hint }}</span>
         </div>
-      </ng-template>
-
+      }
+      <!-- Sinon : Zone de dépôt classique -->
       <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;" />
-
       <!-- Texte additionnel via le service de langues (à adapter dans tes JSON) -->
       <p class="preview-helper-text">
         {{ t.certification?.preview_helper_text}}
       </p>
-
       <!-- Bouton d'envoi final -->
       <ion-button expand="block" color="primary" [disabled]="!selectedFile && !existingPhotoUrl" (click)="submitCertificationPhoto()" class="ion-margin-top">
         <ion-icon name="send-outline" slot="start"></ion-icon>
         {{ t.certification?.submit_btn }}
       </ion-button>
     </div>
-
   </ion-content>
-</ng-container>
+}

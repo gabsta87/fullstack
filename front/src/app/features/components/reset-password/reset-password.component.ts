@@ -4,7 +4,7 @@ import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/
 import {ActivatedRoute, Router} from '@angular/router';
 import {IonText, ModalController} from '@ionic/angular/standalone';
 import {IonButton, IonContent, IonIcon, IonInput, IonItem, IonSpinner} from "@ionic/angular/standalone";
-import {AsyncPipe, NgIf} from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import {AuthService} from "../../services/auth.service";
 import {ForgotPasswordComponent} from "../forgot-password/forgot-password.component";
 import {LanguageManagerService} from "../../services/language-manager.service";
@@ -14,17 +14,16 @@ import {LanguageManagerService} from "../../services/language-manager.service";
     templateUrl: './reset-password.component.html',
     styleUrls: ['./reset-password.component.scss'],
     imports: [
-        IonContent,
-        ReactiveFormsModule,
-        IonItem,
-        IonInput,
-        IonButton,
-        IonSpinner,
-        IonIcon,
-        NgIf,
-        AsyncPipe,
-        IonText
-    ]
+    IonContent,
+    ReactiveFormsModule,
+    IonItem,
+    IonInput,
+    IonButton,
+    IonSpinner,
+    IonIcon,
+    AsyncPipe,
+    IonText
+]
 })
 export class ResetPasswordComponent implements OnInit {
   resetForm!: FormGroup;

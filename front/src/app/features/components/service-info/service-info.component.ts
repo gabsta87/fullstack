@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {IonIcon, IonPopover} from '@ionic/angular/standalone';
 import {addIcons} from 'ionicons';
 import {informationCircleOutline} from 'ionicons/icons';
@@ -19,35 +19,39 @@ let nextId = 0;
  */
 @Component({
     selector: 'service-info',
-    imports: [CommonModule, IonIcon, IonPopover],
+    imports: [IonIcon, IonPopover],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
     <span class="trigger"
-          [id]="hasDescription ? triggerId : null"
-          [class.interactive]="hasDescription"
-          [attr.role]="hasDescription ? 'button' : null"
-          [attr.tabindex]="hasDescription ? 0 : null"
-          [attr.aria-label]="hasDescription ? service.name : null"
-          (click)="hasDescription && $event.stopPropagation()">
+      [id]="hasDescription ? triggerId : null"
+      [class.interactive]="hasDescription"
+      [attr.role]="hasDescription ? 'button' : null"
+      [attr.tabindex]="hasDescription ? 0 : null"
+      [attr.aria-label]="hasDescription ? service.name : null"
+      (click)="hasDescription && $event.stopPropagation()">
       <ng-content></ng-content>
-      <ion-icon *ngIf="hasDescription" name="information-circle-outline" class="info-icon"></ion-icon>
+      @if (hasDescription) {
+        <ion-icon name="information-circle-outline" class="info-icon"></ion-icon>
+      }
     </span>
-
-    <ion-popover *ngIf="hasDescription"
-                 class="service-info-popover"
-                 [trigger]="triggerId"
-                 [triggerAction]="triggerAction"
-                 side="top"
-                 alignment="center"
-                 [showBackdrop]="false">
-      <ng-template>
-        <div class="service-info-body">
-          <strong>{{ service.name }}</strong>
-          <p>{{ service.description }}</p>
-        </div>
-      </ng-template>
-    </ion-popover>
-  `,
+    
+    @if (hasDescription) {
+      <ion-popover
+        class="service-info-popover"
+        [trigger]="triggerId"
+        [triggerAction]="triggerAction"
+        side="top"
+        alignment="center"
+        [showBackdrop]="false">
+        <ng-template>
+          <div class="service-info-body">
+            <strong>{{ service.name }}</strong>
+            <p>{{ service.description }}</p>
+          </div>
+        </ng-template>
+      </ion-popover>
+    }
+    `,
     styles: [`
     :host { display: inline-flex; align-items: center; min-width: 0; }
 
