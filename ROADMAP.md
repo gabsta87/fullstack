@@ -11,6 +11,7 @@ Cocher `[x]` quand c'est mergé dans `master`.
 
 Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 
+- [ ] phpmyadmin de mon NAS doit être accessible depuis mon réseau local, pas uniquement depuis le NAS, comme c'était le cas avant les modifications que tu as faites.
 - [ ] front : afficher l'espace utilisé sur la page profile-management
 - [ ] front : le guard profil bloque l'accès à un profil banni (sauf admins) — *backend fait dans `chore/tests` : `GET /workers/{id}` répond 404 pour un profil non public, sauf admin/propriétaire*
 - [ ] front : les admins voient tous les champs requis de chaque profil dans le tableau (détecter les problèmes de validité)
@@ -20,9 +21,16 @@ Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 - [ ] test : les admins voient-ils en live les modifications des autres admins (SSE) ?
 - [ ] front : supprimer la clé `account.favorites.title` de `data.json`
 - [x] front : onglets cassés (admin, profile-management) — balises Ionic jamais enregistrées ; corrigé par `ionic-elements.ts` (vérifié en test et en CI)
-- [ ] front : simplifier les textes pour les régions (au lieu de "choisir une région" -> Région / localisation) afin de gagner de la place
+- [ ] front : simplifier les textes afin de gagner de la place
+  - "choisir une région" -> Région
+  - "localisation précise" -> Localisation
+  - Certificaiton du profil -> Certification
 - [ ] serv : nettoyer les noms de tables (`@Table(name = …)`) en corrigeant et utilisant la classe TablesNames
-- [ ] s'assurer du fonctionnement des SSEStream pour que les admins soient notifiés en temps réel des actions des autres admins. Ainsi que les annonceurs notifiés des modifs des amins sur leur propre profile-management 
+- [ ] front : affichage des espaces pour rendre les numéros de téléphone plus lisibles.
+- [ ] front : profile management : ajout d'une langue : choix du niveau de maitrise pas encore traduits selon la langue choisie.
+- [ ] front : le bouton escape quand on est dans le champ de recherche par nom doit vider le champ
+- [ ] front : lors de la première visite du site, un message doit s'afficher pour préciser que le site est réservé à un public adulte. Il s'agit d'un texte légal qui doit être stocké dans la DB, et qui doit être affiché en plusieurs langues. L'utilisateur peut quitter le site, ou accepter.
+- [ ] s'assurer du fonctionnement des SSEStream pour que les admins soient notifiés en temps réel des actions des autres admins. Ainsi que les annonceurs notifiés des modifs des amins sur leur propre profile-management
 
 ## 2. Prêt — fonctionnalités (une branche chacune)
 
@@ -64,7 +72,7 @@ Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 - [x] visiteurs anonymes bloqués (401 partout, y compris la connexion) quand le navigateur gardait un jeton de l'ancien déploiement : sur les routes publiques un jeton invalide est désormais ignoré (`PublicAccessTest`)
 - [x] connexion refusée (403 CORS) quand le site est servi sur un port non standard : nginx transmet l'hôte, le port et le protocole publics
 
-- [ ] **Déploiement** : créer le secret GitHub `JWT_SECRET` (≥ 32 caractères, ex. `openssl rand -base64 48`) avant de merger — sinon le déploiement s'arrête
+- [x] **Déploiement** : créer le secret GitHub `JWT_SECRET` (≥ 32 caractères, ex. `openssl rand -base64 48`) avant de merger — sinon le déploiement s'arrête
 - [x] infra : phpMyAdmin n'écoute plus que sur `127.0.0.1:8082` du NAS (accès via tunnel SSH)
 - [x] infra : photos de certification stockées hors de `/media` (volume `private-media`), servies uniquement aux admins par l'API ; migration automatique des anciennes photos au démarrage
 - [ ] infra : limitation de débit par IP dans nginx (`limit_req`) pour inscription / login / reset, une fois la vraie IP client connue derrière le reverse proxy Synology
