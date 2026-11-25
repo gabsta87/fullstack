@@ -7,8 +7,8 @@ Il décrit le projet, les conventions et la façon de travailler ensemble.
 
 - **front/** : Angular 22 + Ionic 8 (+ PrimeNG 22), Node 24 (`front/.nvmrc`), servi par nginx.
 - **serv/** : Spring Boot 4.1 (Java 21, Gradle 8.14 Kotlin DSL), package `com.serv`.
-- **DB** : MySQL 8.4 LTS (`docker-compose.yml`, `ddl-auto: update`). Montées de version MySQL : une LTS à la fois, sauvegarde avant.
-- **Déploiement** : `.github/workflows/deploy.yml` — **chaque push sur `master` déploie en production** (runner self-hosted sur le NAS).
+- **DB** : MySQL 9.7 LTS (`docker-compose.yml`, `ddl-auto: update`). Montées de version MySQL : une LTS à la fois, sauvegarde avant.
+- **Déploiement** : `.github/workflows/deploy.yml` — **chaque push sur `master` déploie sur le staging** (runner self-hosted sur le NAS).
 - Pour l'instant **le site est gratuit** : ne rien développer autour du paiement (Stripe, tarification, achat de temps) sans demande explicite.
 
 ## Commandes utiles

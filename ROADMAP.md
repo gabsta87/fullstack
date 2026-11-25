@@ -12,25 +12,31 @@ Cocher `[x]` quand c'est mergé dans `master`.
 Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 
 - [x] phpmyadmin de mon NAS doit être accessible depuis mon réseau local, pas uniquement depuis le NAS, comme c'était le cas avant les modifications que tu as faites. *Port 8082 ouvert sur le réseau local ; ne jamais le rediriger sur la box. Sur un serveur public : `PHPMYADMIN_BIND=127.0.0.1`.*
-- [ ] front : afficher l'espace utilisé en Mo et % sur la page profile-management pour les images/vidéos
-- [ ] front : le guard profil bloque l'accès à un profil banni (sauf admins) — *backend fait dans `chore/tests` : `GET /workers/{id}` répond 404 pour un profil non public, sauf admin/propriétaire*
-- [ ] front : les admins voient quels champs sont manquants pour qu'un profil soit valide (détecter les problèmes de validité). si cela est compliqué sur le dashboard, on va faire une page d'administration d'un profil pour les admins. Ils y ont accès en cliquant sur un profil depuis le dashboard.
+- [x] front : afficher l'espace utilisé en Mo et % sur la page profile-management pour les images/vidéos — *barre sous le bouton d'ajout, `GET /account/worker/storage`*
+- [x] front : le guard profil bloque l'accès à un profil banni (sauf admins) — *un profil non public (404) renvoie à la galerie*
+- [x] front : les admins voient quels champs sont manquants pour qu'un profil soit valide — *affichés sous le nom dans la table utilisateurs (`profileIssues` : champs manquants, mineur, expiré) ; la page d'administration d'un profil reste possible plus tard*
 - [x] front : les profils favoris sont marqués comme favoris sur la homepage
 - [x] serv : sécuriser la demande de certification côté backend (refuser si déjà certifié / en cours de revue) — `chore/tests`
-- [ ] front+serv : debug — le worker ne voit pas la mise à jour de certification en live (SSE) — *cause probable corrigée dans `chore/tests` (le front lisait un rôle absent du JWT) ; à vérifier en conditions réelles*
-- [ ] test : les admins voient-ils en live les modifications des autres admins (SSE) ?
-- [ ] front : supprimer la clé `account.favorites.title` de `data.json`
+- [x] front+serv : debug — le worker ne voit pas la mise à jour de certification en live (SSE) — *vérifié sur la stack locale : l'annonceur reçoit `CERTIFIED` dès l'approbation*
+- [x] test : les admins voient-ils en live les modifications des autres admins (SSE) ? — *non : les événements partaient avant le commit, et le flux n'était pas rouvert après une reconnexion. Corrigé et vérifié (tables utilisateurs et journal mis à jour en direct)*
+- [x] front : supprimer la clé `account.favorites.title` de `data.json`
 - [x] front : onglets cassés (admin, profile-management) — balises Ionic jamais enregistrées ; corrigé par `ionic-elements.ts` (vérifié en test et en CI)
-- [ ] front : simplifier les textes afin de gagner de la place
-  - "choisir une région" -> Région
-  - "localisation précise" -> Localisation
-  - Certificaiton du profil -> Certification
-- [ ] serv : nettoyer les noms de tables (`@Table(name = …)`) en corrigeant et utilisant la classe TablesNames
-- [ ] front : affichage des espaces pour rendre les numéros de téléphone plus lisibles.
-- [ ] front : profile management : ajout d'une langue : choix du niveau de maitrise pas encore traduits selon la langue choisie.
-- [ ] front : le bouton escape quand on est dans le champ de recherche par nom doit vider le champ
-- [ ] front : lors de la première visite du site, un message doit s'afficher pour préciser que le site est réservé à un public adulte. Il s'agit d'un texte légal qui doit être stocké dans la DB, et qui doit être affiché en plusieurs langues. L'utilisateur peut quitter le site, ou accepter.
-- [ ] s'assurer du fonctionnement des SSEStream pour que les admins soient notifiés en temps réel des actions des autres admins. Ainsi que les annonceurs notifiés des modifs des amins sur leur propre profile-management
+- [x] front : simplifier les textes afin de gagner de la place (Région, Localisation, Certification — dans les 9 langues)
+- [x] serv : nettoyer les noms de tables — *`TableNames` (renommée) couvre toutes les tables ; schéma généré identique, vérifié par `TableNamesTest`*
+- [x] front : affichage des espaces pour rendre les numéros de téléphone plus lisibles — *« +41 79 123 45 67 » (libphonenumber-js) ; lien WhatsApp corrigé au passage*
+- [x] front : profile management : ajout d'une langue : choix du niveau de maitrise pas encore traduits selon la langue choisie
+- [x] front : le bouton escape quand on est dans le champ de recherche par nom doit vider le champ
+- [x] front : lors de la première visite du site, un message doit s'afficher pour préciser que le site est réservé à un public adulte (texte légal en DB, plusieurs langues, quitter ou accepter) — *table `legal_text` versionnée par langue, texte initial dans `serv/src/main/resources/legal/`. **Le texte est une proposition : à faire valider (juridiquement) par le propriétaire.** L'acceptation est mémorisée dans le navigateur (version acceptée) ; la modifier passe par `POST /admin/legal` en attendant l'écran admin (`feat/legal-texts-admin`)*
+- [x] ajouter la documentation (en anglais) pour tout le projet, concise — *`README.md`, `serv/README.md`, `front/README.md`*
+- [x] s'assurer du fonctionnement des SSEStream (admins notifiés des actions des autres admins ; annonceurs notifiés des modifs des admins) — *bannissement → déconnexion immédiate de l'annonceur ; verrouillage, certification → profil mis à jour en direct*
+- [x] corrigés en vérifiant : session non restaurée quand on ouvrait directement une page publique (profil affiché comme visiteur) ; photos invisibles sur profile-management en production (`/api/media` → 404)
+
+### Notes laissées pour plus tard
+
+- [ ] serv : deux endpoints de suppression de commentaire par un admin font la même chose (`DELETE /admin/comments/{id}` et `/admin/comment/{id}`) : n'en garder qu'un
+- [ ] serv : la colonne `legal_text.content` (varchar 255) n'est plus utilisée (remplacée par `body`) : à supprimer à la main (`ALTER TABLE legal_text DROP COLUMN content`) ou avec un outil de migration (Flyway) le jour où il y aura de vraies données
+- [ ] admins : les modifications faites par un annonceur sur son propre profil ne rafraîchissent pas la table admin en direct (seulement les actions admin) — à faire si utile, la table étant déjà lourde (`feat/admin-users-table`)
+- [ ] e-mails : envoyés dans la langue du site au moment de la demande ; un e-mail déclenché plus tard (alerte de ville) devra stocker la langue préférée de l'utilisateur
 
 ## 2. Prêt — fonctionnalités (une branche chacune)
 
@@ -58,7 +64,7 @@ Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
   - [x] front : tests Angular (`ng test`) — intercepteur JWT, AuthService (SSE inclus), guards, formulaire de connexion, utilitaires, photo de certification — 51 tests
   - [x] CI : tests backend + front sur GitHub avant tout déploiement (et sur chaque pull request)
 - [x] `chore/english-docs` — commentaires et noms de tests en anglais (~450 commentaires, code inchangé vérifié automatiquement)
-  - [ ] textes encore en français codés en dur (hors traductions) : messages d'erreur de l'API, e-mails, quelques messages du front (`errorMsg`, `alert`) → à passer par `data.json` / des clés de traduction
+  - [x] textes encore en français codés en dur : messages de l'API et journal admin en anglais ; e-mails traduits dans les 9 langues (`messages*.properties`, langue du site envoyée par le front) ; messages du front (`alert`, `confirm`, erreurs) dans `data.json` (section `messages`)
 - [x] `chore/logging` — logs SLF4J avec id de requête, événements `SECURITY` / `ADMIN` sans données personnelles, rotation des logs Docker, plus de `console.log` côté front
 - [x] `chore/warnings` — zéro warning au démarrage Spring, à la compilation Java (`-Xlint:all` activé en permanence), au build Angular et dans les tests
 - [x] `chore/refactoring` — code mort supprimé (composant Stripe, services et resolver inutilisés), Angular Material retiré, CSS globaux chargés une seule fois (plus de Sass `@import`), build Angular moderne (esbuild, 844 → 491 paquets npm) ; rendu vérifié par 30 captures comparées pixel par pixel. Le SCSS des composants n'avait presque pas de duplication : pas de factorisation forcée
