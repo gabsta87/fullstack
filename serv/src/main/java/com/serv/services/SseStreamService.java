@@ -21,8 +21,15 @@ public class SseStreamService {
     /** A user (or admin) rarely has more tabs open; older connections are closed beyond this. */
     static final int MAX_STREAMS_PER_USER = 5;
 
+    /** Idle streams are closed after 30 minutes; the browser's EventSource reconnects by itself. */
+    private static final long STREAM_TIMEOUT_MS = 30 * 60 * 1000L;
+
     public SseEmitter createStream(UUID userId) {
-        SseEmitter emitter = new SseEmitter(30 * 60 * 1000L);
+        return createStream(userId, new SseEmitter(STREAM_TIMEOUT_MS));
+    }
+
+    /** Package-private: lets tests observe what is sent. */
+    SseEmitter createStream(UUID userId, SseEmitter emitter) {
         List<SseEmitter> existing = emitters.computeIfAbsent(userId, k -> new CopyOnWriteArrayList<>());
         while (existing.size() >= MAX_STREAMS_PER_USER) {
             SseEmitter oldest = existing.remove(0);
@@ -58,25 +65,42 @@ public class SseStreamService {
     }
 
     /**
-     * Sends any kind of event to a user.
+     * Runs the action once the current transaction has committed (right away outside a transaction).
+     * Receivers reload data when notified: they must never read the state from before the change.
      */
-    public void emitEvent(UUID userId, String eventName, Object data) {
-        // Inside a transaction (@Transactional)?
-        if (TransactionSynchronizationManager.isActualTransactionActive()) {
-
-            // Then emit through a Spring synchronization hook
+    private static void afterCommit(Runnable action) {
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
                 @Override
                 public void afterCommit() {
-                    // Runs ONLY once the database has committed the write
-                    executeEmission(userId, eventName, data);
+                    action.run();
                 }
             });
-
         } else {
-            // No transaction (e.g. GET /me): emit right away
-            executeEmission(userId, eventName, data);
+            action.run();
         }
+    }
+
+    /**
+     * Sends any kind of event to a user, after the commit of the current transaction.
+     */
+    public void emitEvent(UUID userId, String eventName, Object data) {
+        afterCommit(() -> executeEmission(userId, eventName, data));
+    }
+
+    /**
+     * Tells the user's open pages that the session is over (ban, deletion), then closes their streams.
+     */
+    public void endSession(UUID userId) {
+        afterCommit(() -> {
+            executeEmission(userId, "session-expired", "");
+            List<SseEmitter> userEmitters = emitters.remove(userId);
+            if (userEmitters != null) {
+                for (SseEmitter emitter : userEmitters) {
+                    try { emitter.complete(); } catch (Exception ignored) {}
+                }
+            }
+        });
     }
 
     public void broadcastEvent(String eventName, Object data) {
@@ -122,7 +146,10 @@ public class SseStreamService {
     private final Map<UUID, List<SseEmitter>> adminEmittersById = new ConcurrentHashMap<>();
 
     public SseEmitter createAdminStream(UUID adminId) {
-        SseEmitter emitter = new SseEmitter(30 * 60 * 1000L);
+        return createAdminStream(adminId, new SseEmitter(STREAM_TIMEOUT_MS));
+    }
+
+    SseEmitter createAdminStream(UUID adminId, SseEmitter emitter) {
         List<SseEmitter> own = adminEmittersById.computeIfAbsent(adminId, k -> new CopyOnWriteArrayList<>());
         while (own.size() >= MAX_STREAMS_PER_USER) {
             SseEmitter oldest = own.remove(0);
@@ -148,7 +175,12 @@ public class SseStreamService {
         return list == null ? 0 : list.size();
     }
 
+    /** Notifies every connected admin, after the commit of the current transaction. */
     public void broadcastAdminEvent(String eventName, Object data) {
+        afterCommit(() -> sendToAdmins(eventName, data));
+    }
+
+    private void sendToAdmins(String eventName, Object data) {
         List<SseEmitter> emittersCopy = new ArrayList<>(adminEmitters);
         for (SseEmitter emitter : emittersCopy) {
             try {

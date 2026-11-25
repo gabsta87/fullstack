@@ -102,6 +102,8 @@ public class AdminController {
 
         // Audit Log
         logAdminAction(admin, "DELETE_USER", "null", "Account deleted " + userToDelete.getEmail());
+        sseStreamService.broadcastAdminEvent("USERS_UPDATED", id);
+        sseStreamService.endSession(id);
 
         return ResponseEntity.ok(Map.of("message", "User deleted successfully"));
     }
@@ -140,6 +142,14 @@ public class AdminController {
 
         VenusUser savedUser = userRepository.save(targetUser);
         logAdminAction(admin, "UPDATE_WORKER_STATUS", targetUser, "Profile updated -> " + changes.toString().trim());
+
+        // Live updates: the other admins refresh their table, the advertiser sees the change (or is logged out)
+        sseStreamService.broadcastAdminEvent("USERS_UPDATED", savedUser.getId());
+        if (savedUser.isBanned()) {
+            sseStreamService.endSession(savedUser.getId());
+        } else if (savedUser instanceof Worker worker) {
+            sseStreamService.emitEvent(worker.getId(), "account-update", WorkerFullProfileDTO.from(worker));
+        }
 
         return ResponseEntity.ok(AdminUserDTO.from(savedUser));
     }
@@ -651,6 +661,7 @@ public class AdminController {
 
         // 3. Send the invitation (password reset flow in invitation mode)
         passwordResetService.createTokenAndSendEmail(newAdmin, true);
+        sseStreamService.broadcastAdminEvent("USERS_UPDATED", newAdmin.getId());
 
         // 4. Audit Log
         String snapshotJson = String.format("{\"invited_email\": \"%s\", \"role_assigned\": \"ADMIN\"}", email);
@@ -712,5 +723,6 @@ public class AdminController {
         }
 
         auditLogRepository.save(log);
+        sseStreamService.broadcastAdminEvent("AUDIT_LOG_UPDATED", actionType);
     }
 }
