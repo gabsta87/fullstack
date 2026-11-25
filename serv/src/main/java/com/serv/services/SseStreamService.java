@@ -18,8 +18,16 @@ public class SseStreamService {
     // Permet de stocker PLUSIEURS connexions actives pour un même UUID utilisateur
     private final Map<UUID, List<SseEmitter>> emitters = new ConcurrentHashMap<>();
 
+    /** A user (or admin) rarely has more tabs open; older connections are closed beyond this. */
+    static final int MAX_STREAMS_PER_USER = 5;
+
     public SseEmitter createStream(UUID userId) {
         SseEmitter emitter = new SseEmitter(30 * 60 * 1000L);
+        List<SseEmitter> existing = emitters.computeIfAbsent(userId, k -> new CopyOnWriteArrayList<>());
+        while (existing.size() >= MAX_STREAMS_PER_USER) {
+            SseEmitter oldest = existing.remove(0);
+            try { oldest.complete(); } catch (Exception ignored) {}
+        }
         try {
             emitter.send(SseEmitter.event()
                     .name("init")
@@ -111,16 +119,33 @@ public class SseStreamService {
     // ADMINS
 
     private final List<SseEmitter> adminEmitters = new CopyOnWriteArrayList<>();
+    private final Map<UUID, List<SseEmitter>> adminEmittersById = new ConcurrentHashMap<>();
 
     public SseEmitter createAdminStream(UUID adminId) {
         SseEmitter emitter = new SseEmitter(30 * 60 * 1000L);
+        List<SseEmitter> own = adminEmittersById.computeIfAbsent(adminId, k -> new CopyOnWriteArrayList<>());
+        while (own.size() >= MAX_STREAMS_PER_USER) {
+            SseEmitter oldest = own.remove(0);
+            adminEmitters.remove(oldest);
+            try { oldest.complete(); } catch (Exception ignored) {}
+        }
+        own.add(emitter);
         adminEmitters.add(emitter);
 
-        emitter.onCompletion(() -> adminEmitters.remove(emitter));
-        emitter.onTimeout(() -> { emitter.complete(); adminEmitters.remove(emitter); });
-        emitter.onError((e) -> { emitter.completeWithError(e); adminEmitters.remove(emitter); });
+        Runnable cleanup = () -> {
+            adminEmitters.remove(emitter);
+            own.remove(emitter);
+        };
+        emitter.onCompletion(cleanup);
+        emitter.onTimeout(() -> { emitter.complete(); cleanup.run(); });
+        emitter.onError((e) -> { emitter.completeWithError(e); cleanup.run(); });
 
         return emitter;
+    }
+
+    int activeStreamCount(UUID userId) {
+        List<SseEmitter> list = emitters.get(userId);
+        return list == null ? 0 : list.size();
     }
 
     public void broadcastAdminEvent(String eventName, Object data) {

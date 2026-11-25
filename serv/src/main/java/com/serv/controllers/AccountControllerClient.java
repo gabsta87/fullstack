@@ -12,6 +12,7 @@ import com.serv.dto.GalleryFiltersDTO;
 import com.serv.dto.ReportDTO;
 import com.serv.requests.CommentRequest;
 import com.serv.services.WorkerService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,6 +57,7 @@ public class AccountControllerClient {
     @Transactional
     public ResponseEntity<?> addFavorite(@PathVariable UUID workerId, Client clientArg) {
         Worker worker = workerRepository.findById(workerId)
+                .filter(Worker::isValid)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found."));
 
         Client client = clientRepository.findById(clientArg.getId())
@@ -94,20 +96,20 @@ public class AccountControllerClient {
 
     @PostMapping("/report-account")
     @Transactional
-    public ResponseEntity<?> reportWorker(@RequestBody com.serv.requests.Report body, Client clientArg){
+    public ResponseEntity<?> reportWorker(@Valid @RequestBody com.serv.requests.Report body, Client clientArg){
         Client c = clientRepository.findById(clientArg.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
 
-        Worker w = workerRepository.findById(UUID.fromString(body.workerId())).orElseThrow(
+        Worker w = workerRepository.findById(body.workerId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Targeted announcer not found")
         );
 
         Report r = reportRepository.findByWorkerAndAuthor(w, c).orElse(null);
         if(r == null){
-            r = new Report(w, c, body.reason());
+            r = new Report(w, c, body.reason().trim());
             reportRepository.save(r);
         }else if(r.getStatus() == ReportStatus.PENDING){
-            r.setReason(body.reason());
+            r.setReason(body.reason().trim());
         }else{
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Account already reported");
         }
@@ -117,23 +119,26 @@ public class AccountControllerClient {
 
     @PostMapping("/comment")
     @Transactional
-    public ResponseEntity<?> writeComment(@RequestBody CommentRequest body, Client clientArg) {
+    public ResponseEntity<?> writeComment(@Valid @RequestBody CommentRequest body, Client clientArg) {
         Client c = clientRepository.findById(clientArg.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
 
-        Worker w = workerRepository.findById(UUID.fromString(body.workerId())).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Targeted announcer not found")
-        );
+        // Comments can only target profiles that are publicly visible.
+        Worker w = workerRepository.findById(body.workerId())
+                .filter(Worker::isValid)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Targeted announcer not found"));
+
+        String content = body.content().trim();
 
         Comment comm = commentRepository.findByAuthorAndWorker(c, w).orElse(null);
 
         if(comm == null){
             // New comment
-            comm = new Comment(c,w,body.content());
+            comm = new Comment(c, w, content);
             commentRepository.save(comm);
         }else{
             // Edit comment
-            comm.setContent(body.content());
+            comm.setContent(content);
             comm.refreshDate();
             commentRepository.save(comm);
         }

@@ -1,4 +1,14 @@
 package com.serv.requests;
 
-public record Report(String reason, String workerId) {
+import com.serv.common.InputLimits;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+import java.util.UUID;
+
+public record Report(
+        @NotBlank @Size(max = InputLimits.REASON_MAX) String reason,
+        @NotNull UUID workerId
+) {
 }

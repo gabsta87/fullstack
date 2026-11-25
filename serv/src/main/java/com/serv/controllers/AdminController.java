@@ -9,6 +9,8 @@ import com.serv.requests.admin.*;
 import com.serv.services.PasswordResetService;
 import com.serv.services.SseStreamService;
 import com.serv.services.UserCleanupService;
+import com.serv.common.InputLimits;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -91,6 +93,7 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("error", "An admin cannot suppress himself"));
         }
+        requireAuthorityOver(admin, userToDelete);
 
         // Appel du service de nettoyage et de suppression
         userCleanupService.deleteUserCompletely(userToDelete);
@@ -117,6 +120,11 @@ public class AdminController {
         VenusUser targetUser = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found"));
 
+        if (targetUser.getId().equals(admin.getId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "An admin cannot change his own status.");
+        }
+        requireAuthorityOver(admin, targetUser);
+
         StringBuilder changes = new StringBuilder();
 
         if (req.locked() != null) {
@@ -136,11 +144,11 @@ public class AdminController {
 
     @PostMapping("/profiles/update-days")
     @Transactional
-    public ResponseEntity<?> updateDays(@RequestBody UpdateWorkerDays req, Admin admin) {
-        Worker targetWorker = workerRepository.findById(UUID.fromString(req.workerId()))
+    public ResponseEntity<?> updateDays(@Valid @RequestBody UpdateWorkerDays req, Admin admin) {
+        Worker targetWorker = workerRepository.findById(req.workerId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found"));
 
-        int oldDays = targetWorker.getRemainingDaysCredit();
+        int oldDays = targetWorker.getRemainingDaysCredit() != null ? targetWorker.getRemainingDaysCredit() : 0;
         targetWorker.setRemainingDaysCredit(req.newDaysValue());
 
         Worker savedWorker = workerRepository.save(targetWorker);
@@ -204,11 +212,17 @@ public class AdminController {
 
     @PostMapping("/profiles/verify-certification")
     @Transactional
-    public ResponseEntity<?> processCertification(@RequestBody CertificationReviewDTO dto, Admin admin) {
+    public ResponseEntity<?> processCertification(@Valid @RequestBody CertificationReviewDTO dto, Admin admin) {
         CertificationRequest request = certificationRequestRepository.findById(dto.requestId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found"));
 
         Worker worker = request.getWorker();
+        if (worker == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found");
+        }
+        if (request.getStatus() != CertificationStatus.PENDING_APPROVAL) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "This request is not awaiting approval.");
+        }
 
         CertificationRequest saved;
 
@@ -242,9 +256,12 @@ public class AdminController {
 
     @Transactional
     @PostMapping("/profiles/revoke-certification")
-    public ResponseEntity<?> revokeCertification(@RequestBody CertificationRevocationDTO dto, Admin admin) {
+    public ResponseEntity<?> revokeCertification(@Valid @RequestBody CertificationRevocationDTO dto, Admin admin) {
         Worker worker = workerRepository.findById(dto.workerId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found"));
+        if (worker.getLastCertificationRequest() == null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "This worker has no certification.");
+        }
 
         worker.clearCertification();
 
@@ -268,13 +285,17 @@ public class AdminController {
      */
     @PostMapping("/service")
     @Transactional
-    public ResponseEntity<?> saveOrUpdateService(@RequestBody UpdateService service, Admin admin) {
+    public ResponseEntity<?> saveOrUpdateService(@Valid @RequestBody UpdateService service, Admin admin) {
 
         boolean isUpdate = service.id() != null;
+        String trimmedName = service.name().trim();
 
         if (isUpdate) {
             Service existing = serviceRepository.findById(service.id()).orElse(null);
             if (existing == null) return ResponseEntity.notFound().build();
+            if (serviceRepository.findByName(trimmedName).filter(other -> !other.getId().equals(existing.getId())).isPresent()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Service already exists");
+            }
 
             String oldName = existing.getName();
             existing.setName(service.name().trim());
@@ -284,7 +305,7 @@ public class AdminController {
 
             logAdminAction(admin, "UPDATE_SERVICE", existing, String.format("Service %s renamed to %s", oldName, existing.getName()));
         } else {
-            if (serviceRepository.findByName(service.name()).isPresent()) {
+            if (serviceRepository.findByName(trimmedName).isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Service already exists");
             }
             Service newService = new Service();
@@ -336,7 +357,7 @@ public class AdminController {
 
     @PostMapping("/legal")
     @Transactional
-    public ResponseEntity<?> updateLegalText(@RequestBody UpdateLegalText req, Admin admin) {
+    public ResponseEntity<?> updateLegalText(@Valid @RequestBody UpdateLegalText req, Admin admin) {
         LegalText legal = new LegalText();
         legal.setName(req.key());
         legal.setContent(req.content());
@@ -408,16 +429,17 @@ public class AdminController {
 
     @PostMapping("/region")
     @Transactional
-    public ResponseEntity<List<GeographicZoneWithParentDTO>> updateRegion(Admin admin, @RequestBody UpdateRegion region){
+    public ResponseEntity<List<GeographicZoneWithParentDTO>> updateRegion(Admin admin, @Valid @RequestBody UpdateRegion region){
         GeographicZone savedZone;
         if(region.id() == null){
             // Create new Region
             GeographicZone newZone = new GeographicZone();
-            newZone.setName(region.name());
+            newZone.setName(region.name().trim());
 
-            // CORRECTION ICI : On vérifie que le parentId n'est pas null avant de le chercher
             if (region.parentId() != null) {
-                newZone.setParent(geographicZoneRepository.findById(region.parentId()).orElse(null));
+                GeographicZone parent = geographicZoneRepository.findById(region.parentId()).orElse(null);
+                if (parent == null) return ResponseEntity.notFound().build();
+                newZone.setParent(parent);
             } else {
                 newZone.setParent(null);
             }
@@ -437,12 +459,15 @@ public class AdminController {
             if (region.parentId() != null) {
                 GeographicZone parentZone = geographicZoneRepository.findById(region.parentId()).orElse(null);
                 if(parentZone == null) return ResponseEntity.notFound().build();
+                if (createsCycle(zone, parentZone)) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A region cannot be its own ancestor.");
+                }
                 zone.setParent(parentZone);
             } else {
                 zone.setParent(null); // Devient une zone racine
             }
 
-            zone.setName(region.name());
+            zone.setName(region.name().trim());
             geographicZoneRepository.save(zone);
 
             String newParentName = (zone.getParent() != null) ? zone.getParent().getName() : "Aucun";
@@ -465,16 +490,22 @@ public class AdminController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found"));
 
         Worker targetWorker = c.getWorker();
+        if (c.getAuthor() != null) {
+            c.getAuthor().removeComment(c);
+        }
 
-        targetWorker.getComments().remove(c);
+        List<CommentDTO> remainingComments = List.of();
+        if (targetWorker != null) {
+            targetWorker.getComments().remove(c);
+            remainingComments = targetWorker.getComments().stream()
+                    .map(CommentDTO::from)
+                    .collect(Collectors.toList());
+        }
 
         commentRepository.delete(c);
 
-        List<CommentDTO> remainingComments = targetWorker.getComments().stream()
-                .map(CommentDTO::from)
-                .collect(Collectors.toList());
-
-        logAdminAction(admin, "COMMENT_DELETED", id, "Comment deleted on worker " + targetWorker.getEmail());
+        logAdminAction(admin, "COMMENT_DELETED", "comment:" + id,
+                "Comment deleted on worker " + (targetWorker != null ? targetWorker.getEmail() : "unknown"));
 
         return ResponseEntity.ok().body(remainingComments);
     }
@@ -482,10 +513,13 @@ public class AdminController {
     @PatchMapping("/comments/{id}")
     @Transactional
     public ResponseEntity<CommentDTO> editComment(@PathVariable Long id, @RequestBody String content, Admin admin) {
+        if (content == null || content.isBlank() || content.length() > InputLimits.COMMENT_MAX) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid comment content.");
+        }
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found"));
 
-        comment.setContent(content);
+        comment.setContent(content.trim());
 
         logAdminAction(admin, "COMMENT_EDITED", comment.getId(), "Comment edited on worker " + comment.getWorker().getEmail());
 
@@ -509,9 +543,10 @@ public class AdminController {
         }
 
         commentRepository.delete(comm);
-        logAdminAction(admin, "COMMENT_DELETED", commentId, "Comment from "+author.getEmail()+" deleted by admin");
+        logAdminAction(admin, "COMMENT_DELETED", "comment:" + commentId,
+                "Comment from " + (author != null ? author.getEmail() : "unknown") + " deleted by admin");
 
-        return ResponseEntity.ok(ClientDTO.from(author));
+        return author != null ? ResponseEntity.ok(ClientDTO.from(author)) : ResponseEntity.ok().build();
     }
 
     // REPORTS
@@ -575,7 +610,7 @@ public class AdminController {
 
     @PostMapping("/invite")
     @Transactional
-    public ResponseEntity<?> inviteAdmin(@RequestBody AdminInvitation req, Admin admin) {
+    public ResponseEntity<?> inviteAdmin(@Valid @RequestBody AdminInvitation req, Admin admin) {
         Email email;
 
         if (req.email() == null || req.email().isBlank()) {
@@ -586,7 +621,7 @@ public class AdminController {
         }
 
         // 1. On vérifie les doublons
-        if (adminRepository.findByEmail(email).isPresent()) {
+        if (userRepository.findByEmail(email.getValue()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", "Un utilisateur avec cet e-mail existe déjà"));
         }
 
@@ -599,9 +634,7 @@ public class AdminController {
         adminRepository.save(newAdmin);
 
         // 3. Réutilisation immédiate avec le paramètre d'invitation à true
-        String url = passwordResetService.createTokenAndSendEmail(newAdmin, true);
-
-        System.out.println("Reset URL generated for new admin: " + url);
+        passwordResetService.createTokenAndSendEmail(newAdmin, true);
 
         // 4. Audit Log
         String snapshotJson = String.format("{\"invited_email\": \"%s\", \"role_assigned\": \"ADMIN\"}", email);
@@ -615,6 +648,30 @@ public class AdminController {
     @GetMapping("/logs")
     public ResponseEntity<List<AdminAuditLogDTO>> getAuditLogs() {
         return ResponseEntity.ok(auditLogRepository.findAll().stream().map(AdminAuditLogDTO::from).collect(Collectors.toList()));
+    }
+
+    /**
+     * An admin may act on clients and workers. Acting on another admin (ban, lock, delete)
+     * requires the super admin role, and nobody can act on a super admin.
+     */
+    private static void requireAuthorityOver(Admin actor, VenusUser target) {
+        if (target.isSuperAdmin()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "A super admin cannot be modified.");
+        }
+        if (target.isAdmin() && !actor.isSuperAdmin()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a super admin can modify an admin.");
+        }
+    }
+
+    /** True if making {@code newParent} the parent of {@code zone} would create a loop. */
+    private static boolean createsCycle(GeographicZone zone, GeographicZone newParent) {
+        GeographicZone current = newParent;
+        int depth = 0;
+        while (current != null && depth++ < 100) {
+            if (current.getId() != null && current.getId().equals(zone.getId())) return true;
+            current = current.getParent();
+        }
+        return current != null;
     }
 
     private void logAdminAction(Admin admin, String actionType, Object target, String details) {

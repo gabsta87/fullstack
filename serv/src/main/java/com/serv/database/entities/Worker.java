@@ -135,17 +135,38 @@ public class Worker extends VenusUser {
         this.username = username;
     }
 
-    public void parseAndSetBirthdate(String birthdate) throws ParseException {
+    public static final int MAX_AGE = 120;
+
+    private static final java.time.format.DateTimeFormatter ISO_DATE =
+            java.time.format.DateTimeFormatter.ofPattern("uuuu-MM-dd").withResolverStyle(java.time.format.ResolverStyle.STRICT);
+    private static final java.time.format.DateTimeFormatter FR_DATE =
+            java.time.format.DateTimeFormatter.ofPattern("dd/MM/uuuu").withResolverStyle(java.time.format.ResolverStyle.STRICT);
+
+    /**
+     * Parses a birthdate in {@code yyyy-MM-dd} or {@code dd/MM/yyyy} format. Blank clears the birthdate.
+     *
+     * @throws IllegalArgumentException for an unparsable or impossible date (e.g. 2000-02-30),
+     *                                  a date in the future, or an age above {@value #MAX_AGE}
+     */
+    public void parseAndSetBirthdate(String birthdate) {
         if (birthdate == null || birthdate.isBlank()) {
             this.birthdate = null;
             return;
         }
-
-        if (birthdate.matches("\\d{4}-\\d{2}-\\d{2}")) {
-            this.birthdate = new SimpleDateFormat("yyyy-MM-dd").parse(birthdate);
-        } else {
-            this.birthdate = new SimpleDateFormat("dd/MM/yyyy").parse(birthdate);
+        String value = birthdate.trim();
+        java.time.LocalDate date;
+        try {
+            date = value.matches("\\d{4}-\\d{2}-\\d{2}")
+                    ? java.time.LocalDate.parse(value, ISO_DATE)
+                    : java.time.LocalDate.parse(value, FR_DATE);
+        } catch (java.time.format.DateTimeParseException e) {
+            throw new IllegalArgumentException("Invalid birthdate format.");
         }
+        java.time.LocalDate today = java.time.LocalDate.now();
+        if (date.isAfter(today) || date.isBefore(today.minusYears(MAX_AGE))) {
+            throw new IllegalArgumentException("Invalid birthdate.");
+        }
+        this.birthdate = java.sql.Date.valueOf(date);
     }
 
 

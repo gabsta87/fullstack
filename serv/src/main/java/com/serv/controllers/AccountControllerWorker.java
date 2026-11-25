@@ -11,6 +11,7 @@ import com.serv.services.MediaStorageService;
 import com.serv.services.SseStreamService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,10 +21,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestController
 @RequestMapping("/account/worker")
 @PreAuthorize("hasRole('WORKER')")
@@ -55,6 +56,7 @@ public class AccountControllerWorker {
     @GetMapping("/request-certification")
     public ResponseEntity<?> requestCertification(Worker workerArg) {
         Worker worker = getWorkerWithPhotos(workerArg);
+        rejectIfCertificationInProgress(worker);
 
         String verificationCode = worker.getVerificationCode();
         if (verificationCode == null || verificationCode.isEmpty()) {
@@ -81,6 +83,7 @@ public class AccountControllerWorker {
     public ResponseEntity<?> uploadCertificationPhoto(@RequestParam("file") MultipartFile file, Worker workerArg) {
         try {
             final Worker worker = getWorkerWithPhotos(workerArg);
+            rejectIfCertificationInProgress(worker);
 
             Photo certificationPhoto = mediaStorageService.saveCertificationPhoto(file, worker);
             certificationPhoto.setType(PhotoType.CERTIFICATION);
@@ -101,8 +104,9 @@ public class AccountControllerWorker {
 
             return ResponseEntity.ok().body(WorkerFullProfileDTO.from(savedWorker));
         } catch (IOException e) {
+            log.error("Could not store certification photo of worker {}", workerArg.getId(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message", "Erreur lors de la sauvegarde : " + e.getMessage()));
+                    .body(Map.of("message", "Could not store the file."));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
                     .body(Map.of("message", e.getMessage()));
@@ -115,7 +119,10 @@ public class AccountControllerWorker {
                                              Worker workerArg) {
         Worker worker = getWorkerWithPhotos(workerArg);
 
-        boolean requestedAvailability = body.getOrDefault("available", false);
+        Boolean requestedAvailability = body == null ? null : body.get("available");
+        if (requestedAvailability == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Field 'available' is required.");
+        }
         worker.setAvailable(requestedAvailability);
 
         if (requestedAvailability) {
@@ -132,7 +139,10 @@ public class AccountControllerWorker {
     public ResponseEntity<?> setVisibility(@RequestBody Map<String, Boolean> body,
                                              Worker workerArg) {
         Worker worker = getWorkerWithPhotos(workerArg);
-        boolean requestedVisibility = body.getOrDefault("hidden", false);
+        Boolean requestedVisibility = body == null ? null : body.get("hidden");
+        if (requestedVisibility == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Field 'hidden' is required.");
+        }
 
         worker.setHidden(requestedVisibility);
 
@@ -141,61 +151,61 @@ public class AccountControllerWorker {
         return ResponseEntity.ok().body(WorkerFullProfileDTO.from(savedWorker));
     }
 
-    /** PATCH /account/profile */
+    /** PATCH /account/worker/profile — partial update, every field is validated before anything is changed. */
     @PatchMapping("/profile")
-    public ResponseEntity<?> updateProfile(@RequestBody UpdateWorkerProfile req,
+    public ResponseEntity<?> updateProfile(@Valid @RequestBody UpdateWorkerProfile req,
                                            Worker workerArg) {
         Worker worker = getWorkerWithPhotos(workerArg);
 
-        if (req.description() != null) worker.setDescription(req.description());
+        // 1. Validate and resolve everything first: an invalid field must not leave a half-updated profile.
+        BodyType bodyType = parseEnum(BodyType.class, req.bodyType());
+        EyeColor eyeColor = parseEnum(EyeColor.class, req.eyeColor());
+        HairColor hairColor = parseEnum(HairColor.class, req.hairColor());
 
-        if (req.geographicZoneId() != null) {
-            if (req.geographicZoneId() == -1) {
-                worker.setGeographicZone(null);
-            } else {
-                geographicZoneRepository.findById(req.geographicZoneId()).ifPresent(worker::setGeographicZone);
-            }
+        GeographicZone zone = null;
+        if (req.geographicZoneId() != null && req.geographicZoneId() != -1) {
+            zone = geographicZoneRepository.findById(req.geographicZoneId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown geographic zone."));
         }
 
-        if (req.username()    != null) worker.setUsername(req.username());
-        if (req.shortDescription() != null) worker.setShortDescription(req.shortDescription());
-        if (req.bodyType()    != null) worker.setBodyType(BodyType.valueOf(req.bodyType()));
-        if (req.eyeColor()    != null) worker.setEyeColor(EyeColor.valueOf(req.eyeColor()));
-        if (req.hairColor()   != null) worker.setHairColor(HairColor.valueOf(req.hairColor()));
-        if (req.phone()       != null) worker.setPhone(req.phone());
-        if (req.birthdate()   != null){
-            try{
-                worker.parseAndSetBirthdate(req.birthdate());
-
-                if (worker.getAge() < 18) {
-                    // ⚠️ ALERTE CRITIQUE
-                    System.out.println("ALERT : updateProfile : " + worker.getAge() + " < 18 : profile deactivated");
-                    worker.setLocked(true);
-                    worker.setInvalid(true);
-                    worker.setBanned(true);
-                    this.emailService.sendAlertToLocalAuthorities(worker);
-
-//                  // Returning an error could prevent some investigation. Better to silently warn the authorities
-//                    return ResponseEntity.status(HttpStatus.FORBIDDEN)
-//                            .body(Map.of("error", "L'accès à cette plateforme est strictement réservé aux personnes majeures."));
-                }
-            }catch (ParseException e){
-                return ResponseEntity.badRequest().body("Invalid birthdate format.");
-            }
-        }
-
+        Photo mainPhoto = null;
         if (req.mainPhotoId() != null) {
-            Optional<Photo> newPhoto = photoRepository.findById(UUID.fromString(req.mainPhotoId()));
-            if (newPhoto.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Photo not found.");
-            worker.setMainPhoto(newPhoto.get());
+            mainPhoto = findOwnGalleryPhoto(worker, req.mainPhotoId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Photo not found."));
         }
 
-        if (req.services()    != null) {
-            worker.setServices(req.services().stream()
-                    .map(serviceRepository::findByName)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .collect(Collectors.toList()));
+        List<Service> services = null;
+        if (req.services() != null) {
+            services = new ArrayList<>();
+            for (String name : new LinkedHashSet<>(req.services())) {
+                services.add(serviceRepository.findByName(name)
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown service.")));
+            }
+        }
+
+        if (req.birthdate() != null) {
+            worker.parseAndSetBirthdate(req.birthdate()); // IllegalArgumentException -> 400
+        }
+
+        // 2. Apply.
+        if (req.geographicZoneId() != null) worker.setGeographicZone(zone);
+        if (req.description() != null) worker.setDescription(blankToNull(req.description()));
+        if (req.username() != null) worker.setUsername(blankToNull(req.username()));
+        if (req.shortDescription() != null) worker.setShortDescription(blankToNull(req.shortDescription()));
+        if (req.bodyType() != null) worker.setBodyType(bodyType);
+        if (req.eyeColor() != null) worker.setEyeColor(eyeColor);
+        if (req.hairColor() != null) worker.setHairColor(hairColor);
+        if (req.phone() != null) worker.setPhone(blankToNull(req.phone()));
+        if (mainPhoto != null) worker.setMainPhoto(mainPhoto);
+        if (services != null) worker.setServices(services);
+
+        if (req.birthdate() != null && worker.getBirthdate() != null && worker.getAge() < 18) {
+            // Minors are silently deactivated and reported (returning an error could hinder an investigation).
+            log.warn("Worker {} declared an age under 18: profile deactivated", worker.getId());
+            worker.setLocked(true);
+            worker.setInvalid(true);
+            worker.setBanned(true);
+            this.emailService.sendAlertToLocalAuthorities(worker);
         }
 
         this.setWorkerProfileCompleteness(worker);
@@ -209,11 +219,15 @@ public class AccountControllerWorker {
     public ResponseEntity<?> updateServices(@RequestBody List<Integer> services, Worker workerArg) {
         Worker worker = getWorkerWithPhotos(workerArg);
 
-        List<Service> serviceList = services.stream()
-                .map(serviceRepository::findById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
+        if (services == null || services.size() > InputLimits.LIST_MAX || services.contains(null)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid services list.");
+        }
+
+        List<Service> serviceList = new ArrayList<>();
+        for (Integer id : new LinkedHashSet<>(services)) {
+            serviceList.add(serviceRepository.findById(id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown service.")));
+        }
 
         worker.setServices(serviceList);this.setWorkerProfileCompleteness(worker);
 
@@ -225,14 +239,35 @@ public class AccountControllerWorker {
     // Medias
 
     @PostMapping("/media")
-    public ResponseEntity<WorkerFullProfileDTO> uploadMedia(@RequestParam("files") List<MultipartFile> files, Worker workerArg) {
+    public ResponseEntity<?> uploadMedia(@RequestParam("files") List<MultipartFile> files, Worker workerArg) {
         Worker worker = getWorkerWithPhotos(workerArg);
-        boolean mediaAdded = false;
+
+        if (files == null || files.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No file provided.");
+        }
+        if (files.size() > MAX_FILES_PER_UPLOAD) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "At most " + MAX_FILES_PER_UPLOAD + " files per upload.");
+        }
+
+        long incoming = files.stream().mapToLong(MultipartFile::getSize).sum();
+        long used = mediaStorageService.usedBytes(worker.getId());
+        if (used + incoming > worker.getMaxStorageBytes()) {
+            throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
+                    "Storage limit reached: " + (worker.getMaxStorageBytes() / (1024 * 1024)) + " MB.");
+        }
 
         for (MultipartFile file : files) {
+            String contentType = file.getContentType();
+            if (contentType == null || !(contentType.startsWith("image/") || contentType.startsWith("video/"))) {
+                throw new ResponseStatusException(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Only images and videos are accepted.");
+            }
+        }
+
+        boolean mediaAdded = false;
+        for (MultipartFile file : files) {
             try {
-                String contentType = file.getContentType();
-                if (contentType != null && contentType.startsWith("image")) {
+                if (file.getContentType().startsWith("image/")) {
                     Photo photo = mediaStorageService.savePhoto(file, worker);
                     photo.setSortOrder(worker.getPhotos().size());
                     if (worker.getMainPhoto() == null) {
@@ -240,16 +275,18 @@ public class AccountControllerWorker {
                     }
                     worker.addPhoto(photo);
                     photoRepository.save(photo);
-                    mediaAdded = true;
-                } else if (contentType != null && contentType.startsWith("video")) {
+                } else {
                     Video video = mediaStorageService.saveVideo(file, worker);
                     worker.addVideo(video);
                     videoRepository.save(video);
-                    mediaAdded = true;
                 }
+                mediaAdded = true;
+            } catch (IllegalArgumentException e) {
+                // Invalid file: reject the request (files already stored are kept, they are valid).
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
             } catch (IOException e) {
-                System.err.println("Error uploading media "+ file.getName()+" . CAUSE : " + e.getMessage());
-                e.printStackTrace();
+                log.error("Could not store media of worker {}", worker.getId(), e);
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not store the file.");
             }
         }
 
@@ -349,8 +386,8 @@ public class AccountControllerWorker {
     @PatchMapping("/photos/{photoId}/main")
     public ResponseEntity<WorkerFullProfileDTO> setMainPhoto(@PathVariable UUID photoId, Worker worker) {
         worker = getWorkerWithPhotos(worker);
-        Photo photo = photoRepository.findById(photoId).orElse(null);
-        if (photo == null || !photo.getWorker().getId().equals(worker.getId()))
+        Photo photo = findOwnGalleryPhoto(worker, photoId).orElse(null);
+        if (photo == null)
             return ResponseEntity.notFound().build();
 
         worker.setMainPhoto(photo);
@@ -369,15 +406,19 @@ public class AccountControllerWorker {
                                                               Worker workerArg) {
         Worker worker = getWorkerWithPhotos(workerArg);
 
-        for (int i = 0; i < orderedIds.size(); i++) {
-            UUID id = UUID.fromString(orderedIds.get(i));
-            int finalI = i;
-            photoRepository.findById(id).ifPresent(p -> {
-                if (p.getWorker().getId().equals(worker.getId())) {
-                    p.setSortOrder(finalI);
-                    photoRepository.save(p);
-                }
-            });
+        if (orderedIds == null || orderedIds.size() > MAX_PHOTOS_REORDER || new HashSet<>(orderedIds).size() != orderedIds.size()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid photo list.");
+        }
+
+        List<Photo> ordered = new ArrayList<>();
+        for (String rawId : orderedIds) {
+            UUID id = UUID.fromString(rawId); // IllegalArgumentException -> 400
+            ordered.add(findOwnGalleryPhoto(worker, id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown photo.")));
+        }
+        for (int i = 0; i < ordered.size(); i++) {
+            ordered.get(i).setSortOrder(i);
+            photoRepository.save(ordered.get(i));
         }
 
         // 💡 On recharge le worker propre avec ses photos triées et on notifie le front
@@ -409,7 +450,42 @@ public class AccountControllerWorker {
         return ResponseEntity.ok(WorkerFullProfileDTO.from(savedWorker));
     }
 
-    // Utility method
+    // Utility methods
+
+    private static final int MAX_FILES_PER_UPLOAD = 10;
+    private static final int MAX_PHOTOS_REORDER = 200;
+
+    /** A photo the worker owns and that is part of the public gallery (never a certification photo). */
+    private Optional<Photo> findOwnGalleryPhoto(Worker worker, UUID photoId) {
+        return photoRepository.findById(photoId)
+                .filter(p -> p.getWorker() != null && p.getWorker().getId().equals(worker.getId()))
+                .filter(p -> p.getType() == PhotoType.GALLERY);
+    }
+
+    private void rejectIfCertificationInProgress(Worker worker) {
+        if (worker.isCertified()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Profile already certified.");
+        }
+        CertificationRequest last = worker.getLastCertificationRequest();
+        if (last != null && last.getStatus() == CertificationStatus.PENDING_APPROVAL && last.isUnderReview()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Certification is being reviewed.");
+        }
+    }
+
+    private static <E extends Enum<E>> E parseEnum(Class<E> type, String raw) {
+        if (raw == null || raw.isBlank()) return null;
+        try {
+            return Enum.valueOf(type, raw.trim().toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid value for " + type.getSimpleName() + ".");
+        }
+    }
+
+    private static String blankToNull(String value) {
+        if (value == null) return null;
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
+    }
 
     private void setWorkerProfileCompleteness(Worker worker) {
         boolean isComplete = worker.getUsername() != null && !worker.getUsername().trim().isEmpty()
