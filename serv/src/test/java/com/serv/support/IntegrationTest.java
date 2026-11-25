@@ -46,10 +46,12 @@ public abstract class IntegrationTest {
     public static final String PASSWORD = "Correct-Horse-42";
 
     protected static final Path MEDIA_DIR;
+    protected static final Path PRIVATE_MEDIA_DIR;
 
     static {
         try {
             MEDIA_DIR = Files.createTempDirectory("venus-test-media");
+            PRIVATE_MEDIA_DIR = Files.createTempDirectory("venus-test-private-media");
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
@@ -59,6 +61,7 @@ public abstract class IntegrationTest {
     static void mediaProperties(DynamicPropertyRegistry registry) {
         registry.add("media.upload.base", MEDIA_DIR::toString);
         registry.add("media.public.base-url", () -> "/media");
+        registry.add("media.private.base", PRIVATE_MEDIA_DIR::toString);
     }
 
     @Autowired protected MockMvc mvc;
@@ -102,11 +105,13 @@ public abstract class IntegrationTest {
     }
 
     private static void wipeMedia() throws IOException {
-        if (!Files.exists(MEDIA_DIR)) return;
-        try (var paths = Files.walk(MEDIA_DIR)) {
-            paths.sorted(Comparator.reverseOrder())
-                    .filter(p -> !p.equals(MEDIA_DIR))
-                    .forEach(p -> p.toFile().delete());
+        for (Path root : List.of(MEDIA_DIR, PRIVATE_MEDIA_DIR)) {
+            if (!Files.exists(root)) continue;
+            try (var paths = Files.walk(root)) {
+                paths.sorted(Comparator.reverseOrder())
+                        .filter(p -> !p.equals(root))
+                        .forEach(p -> p.toFile().delete());
+            }
         }
     }
 

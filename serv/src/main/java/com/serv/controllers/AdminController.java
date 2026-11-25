@@ -48,6 +48,7 @@ public class AdminController {
     private final CertificationRequestRepository certificationRequestRepository;
     private final UserCleanupService userCleanupService;
     private final ReportRepository reportRepository;
+    private final com.serv.services.MediaStorageService mediaStorageService;
 
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamAdmin(Admin adminArg) {
@@ -276,6 +277,20 @@ public class AdminController {
         sseStreamService.emitEvent(worker.getId(), "account-update", workerDto);
 
         return ResponseEntity.ok(CertificationRequestDTO.from(savedRequest));
+    }
+
+    /**
+     * Certification photos are private: they are only served here, to admins, and never cached.
+     */
+    @GetMapping("/certification-photos/{workerId}/{fileName}")
+    public ResponseEntity<org.springframework.core.io.Resource> getCertificationPhoto(@PathVariable UUID workerId,
+                                                                                      @PathVariable String fileName) {
+        return mediaStorageService.findCertificationPhoto(workerId, fileName)
+                .map(path -> ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .cacheControl(org.springframework.http.CacheControl.noStore().cachePrivate())
+                        .body((org.springframework.core.io.Resource) new org.springframework.core.io.FileSystemResource(path)))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     // SERVICES

@@ -41,10 +41,12 @@ import java.util.concurrent.Semaphore;
  * <pre>
  *   ${media.upload.base}/{workerId}/originals/{uuid}.jpg
  *   ${media.upload.base}/{workerId}/thumbs/main/{uuid}_main.jpg
- *   ${media.upload.base}/{workerId}/certification/{uuid}.jpg
+ *   ${media.private.base}/{workerId}/certification/{uuid}.jpg   (never served by nginx)
  *   ${media.upload.base}/{workerId}/videos/{uuid}.mp4
  * </pre>
- * Nginx serves everything under ${media.upload.base} directly.
+ * Nginx serves everything under ${media.upload.base} directly. Certification photos (face + code)
+ * live under ${media.private.base}, outside the public directory, and are only readable by admins
+ * through {@code GET /admin/certification-photos/{workerId}/{file}}.
  */
 @Slf4j
 @Service
@@ -70,6 +72,14 @@ public class MediaStorageService {
 
     @Value("${media.public.base-url}")
     private String publicBaseUrl;
+
+    @Value("${media.private.base:${media.upload.base}-private}")
+    private String privateBase;
+
+    /** API path prefix stored as the URL of certification photos. */
+    public static final String CERTIFICATION_URL_PREFIX = "/admin/certification-photos/";
+    private static final java.util.regex.Pattern PRIVATE_FILE_NAME =
+            java.util.regex.Pattern.compile("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.jpg$");
 
     enum ImageType { JPEG, PNG, WEBP, GIF }
 
@@ -114,11 +124,11 @@ public class MediaStorageService {
         BufferedImage image = readValidatedImage(file);
 
         String baseName = UUID.randomUUID() + ".jpg";
-        Path certPath = resolveDir(worker.getId(), "certification").resolve(baseName);
+        Path certPath = resolvePrivateCertificationDir(worker.getId()).resolve(baseName);
         writeJpeg(image, certPath, MAX_STORED_SIDE);
 
         Photo photo = new Photo();
-        photo.setUrl(buildUrl(worker.getId(), "certification", baseName));
+        photo.setUrl(CERTIFICATION_URL_PREFIX + worker.getId() + "/" + baseName);
         photo.setFileSize(Files.size(certPath));
         photo.setWorker(worker);
         return photo;
@@ -283,7 +293,11 @@ public class MediaStorageService {
 
     /** Deletes the whole /{uploadBase}/{userId} directory. */
     public void deleteAllForUser(UUID userId) throws IOException {
-        Path baseDir = baseDir();
+        deleteUserDir(baseDir(), userId);
+        deleteUserDir(privateBaseDir(), userId);
+    }
+
+    private static void deleteUserDir(Path baseDir, UUID userId) throws IOException {
         Path userDir = baseDir.resolve(String.valueOf(userId)).normalize();
 
         if (!userDir.startsWith(baseDir) || userDir.equals(baseDir) || !Files.exists(userDir)) {
@@ -298,7 +312,7 @@ public class MediaStorageService {
         try {
             deletePhysicalFile(workerId, "originals", photo.getUrl());
             deletePhysicalFile(workerId, "thumbs/main", photo.getMainThumbUrl());
-            deletePhysicalFile(workerId, "certification", photo.getUrl());
+            deletePrivateCertificationFile(workerId, photo.getUrl());
         } catch (IOException e) {
             log.warn("Could not delete photo files of worker {}: {}", workerId, e.getMessage());
         }
@@ -327,6 +341,76 @@ public class MediaStorageService {
         }
 
         Files.deleteIfExists(filePath);
+    }
+
+    // ── Private certification photos ──────────────────────────────────────────
+
+    /**
+     * Resolves a certification photo for an admin. Returns empty for anything that is not a
+     * well-formed file name of that worker (no traversal, no other directory).
+     */
+    public java.util.Optional<Path> findCertificationPhoto(UUID workerId, String fileName) {
+        if (fileName == null || !PRIVATE_FILE_NAME.matcher(fileName).matches()) {
+            return java.util.Optional.empty();
+        }
+        Path dir = privateBaseDir().resolve(workerId.toString()).resolve("certification").normalize();
+        Path file = dir.resolve(fileName).normalize();
+        if (!file.startsWith(dir) || !Files.isRegularFile(file)) {
+            return java.util.Optional.empty();
+        }
+        return java.util.Optional.of(file);
+    }
+
+    /**
+     * Moves a certification photo stored by an older version in the public media directory
+     * to the private directory. @return the new URL, or empty if there was nothing to migrate
+     */
+    public java.util.Optional<String> migrateLegacyCertificationPhoto(UUID workerId, String url) throws IOException {
+        String legacyMarker = "/" + workerId + "/certification/";
+        if (url == null || url.startsWith(CERTIFICATION_URL_PREFIX) || !url.contains(legacyMarker)) {
+            return java.util.Optional.empty();
+        }
+        String fileName = url.substring(url.lastIndexOf('/') + 1);
+        Path legacyDir = baseDir().resolve(workerId.toString()).resolve("certification").normalize();
+        Path legacy = legacyDir.resolve(fileName).normalize();
+        if (!legacy.startsWith(legacyDir)) {
+            return java.util.Optional.empty();
+        }
+        String newName = UUID.randomUUID() + ".jpg";
+        if (Files.isRegularFile(legacy)) {
+            // Re-encode on the way: legacy files were stored as uploaded, possibly with metadata.
+            BufferedImage image;
+            try {
+                image = decodeImage(Files.readAllBytes(legacy));
+            } catch (IllegalArgumentException e) {
+                Files.deleteIfExists(legacy); // not a valid image: never keep it public
+                return java.util.Optional.of(CERTIFICATION_URL_PREFIX + workerId + "/missing.jpg");
+            }
+            writeJpeg(image, resolvePrivateCertificationDir(workerId).resolve(newName), MAX_STORED_SIDE);
+            Files.delete(legacy);
+        }
+        return java.util.Optional.of(CERTIFICATION_URL_PREFIX + workerId + "/" + newName);
+    }
+
+    private void deletePrivateCertificationFile(UUID workerId, String url) throws IOException {
+        if (url == null || !url.startsWith(CERTIFICATION_URL_PREFIX)) return;
+        String fileName = url.substring(url.lastIndexOf('/') + 1);
+        java.util.Optional<Path> file = findCertificationPhoto(workerId, fileName);
+        if (file.isPresent()) Files.delete(file.get());
+    }
+
+    private Path resolvePrivateCertificationDir(UUID workerId) throws IOException {
+        Path base = privateBaseDir();
+        Path dir = base.resolve(workerId.toString()).resolve("certification").normalize();
+        if (!dir.startsWith(base)) {
+            throw new SecurityException("Path not allowed.");
+        }
+        Files.createDirectories(dir);
+        return dir;
+    }
+
+    private Path privateBaseDir() {
+        return Paths.get(privateBase).toAbsolutePath().normalize();
     }
 
     // ── Paths ─────────────────────────────────────────────────────────────────

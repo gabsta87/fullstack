@@ -218,7 +218,73 @@ class MediaUploadSecurityTest extends IntegrationTest {
                         .file(new MockMultipartFile("file", "id.html", "image/jpeg", TestImages.jpeg(300, 300)))
                         .header("Authorization", bearer(worker)))
                 .andExpect(status().isOk());
-        assertThat(storedFiles()).singleElement().matches(p -> p.toString().endsWith(".jpg"));
         assertThat(photoRepository.findAll()).singleElement().matches(p -> p.getType() == PhotoType.CERTIFICATION);
+    }
+
+    @Test
+    @DisplayName("Certification photos are stored outside the public media directory and only admins can read them")
+    void certificationPhotoIsPrivate() throws Exception {
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/account/worker/request-certification")
+                .header("Authorization", bearer(worker))).andExpect(status().isOk());
+        mvc.perform(multipart("/account/worker/certification-photo")
+                        .file(new MockMultipartFile("file", "id.jpg", "image/jpeg", TestImages.jpeg(300, 300)))
+                        .header("Authorization", bearer(worker)))
+                .andExpect(status().isOk());
+
+        assertThat(storedFiles()).as("nothing under the nginx-served directory").isEmpty();
+        Photo cert = photoRepository.findAll().get(0);
+        assertThat(cert.getUrl()).startsWith("/admin/certification-photos/" + worker.getId() + "/");
+        try (Stream<Path> s = Files.walk(PRIVATE_MEDIA_DIR)) {
+            assertThat(s.filter(Files::isRegularFile).count()).isEqualTo(1);
+        }
+
+        var get = org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(cert.getUrl());
+        mvc.perform(get).andExpect(status().isUnauthorized());
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(cert.getUrl())
+                .header("Authorization", bearer(worker))).andExpect(status().isForbidden());
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(cert.getUrl())
+                        .header("Authorization", bearer(createAdmin("admin@venus.test"))))
+                .andExpect(status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.content().contentType("image/jpeg"))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.header().string("Cache-Control", org.hamcrest.Matchers.containsString("no-store")));
+    }
+
+    @Test
+    @DisplayName("The certification photo endpoint cannot be used to read arbitrary files")
+    void certificationEndpointTraversal() throws Exception {
+        String admin = bearer(createAdmin("admin@venus.test"));
+        Files.writeString(PRIVATE_MEDIA_DIR.resolve("secret.txt"), "secret");
+        for (String path : new String[]{
+                "/admin/certification-photos/" + worker.getId() + "/..%2F..%2Fsecret.txt",
+                "/admin/certification-photos/" + worker.getId() + "/secret.txt",
+                "/admin/certification-photos/" + worker.getId() + "/" + java.util.UUID.randomUUID() + ".jpg",
+                "/admin/certification-photos/not-a-uuid/x.jpg"}) {
+            int code = mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(path)
+                    .header("Authorization", admin)).andReturn().getResponse().getStatus();
+            assertThat(code).as(path).isIn(400, 404);
+        }
+    }
+
+    @Test
+    @DisplayName("Legacy public certification photos are moved to private storage at startup")
+    void legacyMigration(@org.springframework.beans.factory.annotation.Autowired com.serv.services.CertificationPhotoMigration migration) throws Exception {
+        Path legacyDir = Files.createDirectories(MEDIA_DIR.resolve(worker.getId().toString()).resolve("certification"));
+        Files.write(legacyDir.resolve("old.jpg"), TestImages.jpeg(100, 100));
+        Photo legacy = new Photo();
+        legacy.setWorker(worker);
+        legacy.setType(PhotoType.CERTIFICATION);
+        legacy.setUrl("/media/" + worker.getId() + "/certification/old.jpg");
+        legacy = photoRepository.save(legacy);
+
+        migration.run(null);
+
+        assertThat(legacyDir.resolve("old.jpg")).doesNotExist();
+        String url = photoRepository.findById(legacy.getId()).orElseThrow().getUrl();
+        assertThat(url).startsWith("/admin/certification-photos/");
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(url)
+                .header("Authorization", bearer(createAdmin("admin@venus.test")))).andExpect(status().isOk());
+
+        migration.run(null); // idempotent
+        assertThat(photoRepository.findById(legacy.getId()).orElseThrow().getUrl()).isEqualTo(url);
     }
 }

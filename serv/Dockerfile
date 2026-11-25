@@ -14,7 +14,7 @@ WORKDIR /app
 COPY --from=builder /app/build/libs/*.jar app.jar
 
 # Media storage directory (mounted as volume)
-RUN mkdir -p /var/serv-media
+RUN mkdir -p /var/serv-media /var/serv-private
 
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]

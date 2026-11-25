@@ -33,6 +33,7 @@ class MediaStorageServiceTest {
         service = new MediaStorageService();
         ReflectionTestUtils.setField(service, "uploadBase", tempDir.toString());
         ReflectionTestUtils.setField(service, "publicBaseUrl", "/media");
+        ReflectionTestUtils.setField(service, "privateBase", tempDir.resolve("private").toString());
 
         worker = new Worker();
         worker.setId(UUID.randomUUID());
