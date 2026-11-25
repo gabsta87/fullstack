@@ -46,7 +46,7 @@ export class AuthModalComponent implements OnInit {
     if (this.mode === 'register') {
       this.authForm = this.fb.group({
         email: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required, Validators.minLength(6)]],
+        password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(72)]],
         confirmPassword: ['', [Validators.required]],
         role: ['client']
       }, { validators: this.passwordMatchValidator });

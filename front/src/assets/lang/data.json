@@ -109,7 +109,7 @@
       "current_password_label": "Current password",
       "current_password_placeholder": "Current password",
       "new_password_label": "New password (Optional)",
-      "new_password_placeholder": "Minimum 6 characters",
+      "new_password_placeholder": "Minimum 8 characters",
       "confirm_password_placeholder": "Confirm new password",
       "save_btn": "Save changes",
       "email_change_title": "Email Address Change",
@@ -409,7 +409,7 @@
       "current_password_label": "Mot de passe actuel",
       "current_password_placeholder": "Mot de passe actuel",
       "new_password_label": "Nouveau mot de passe (Optionnel)",
-      "new_password_placeholder": "6 caractères minimum",
+      "new_password_placeholder": "8 caractères minimum",
       "confirm_password_placeholder": "Confirmer le nouveau mot de passe",
       "save_btn": "Enregistrer les modifications",
       "email_change_title": "Changement d'adresse e-mail",
@@ -709,7 +709,7 @@
       "current_password_label": "Aktuelles Passwort",
       "current_password_placeholder": "Aktuelles Passwort",
       "new_password_label": "Neues Passwort (Optional)",
-      "new_password_placeholder": "Mindestens 6 Zeichen",
+      "new_password_placeholder": "Mindestens 8 Zeichen",
       "save_btn": "Änderungen speichern"
     },
     "auth": {
@@ -1004,7 +1004,7 @@
       "current_password_label": "Contraseña actual",
       "current_password_placeholder": "Contraseña actual",
       "new_password_label": "Nueva contraseña (Opcional)",
-      "new_password_placeholder": "Mínimo 6 caracteres",
+      "new_password_placeholder": "Mínimo 8 caracteres",
       "save_btn": "Guardar cambios"
     },
     "auth": {
@@ -1299,7 +1299,7 @@
       "current_password_label": "Palavra-passe atual",
       "current_password_placeholder": "Palavra-passe atual",
       "new_password_label": "Nova palavra-passe (Opcional)",
-      "new_password_placeholder": "Mínimo 6 caracteres",
+      "new_password_placeholder": "Mínimo 8 caracteres",
       "save_btn": "Guardar alterações"
     },
     "auth": {
@@ -1594,7 +1594,7 @@
       "current_password_label": "Password attuale",
       "current_password_placeholder": "Password attuale",
       "new_password_label": "Nuova password (Opzionale)",
-      "new_password_placeholder": "Minimo 6 caratteri",
+      "new_password_placeholder": "Minimo 8 caratteri",
       "save_btn": "Salva modifiche"
     },
     "auth": {
@@ -1889,7 +1889,7 @@
       "current_password_label": "Текущий пароль",
       "current_password_placeholder": "Текущий пароль",
       "new_password_label": "Новый пароль (Опционально)",
-      "new_password_placeholder": "Минимум 6 символов",
+      "new_password_placeholder": "Минимум 8 символов",
       "save_btn": "Сохранить изменения"
     },
     "auth": {
@@ -2184,7 +2184,7 @@
       "current_password_label": "Поточний пароль",
       "current_password_placeholder": "Поточний пароль",
       "new_password_label": "Новий пароль (Опціонально)",
-      "new_password_placeholder": "Мінімум 6 символів",
+      "new_password_placeholder": "Мінімум 8 символів",
       "save_btn": "Зберегти зміни"
     },
     "auth": {
@@ -2479,7 +2479,7 @@
       "current_password_label": "كلمة المرور الحالية",
       "current_password_placeholder": "كلمة المرور الحالية",
       "new_password_label": "كلمة المرور الجديدة (اختياري)",
-      "new_password_placeholder": "6 أحرف على الأقل",
+      "new_password_placeholder": "8 أحرف على الأقل",
       "save_btn": "حفظ التغييرات"
     },
     "auth": {
