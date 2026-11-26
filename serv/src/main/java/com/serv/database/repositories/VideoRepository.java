@@ -15,4 +15,10 @@ public interface VideoRepository extends JpaRepository<Video, UUID> {
     void deleteByWorkerId(UUID workerId);
 
     List<Video> findByWorkerId(UUID workerId);
+
+    @org.springframework.data.jpa.repository.Query("SELECT v.id FROM Video v WHERE v.status = :status")
+    List<UUID> findIdsByStatus(com.serv.common.VideoStatus status);
+
+    @org.springframework.data.jpa.repository.Query("SELECT v.worker.id FROM Video v WHERE v.id = :id")
+    UUID findWorkerIdById(UUID id);
 }

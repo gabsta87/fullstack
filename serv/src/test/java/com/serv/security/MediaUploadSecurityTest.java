@@ -171,10 +171,12 @@ class MediaUploadSecurityTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("A video gets its extension from its real format, not from its name")
-    void videoExtensionFromContent() throws Exception {
+    @DisplayName("An uploaded video never reaches the public folder as uploaded (it waits to be re-encoded)")
+    void videoNotPublishedRaw() throws Exception {
+        org.mockito.Mockito.when(videoTranscoder.probe(org.mockito.ArgumentMatchers.any()))
+                .thenThrow(new IOException("not a video"));
         upload(file("clip.html", "video/mp4", TestImages.mp4())).andExpect(status().isOk());
-        assertThat(storedFiles()).singleElement().matches(p -> p.toString().endsWith(".mp4"));
+        assertThat(storedFiles()).isEmpty();
     }
 
     @Test

@@ -54,7 +54,7 @@ public record WorkerPublicFullProfileDTO(
                 mainThumb,
                 w.getAge(),
                 w.getPhotos() != null ? w.getPhotos().stream().map(PhotoDTO::from).toList() : List.of(),
-                w.getVideos() != null ? w.getVideos().stream().map(VideoDTO::from).toList() : List.of(),
+                w.getVideos() != null ? w.getVideos().stream().filter(com.serv.database.entities.Video::isReady).map(VideoDTO::from).toList() : List.of(),
                 w.getSpokenLanguages().stream().map(WorkerLanguage::toString).toList(),
                 w.getCertifiedAt() != null ? w.getCertifiedAt().toString() : null,
                 w.getComments() != null ? w.getComments().stream().map(CommentDTO::from).toList() : List.of(),

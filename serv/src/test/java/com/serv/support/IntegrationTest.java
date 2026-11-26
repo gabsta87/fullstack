@@ -81,6 +81,8 @@ public abstract class IntegrationTest {
     @Autowired protected CommentRepository commentRepository;
 
     @MockitoBean protected JavaMailSender mailSender;
+    /** ffmpeg is not needed by the tests: each video test says what the "transcoder" does. */
+    @MockitoBean protected com.serv.services.video.VideoTranscoder videoTranscoder;
 
     @BeforeEach
     void resetState() throws IOException {

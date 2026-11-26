@@ -11,6 +11,8 @@ RUN gradle bootJar --no-daemon --no-build-cache
 
 # ── Stage 2: run ──────────────────────────────────────────────────────────────
 FROM eclipse-temurin:21-jre-alpine
+# ffmpeg re-encodes uploaded videos and extracts their thumbnails (VideoProcessingService)
+RUN apk add --no-cache ffmpeg
 WORKDIR /app
 COPY --from=builder /app/build/libs/*.jar app.jar
 

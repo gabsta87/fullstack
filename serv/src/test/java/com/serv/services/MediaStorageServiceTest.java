@@ -82,11 +82,20 @@ class MediaStorageServiceTest {
     }
 
     @Test
-    @DisplayName("saveVideo stores a recognised video with the extension of its real format")
+    @DisplayName("saveVideo keeps the raw upload outside the public folder until it is processed")
     void saveVideo() throws IOException {
         Video video = service.saveVideo(new MockMultipartFile("f", "clip.exe", "video/mp4", TestImages.mp4()), worker);
-        assertThat(video.getUrl()).endsWith(".mp4");
-        assertThat(video.getFileSize()).isEqualTo(TestImages.mp4().length);
+        assertThat(video.getUrl()).startsWith("/media/" + worker.getId() + "/videos/").endsWith(".mp4");
+        assertThat(video.getMainThumbUrl()).endsWith(".jpg");
+        assertThat(video.getStatus()).isEqualTo(com.serv.common.VideoStatus.PROCESSING);
+
+        Path pending = service.pendingVideoFile(worker.getId(), video);
+        assertThat(pending).startsWith(tempDir.resolve("private"));
+        assertThat(Files.size(pending)).isEqualTo(TestImages.mp4().length);
+        assertThat(Files.exists(tempDir.resolve(worker.getId().toString()).resolve("videos"))).isFalse();
+
+        service.deleteVideo(worker.getId(), video);
+        assertThat(Files.exists(pending)).isFalse();
     }
 
     @Test

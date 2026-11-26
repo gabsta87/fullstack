@@ -42,7 +42,9 @@ import java.util.concurrent.Semaphore;
  *   ${media.upload.base}/{workerId}/originals/{uuid}.jpg
  *   ${media.upload.base}/{workerId}/thumbs/main/{uuid}_main.jpg
  *   ${media.private.base}/{workerId}/certification/{uuid}.jpg   (never served by nginx)
- *   ${media.upload.base}/{workerId}/videos/{uuid}.mp4
+ *   ${media.upload.base}/{workerId}/videos/{uuid}.mp4                (re-encoded, see VideoProcessingService)
+ *   ${media.upload.base}/{workerId}/thumbs/videos/{uuid}.jpg
+ *   ${media.private.base}/{workerId}/video-uploads/{uuid}.upload      (raw upload, deleted once processed)
  * </pre>
  * Nginx serves everything under ${media.upload.base} directly. Certification photos (face + code)
  * live under ${media.private.base}, outside the public directory, and are only readable by admins
@@ -53,7 +55,8 @@ import java.util.concurrent.Semaphore;
 public class MediaStorageService {
 
     public static final long MAX_IMAGE_BYTES = 20L * 1024 * 1024;
-    public static final long MAX_VIDEO_BYTES = 50L * 1024 * 1024;
+    /** Raw upload limit (phones record large files); the stored, re-encoded video is much smaller. */
+    public static final long MAX_VIDEO_BYTES = 100L * 1024 * 1024;
     /** Rejects decompression bombs: a tiny file declaring a huge canvas. */
     public static final int MAX_IMAGE_SIDE = 10_000;
     public static final long MAX_IMAGE_PIXELS = 40_000_000L;
@@ -237,22 +240,67 @@ public class MediaStorageService {
 
     // ── Videos ────────────────────────────────────────────────────────────────
 
+    /**
+     * Keeps the raw upload outside the public directory and returns a video waiting to be processed:
+     * its public URL and thumbnail URL are known, the files appear there once re-encoded.
+     */
     public Video saveVideo(MultipartFile file, Worker worker) throws IOException {
-        VideoType type = validateVideo(file);
+        validateVideo(file);
 
-        String baseName = UUID.randomUUID() + type.extension;
-        Path videoPath = resolveDir(worker.getId(), "videos").resolve(baseName);
+        String uuid = UUID.randomUUID().toString();
+        Path pending = resolvePrivateDir(worker.getId(), "video-uploads").resolve(uuid + ".upload");
 
         // Streamed to disk: a large video is never loaded in memory.
         try (InputStream in = file.getInputStream()) {
-            Files.copy(in, videoPath, StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(in, pending, StandardCopyOption.REPLACE_EXISTING);
         }
 
         Video video = new Video();
-        video.setUrl(buildUrl(worker.getId(), "videos", baseName));
-        video.setFileSize(Files.size(videoPath));
+        video.setUrl(buildUrl(worker.getId(), "videos", uuid + ".mp4"));
+        video.setMainThumbUrl(buildUrl(worker.getId(), "thumbs/videos", uuid + ".jpg"));
+        video.setStatus(com.serv.common.VideoStatus.PROCESSING);
+        video.setFileSize(0L);
         video.setWorker(worker);
         return video;
+    }
+
+    /** Raw upload of a video waiting to be processed. */
+    public Path pendingVideoFile(UUID workerId, Video video) throws IOException {
+        return resolvePrivateDir(workerId, "video-uploads").resolve(fileStem(video.getUrl()) + ".upload");
+    }
+
+    /** Where the re-encoded video is written before being moved in place (not public). */
+    public Path encodingVideoFile(UUID workerId, Video video) throws IOException {
+        return resolvePrivateDir(workerId, "video-uploads").resolve(fileStem(video.getUrl()) + ".encoding.mp4");
+    }
+
+    public Path publicVideoFile(UUID workerId, Video video) throws IOException {
+        return resolveDir(workerId, "videos").resolve(fileStem(video.getUrl()) + ".mp4");
+    }
+
+    public Path publicVideoThumbnail(UUID workerId, Video video) throws IOException {
+        return resolveDir(workerId, "thumbs/videos").resolve(fileStem(video.getUrl()) + ".jpg");
+    }
+
+    /** UUID part of a stored media URL; anything else is refused (the name is used to build paths). */
+    private static String fileStem(String url) {
+        String name = url == null ? "" : url.substring(url.lastIndexOf('/') + 1);
+        int dot = name.indexOf('.');
+        String stem = dot < 0 ? name : name.substring(0, dot);
+        if (!stem.matches("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")) {
+            throw new SecurityException("Unexpected media file name.");
+        }
+        return stem;
+    }
+
+    private Path resolvePrivateDir(UUID userId, String subdir) throws IOException {
+        Path base = privateBaseDir();
+        Path dir = base.resolve(String.valueOf(userId)).resolve(subdir).normalize();
+        if (!dir.startsWith(base)) {
+            throw new SecurityException("Path not allowed.");
+        }
+        Files.createDirectories(dir);
+        return dir;
     }
 
     private VideoType validateVideo(MultipartFile file) throws IOException {
@@ -264,7 +312,7 @@ public class MediaStorageService {
             throw new IllegalArgumentException("Only video files are accepted.");
         }
         if (file.getSize() > MAX_VIDEO_BYTES) {
-            throw new IllegalArgumentException("Video must be smaller than 50 MB.");
+            throw new IllegalArgumentException("Video must be smaller than 100 MB.");
         }
         byte[] header;
         try (InputStream in = file.getInputStream()) {
@@ -321,7 +369,10 @@ public class MediaStorageService {
     public void deleteVideo(UUID workerId, Video video) {
         try {
             deletePhysicalFile(workerId, "videos", video.getUrl());
-        } catch (IOException e) {
+            deletePhysicalFile(workerId, "thumbs/videos", video.getMainThumbUrl());
+            Files.deleteIfExists(pendingVideoFile(workerId, video));
+            Files.deleteIfExists(encodingVideoFile(workerId, video));
+        } catch (IOException | SecurityException e) {
             log.warn("Could not delete video file of worker {}: {}", workerId, e.getMessage());
         }
     }

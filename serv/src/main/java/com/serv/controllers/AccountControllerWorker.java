@@ -41,6 +41,7 @@ public class AccountControllerWorker {
     private final SseStreamService sseStreamService;
     private final MailService emailService;
     private final com.serv.services.AvailabilityAlertService availabilityAlertService;
+    private final com.serv.services.video.VideoProcessingService videoProcessingService;
 
     @Transactional(readOnly = true)
     @GetMapping("/me")
@@ -280,6 +281,7 @@ public class AccountControllerWorker {
         }
 
         boolean mediaAdded = false;
+        List<UUID> videosToProcess = new java.util.ArrayList<>();
         for (MultipartFile file : files) {
             try {
                 if (file.getContentType().startsWith("image/")) {
@@ -292,8 +294,9 @@ public class AccountControllerWorker {
                     photoRepository.save(photo);
                 } else {
                     Video video = mediaStorageService.saveVideo(file, worker);
+                    video.setSortOrder(worker.getVideos().size());
                     worker.addVideo(video);
-                    videoRepository.save(video);
+                    videosToProcess.add(videoRepository.save(video).getId());
                 }
                 mediaAdded = true;
             } catch (IllegalArgumentException e) {
@@ -318,6 +321,7 @@ public class AccountControllerWorker {
         this.setWorkerProfileCompleteness(worker);
 
         Worker savedWorker = workerRepository.save(worker);
+        videosToProcess.forEach(videoProcessingService::enqueue); // re-encoded in the background, after the commit
 
         if (mediaAdded) {
             sseStreamService.emitEvent(savedWorker.getId(), "account-update", WorkerFullProfileDTO.from(savedWorker));

@@ -34,7 +34,7 @@ public class AvailabilityAlertService {
     private final Executor mailExecutor;
 
     public AvailabilityAlertService(AvailabilityAlertRepository alertRepository, EmailTemplates emailTemplates,
-                                    MailService mailService, @Qualifier("applicationTaskExecutor") Executor mailExecutor) {
+                                    MailService mailService, @Qualifier("mailExecutor") Executor mailExecutor) {
         this.alertRepository = alertRepository;
         this.emailTemplates = emailTemplates;
         this.mailService = mailService;
