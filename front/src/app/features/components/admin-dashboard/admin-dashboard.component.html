@@ -106,6 +106,7 @@
                 <ion-button size="small"
                   [fill]="user.banned ? 'solid' : 'outline'"
                   [color]="user.banned ? 'danger' : 'medium'"
+                  [disabled]="!canManage(user)"
                   (click)="banUser(user, user.banned)"
                   [title]="$safeNavigationMigration(t.admin?.users_tab?.tooltip_banned)"
                   class="admin-action-btn">
@@ -117,6 +118,7 @@
                 <ion-button size="small"
                   [fill]="user.locked ? 'solid' : 'outline'"
                   [color]="user.locked ? 'warning' : 'medium'"
+                  [disabled]="!canManage(user)"
                   (click)="setLocked(user, !user.locked)"
                   [title]="$safeNavigationMigration(t.admin?.users_tab?.tooltip_locked)"
                   class="admin-action-btn">
@@ -152,9 +154,11 @@
               </td>
               <td>{{ (user.certifiedAt | date:'yyyy-MM-dd') || '' }}</td>
               <td class="ion-text-center">
-                <ion-button size="small" fill="clear" color="danger" (click)="deleteUser(user)" [title]="$safeNavigationMigration(t.common?.delete)">
-                  <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
-                </ion-button>
+                @if (canManage(user)) {
+                  <ion-button size="small" fill="clear" color="danger" (click)="deleteUser(user)" [title]="$safeNavigationMigration(t.common?.delete)">
+                    <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                  </ion-button>
+                }
               </td>
             </tr>
           </ng-template>

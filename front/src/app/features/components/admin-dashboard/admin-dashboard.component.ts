@@ -18,6 +18,7 @@ import { GeographicZoneWithParent } from "../../models/filter.model";
 import { WorkerPrivateProfile, AdminUser } from "../../models/user.model";
 import { AuthService } from "../../services/auth.service";
 import { UserRole } from "../../models/roles";
+import { canManageAccount } from "../../utils/admin-rights";
 import {Select} from "primeng/select";
 import {AdminWorkerReport} from "../../models/items.model";
 import {Router} from "@angular/router";
@@ -85,6 +86,11 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     addIcons({ addOutline, trashOutline, pencilOutline, chevronBackOutline, chevronForwardOutline, closeOutline,
       personAddOutline, shieldCheckmarkOutline, lockClosedOutline, lockOpenOutline, closeCircleOutline, alertCircleOutline
     });
+  }
+
+  /** Ban, lock and delete are only offered on accounts the current admin may act on (see canManageAccount). */
+  canManage(user: AdminUser): boolean {
+    return canManageAccount(this.authService.getUser(), user);
   }
 
   @HostListener('window:beforeunload')
