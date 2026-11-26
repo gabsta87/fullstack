@@ -79,7 +79,7 @@ Branche du deuxième lot : `fix/batch-2`.
 | `feat/gallery-cache` | Cache pour réduire les requêtes de la galerie | après les tests, idéalement |
 | `feat/photo-management-ui` | Gestion des photos plus jolie et moderne (les boutons actuels sont peu esthétiques) | profile-management |
 | `feat/admin-users-table` | Alléger la table utilisateurs de l'admin-dashboard (lente à charger) sans perdre le filtrage sur l'ensemble des utilisateurs | piste : pagination + filtrage côté serveur (endpoint paginé `GET /admin/users?page&size&q&role&status`), DTO de liste allégé (détails chargés à l'ouverture d'une ligne), index SQL sur les colonnes filtrées |
-| `feat/clear-filters` | Croix / touche Échap pour annuler le filtrage courant | galerie et tables admin |
+| ~~`feat/clear-filters`~~ | ✅ Croix / touche Échap pour annuler le filtrage courant | *fait : galerie — Échap vide le nom (déjà en place), croix dans le champ nom, bouton « Effacer » (icône croix) qui remet tous les filtres à zéro, région comprise ; admin — table utilisateurs et journal : Échap vide la recherche, bouton « Effacer » dès qu'un filtre est actif. Les autres tables admin n'ont pas de filtre* |
 | `feat/availability-calendar` | Les annonceurs affichent leurs jours de disponibilité à venir dans un calendrier, visible par les clients sur leur profil | affichage seul : les RDV ne sont jamais gérés par le site, visiteur et annonceur s'arrangent entre eux |
 
 ## 3. Chantiers transverses (branches `chore/…`)
