@@ -74,16 +74,16 @@
           [tableStyle]="{'min-width': '65rem'}">
           <ng-template #header>
             <tr>
-              <th pSortableColumn="username">{{ t.admin?.users_tab?.col_user }} <p-sort-icon field="username"></p-sort-icon></th>
-              <th pSortableColumn="email">{{ t.common?.email }}<p-sort-icon field="email"></p-sort-icon></th>
-              <th pSortableColumn="role">{{ t.common?.role }}<p-sort-icon field="role"></p-sort-icon></th>
-              <th pSortableColumn="birthdate">{{ t.common?.birthdate }}<p-sort-icon field="birthdate"></p-sort-icon></th>
-              <th pSortableColumn="banned">{{ t.common?.banned }}<p-sort-icon field="banned"></p-sort-icon></th>
-              <th pSortableColumn="locked">{{ t.common?.locked }}<p-sort-icon field="locked"></p-sort-icon></th>
-              <th pSortableColumn="available">{{ t.common?.status }}<p-sort-icon field="available"></p-sort-icon></th>
-              <th pSortableColumn="hidden">{{ t.common?.hidden }}<p-sort-icon field="hidden"></p-sort-icon></th>
+              <th pSortableColumn="username" class="sort-header"><span class="sort-btn">{{ t.admin?.users_tab?.col_user }}</span></th>
+              <th pSortableColumn="email" class="sort-header"><span class="sort-btn">{{ t.common?.email }}</span></th>
+              <th pSortableColumn="role" class="sort-header"><span class="sort-btn">{{ t.common?.role }}</span></th>
+              <th pSortableColumn="birthdate" class="sort-header"><span class="sort-btn">{{ t.common?.birthdate }}</span></th>
+              <th pSortableColumn="banned" class="sort-header"><span class="sort-btn">{{ t.common?.banned }}</span></th>
+              <th pSortableColumn="locked" class="sort-header"><span class="sort-btn">{{ t.common?.locked }}</span></th>
+              <th pSortableColumn="available" class="sort-header"><span class="sort-btn">{{ t.common?.status }}</span></th>
+              <th pSortableColumn="hidden" class="sort-header"><span class="sort-btn">{{ t.common?.hidden }}</span></th>
               <th>{{ t.admin?.users_tab?.col_certification }}</th>
-              <th pSortableColumn="certifiedAt">{{ t.admin?.users_tab?.col_certif_date }}<p-sort-icon field="certifiedAt"></p-sort-icon></th>
+              <th pSortableColumn="certifiedAt" class="sort-header"><span class="sort-btn">{{ t.admin?.users_tab?.col_certif_date }}</span></th>
               <th class="col-center-width-70">{{ t.common?.actions }}</th>
             </tr>
           </ng-template>
@@ -356,9 +356,9 @@
         <p-table [value]="(reportsSummary$ | async) || []" class="p-datatable-sm" [tableStyle]="{'min-width': '50rem'}">
           <ng-template #header>
             <tr>
-              <th pSortableColumn="workerUsername">{{ t.admin?.reports_tab?.col_advertiser }} <p-sort-icon field="workerUsername"></p-sort-icon></th>
+              <th pSortableColumn="workerUsername" class="sort-header"><span class="sort-btn">{{ t.admin?.reports_tab?.col_advertiser }}</span></th>
               <th>{{ t.common?.email }}</th>
-              <th pSortableColumn="reportCount">{{ t.admin?.reports_tab?.col_count }} <p-sort-icon field="reportCount"></p-sort-icon></th>
+              <th pSortableColumn="reportCount" class="sort-header"><span class="sort-btn">{{ t.admin?.reports_tab?.col_count }}</span></th>
               <th class="ion-text-center">{{ t.common?.actions }}</th>
             </tr>
           </ng-template>
@@ -580,10 +580,10 @@
                  [paginator]="true" [rows]="50" [alwaysShowPaginator]="false" dataKey="id">
           <ng-template #header>
             <tr>
-              <th class="log-col-date">{{ t.admin?.logs_tab?.col_date }}</th>
-              <th class="log-col-admin">{{ t.admin?.logs_tab?.moderator_label }}</th>
-              <th class="log-col-action">{{ t.admin?.logs_tab?.action_label }}</th>
-              <th class="log-col-target">{{ t.admin?.logs_tab?.target_label }}</th>
+              <th pSortableColumn="createdAt" class="sort-header log-col-date"><span class="sort-btn">{{ t.admin?.logs_tab?.col_date }}</span></th>
+              <th pSortableColumn="adminName" class="sort-header log-col-admin"><span class="sort-btn">{{ t.admin?.logs_tab?.moderator_label }}</span></th>
+              <th pSortableColumn="actionType" class="sort-header log-col-action"><span class="sort-btn">{{ t.admin?.logs_tab?.action_label }}</span></th>
+              <th pSortableColumn="targetLabel" class="sort-header log-col-target"><span class="sort-btn">{{ t.admin?.logs_tab?.target_label }}</span></th>
               <th>{{ t.admin?.logs_tab?.col_details }}</th>
             </tr>
           </ng-template>
@@ -591,7 +591,7 @@
             <tr class="log-row">
               <td class="log-col-date nowrap-cell">{{ log.createdAt | date:'dd.MM.yyyy HH:mm' }}</td>
               <td class="log-col-admin">{{ log.adminName }}</td>
-              <td class="log-col-action"><span class="log-action">{{ log.actionType }}</span></td>
+              <td class="log-col-action">{{ log.actionType }}</td>
               <td class="log-col-target">
                 @if (log.targetLabel || log.targetId) {
                   <span class="log-target-type">{{ log.targetType }}</span>

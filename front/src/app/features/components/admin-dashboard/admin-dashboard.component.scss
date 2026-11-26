@@ -458,24 +458,57 @@ ion-modal.image-preview-modal {
 
 .log-row td { vertical-align: top; }
 
-.log-col-date { width: 7.5rem; font-variant-numeric: tabular-nums; }
+.log-col-date { width: 9.5rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .log-col-admin { width: 12%; overflow-wrap: anywhere; }
-.log-col-action { width: 10.5rem; }
-.log-col-action .log-action { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: top; }
+.log-col-action { width: 13rem; overflow-wrap: anywhere; }
+td.log-col-action { font-size: 0.85rem; }
 .log-col-target { width: 12%; overflow-wrap: anywhere; }
 .log-col-details { overflow-wrap: break-word; }
 
-.log-action {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  background: var(--ion-color-step-150, #e6e6e6);
-}
 
 .log-target-type {
   display: block;
   font-size: 0.75rem;
   color: var(--ion-color-medium);
 }
+
+// ── Tables: room between columns; sortable headers look like buttons ──
+// No PrimeNG theme preset: cells have no padding of their own
+:host {
+  --p-datatable-header-cell-padding: 8px 10px;
+  --p-datatable-header-cell-sm-padding: 6px 10px;
+  --p-datatable-body-cell-padding: 8px 10px;
+  --p-datatable-body-cell-sm-padding: 6px 10px;
+}
+
+// Sortable headers are buttons (the others stay plain text); the arrow only shows the current sort
+th.sort-header {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+
+  &:focus-visible { outline: none; }
+  &:focus-visible .sort-btn { outline: 2px solid var(--ion-color-primary); }
+}
+
+.sort-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 1px solid var(--ion-color-step-200, #ddd);
+  border-radius: 8px;
+  background: var(--ion-background-color, #fff);
+  font-weight: 600;
+  transition: background 0.15s, border-color 0.15s;
+
+  th.sort-header:hover & { background: var(--ion-color-step-100, #f0f0f0); }
+}
+
+th.sort-header[aria-sort="ascending"] .sort-btn,
+th.sort-header[aria-sort="descending"] .sort-btn {
+  border-color: var(--ion-color-primary);
+  background: rgba(var(--ion-color-primary-rgb), 0.1);
+}
+th.sort-header[aria-sort="ascending"] .sort-btn::after { content: '▲'; font-size: 0.7em; color: var(--ion-color-primary); }
+th.sort-header[aria-sort="descending"] .sort-btn::after { content: '▼'; font-size: 0.7em; color: var(--ion-color-primary); }
