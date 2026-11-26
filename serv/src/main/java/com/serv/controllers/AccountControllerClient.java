@@ -129,6 +129,7 @@ public class AccountControllerClient {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Targeted announcer not found"));
 
         String content = body.content().trim();
+        c.ensureUsername(); // a comment is always signed with a pseudonym
 
         Comment comm = commentRepository.findByAuthorAndWorker(c, w).orElse(null);
 

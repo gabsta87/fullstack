@@ -85,7 +85,12 @@ public class AccountController {
         // All checks passed: apply the changes.
         if (req.username() != null) {
             String username = req.username().trim();
-            user.setUsername(username.isEmpty() ? null : username);
+            if (username.isEmpty()) {
+                // A visitor keeps a pseudonym: their comments must never be signed with nothing (or their email).
+                user.setUsername(user instanceof Client ? Client.defaultPseudonym() : null);
+            } else {
+                user.setUsername(username);
+            }
         }
 
         if (isEmailChanging) {

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -56,8 +57,25 @@ public class Client extends VenusUser {
     @OneToMany(mappedBy = "author", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<Comment> comments = new ArrayList<>();
 
+    private static final SecureRandom RANDOM = new SecureRandom();
+
     public Client(Email email, String password) {
-        super(email, password, null);
+        super(email, password, defaultPseudonym());
+    }
+
+    /**
+     * Pseudonym given to a visitor who has not chosen a name ("visitor-0427"). Never derived from the email,
+     * which often contains a real name.
+     */
+    public static String defaultPseudonym() {
+        return "visitor-%04d".formatted(RANDOM.nextInt(10_000));
+    }
+
+    /** Gives a pseudonym to an account without a name (accounts created before pseudonyms existed). */
+    public void ensureUsername() {
+        if (username == null || username.isBlank()) {
+            username = defaultPseudonym();
+        }
     }
 
     public UserRole getRole(){

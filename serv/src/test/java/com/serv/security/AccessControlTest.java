@@ -134,6 +134,31 @@ class AccessControlTest extends IntegrationTest {
         }
 
         @Test
+        @DisplayName("A visitor always comments under a pseudonym, never derived from the email")
+        void commentPseudonym() throws Exception {
+            mvc.perform(post("/auth/register/client").contentType(MediaType.APPLICATION_JSON)
+                    .content(toJson(Map.of("email", "jane.doe@venus.test", "password", PASSWORD)))).andExpect(status().isOk());
+            Client fresh = clientRepository.findAll().stream()
+                    .filter(x -> x.getEmail().getValue().equals("jane.doe@venus.test")).findFirst().orElseThrow();
+            assertThat(fresh.getUsername()).matches("visitor-\\d{4}");
+
+            // Account created before pseudonyms existed: it gets one when it comments.
+            Client legacy = clientRepository.findById(fresh.getId()).orElseThrow();
+            legacy.setUsername(null);
+            clientRepository.save(legacy);
+            Worker w = createVisibleWorker("luna@venus.test");
+            mvc.perform(post("/account/client/comment").header("Authorization", bearer(legacy)).contentType(MediaType.APPLICATION_JSON)
+                    .content(toJson(Map.of("content", "Hello", "workerId", w.getId().toString()))))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.authorUsername").value(org.hamcrest.Matchers.matchesPattern("visitor-\\d{4}")));
+
+            // Clearing the name gives a new pseudonym instead of nothing.
+            mvc.perform(patch("/account/data").header("Authorization", bearer(legacy)).contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"username\":\"   \"}")).andExpect(status().isOk());
+            assertThat(clientRepository.findById(fresh.getId()).orElseThrow().getUsername()).matches("visitor-\\d{4}");
+        }
+
+        @Test
         @DisplayName("Comments cannot target a hidden or banned profile")
         void commentOnHiddenProfile() throws Exception {
             Client c = createClient("client@venus.test");
