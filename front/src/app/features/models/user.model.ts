@@ -50,6 +50,9 @@ export interface WorkerPublicFullProfile extends WorkerMinimalProfile {
 export interface WorkerPrivateProfile extends WorkerPublicFullProfile {
   birthdate?: string;
   certificationRequest?: CertificationRequest;
+  /** End of the current certification and start of its renewal period (set by the server at approval). */
+  certificationExpiresAt?: string | null;
+  certificationRenewableFrom?: string | null;
   adminCertificationFeedback?: string;
   lastRefreshed?: string;
   expirationDate?: string;
@@ -87,6 +90,9 @@ export interface AdminUser {
   certificationStatus?: string;
   verificationCode?: string;
   certifiedAt?: string;
+  /** Valid certification right now (certificationStatus may be a renewal in progress meanwhile). */
+  certified?: boolean;
+  certificationExpiresAt?: string | null;
   certificationRequestDate?: string;
   description?: string;
   servicesId: number[];

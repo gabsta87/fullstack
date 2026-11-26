@@ -425,7 +425,14 @@
       "admin_settings_default": "default: {value}",
       "admin_settings_range": "between {min} and {max}",
       "settings_saved": "Your account settings have been updated.",
-      "settings_error": "An error occurred while updating."
+      "settings_error": "An error occurred while updating.",
+      "cert_valid_until": "Certified until {date}",
+      "cert_renew_open": "Ends on {date}: you can renew it now",
+      "cert_renew_btn": "Renew",
+      "cert_renewal_pending": "Renewal sent, waiting for review",
+      "cert_pending": "Waiting for review",
+      "admin_cert_expired": "Expired",
+      "admin_cert_until": "until {date}"
     }
   },
   "fr": {
@@ -854,7 +861,14 @@
       "admin_settings_default": "par défaut : {value}",
       "admin_settings_range": "entre {min} et {max}",
       "settings_saved": "Vos paramètres de compte ont été mis à jour.",
-      "settings_error": "Une erreur est survenue lors de la mise à jour."
+      "settings_error": "Une erreur est survenue lors de la mise à jour.",
+      "cert_valid_until": "Certifié jusqu'au {date}",
+      "cert_renew_open": "Se termine le {date} : vous pouvez la renouveler dès maintenant",
+      "cert_renew_btn": "Renouveler",
+      "cert_renewal_pending": "Renouvellement envoyé, en attente de validation",
+      "cert_pending": "En attente de validation",
+      "admin_cert_expired": "Expirée",
+      "admin_cert_until": "jusqu'au {date}"
     }
   },
   "de": {
@@ -1278,7 +1292,14 @@
       "admin_settings_default": "Standard: {value}",
       "admin_settings_range": "zwischen {min} und {max}",
       "settings_saved": "Ihre Kontoeinstellungen wurden aktualisiert.",
-      "settings_error": "Beim Aktualisieren ist ein Fehler aufgetreten."
+      "settings_error": "Beim Aktualisieren ist ein Fehler aufgetreten.",
+      "cert_valid_until": "Zertifiziert bis {date}",
+      "cert_renew_open": "Endet am {date}: Sie können sie jetzt verlängern",
+      "cert_renew_btn": "Verlängern",
+      "cert_renewal_pending": "Verlängerung gesendet, wartet auf Prüfung",
+      "cert_pending": "Wartet auf Prüfung",
+      "admin_cert_expired": "Abgelaufen",
+      "admin_cert_until": "bis {date}"
     }
   },
   "es": {
@@ -1702,7 +1723,14 @@
       "admin_settings_default": "por defecto: {value}",
       "admin_settings_range": "entre {min} y {max}",
       "settings_saved": "Los ajustes de su cuenta se han actualizado.",
-      "settings_error": "Se ha producido un error durante la actualización."
+      "settings_error": "Se ha producido un error durante la actualización.",
+      "cert_valid_until": "Certificado hasta el {date}",
+      "cert_renew_open": "Termina el {date}: ya puede renovarla",
+      "cert_renew_btn": "Renovar",
+      "cert_renewal_pending": "Renovación enviada, pendiente de validación",
+      "cert_pending": "Pendiente de validación",
+      "admin_cert_expired": "Caducada",
+      "admin_cert_until": "hasta el {date}"
     }
   },
   "pt": {
@@ -2126,7 +2154,14 @@
       "admin_settings_default": "predefinição: {value}",
       "admin_settings_range": "entre {min} e {max}",
       "settings_saved": "As definições da sua conta foram atualizadas.",
-      "settings_error": "Ocorreu um erro durante a atualização."
+      "settings_error": "Ocorreu um erro durante a atualização.",
+      "cert_valid_until": "Certificado até {date}",
+      "cert_renew_open": "Termina a {date}: já pode renová-la",
+      "cert_renew_btn": "Renovar",
+      "cert_renewal_pending": "Renovação enviada, a aguardar validação",
+      "cert_pending": "A aguardar validação",
+      "admin_cert_expired": "Expirada",
+      "admin_cert_until": "até {date}"
     }
   },
   "it": {
@@ -2550,7 +2585,14 @@
       "admin_settings_default": "predefinito: {value}",
       "admin_settings_range": "tra {min} e {max}",
       "settings_saved": "Le impostazioni del tuo account sono state aggiornate.",
-      "settings_error": "Si è verificato un errore durante l'aggiornamento."
+      "settings_error": "Si è verificato un errore durante l'aggiornamento.",
+      "cert_valid_until": "Certificato fino al {date}",
+      "cert_renew_open": "Scade il {date}: puoi rinnovarla da ora",
+      "cert_renew_btn": "Rinnova",
+      "cert_renewal_pending": "Rinnovo inviato, in attesa di verifica",
+      "cert_pending": "In attesa di verifica",
+      "admin_cert_expired": "Scaduta",
+      "admin_cert_until": "fino al {date}"
     }
   },
   "ru": {
@@ -2974,7 +3016,14 @@
       "admin_settings_default": "по умолчанию: {value}",
       "admin_settings_range": "от {min} до {max}",
       "settings_saved": "Настройки аккаунта обновлены.",
-      "settings_error": "Ошибка при обновлении."
+      "settings_error": "Ошибка при обновлении.",
+      "cert_valid_until": "Сертифицировано до {date}",
+      "cert_renew_open": "Заканчивается {date}: её уже можно продлить",
+      "cert_renew_btn": "Продлить",
+      "cert_renewal_pending": "Продление отправлено, ожидает проверки",
+      "cert_pending": "Ожидает проверки",
+      "admin_cert_expired": "Истекла",
+      "admin_cert_until": "до {date}"
     }
   },
   "ua": {
@@ -3398,7 +3447,14 @@
       "admin_settings_default": "за замовчуванням: {value}",
       "admin_settings_range": "від {min} до {max}",
       "settings_saved": "Налаштування облікового запису оновлено.",
-      "settings_error": "Помилка під час оновлення."
+      "settings_error": "Помилка під час оновлення.",
+      "cert_valid_until": "Сертифіковано до {date}",
+      "cert_renew_open": "Завершується {date}: її вже можна продовжити",
+      "cert_renew_btn": "Продовжити",
+      "cert_renewal_pending": "Продовження надіслано, очікує перевірки",
+      "cert_pending": "Очікує перевірки",
+      "admin_cert_expired": "Закінчилася",
+      "admin_cert_until": "до {date}"
     }
   },
   "ar": {
@@ -3822,7 +3878,14 @@
       "admin_settings_default": "الافتراضي: {value}",
       "admin_settings_range": "بين {min} و {max}",
       "settings_saved": "تم تحديث إعدادات حسابك.",
-      "settings_error": "حدث خطأ أثناء التحديث."
+      "settings_error": "حدث خطأ أثناء التحديث.",
+      "cert_valid_until": "موثّق حتى {date}",
+      "cert_renew_open": "تنتهي في {date}: يمكنك تجديدها الآن",
+      "cert_renew_btn": "تجديد",
+      "cert_renewal_pending": "تم إرسال التجديد، بانتظار المراجعة",
+      "cert_pending": "بانتظار المراجعة",
+      "admin_cert_expired": "منتهية",
+      "admin_cert_until": "حتى {date}"
     }
   }
 }

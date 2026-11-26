@@ -159,8 +159,12 @@
               <!-- Certification and revocation -->
               <td>
                 <div class="certif-cell-wrapper">
-                  <span>{{ user.certificationStatus || '' }}</span>
-                  @if (user.certificationStatus === 'CERTIFIED') {
+                  @if (user.certificationStatus === 'CERTIFIED' && !user.certified) {
+                    <span class="cert-expired">{{ languageService.msg('admin_cert_expired') }}</span>
+                  } @else {
+                    <span>{{ user.certificationStatus || '' }}</span>
+                  }
+                  @if (user.certified) {
                     <ion-button
                       size="small"
                       fill="outline"
@@ -173,7 +177,14 @@
                   }
                 </div>
               </td>
-              <td>{{ (user.certifiedAt | date:'yyyy-MM-dd') || '' }}</td>
+              <td>
+                {{ (user.certifiedAt | date:'yyyy-MM-dd') || '' }}
+                @if (user.certificationExpiresAt) {
+                  <div class="cert-until" [class.cert-expired]="!user.certified">
+                    {{ languageService.msg('admin_cert_until', { date: (user.certificationExpiresAt | date:'yyyy-MM-dd') ?? '' }) }}
+                  </div>
+                }
+              </td>
               <td class="ion-text-center">
                 @if (canManage(user)) {
                   <ion-button size="small" fill="clear" color="danger" (click)="deleteUser(user)" [title]="$safeNavigationMigration(t.common?.delete)">

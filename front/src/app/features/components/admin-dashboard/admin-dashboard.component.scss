@@ -361,3 +361,6 @@ ion-modal.image-preview-modal {
 @media (max-width: 576px) {
   .setting-row { grid-template-columns: 1fr; }
 }
+
+.cert-until { font-size: 0.8rem; color: var(--ion-color-medium); }
+.cert-expired { color: var(--ion-color-danger); font-weight: 600; }

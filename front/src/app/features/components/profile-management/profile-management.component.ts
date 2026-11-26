@@ -27,6 +27,7 @@ import {AccountService} from "../../services/account-service";
 import {sanitizePhone, sanitizePhoneTyping} from "../../utils/input-limits";
 import {formatPhone} from "../../utils/phone";
 import {settingsErrorKey} from "../../utils/error-messages";
+import {certificationState} from "../../utils/certification-state";
 import {siteLanguageTag} from "../../interceptors/jwt.interceptor";
 
 @Component({
@@ -197,11 +198,8 @@ export class ProfileManagementComponent implements OnInit {
   // ── Certification ────────────────────────────────────────────────────────
 
   /**
-   * Color and label of the certification, valid for 8 months after it was granted (certifiedAt).
-   * - Green (< 6 months): valid
-   * - Yellow (6 to 7 months): renewal soon
-   * - Orange (7 to 8 months): about to expire
-   * - Red (> 8 months or not certified): expired / invalid
+   * Color and label of the certification button. The end and renewal dates come from the server
+   * (fixed at approval from the admin settings), see certificationState.
    */
   getCertificationBadge(me: WorkerPrivateProfile, t: any): {
     color: string;
@@ -212,74 +210,37 @@ export class ProfileManagementComponent implements OnInit {
     hasNotification: boolean;
     isDisabled: boolean;
   } {
-    const status = me.certificationRequest?.status;
+    const title = t.certification?.title || 'Certification';
+    const date = (value?: string | null) => value
+      ? new Date(value).toLocaleDateString(this.languageService.currentCode.toLowerCase(), { day: 'numeric', month: 'long', year: 'numeric' })
+      : '';
+    const msg = (key: string, params: Record<string, string> = {}) => this.languageService.msg(key, params);
 
-    // 1. Waiting for the photo (or first request)
-    if (status === CertificationStatus.PENDING_PHOTO || !status || status === CertificationStatus.NOT_CERTIFIED) {
-      return {
-        color: 'tertiary',
-        label: t.certification?.title || 'Certification',
-        buttonText: t.certification?.title || 'Certification',
-        icon: 'camera-outline',
-        isCert: false,
-        hasNotification: false,
-        isDisabled: false
-      };
+    switch (certificationState(me)) {
+      case 'valid':
+        return { color: 'success', label: msg('cert_valid_until', { date: date(me.certificationExpiresAt) }),
+          buttonText: msg('cert_certified_btn'), icon: 'shield-checkmark-outline', isCert: true, hasNotification: false, isDisabled: true };
+      case 'renewal_open':
+        return { color: 'warning', label: msg('cert_renew_open', { date: date(me.certificationExpiresAt) }),
+          buttonText: msg('cert_renew_btn'), icon: 'shield-outline', isCert: true, hasNotification: true, isDisabled: false };
+      case 'renewal_pending':
+        return { color: 'success', label: msg('cert_renewal_pending'),
+          buttonText: msg('cert_certified_btn'), icon: 'time-outline', isCert: true, hasNotification: false, isDisabled: true };
+      case 'pending_approval':
+        return { color: 'medium', label: msg('cert_pending'),
+          buttonText: t.admin?.certif_tab?.badge_pending || msg('cert_pending'), icon: 'time-outline', isCert: false, hasNotification: false, isDisabled: true };
+      case 'revision':
+        return { color: 'danger',
+          label: me.adminCertificationFeedback
+            ? msg('cert_rejected', { reason: me.adminCertificationFeedback })
+            : msg('cert_revision_required'),
+          buttonText: title, icon: 'alert-circle-outline', isCert: false, hasNotification: true, isDisabled: false };
+      case 'expired':
+        return { color: 'danger', label: msg('cert_expired'),
+          buttonText: title, icon: 'camera-outline', isCert: false, hasNotification: false, isDisabled: false };
+      default: // none, pending_photo
+        return { color: 'tertiary', label: title, buttonText: title, icon: 'camera-outline', isCert: false, hasNotification: false, isDisabled: false };
     }
-
-    // 2. Correction requested by the admin OR rejected
-    if (status === CertificationStatus.NEEDS_REVISION || status === CertificationStatus.REJECTED) {
-      return {
-        color: 'danger',
-        label: me.adminCertificationFeedback
-          ? this.languageService.msg('cert_rejected', { reason: me.adminCertificationFeedback })
-          : this.languageService.msg('cert_revision_required'),
-        buttonText: t.certification?.title || 'Certification',
-        icon: 'alert-circle-outline',
-        isCert: false,
-        hasNotification: true,
-        isDisabled: false
-      };
-    }
-
-    // 3. Waiting for the admins -> LOCKED
-    if (status === CertificationStatus.PENDING_APPROVAL) {
-      return {
-        color: 'medium',
-        label: 'En attente de validation',
-        buttonText: t.admin?.certif_tab?.badge_pending || 'En attente',
-        icon: 'time-outline',
-        isCert: false,
-        hasNotification: false,
-        isDisabled: true
-      };
-    }
-
-    // 4. Certified
-    if (status === CertificationStatus.CERTIFIED) {
-      const certifiedDate = new Date(me.certifiedAt!).getTime();
-      const currentTime = new Date().getTime();
-      const diffInDays = Math.floor((currentTime - certifiedDate) / (1000 * 60 * 60 * 24));
-      const diffInMonths = diffInDays / 30.44;
-
-      if (diffInMonths > 8) {
-        return { color: 'danger', label: this.languageService.msg('cert_expired'), buttonText: t.certification?.title || 'Certification', icon: 'camera-outline', isCert: false, hasNotification: false, isDisabled: false };
-      } else if (diffInMonths >= 6) {
-        return { color: 'warning', label: this.languageService.msg('cert_expiring'), buttonText: this.languageService.msg('cert_expiring_btn'), icon: 'shield-outline', isCert: true, hasNotification: false, isDisabled: false };
-      } else {
-        return { color: 'success', label: this.languageService.msg('cert_certified'), buttonText: this.languageService.msg('cert_certified_btn'), icon: 'shield-checkmark-outline', isCert: true, hasNotification: false, isDisabled: true };
-      }
-    }
-
-    return {
-      color: 'danger',
-      label: 'Certification',
-      buttonText: t.certification?.title || 'Certification',
-      icon: 'shield-outline',
-      isCert: false,
-      hasNotification: false,
-      isDisabled: false
-    };
   }
 
   /**
@@ -288,7 +249,9 @@ export class ProfileManagementComponent implements OnInit {
    */
   async openCertificationModal(me: WorkerPrivateProfile) {
     try {
-      if (!me.certificationRequest?.verificationCode || me.certificationRequest?.status === CertificationStatus.NOT_CERTIFIED) {
+      const status = me.certificationRequest?.status;
+      // A renewal (status CERTIFIED) or a first request starts with a new verification code
+      if (!me.certificationRequest?.verificationCode || status === CertificationStatus.NOT_CERTIFIED || status === CertificationStatus.CERTIFIED) {
         await this.workerAccountService.requestCertification();
       }
 
