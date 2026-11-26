@@ -67,9 +67,9 @@
 // Compact list: advertiser thumbnail on the left, then name, date, text.
 .my-comments {
   list-style: none;
-  margin: 0;
   padding: 0;
-  max-width: 800px; // text list: readable width
+  max-width: 800px; // text list: readable width, centered (the tab already says what it is)
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 10px;
