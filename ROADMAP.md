@@ -11,6 +11,25 @@ Cocher `[x]` quand c'est mergé dans `master`.
 
 Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 
+Elements nouveaux
+
+- [ ] Les admins ont encore l'attribut "disponible/indisponible". On pourrait plutôt afficher s'ils sont online ou pas. On peut utiliser la même propriété. Quand ils se connectent, ils deviennent online (disponibles). Quand ils se déconnectent, la valeur est ajustée en conséquence. On pourrait aussi afficher en vert/rouge ce statut pour tout le monde  (disponible/indisponible pour les annonceurs, online/offline pour les admins)
+
+Branche du deuxième lot : `fix/batch-2`.
+
+- [x] message à propos des cookies — *il ne vient pas du site : Venus ne pose aucun cookie (la session est gardée dans le `localStorage` du navigateur, pas dans un cookie), et le code ne contient aucun bandeau ni texte « rester connecté ». Le message « rester connecté sur tous les navigateurs / appareils » est très probablement celui de Chrome (gestionnaire de mots de passe Google, icône de clé dans la barre d'adresse) ou d'une extension. Si tu le revois sur le site, une capture d'écran permettra de trancher. La suggestion `visitor-1234` est reprise pour les commentaires (ligne suivante)*
+- [x] front : un visiteur ne peut pas laisser de commentaire s'il n'a pas défini un nom — *chaque visiteur reçoit un pseudonyme `visitor-1234` à l'inscription (jamais tiré de l'e-mail) ; les anciens comptes sans nom en reçoivent un au premier commentaire ; effacer son nom redonne un pseudonyme*
+- [x] serv : deux routes de suppression de commentaire par un admin — *elles existaient bien : `DELETE /admin/comments/{id}` et `DELETE /admin/comment/{id}` (singulier). Seule la première est gardée ; pas de PATCH pour supprimer (en REST, PATCH modifie, DELETE supprime). Le front n'a encore aucun écran de modération (`feat/comment-moderation`)*
+- [x] avertissement Vite (`The above dynamic import cannot be analyzed`) — *sans danger, uniquement en développement : il vient du chargeur paresseux d'Ionic, embarqué parce que 9 composants importent encore `@ionic/angular` (ancien `IonicModule`) alors que l'appli démarre en mode standalone. Mélanger les deux est déconseillé par Ionic ; la vraie correction est une migration → déplacée en §3 (`chore/ionic-standalone`)*
+- [x] front : le formatage du numéro de téléphone avec les espaces est aussi utilisé sur profile-management — *affiché groupé, reformaté en quittant le champ, enregistré sans espaces*
+- [x] notification de retour (profil indisponible → disponible) — *vérifié : elle n'existe pas (le bouton « Me notifier son retour » ne fait que changer d'icône, aucun code côté serveur). C'est une fonctionnalité à part entière → déplacée en §2 (`feat/back-online-alert`)*
+- [x] front : supprimer la largeur max — *profil, gestion du profil et compte utilisent toute la largeur (la galerie l'utilisait déjà) ; seuls les blocs de texte (description, formulaire de compte, liste de commentaires) gardent une largeur lisible, comme le veut l'usage*
+- [x] front : admin-dashboard : les admins ne peuvent pas supprimer un admin / super_admin — *le backend le refusait déjà ; les boutons bannir, verrouiller et supprimer ne sont plus proposés sur ces comptes ni sur son propre compte (règle testée, identique au backend)*
+- [x] onglet admin des textes légaux (sélecteur de langue, vue de toutes les langues côte à côte) — *écran complet → fusionné avec `feat/legal-texts-admin` en §2*
+- [x] limite globale de stockage modifiable par les admins — *nécessite une table de réglages, un endpoint et un onglet, et touche aux paliers d'abonnement (la limite dépend aujourd'hui du palier, codée en dur) → déplacée en §2 (`feat/admin-settings`)*
+- [x] front : spinner pendant le chargement de la liste des utilisateurs (admin)
+- [x] front : boutons du formulaire d'avis traduits (« Publier » / « Mettre à jour » restaient en anglais)
+- [x] corrigés en vérifiant : la suppression d'un commentaire par un admin échouait toujours sur MySQL (journal d'audit : texte non JSON dans une colonne `json` ; les noms de services/régions supprimés n'étaient pas échappés non plus) — *instantanés sérialisés en vrai JSON, test qui relit chaque instantané* ; une API lente laissait le site blanc au démarrage (restauration de session sans limite de temps) — *4 s au plus*
 - [x] phpmyadmin de mon NAS doit être accessible depuis mon réseau local, pas uniquement depuis le NAS, comme c'était le cas avant les modifications que tu as faites. *Port 8082 ouvert sur le réseau local ; ne jamais le rediriger sur la box. Sur un serveur public : `PHPMYADMIN_BIND=127.0.0.1`.*
 - [x] front : afficher l'espace utilisé en Mo et % sur la page profile-management pour les images/vidéos — *barre sous le bouton d'ajout, `GET /account/worker/storage`*
 - [x] front : le guard profil bloque l'accès à un profil banni (sauf admins) — *un profil non public (404) renvoie à la galerie*
@@ -33,9 +52,10 @@ Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 
 ### Notes laissées pour plus tard
 
-- [ ] serv : deux endpoints de suppression de commentaire par un admin font la même chose (`DELETE /admin/comments/{id}` et `/admin/comment/{id}`) : n'en garder qu'un
-- [ ] serv : la colonne `legal_text.content` (varchar 255) n'est plus utilisée (remplacée par `body`) : à supprimer à la main (`ALTER TABLE legal_text DROP COLUMN content`) ou avec un outil de migration (Flyway) le jour où il y aura de vraies données
+- [x] serv : deux endpoints de suppression de commentaire par un admin font la même chose (`DELETE /admin/comments/{id}` et `/admin/comment/{id}`) : n'en garder qu'un — *fait dans `fix/batch-2`*
+- [x] serv : la colonne `legal_text.content` (varchar 255) n'est plus utilisée (remplacée par `body`) : à supprimer à la main (`ALTER TABLE legal_text DROP COLUMN content`) ou avec un outil de migration (Flyway) le jour où il y aura de vraies données
 - [ ] admins : les modifications faites par un annonceur sur son propre profil ne rafraîchissent pas la table admin en direct (seulement les actions admin) — à faire si utile, la table étant déjà lourde (`feat/admin-users-table`)
+  - REPONSE : PAS BESOIN - par contre, le rafraichissement devra se faire sur la page du profil pour l'administrateur (quand elle sera créée)
 - [ ] e-mails : envoyés dans la langue du site au moment de la demande ; un e-mail déclenché plus tard (alerte de ville) devra stocker la langue préférée de l'utilisateur
 
 ## 2. Prêt — fonctionnalités (une branche chacune)
@@ -44,7 +64,9 @@ Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 |---|---|---|
 | `feat/video-upload` | Upload vidéo : compression / limite de taille, stockage, génération de miniature | priorité serveur |
 | `feat/account-credentials` | Changer mot de passe / email, protégé par l'ancien mot de passe | |
-| `feat/legal-texts-admin` | Les admins modifient les textes légaux + historique horodaté (preuve légale) | |
+| `feat/legal-texts-admin` | Onglet admin des textes légaux : modifier ou ajouter une version, historique horodaté (preuve légale) | sélecteur de langue plutôt qu'une ligne par langue ; vue de toutes les langues côte à côte (modale ou page) ; l'API existe déjà (`POST /admin/legal`, versions par langue) |
+| `feat/admin-settings` | Onglet « Administration » : limite globale de stockage (photos, vidéos) des annonceurs, plus tard la tarification | **à décider** : une seule limite globale, ou une par palier d'abonnement (aujourd'hui codée en dur dans `Worker.getMaxStorageBytes`) ? Réglages en base, modifiables sans redéploiement |
+| `feat/back-online-alert` | « Me notifier son retour » : e-mail aux visiteurs abonnés quand un profil indisponible redevient disponible | table d'abonnements, envoi au passage indisponible → disponible (une fois par retour), lien de désabonnement, langue de l'e-mail stockée (cf. note e-mails ci-dessus). En attendant, le bouton ne fait rien côté serveur |
 | `feat/comment-moderation` | Signalement de commentaires par les annonceurs + modération admin | |
 | `feat/age-certification` | Certification de l'âge par les admins | voir aussi §6 (mineurs) |
 | `feat/certification-expiration` | Expiration automatique des certifications (table triée par date, réveil à l'échéance) | |
@@ -70,6 +92,7 @@ Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 - [x] `chore/refactoring` — code mort supprimé (composant Stripe, services et resolver inutilisés), Angular Material retiré, CSS globaux chargés une seule fois (plus de Sass `@import`), build Angular moderne (esbuild, 844 → 491 paquets npm) ; rendu vérifié par 30 captures comparées pixel par pixel. Le SCSS des composants n'avait presque pas de duplication : pas de factorisation forcée
 - [x] `chore/deps-upgrade` — Spring Boot 3.3 → 4.1.3, Gradle 8.14, Angular 18 → 22, PrimeNG 18 → 22, TypeScript 6, Node 24, MySQL 8.0 → 9.7 LTS ; dépendances inutiles retirées (serveur d'autorisation OAuth2, Thymeleaf, Spring Session, paquets Stripe/Express du front)
   - [x] MySQL 9.7 LTS sur un volume neuf (`db-data-mysql97`) : les données de test repartent de zéro. L'ancien volume peut être supprimé sur le NAS : `docker volume rm venus_db-data`. **Le jour où il y aura de vraies données (Infomaniak)** : sauvegarder avant toute montée MySQL, une LTS à la fois.
+  - [ ] `chore/ionic-standalone` : 9 composants importent encore `@ionic/angular` (`IonicModule`, contrôleurs) alors que l'appli démarre en standalone. Migrer vers `@ionic/angular/standalone` (import des composants utilisés), ce qui supprime l'avertissement Vite du chargeur paresseux et, à terme, `ionic-elements.ts`. Comparaison visuelle nécessaire ; à faire avant Ionic 9
   - [ ] Ionic 8 → 9 (majeure, changements visuels possibles) : branche dédiée avec comparaison visuelle
   - [ ] Java 21 → 25 LTS (21 reste supporté jusqu'en 2029 : pas urgent ; nécessite aussi Gradle 9)
   - [x] `@angular/material` retiré (dans `chore/refactoring`)
@@ -100,8 +123,9 @@ Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 
 - **Tri de la galerie** : certifiés d'abord, puis par date de refresh. *La partie sans paiement (certifiés → date) pourrait être faite tout de suite ; refresh payant / cooldown à décider.*
 - **Mineurs** : notification quand un utilisateur s'inscrit avec une date de naissance < 18 ans → message aux autorités locales ? Ou impossibilité de créer le compte ? ou bannissement de compte ? Qui, comment, selon quel pays ? (lié à la sécurité des annonceurs mineurs selon les pays)
-- **Régions** générées selon le pays (et non par les utilisateurs)
-- **Certification** : une fois certifié, les photos doivent-elles rester figées (seul l'ajout autorisé) pour éviter la fraude ?
+- **Favoris** les admins et annonceurs ont-ils les droits des visiteurs ? peuvent-ils avoir des favoris ?
+- **Admin** Les admins ont-ils besoin de l'onglet compte ? 
+- **Certification** : une fois certifié, les photos doivent-elles rester figées ? (seule la suppression est autorisée pour l'instant) pour éviter la fraude ? Peut-être laisse un certain nombre de slots photos libres de changements après certification, genre 2 ou 3.
 - **Signalement de numéros de clients** par les annonceurs + outil « Vérifier un numéro » dans l'espace annonceur (plutôt qu'une app mobile)
 - **Serveur stateless / montée en charge** : pouvoir lancer plusieurs instances du backend. État actuellement gardé en mémoire à déplacer (DB ou Redis) : flux SSE (`SseStreamService`), limitation des connexions (`AbuseProtectionService`), tâches planifiées (`@Scheduled`, à exécuter sur une seule instance), future file de tarification. Les médias sont sur disque local → stockage partagé (cf. Azure Blob en §7).
 - **Super Admin** (sans la partie paiement) : tous les droits admin, ajout/suppression d'admins
