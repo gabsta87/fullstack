@@ -281,7 +281,12 @@
       },
       "logs_tab": {
         "moderator_label": "Moderator",
-        "action_label": "Action"
+        "action_label": "Action",
+        "search_placeholder": "Target, id, details…",
+        "filter_admin": "All admins",
+        "filter_action": "All actions",
+        "target_label": "Target ",
+        "empty": "No entry."
       },
       "services_tab": {
         "title": "Services List",
@@ -681,7 +686,12 @@
       },
       "logs_tab": {
         "moderator_label": "Modérateur ",
-        "action_label": "Action "
+        "action_label": "Action ",
+        "search_placeholder": "Cible, id, détails…",
+        "filter_admin": "Tous les admins",
+        "filter_action": "Toutes les actions",
+        "target_label": "Cible ",
+        "empty": "Aucune entrée."
       },
       "services_tab": {
         "title": "Liste des Services",
@@ -1076,7 +1086,12 @@
       },
       "logs_tab": {
         "moderator_label": "Moderator",
-        "action_label": "Aktion"
+        "action_label": "Aktion",
+        "search_placeholder": "Ziel, ID, Details…",
+        "filter_admin": "Alle Admins",
+        "filter_action": "Alle Aktionen",
+        "target_label": "Ziel ",
+        "empty": "Kein Eintrag."
       },
       "services_tab": {
         "title": "Liste der Dienstleistungen",
@@ -1471,7 +1486,12 @@
       },
       "logs_tab": {
         "moderator_label": "Moderador",
-        "action_label": "Acción"
+        "action_label": "Acción",
+        "search_placeholder": "Objetivo, id, detalles…",
+        "filter_admin": "Todos los admins",
+        "filter_action": "Todas las acciones",
+        "target_label": "Objetivo ",
+        "empty": "Ninguna entrada."
       },
       "services_tab": {
         "title": "Lista de servicios",
@@ -1866,7 +1886,12 @@
       },
       "logs_tab": {
         "moderator_label": "Moderador",
-        "action_label": "Ação"
+        "action_label": "Ação",
+        "search_placeholder": "Alvo, id, detalhes…",
+        "filter_admin": "Todos os admins",
+        "filter_action": "Todas as ações",
+        "target_label": "Alvo ",
+        "empty": "Nenhuma entrada."
       },
       "services_tab": {
         "title": "Lista de serviços",
@@ -2261,7 +2286,12 @@
       },
       "logs_tab": {
         "moderator_label": "Moderatore",
-        "action_label": "Azione"
+        "action_label": "Azione",
+        "search_placeholder": "Obiettivo, id, dettagli…",
+        "filter_admin": "Tutti gli admin",
+        "filter_action": "Tutte le azioni",
+        "target_label": "Obiettivo ",
+        "empty": "Nessuna voce."
       },
       "services_tab": {
         "title": "Elenco dei servizi",
@@ -2656,7 +2686,12 @@
       },
       "logs_tab": {
         "moderator_label": "Модератор",
-        "action_label": "Действие"
+        "action_label": "Действие",
+        "search_placeholder": "Объект, id, детали…",
+        "filter_admin": "Все админы",
+        "filter_action": "Все действия",
+        "target_label": "Объект ",
+        "empty": "Нет записей."
       },
       "services_tab": {
         "title": "Список услуг",
@@ -3051,7 +3086,12 @@
       },
       "logs_tab": {
         "moderator_label": "Модератор",
-        "action_label": "Дія"
+        "action_label": "Дія",
+        "search_placeholder": "Об'єкт, id, деталі…",
+        "filter_admin": "Усі адміни",
+        "filter_action": "Усі дії",
+        "target_label": "Об'єкт ",
+        "empty": "Немає записів."
       },
       "services_tab": {
         "title": "Список послуг",
@@ -3446,7 +3486,12 @@
       },
       "logs_tab": {
         "moderator_label": "المشرف",
-        "action_label": "الإجراء"
+        "action_label": "الإجراء",
+        "search_placeholder": "الهدف، المعرّف، التفاصيل…",
+        "filter_admin": "كل المشرفين",
+        "filter_action": "كل الإجراءات",
+        "target_label": "الهدف ",
+        "empty": "لا توجد إدخالات."
       },
       "services_tab": {
         "title": "قائمة الخدمات",

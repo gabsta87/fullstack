@@ -33,17 +33,18 @@
     <!-- TAB 1: USERS (PrimeNG table) -->
     @if (currentTab === 'users') {
       <div>
-        <div class="admin-toolbar ion-margin-bottom admin-flex-toolbar">
-          <span class="p-input-icon-left search-input-wrapper">
-            <i class="pi pi-search"></i>
+        <div class="filter-bar ion-margin-bottom">
+          <div class="filter-search">
+            <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
             <input
               pInputText
-              type="text"
+              type="search"
               (input)="dt.filterGlobal($any($event.target).value, 'contains')"
-              [placeholder]="$safeNavigationMigration(t.admin?.users_tab?.search_placeholder)"
-              class="global-search-input" />
-          </span>
+              [attr.aria-label]="t.admin?.users_tab?.search_placeholder"
+              [placeholder]="$safeNavigationMigration(t.admin?.users_tab?.search_placeholder)" />
+          </div>
           <p-select
+            class="filter-select"
             [options]="roleOptions"
             [(ngModel)]="selectedRole"
             (onChange)="dt.filter($event.value, 'role', 'equals')"
@@ -511,16 +512,56 @@
     <!-- TAB 6: AUDIT LOG -->
     @if (currentTab === 'logs') {
       <div>
+        @let choices = auditLogChoices$ | async;
+        @let logFilter = auditLogFilter$ | async;
+        <div class="filter-bar ion-margin-bottom">
+          <div class="filter-search">
+            <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+            <input
+              pInputText
+              type="search"
+              [value]="logFilter?.text ?? ''"
+              (input)="setAuditLogFilter({ text: $any($event.target).value })"
+              [attr.aria-label]="t.admin?.logs_tab?.search_placeholder"
+              [placeholder]="t.admin?.logs_tab?.search_placeholder" />
+          </div>
+          <p-select
+            class="filter-select"
+            [options]="choices?.admins ?? []"
+            optionLabel="name"
+            optionValue="id"
+            [ngModel]="logFilter?.adminId"
+            (ngModelChange)="setAuditLogFilter({ adminId: $event ?? null })"
+            [placeholder]="t.admin?.logs_tab?.filter_admin"
+            [showClear]="true">
+          </p-select>
+          <p-select
+            class="filter-select"
+            [options]="choices?.actions ?? []"
+            [ngModel]="logFilter?.actionType"
+            (ngModelChange)="setAuditLogFilter({ actionType: $event ?? null })"
+            [placeholder]="t.admin?.logs_tab?.filter_action"
+            [showClear]="true">
+          </p-select>
+        </div>
         <ion-list>
-          @for (log of (displayedAuditLogs$ | async) || []; track log) {
+          @for (log of (displayedAuditLogs$ | async) || []; track log.id) {
             <ion-item>
-              <ion-label>
-                <h3><strong>{{ t.admin?.logs_tab?.moderator_label }}</strong> {{ log.adminUser.username ?? log.adminUser.email }}</h3>
+              <ion-label class="ion-text-wrap">
+                <h3><strong>{{ t.admin?.logs_tab?.moderator_label }}</strong> {{ log.adminName }}</h3>
                 <p><strong>{{ t.admin?.logs_tab?.action_label }}</strong> <ion-badge color="medium">{{ log.actionType }}</ion-badge></p>
+                @if (log.targetLabel || log.targetId) {
+                  <p><strong>{{ t.admin?.logs_tab?.target_label }}</strong> {{ log.targetType }} · {{ log.targetLabel || log.targetId }}</p>
+                }
                 <p>{{ log.details }}</p>
+                @if (log.targetSnapshot) {
+                  <p class="log-snapshot">{{ log.targetSnapshot }}</p>
+                }
                 <p class="ion-text-right"><small>{{ log.createdAt | date:'short' }}</small></p>
               </ion-label>
             </ion-item>
+          } @empty {
+            <p class="ion-text-center ion-padding">{{ t.admin?.logs_tab?.empty }}</p>
           }
         </ion-list>
       </div>

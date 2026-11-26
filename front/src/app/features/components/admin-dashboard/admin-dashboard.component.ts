@@ -9,9 +9,9 @@ import { AdminService } from '../../services/admin-service';
 import { addIcons } from "ionicons";
 import {
   addOutline, chevronBackOutline, chevronForwardOutline, closeOutline, pencilOutline, trashOutline, personAddOutline,
-  shieldCheckmarkOutline, lockClosedOutline, lockOpenOutline, closeCircleOutline, alertCircleOutline
+  shieldCheckmarkOutline, lockClosedOutline, lockOpenOutline, closeCircleOutline, alertCircleOutline, searchOutline
 } from "ionicons/icons";
-import {combineLatest, firstValueFrom, map, Observable, Subject} from "rxjs";
+import {BehaviorSubject, combineLatest, firstValueFrom, map, Observable, Subject} from "rxjs";
 import { switchMap, tap } from "rxjs/operators";
 import { AdminLog, CertificationRequest, Service } from "../../models/common.model";
 import { GeographicZoneWithParent } from "../../models/filter.model";
@@ -19,6 +19,7 @@ import { WorkerPrivateProfile, AdminUser } from "../../models/user.model";
 import { AuthService } from "../../services/auth.service";
 import { UserRole } from "../../models/roles";
 import { canManageAccount } from "../../utils/admin-rights";
+import { auditLogChoices, AuditLogFilter, EMPTY_AUDIT_LOG_FILTER, filterAuditLogs } from "../../utils/audit-log-filter";
 import {Select} from "primeng/select";
 import {AdminWorkerReport} from "../../models/items.model";
 import {Router} from "@angular/router";
@@ -46,7 +47,13 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   services$!: Observable<Service[]>;
   zones$!: Observable<GeographicZoneWithParent[]>;
   auditLogs$!: Observable<AdminLog[]>;
-  displayedAuditLogs$!: Observable<any[]>;
+  displayedAuditLogs$!: Observable<AdminLog[]>;
+  auditLogChoices$!: Observable<ReturnType<typeof auditLogChoices>>;
+  auditLogFilter$ = new BehaviorSubject<AuditLogFilter>(EMPTY_AUDIT_LOG_FILTER);
+
+  setAuditLogFilter(change: Partial<AuditLogFilter>): void {
+    this.auditLogFilter$.next({ ...this.auditLogFilter$.value, ...change });
+  }
   flatZones$!: Observable<{ id: number; name: string; level: number; parentId: number | null }[]>;
 
   selectedReportWorker: AdminWorkerReport | null = null;
@@ -84,7 +91,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     protected languageService : LanguageManagerService
   ) {
     addIcons({ addOutline, trashOutline, pencilOutline, chevronBackOutline, chevronForwardOutline, closeOutline,
-      personAddOutline, shieldCheckmarkOutline, lockClosedOutline, lockOpenOutline, closeCircleOutline, alertCircleOutline
+      personAddOutline, shieldCheckmarkOutline, lockClosedOutline, lockOpenOutline, closeCircleOutline, alertCircleOutline, searchOutline
     });
   }
 
@@ -118,26 +125,11 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     // Users come from the service's reactive stream
     this.users$ = this.adminService.users$;
 
-    this.auditLogs$ = this.adminService.getAuditLogs().pipe(
-      map(logs => logs.sort((a:AdminLog, b : AdminLog) =>
-        new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
-      )));
-
-    this.displayedAuditLogs$ = combineLatest([this.auditLogs$, this.users$]).pipe(
-      map(([logs, users]) => {
-        return logs.map(log => {
-          // Property linking the log to the admin
-          const adminId = (log as any).adminId;
-
-          const matchingUser = users.find(u => u.id === adminId);
-
-          return {
-            ...log,
-            adminUser: matchingUser || null // Attach the AdminUser (or null when not found)
-          };
-        });
-      })
-    );
+    // Newest first (sorted by the server); filtered by admin, action and target
+    this.auditLogs$ = this.adminService.getAuditLogs();
+    this.auditLogChoices$ = this.auditLogs$.pipe(map(auditLogChoices));
+    this.displayedAuditLogs$ = combineLatest([this.auditLogs$, this.auditLogFilter$]).pipe(
+      map(([logs, filter]) => filterAuditLogs(logs, filter)));
 
     this.pendingCertificationRequests$ = this.adminService.pendingCertificationRequests$.pipe(
       map(requests => (requests || []).sort((a: any, b: any) =>

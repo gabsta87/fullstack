@@ -1,20 +1,53 @@
 /* --- Utility classes and admin layout --- */
-.admin-flex-toolbar {
+// Filter bar (users table, audit log): search of reasonable width, selects aligned beside it,
+// everything on a visible background
+.filter-bar {
   display: flex;
-  gap: 15px;
   flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+
+  .filter-search {
+    position: relative;
+    flex: 1 1 18rem;
+    max-width: 28rem;
+
+    ion-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted, #8c7d75);
+      pointer-events: none;
+    }
+
+    input {
+      width: 100%;
+      height: 40px;
+      padding: 0 12px 0 36px;
+      background: var(--surface, #fff);
+      border: 1px solid var(--border, #d9d2cc);
+      border-radius: var(--radius-sm, 6px);
+    }
+  }
+
+  .filter-select {
+    display: inline-flex;
+    height: 40px;
+    padding: 0 8px 0 12px;
+    gap: 8px;
+    min-width: 12rem;
+    align-items: center;
+    background: var(--surface, #fff);
+    border: 1px solid var(--border, #d9d2cc);
+    border-radius: var(--radius-sm, 6px);
+  }
 }
 
-.search-input-wrapper {
-  flex: 1;
-  min-width: 250px;
-}
-
-.global-search-input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+.log-snapshot {
+  font-family: monospace;
+  font-size: 0.75rem;
+  overflow-wrap: anywhere;
 }
 
 .col-center-width-70 {

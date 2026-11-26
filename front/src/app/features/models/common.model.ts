@@ -44,8 +44,15 @@ export interface CertificationRequest {
 
 export interface AdminLog {
   id: number;
-  adminId: number;
+  adminId: string;
+  adminName: string;
   actionType: string;
   details?: string;
+  /** Role of the user (WORKER, CLIENT…), SERVICE, REGION or LEGAL_TEXT; absent for deleted items (see targetSnapshot) */
+  targetType?: string | null;
+  targetId?: string | null;
+  targetLabel?: string | null;
+  /** JSON snapshot of a deleted item (ids, name, excerpt) */
+  targetSnapshot?: string | null;
   createdAt: string;
 }

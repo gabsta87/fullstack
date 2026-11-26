@@ -12,6 +12,7 @@ import com.serv.services.UserCleanupService;
 import com.serv.common.InputLimits;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -104,7 +105,8 @@ public class AdminController {
         userCleanupService.deleteUserCompletely(userToDelete);
 
         // Audit Log
-        logAdminAction(admin, "DELETE_USER", Map.of("userId", id.toString(), "role", userToDelete.getRole().name()),
+        logAdminAction(admin, "DELETE_USER", Map.of("userId", id.toString(), "role", userToDelete.getRole().name(),
+                        "username", String.valueOf(userToDelete.getUsername())),
                 "Account deleted " + userToDelete.getEmail());
         sseStreamService.broadcastAdminEvent("USERS_UPDATED", id);
         sseStreamService.endSession(id);
@@ -538,7 +540,8 @@ public class AdminController {
 
         commentRepository.delete(c);
 
-        logAdminAction(admin, "COMMENT_DELETED", Map.of("commentId", id),
+        logAdminAction(admin, "COMMENT_DELETED", Map.of("commentId", id, "workerId", targetWorker != null ? targetWorker.getId().toString() : "",
+                        "content", excerpt(c.getContent())),
                 "Comment deleted on worker #" + (targetWorker != null ? targetWorker.getId() : "unknown"));
 
         return ResponseEntity.ok().body(remainingComments);
@@ -553,9 +556,12 @@ public class AdminController {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found"));
 
+        String before = comment.getContent();
         comment.setContent(content.trim());
 
-        logAdminAction(admin, "COMMENT_EDITED", Map.of("commentId", comment.getId()), "Comment edited on worker #" + comment.getWorker().getId());
+        logAdminAction(admin, "COMMENT_EDITED", Map.of("commentId", comment.getId(), "workerId", comment.getWorker().getId().toString(),
+                        "before", excerpt(before)),
+                "Comment edited on worker #" + comment.getWorker().getId());
 
         return ResponseEntity.ok(CommentDTO.from(comment));
     }
@@ -656,9 +662,12 @@ public class AdminController {
 
     // ADMIN LOGS
 
+    /** Newest first. */
     @GetMapping("/logs")
+    @Transactional(readOnly = true)
     public ResponseEntity<List<AdminAuditLogDTO>> getAuditLogs() {
-        return ResponseEntity.ok(auditLogRepository.findAll().stream().map(AdminAuditLogDTO::from).collect(Collectors.toList()));
+        return ResponseEntity.ok(auditLogRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt", "id")).stream()
+                .map(AdminAuditLogDTO::from).toList());
     }
 
     /**
@@ -672,6 +681,12 @@ public class AdminController {
         if (target.isAdmin() && !actor.isSuperAdmin()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a super admin can modify an admin.");
         }
+    }
+
+    /** Start of a text kept in the audit log (enough to understand the action, not a full copy). */
+    private static String excerpt(String text) {
+        if (text == null) return "";
+        return text.length() <= 200 ? text : text.substring(0, 200) + "…";
     }
 
     /** True if making {@code newParent} the parent of {@code zone} would create a loop. */

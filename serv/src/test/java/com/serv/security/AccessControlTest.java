@@ -445,6 +445,28 @@ class AccessControlTest extends IntegrationTest {
         }
 
         @Test
+        @DisplayName("The audit log says who did what on which target, newest first")
+        void auditLogReadable() throws Exception {
+            Admin admin = createAdmin("admin@venus.test");
+            Worker w = createVisibleWorker("luna@venus.test");
+            mvc.perform(post("/admin/service").header("Authorization", bearer(admin)).contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"name\":\"Massage\"}")).andExpect(status().isOk());
+            Comment comment = commentRepository.save(new Comment(createClient("c@venus.test"), w, "Original text"));
+            mvc.perform(patch("/admin/comments/" + comment.getId()).header("Authorization", bearer(admin))
+                    .contentType(MediaType.TEXT_PLAIN).content("Edited")).andExpect(status().isOk());
+
+            mvc.perform(get("/admin/logs").header("Authorization", bearer(admin)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$[0].actionType").value("COMMENT_EDITED"))
+                    .andExpect(jsonPath("$[0].adminName").value(admin.getUsername()))
+                    .andExpect(jsonPath("$[0].targetSnapshot").value(org.hamcrest.Matchers.containsString(w.getId().toString())))
+                    .andExpect(jsonPath("$[0].targetSnapshot").value(org.hamcrest.Matchers.containsString("Original text")))
+                    .andExpect(jsonPath("$[1].actionType").value("CREATE_SERVICE"))
+                    .andExpect(jsonPath("$[1].targetType").value("SERVICE"))
+                    .andExpect(jsonPath("$[1].targetLabel").value("Massage"));
+        }
+
+        @Test
         @DisplayName("Admins cannot blank out a comment")
         void editCommentValidated() throws Exception {
             Admin admin = createAdmin("admin@venus.test");
