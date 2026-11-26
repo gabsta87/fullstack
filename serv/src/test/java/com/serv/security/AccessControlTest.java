@@ -159,6 +159,38 @@ class AccessControlTest extends IntegrationTest {
         }
 
         @Test
+        @DisplayName("A password change notifies the account; an email change notifies the previous address")
+        void credentialChangeNotices() throws Exception {
+            Client c = createClient("client@venus.test");
+            mvc.perform(patch("/account/data").header("Authorization", bearer(c)).header("Accept-Language", "fr")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(toJson(Map.of("oldPassword", PASSWORD, "password", "Another-Horse-77"))))
+                    .andExpect(status().isOk());
+            var sent = org.mockito.ArgumentCaptor.forClass(jakarta.mail.internet.MimeMessage.class);
+            org.mockito.Mockito.verify(mailSender).send(sent.capture());
+            assertThat(sent.getValue().getSubject()).isEqualTo("Votre mot de passe Venus a été modifié");
+            assertThat(sent.getValue().getAllRecipients()[0].toString()).isEqualTo("client@venus.test");
+
+            org.mockito.Mockito.clearInvocations(mailSender);
+            mvc.perform(patch("/account/data").header("Authorization", bearer(clientRepository.findById(c.getId()).orElseThrow()))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(toJson(Map.of("oldPassword", "Another-Horse-77", "email", "new@venus.test"))))
+                    .andExpect(status().isOk());
+            org.mockito.Mockito.verify(mailSender, org.mockito.Mockito.times(2)).send(sent.capture());
+            assertThat(sent.getAllValues().stream().map(m -> {
+                try { return m.getAllRecipients()[0] + " " + m.getSubject(); } catch (Exception e) { throw new RuntimeException(e); }
+            })).contains("client@venus.test The email address of your Venus account was changed");
+
+            // Wrong current password: nothing changes, nothing is sent
+            org.mockito.Mockito.clearInvocations(mailSender);
+            mvc.perform(patch("/account/data").header("Authorization", bearer(clientRepository.findById(c.getId()).orElseThrow()))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(toJson(Map.of("oldPassword", "wrong", "password", "Third-Horse-99"))))
+                    .andExpect(status().isUnauthorized());
+            org.mockito.Mockito.verifyNoInteractions(mailSender);
+        }
+
+        @Test
         @DisplayName("Comments cannot target a hidden or banned profile")
         void commentOnHiddenProfile() throws Exception {
             Client c = createClient("client@venus.test");

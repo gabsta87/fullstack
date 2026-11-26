@@ -17,7 +17,7 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class EmailTemplates {
 
-    public enum Kind { VERIFY_EMAIL, RESET_PASSWORD, ADMIN_INVITATION, BACK_ONLINE }
+    public enum Kind { VERIFY_EMAIL, RESET_PASSWORD, ADMIN_INVITATION, BACK_ONLINE, PASSWORD_CHANGED, EMAIL_CHANGED }
 
     public record RenderedEmail(String subject, String html) {}
 
@@ -37,6 +37,8 @@ public class EmailTemplates {
             case RESET_PASSWORD -> "email.reset.";
             case ADMIN_INVITATION -> "email.invite.";
             case BACK_ONLINE -> "email.back.";
+            case PASSWORD_CHANGED -> "email.password-changed.";
+            case EMAIL_CHANGED -> "email.email-changed.";
         };
         String safeUrl = HtmlUtils.htmlEscape(url, "UTF-8");
         String html = "<html><head><meta charset=\"UTF-8\"></head><body>"

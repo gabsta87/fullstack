@@ -47,4 +47,24 @@ class EmailTemplatesTest {
         assertThat(html).doesNotContain("<script>").doesNotContain("'><");
         assertThat(html).contains("L&#39;équipe Venus");
     }
+
+    @Test
+    @org.junit.jupiter.api.DisplayName("Every email exists in every site language, with no missing or raw key")
+    void everyKindInEveryLanguage() {
+        for (String tag : new String[]{"en", "fr", "de", "es", "pt", "it", "ru", "uk", "ar"}) {
+            for (EmailTemplates.Kind kind : EmailTemplates.Kind.values()) {
+                EmailTemplates.RenderedEmail email = templates.render(kind, "https://venus.test/x", Locale.forLanguageTag(tag), "Luna");
+                assertThat(email.subject()).as(tag + " " + kind).isNotBlank().doesNotContain("email.").doesNotContain("{0}");
+                assertThat(email.html()).as(tag + " " + kind).doesNotContain("email.").doesNotContain("{0}");
+            }
+        }
+    }
+
+    @Test
+    @org.junit.jupiter.api.DisplayName("The profile name in the back-online email is escaped")
+    void backOnlineNameEscaped() {
+        EmailTemplates.RenderedEmail email = templates.render(EmailTemplates.Kind.BACK_ONLINE, "u", Locale.FRENCH, "<b>Luna</b>");
+        assertThat(email.html()).contains("&lt;b&gt;Luna&lt;/b&gt;").doesNotContain("<b>Luna");
+        assertThat(email.subject()).isEqualTo("<b>Luna</b> est de retour sur Venus"); // plain-text header
+    }
 }

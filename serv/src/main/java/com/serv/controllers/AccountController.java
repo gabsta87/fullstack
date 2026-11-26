@@ -29,6 +29,7 @@ public class AccountController {
     private final SseStreamService         sseStreamService;
     private final EmailVerificationService emailVerificationService;
     private final JwtProvider              jwtProvider;
+    private final com.serv.services.AccountNotificationService accountNotificationService;
 
     /** Response header carrying a fresh token after a change that revoked the previous ones. */
     public static final String NEW_TOKEN_HEADER = "X-Auth-Token";
@@ -93,6 +94,7 @@ public class AccountController {
             }
         }
 
+        Email previousEmail = user.getEmail();
         if (isEmailChanging) {
             user.setEmail(new Email(req.email()));
             user.setLocked(true); // locked again until the new address is verified
@@ -109,6 +111,10 @@ public class AccountController {
 
         if (isEmailChanging) {
             emailVerificationService.createTokenAndSendEmail(patchedUser);
+            accountNotificationService.emailChanged(previousEmail);
+        }
+        if (isPasswordChanging) {
+            accountNotificationService.passwordChanged(patchedUser.getEmail());
         }
 
         Object dtoToSend = switch (patchedUser) {
