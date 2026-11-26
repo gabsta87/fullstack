@@ -83,6 +83,18 @@ public class AccountController {
             }
         }
 
+        // A visitor signs reviews with this name: it must not be another account's (anyone could pose as them)
+        String newUsername = req.username() == null ? null : req.username().trim();
+        if (newUsername != null && !newUsername.isEmpty()) {
+            if (newUsername.codePoints().anyMatch(Character::isISOControl)) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Invalid username."));
+            }
+            if (user instanceof Client && !newUsername.equalsIgnoreCase(user.getUsername())
+                    && userRepository.existsByUsernameIgnoreCaseAndIdNot(newUsername, user.getId())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", "Username already taken."));
+            }
+        }
+
         // All checks passed: apply the changes.
         if (req.username() != null) {
             String username = req.username().trim();

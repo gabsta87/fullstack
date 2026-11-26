@@ -27,4 +27,7 @@ public interface UserRepository extends JpaRepository<VenusUser, UUID> {
 
     @NonNull
     List<VenusUser> findAll();
+
+    /** Another account already shows this name (case ignored): a visitor may not take it. */
+    boolean existsByUsernameIgnoreCaseAndIdNot(String username, UUID id);
 }

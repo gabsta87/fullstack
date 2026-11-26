@@ -159,6 +159,39 @@ class AccessControlTest extends IntegrationTest {
         }
 
         @Test
+        @DisplayName("A visitor changes their username without a password; another account's name, any case, is refused")
+        void visitorUsername() throws Exception {
+            Client c = createClient("client@venus.test");
+            Client other = createClient("other@venus.test");
+            Worker w = createVisibleWorker("luna@venus.test");
+            String otherName = clientRepository.findById(other.getId()).orElseThrow().getUsername();
+            String workerName = workerRepository.findById(w.getId()).orElseThrow().getUsername();
+
+            java.util.function.Function<String, org.springframework.test.web.servlet.ResultActions> rename = name -> {
+                try {
+                    return mvc.perform(patch("/account/data").header("Authorization", bearer(c))
+                            .contentType(MediaType.APPLICATION_JSON).content(toJson(Map.of("username", name))));
+                } catch (Exception e) { throw new RuntimeException(e); }
+            };
+
+            rename.apply("  Night Owl  ").andExpect(status().isOk());
+            assertThat(clientRepository.findById(c.getId()).orElseThrow().getUsername()).isEqualTo("Night Owl");
+            rename.apply("night owl").andExpect(status().isOk()); // their own name, other case
+
+            rename.apply(otherName.toUpperCase()).andExpect(status().isConflict());
+            rename.apply(workerName).andExpect(status().isConflict());
+            rename.apply("x".repeat(51)).andExpect(status().isBadRequest());
+            rename.apply("Bad\u0000Name").andExpect(status().isBadRequest());
+            rename.apply("Line\nBreak").andExpect(status().isBadRequest());
+            assertThat(clientRepository.findById(c.getId()).orElseThrow().getUsername()).isEqualTo("night owl");
+
+            // Reviews are signed with the new name
+            mvc.perform(post("/account/client/comment").header("Authorization", bearer(c)).contentType(MediaType.APPLICATION_JSON)
+                    .content(toJson(Map.of("content", "Hello", "workerId", w.getId().toString()))))
+                    .andExpect(jsonPath("$.authorUsername").value("night owl"));
+        }
+
+        @Test
         @DisplayName("A password change notifies the account; an email change notifies the previous address")
         void credentialChangeNotices() throws Exception {
             Client c = createClient("client@venus.test");
