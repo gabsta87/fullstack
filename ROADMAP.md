@@ -14,6 +14,11 @@ Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 Elements nouveaux
 
 - [ ] Les admins ont encore l'attribut "disponible/indisponible". On pourrait plutôt afficher s'ils sont online ou pas. On peut utiliser la même propriété. Quand ils se connectent, ils deviennent online (disponibles). Quand ils se déconnectent, la valeur est ajustée en conséquence. On pourrait aussi afficher en vert/rouge ce statut pour tout le monde  (disponible/indisponible pour les annonceurs, online/offline pour les admins)
+- [ ] Sur profile-management, on utilise plus d'espace que nécessaire pour les langues. les champs de sélection sont super larges, même quand on réduit la largeur. on pourrait peut-être disposer cela plus intelligemment. le bouton notamment peut-être bien plus petit. dans l'espace gagné, on pourrait mettre les langues maitrisées. mais si elles sont en colonne, on risque de perdre de la place au final. Fais moi une suggestion ou teste quelque chose si tu as une bonne idée.
+- [ ] front : les services sont plus importants que la langue ou les critères physiques. peut-être faut-il remonter cela dans la page et les mettre au-dessus des éléments mentionnés.
+- [ ] Vérification que chaque action admin est correctement loggée dans le journal d'audit de manière compréhensible, pour qu'on puisse contrôler les actions de chaque admin. D'ailleurs, il faudra pouvoir filtrer par admin, par cible/annonceur...
+- [ ] Le Filtrage du admin-dashboard (tous les roles) est moche. il faut que ces boutons aient un fond pour être lisibles. En plus, tous les roles et sa flèche vers le bas ne sont pas alignés. ou alors ils devraient être super-posés, mais à mon avis on a assez de largeur disponible. la barre de recherche est très longue
+- Je n'ai pas précisé, mais les super-admins peuvent bannir/supprimer les admins (sauf eux-mêmes). Je ne sais pas encore s'ils doivent pouvoir le faire sur les autres super-admins. il faudra bien pouvoir nettoyer/effacer ça au bout d'un moment, d'une manière ou d'une autre.
 
 Branche du deuxième lot : `fix/batch-2`.
 
@@ -29,7 +34,6 @@ Branche du deuxième lot : `fix/batch-2`.
 - [x] limite globale de stockage modifiable par les admins — *nécessite une table de réglages, un endpoint et un onglet, et touche aux paliers d'abonnement (la limite dépend aujourd'hui du palier, codée en dur) → déplacée en §2 (`feat/admin-settings`)*
 - [x] front : spinner pendant le chargement de la liste des utilisateurs (admin)
 - [x] front : boutons du formulaire d'avis traduits (« Publier » / « Mettre à jour » restaient en anglais)
-- [x] corrigés en vérifiant : la suppression d'un commentaire par un admin échouait toujours sur MySQL (journal d'audit : texte non JSON dans une colonne `json` ; les noms de services/régions supprimés n'étaient pas échappés non plus) — *instantanés sérialisés en vrai JSON, test qui relit chaque instantané* ; une API lente laissait le site blanc au démarrage (restauration de session sans limite de temps) — *4 s au plus*
 - [x] phpmyadmin de mon NAS doit être accessible depuis mon réseau local, pas uniquement depuis le NAS, comme c'était le cas avant les modifications que tu as faites. *Port 8082 ouvert sur le réseau local ; ne jamais le rediriger sur la box. Sur un serveur public : `PHPMYADMIN_BIND=127.0.0.1`.*
 - [x] front : afficher l'espace utilisé en Mo et % sur la page profile-management pour les images/vidéos — *barre sous le bouton d'ajout, `GET /account/worker/storage`*
 - [x] front : le guard profil bloque l'accès à un profil banni (sauf admins) — *un profil non public (404) renvoie à la galerie*
