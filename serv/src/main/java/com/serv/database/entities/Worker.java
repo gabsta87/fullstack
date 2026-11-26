@@ -109,6 +109,14 @@ public class Worker extends VenusUser {
     @Column(name = "certified_at")
     private LocalDateTime certifiedAt;
 
+    /** End of the current certification, fixed when it is approved (a later change of the setting does not move it). */
+    @Column(name = "certification_expires_at")
+    private LocalDateTime certificationExpiresAt;
+
+    /** From this date the advertiser may send a new certification photo, while still certified. */
+    @Column(name = "certification_renewable_from")
+    private LocalDateTime certificationRenewableFrom;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "last_certification_request_id")
     private CertificationRequest lastCertificationRequest;
@@ -244,11 +252,26 @@ public class Worker extends VenusUser {
         return value == null || value.trim().isEmpty();
     }
 
+    /** Certified until the end date set at approval: computed on each read, nothing to expire. */
     public boolean isCertified() {
-        if (this.certifiedAt == null) {
-            return false;
-        }
-        return this.certifiedAt.plusMonths(8).isAfter(LocalDateTime.now());
+        return certificationExpiresAt != null && LocalDateTime.now().isBefore(certificationExpiresAt);
+    }
+
+    /** A new certification can be requested: never certified, expired, or within the renewal period. */
+    public boolean canRequestCertification() {
+        return !isCertified() || (certificationRenewableFrom != null && !LocalDateTime.now().isBefore(certificationRenewableFrom));
+    }
+
+    /**
+     * Records an approved certification.
+     *
+     * @param validityMonths {@code CERTIFICATION_VALIDITY_MONTHS} at the time of approval
+     * @param renewalMonths  {@code CERTIFICATION_RENEWAL_MONTHS} at the time of approval
+     */
+    public void certify(LocalDateTime approvedAt, int validityMonths, int renewalMonths) {
+        this.certifiedAt = approvedAt;
+        this.certificationExpiresAt = approvedAt.plusMonths(validityMonths);
+        this.certificationRenewableFrom = certificationExpiresAt.minusMonths(renewalMonths);
     }
 
     public void addPhoto(Photo photo) {
@@ -276,6 +299,8 @@ public class Worker extends VenusUser {
             request.setStatus(CertificationStatus.NOT_CERTIFIED);
         }
         this.setCertifiedAt(null);
+        this.setCertificationExpiresAt(null);
+        this.setCertificationRenewableFrom(null);
         this.setVerificationCode(null);
     }
 

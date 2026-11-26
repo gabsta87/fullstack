@@ -78,7 +78,9 @@ public class AccountControllerWorker {
         CertificationRequest request = certificationRequestRepository.findByWorker(worker)
                 .orElseGet(() -> new CertificationRequest(workerArg));
 
-        if (request.getStatus() == null || request.getStatus() == CertificationStatus.NOT_CERTIFIED) {
+        // A renewal starts over from the photo step; the current certification stays valid meanwhile
+        if (request.getStatus() == null || request.getStatus() == CertificationStatus.NOT_CERTIFIED
+                || request.getStatus() == CertificationStatus.CERTIFIED) {
             request.setStatus(CertificationStatus.PENDING_PHOTO);
         }
 
@@ -485,8 +487,8 @@ public class AccountControllerWorker {
     }
 
     private void rejectIfCertificationInProgress(Worker worker) {
-        if (worker.isCertified()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Profile already certified.");
+        if (!worker.canRequestCertification()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Profile already certified; renewal opens later.");
         }
         CertificationRequest last = worker.getLastCertificationRequest();
         if (last != null && last.getStatus() == CertificationStatus.PENDING_APPROVAL && last.isUnderReview()) {

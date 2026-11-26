@@ -40,4 +40,7 @@ public interface WorkerRepository extends JpaRepository<Worker, UUID>, JpaSpecif
 
     long countByGeographicZoneIdIn(List<Integer> ids);
 
+
+    /** Certifications approved before their end date was stored (see CertificationDatesMigration). */
+    List<Worker> findByCertifiedAtIsNotNullAndCertificationExpiresAtIsNull();
 }

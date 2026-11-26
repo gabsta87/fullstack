@@ -23,6 +23,9 @@ public record AdminUserDTO(
         String certificationStatus,
         String verificationCode,
         String certifiedAt,
+        /** Valid certification right now (the status can be a renewal in progress meanwhile). */
+        boolean certified,
+        String certificationExpiresAt,
         String certificationRequestDate,
         Integer[] servicesId,
         GeographicZoneWithParentDTO geographicZone,
@@ -44,6 +47,8 @@ public record AdminUserDTO(
         String certStatus = null;
         String verifCode = null;
         String certifiedAt = null;
+        boolean certified = false;
+        String certificationExpiresAt = null;
         Integer[] servicesId = null;
         GeographicZoneWithParentDTO zoneDto = null;
         String desc = null;
@@ -61,6 +66,8 @@ public record AdminUserDTO(
             certStatus = w.getLastCertificationRequest() != null ? w.getLastCertificationRequest().getStatus().toString() : null;
             verifCode = w.getVerificationCode();
             certifiedAt = w.getCertifiedAt() != null ? w.getCertifiedAt().toString() : null;
+            certified = w.isCertified();
+            certificationExpiresAt = w.getCertificationExpiresAt() != null ? w.getCertificationExpiresAt().toString() : null;
 
             if (w.getServices() != null) {
                 servicesId = w.getServices().stream().map(Service::getId).toArray(Integer[]::new);
@@ -87,6 +94,8 @@ public record AdminUserDTO(
                 certStatus,
                 verifCode,
                 certifiedAt,
+                certified,
+                certificationExpiresAt,
                 certificationRequestDateParam,
                 servicesId,
                 zoneDto,

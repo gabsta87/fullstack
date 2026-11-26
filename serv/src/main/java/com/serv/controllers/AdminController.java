@@ -249,7 +249,9 @@ public class AdminController {
             request.setStatus(CertificationStatus.CERTIFIED);
             saved = certificationRequestRepository.save(request);
 
-            worker.setCertifiedAt(LocalDateTime.now());
+            worker.certify(LocalDateTime.now(),
+                    settingsService.get(com.serv.common.SettingKey.CERTIFICATION_VALIDITY_MONTHS),
+                    settingsService.get(com.serv.common.SettingKey.CERTIFICATION_RENEWAL_MONTHS));
             worker.setVerificationCode(null);
             workerRepository.save(worker);
 
@@ -278,8 +280,8 @@ public class AdminController {
     public ResponseEntity<?> revokeCertification(@Valid @RequestBody CertificationRevocationDTO dto, Admin admin) {
         Worker worker = workerRepository.findById(dto.workerId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found"));
-        if (worker.getLastCertificationRequest() == null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "This worker has no certification.");
+        if (worker.getLastCertificationRequest() == null || !worker.isCertified()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "This worker has no valid certification.");
         }
 
         worker.clearCertification();

@@ -159,11 +159,13 @@ class WorkerProfileValidationTest extends IntegrationTest {
     @Test
     @DisplayName("Fields a worker must not control are ignored (mass assignment)")
     void massAssignment() throws Exception {
-        patchProfile("{\"username\":\"Luna\",\"isBanned\":true,\"banned\":false,\"certifiedAt\":\"2030-01-01T00:00:00\","
+        patchProfile("{\"username\":\"Luna\",\"isBanned\":true,\"banned\":false,\"certifiedAt\":\"2030-01-01T00:00:00\",\"certificationExpiresAt\":\"2099-01-01T00:00:00\",\"isCertified\":true,"
                 + "\"galleryPositionPriority\":999999,\"remainingDaysCredit\":9999,\"role\":\"ADMIN\",\"tokenVersion\":5}")
                 .andExpect(status().isOk());
         Worker w = fresh();
         assertThat(w.getCertifiedAt()).isNull();
+        assertThat(w.getCertificationExpiresAt()).isNull();
+        assertThat(w.isCertified()).isFalse();
         assertThat(w.getGalleryPositionPriority()).isZero();
         assertThat(w.getRemainingDaysCredit()).isNull();
         assertThat(w.getTokenVersion()).isZero();
@@ -197,7 +199,7 @@ class WorkerProfileValidationTest extends IntegrationTest {
     @DisplayName("A certified worker cannot open a new certification request")
     void certifiedCannotRequestAgain() throws Exception {
         Worker w = fresh();
-        w.setCertifiedAt(java.time.LocalDateTime.now());
+        w.certify(java.time.LocalDateTime.now(), 8, 2); // renewal opens in 6 months
         workerRepository.save(w);
         mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/account/worker/request-certification")
                 .header("Authorization", bearer(worker))).andExpect(status().isConflict());
