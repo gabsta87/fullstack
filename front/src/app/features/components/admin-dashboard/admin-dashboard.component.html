@@ -39,7 +39,9 @@
             <input
               pInputText
               type="search"
-              (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+              [value]="usersSearch"
+              (input)="usersSearch = $any($event.target).value; dt.filterGlobal(usersSearch, 'contains')"
+              (keydown.escape)="usersSearch = ''; dt.filterGlobal('', 'contains')"
               [attr.aria-label]="t.admin?.users_tab?.search_placeholder"
               [placeholder]="$safeNavigationMigration(t.admin?.users_tab?.search_placeholder)" />
           </div>
@@ -51,6 +53,12 @@
             [placeholder]="$safeNavigationMigration(t.admin?.users_tab?.filter_role_placeholder)"
             [showClear]="true">
           </p-select>
+          @if (usersSearch || selectedRole) {
+            <ion-button fill="clear" size="small" (click)="clearUserFilters(dt)">
+              <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+              {{ t.common?.clear }}
+            </ion-button>
+          }
         </div>
         <!-- null until the first response: the table shows its loading spinner meanwhile -->
         @let users = users$ | async;
@@ -522,6 +530,7 @@
               type="search"
               [value]="logFilter?.text ?? ''"
               (input)="setAuditLogFilter({ text: $any($event.target).value })"
+              (keydown.escape)="setAuditLogFilter({ text: '' })"
               [attr.aria-label]="t.admin?.logs_tab?.search_placeholder"
               [placeholder]="t.admin?.logs_tab?.search_placeholder" />
           </div>
@@ -543,6 +552,12 @@
             [placeholder]="t.admin?.logs_tab?.filter_action"
             [showClear]="true">
           </p-select>
+          @if (logFilter?.text || logFilter?.adminId || logFilter?.actionType) {
+            <ion-button fill="clear" size="small" (click)="auditLogFilter$.next(emptyAuditLogFilter)">
+              <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+              {{ t.common?.clear }}
+            </ion-button>
+          }
         </div>
         <ion-list>
           @for (log of (displayedAuditLogs$ | async) || []; track log.id) {

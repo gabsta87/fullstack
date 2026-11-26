@@ -26,6 +26,7 @@
                 <ion-input [attr.aria-label]="t.filters?.placeholder_name"
                   [placeholder]="$safeNavigationMigration(t.filters?.placeholder_name)"
                   [(ngModel)]="filters.username"
+                  [clearInput]="true"
                   (ionInput)="onSearchInput($event)"
                   (keyup.enter)="loadPage(true)"
                   (keydown.escape)="clearNameSearch()">
@@ -36,7 +37,7 @@
               @if (hasActiveFilters()) {
                 <ion-button fill="outline" class="more-filters-btn clear-btn"
                   size="small" [attr.aria-label]="t.common?.clear" (click)="clearFilters()">
-                  <ion-icon slot="start" name="trash-outline"></ion-icon>
+                  <ion-icon slot="start" name="close-circle-outline"></ion-icon>
                   <span class="btn-label">{{ t.common?.clear || t.filters?.clear }}</span>
                 </ion-button>
               }

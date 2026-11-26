@@ -68,6 +68,16 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   private submitCertification$ = new Subject<{ requestId: number; approved: boolean; comment: string }>();
 
   selectedRole: string | null = null;
+  usersSearch = '';
+  readonly emptyAuditLogFilter = EMPTY_AUDIT_LOG_FILTER;
+
+  /** Clears the search and the role filter of the users table. */
+  clearUserFilters(table: { filterGlobal(value: string, mode: string): void; filter(value: unknown, field: string, mode: string): void }): void {
+    this.usersSearch = '';
+    this.selectedRole = null;
+    table.filterGlobal('', 'contains');
+    table.filter(null, 'role', 'equals');
+  }
 
   predefinedReasons: string[] = [
     "Advertiser identity does not match control photo",
