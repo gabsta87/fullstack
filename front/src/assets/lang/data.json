@@ -123,7 +123,13 @@
       "email_change_title": "Email Address Change",
       "email_change_message": "Warning: Changing your email will temporarily lock your account. A verification link will be sent to your new address.",
       "confirm_btn": "Confirm & Change",
-      "success_update": "Your account settings have been updated successfully."
+      "success_update": "Your account settings have been updated successfully.",
+      "username_title": "Username",
+      "username_label": "Your username",
+      "username_hint": "Signs your reviews. Leave it empty to get a new pseudonym.",
+      "username_saved": "Username saved",
+      "username_taken": "This username is already used by another account",
+      "username_invalid": "Invalid username (50 characters at most)"
     },
     "auth": {
       "login_title": "Log in",
@@ -574,7 +580,13 @@
       "email_change_title": "Changement d'adresse e-mail",
       "email_change_message": "Attention : Modifier votre e-mail verrouillera temporairement votre compte. Un lien de validation sera envoyé à votre nouvelle adresse.",
       "confirm_btn": "Confirmer et modifier",
-      "success_update": "Vos paramètres de compte ont été mis à jour avec succès."
+      "success_update": "Vos paramètres de compte ont été mis à jour avec succès.",
+      "username_title": "Pseudo",
+      "username_label": "Votre pseudo",
+      "username_hint": "Il signe vos avis. Laissez-le vide pour recevoir un nouveau pseudo.",
+      "username_saved": "Pseudo enregistré",
+      "username_taken": "Ce pseudo est déjà utilisé par un autre compte",
+      "username_invalid": "Pseudo invalide (50 caractères au maximum)"
     },
     "auth": {
       "login_title": "Se connecter",
@@ -1020,7 +1032,13 @@
       "current_password_placeholder": "Aktuelles Passwort",
       "new_password_label": "Neues Passwort (Optional)",
       "new_password_placeholder": "Mindestens 8 Zeichen",
-      "save_btn": "Änderungen speichern"
+      "save_btn": "Änderungen speichern",
+      "username_title": "Benutzername",
+      "username_label": "Ihr Benutzername",
+      "username_hint": "Er erscheint unter Ihren Bewertungen. Leer lassen für ein neues Pseudonym.",
+      "username_saved": "Benutzername gespeichert",
+      "username_taken": "Dieser Benutzername wird bereits von einem anderen Konto verwendet",
+      "username_invalid": "Ungültiger Benutzername (höchstens 50 Zeichen)"
     },
     "auth": {
       "login_title": "Anmelden",
@@ -1466,7 +1484,13 @@
       "current_password_placeholder": "Contraseña actual",
       "new_password_label": "Nueva contraseña (Opcional)",
       "new_password_placeholder": "Mínimo 8 caracteres",
-      "save_btn": "Guardar cambios"
+      "save_btn": "Guardar cambios",
+      "username_title": "Seudónimo",
+      "username_label": "Su seudónimo",
+      "username_hint": "Firma sus opiniones. Déjelo vacío para recibir uno nuevo.",
+      "username_saved": "Seudónimo guardado",
+      "username_taken": "Este seudónimo ya lo usa otra cuenta",
+      "username_invalid": "Seudónimo no válido (50 caracteres como máximo)"
     },
     "auth": {
       "login_title": "Iniciar sesión",
@@ -1912,7 +1936,13 @@
       "current_password_placeholder": "Palavra-passe atual",
       "new_password_label": "Nova palavra-passe (Opcional)",
       "new_password_placeholder": "Mínimo 8 caracteres",
-      "save_btn": "Guardar alterações"
+      "save_btn": "Guardar alterações",
+      "username_title": "Pseudónimo",
+      "username_label": "O seu pseudónimo",
+      "username_hint": "Assina as suas avaliações. Deixe-o vazio para receber um novo.",
+      "username_saved": "Pseudónimo guardado",
+      "username_taken": "Este pseudónimo já é usado por outra conta",
+      "username_invalid": "Pseudónimo inválido (50 caracteres no máximo)"
     },
     "auth": {
       "login_title": "Iniciar sessão",
@@ -2358,7 +2388,13 @@
       "current_password_placeholder": "Password attuale",
       "new_password_label": "Nuova password (Opzionale)",
       "new_password_placeholder": "Minimo 8 caratteri",
-      "save_btn": "Salva modifiche"
+      "save_btn": "Salva modifiche",
+      "username_title": "Nickname",
+      "username_label": "Il tuo nickname",
+      "username_hint": "Firma le tue recensioni. Lascialo vuoto per riceverne uno nuovo.",
+      "username_saved": "Nickname salvato",
+      "username_taken": "Questo nickname è già usato da un altro account",
+      "username_invalid": "Nickname non valido (massimo 50 caratteri)"
     },
     "auth": {
       "login_title": "Accedi",
@@ -2804,7 +2840,13 @@
       "current_password_placeholder": "Текущий пароль",
       "new_password_label": "Новый пароль (Опционально)",
       "new_password_placeholder": "Минимум 8 символов",
-      "save_btn": "Сохранить изменения"
+      "save_btn": "Сохранить изменения",
+      "username_title": "Псевдоним",
+      "username_label": "Ваш псевдоним",
+      "username_hint": "Им подписаны ваши отзывы. Оставьте пустым, чтобы получить новый.",
+      "username_saved": "Псевдоним сохранён",
+      "username_taken": "Этот псевдоним уже занят другим аккаунтом",
+      "username_invalid": "Недопустимый псевдоним (не более 50 символов)"
     },
     "auth": {
       "login_title": "Вход в систему",
@@ -3250,7 +3292,13 @@
       "current_password_placeholder": "Поточний пароль",
       "new_password_label": "Новий пароль (Опціонально)",
       "new_password_placeholder": "Мінімум 8 символів",
-      "save_btn": "Зберегти зміни"
+      "save_btn": "Зберегти зміни",
+      "username_title": "Псевдонім",
+      "username_label": "Ваш псевдонім",
+      "username_hint": "Ним підписано ваші відгуки. Залиште порожнім, щоб отримати новий.",
+      "username_saved": "Псевдонім збережено",
+      "username_taken": "Цей псевдонім уже використовує інший акаунт",
+      "username_invalid": "Недійсний псевдонім (не більше 50 символів)"
     },
     "auth": {
       "login_title": "Вхід у систему",
@@ -3696,7 +3744,13 @@
       "current_password_placeholder": "كلمة المرور الحالية",
       "new_password_label": "كلمة المرور الجديدة (اختياري)",
       "new_password_placeholder": "8 أحرف على الأقل",
-      "save_btn": "حفظ التغييرات"
+      "save_btn": "حفظ التغييرات",
+      "username_title": "الاسم المستعار",
+      "username_label": "اسمك المستعار",
+      "username_hint": "يظهر على تقييماتك. اتركه فارغاً للحصول على اسم جديد.",
+      "username_saved": "تم حفظ الاسم المستعار",
+      "username_taken": "هذا الاسم مستخدم من حساب آخر",
+      "username_invalid": "اسم مستعار غير صالح (50 حرفاً كحد أقصى)"
     },
     "auth": {
       "login_title": "تسجيل الدخول",

@@ -1,4 +1,18 @@
 @if (languageService.currentLanguage$ | async; as t) {
+  @if (initialUsername !== null) {
+    <h3 class="section-title">{{ t.account_settings?.username_title }}</h3>
+    <form class="username-form" (ngSubmit)="saveUsername(t)">
+      <ion-item lines="none" class="venus-input username-input">
+        <ion-label position="stacked">{{ t.account_settings?.username_label }}</ion-label>
+        <ion-input name="username" [(ngModel)]="username" maxlength="50" autocomplete="nickname"
+                   (ionInput)="usernameMessage = null"></ion-input>
+      </ion-item>
+      <ion-button type="submit" [disabled]="usernameSaving || !usernameChanged">{{ t.common?.save }}</ion-button>
+    </form>
+    <p class="username-hint" [class.error]="usernameMessage && !usernameMessage.ok" [class.success]="usernameMessage?.ok">
+      {{ usernameMessage?.text || t.account_settings?.username_hint }}
+    </p>
+  }
   <h3 class="section-title">{{ t.account_settings?.title }}</h3>
   <form (ngSubmit)="submitForm(t)">
     <ion-grid class="ion-no-padding">

@@ -95,3 +95,21 @@ ion-row{
 //    margin: 4px 0 0 0;
 //  }
 //}
+
+.username-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  max-width: 36rem;
+
+  .username-input { flex: 1; }
+}
+
+.username-hint {
+  margin: 6px 0 20px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+
+  &.error { color: var(--ion-color-danger); }
+  &.success { color: var(--ion-color-success); }
+}
