@@ -61,7 +61,9 @@
         "intermediate": "Intermediate",
         "good": "Good",
         "native": "Native"
-      }
+      },
+      "publish": "Publish",
+      "update": "Update"
     },
     "header": {
       "home": "Home",
@@ -458,7 +460,9 @@
         "intermediate": "Intermédiaire",
         "good": "Bon",
         "native": "Langue maternelle"
-      }
+      },
+      "publish": "Publier",
+      "update": "Mettre à jour"
     },
     "header": {
       "home": "Accueil",
@@ -855,7 +859,9 @@
         "intermediate": "Mittelstufe",
         "good": "Gut",
         "native": "Muttersprache"
-      }
+      },
+      "publish": "Veröffentlichen",
+      "update": "Aktualisieren"
     },
     "header": {
       "home": "Startseite",
@@ -1247,7 +1253,9 @@
         "intermediate": "Intermedio",
         "good": "Bueno",
         "native": "Nativo"
-      }
+      },
+      "publish": "Publicar",
+      "update": "Actualizar"
     },
     "header": {
       "home": "Inicio",
@@ -1639,7 +1647,9 @@
         "intermediate": "Intermédio",
         "good": "Bom",
         "native": "Nativo"
-      }
+      },
+      "publish": "Publicar",
+      "update": "Atualizar"
     },
     "header": {
       "home": "Início",
@@ -2031,7 +2041,9 @@
         "intermediate": "Intermedio",
         "good": "Buono",
         "native": "Madrelingua"
-      }
+      },
+      "publish": "Pubblica",
+      "update": "Aggiorna"
     },
     "header": {
       "home": "Home",
@@ -2423,7 +2435,9 @@
         "intermediate": "Средний",
         "good": "Хороший",
         "native": "Родной"
-      }
+      },
+      "publish": "Опубликовать",
+      "update": "Обновить"
     },
     "header": {
       "home": "Главная",
@@ -2815,7 +2829,9 @@
         "intermediate": "Середній",
         "good": "Добрий",
         "native": "Рідна"
-      }
+      },
+      "publish": "Опублікувати",
+      "update": "Оновити"
     },
     "header": {
       "home": "Головна",
@@ -3207,7 +3223,9 @@
         "intermediate": "متوسط",
         "good": "جيد",
         "native": "لغة أم"
-      }
+      },
+      "publish": "نشر",
+      "update": "تحديث"
     },
     "header": {
       "home": "الصفحة الرئيسية",
