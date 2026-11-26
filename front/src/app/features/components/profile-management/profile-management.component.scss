@@ -183,7 +183,7 @@
     padding: 12px;
   }
 
-  .selected-languages-chips {
+  .languages-line {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
@@ -244,8 +244,32 @@
   }
 
   // Add row: selects and button at the same height
-  .add-language-row {
-    margin-bottom: 0 !important;
+  // Chips and the add form share one wrapping line
+  .languages-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .empty-languages-hint { margin: 0 8px 0 0; }
+
+  .add-language {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto; // pushed to the right when it fits on the chips' line
+    max-width: 100%;
+
+    .add-language-lang  { width: 13rem; }
+    .add-language-level { width: 12rem; }
+
+    @media (max-width: 576px) {
+      width: 100%;
+      margin-left: 0;
+      .add-language-lang, .add-language-level { flex: 1 1 0; width: auto; min-width: 0; }
+    }
   }
 
   .input-compact {
@@ -263,7 +287,11 @@
 
   .add-language-btn {
     margin: 0;
+    flex: 0 0 44px;
+    width: 44px;
     height: 44px;
+    --padding-start: 0;
+    --padding-end: 0;
     --border-radius: var(--radius-sm);
     --box-shadow: none;
     text-transform: none;

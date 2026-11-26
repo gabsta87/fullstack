@@ -186,6 +186,30 @@
                     </ion-col>
                   </ion-row>
                   <ion-row>
+                    <!-- Services -->
+                    <ion-col size="12">
+                      <div class="services-container" [class.invalid-container]="isFieldMissing('services', me)">
+                        <ion-grid class="services-grid">
+                          <ion-label class="section-box-title">{{ t.profile_management?.form?.services_title }}</ion-label>
+                          <div class="services-list">
+                            @for (service of allServices; track service) {
+                              <div class="service-item">
+                                <ion-checkbox
+                                  justify="start"
+                                  labelPlacement="end"
+                                  [checked]="me.servicesId.includes(service.id)"
+                                  (ionChange)="toggleService(me, service.id, $event)">
+                                  {{ service.name }}
+                                </ion-checkbox>
+                                <service-info [service]="service"></service-info>
+                              </div>
+                            }
+                          </div>
+                        </ion-grid>
+                      </div>
+                    </ion-col>
+                  </ion-row>
+                  <ion-row>
                     <!-- Silhouette -->
                     <ion-col size="12" size-md="4">
                       <ion-item lines="none" class="venus-input">
@@ -243,38 +267,31 @@
                           <ion-label class="section-box-title">
                             {{ t.profile_management?.form?.languages_title || 'Known languages' }}
                           </ion-label>
-                          <!-- Selected languages (chips) -->
-                          @if (profileLanguages && profileLanguages.length > 0) {
-                            <div class="selected-languages-chips ion-margin-bottom"
-                              >
-                              @for (item of profileLanguages; track item; let i = $index) {
-                                <ion-chip color="primary"
-                                  class="language-chip">
-                                  <img [src]="languageService.getLanguageMeta(item.language).flag" [alt]="item.language"
-                                    class="chip-flag"/>
-                                  <ion-label>
-                                    <strong>{{ languageService.getLanguageMeta(item.language).label }}</strong>
-                                    <span class="chip-level">• {{ languageService.getMasteryLabel(item.level, t) }}</span>
-                                  </ion-label>
-                                  <button type="button" class="chip-remove"
-                                    [attr.aria-label]="(t.common?.delete || 'Supprimer') + ' ' + languageService.getLanguageMeta(item.language).label"
-                                    (click)="removeLanguage(i)">
-                                    <ion-icon name="trash-outline"></ion-icon>
-                                  </button>
-                                </ion-chip>
-                              }
-                            </div>
-                          }
-                          @if (!profileLanguages || profileLanguages.length === 0) {
-                            <p class="empty-languages-hint">
-                              {{ t.profile_management?.form?.no_languages || 'No language added yet' }}
-                            </p>
-                          }
-                          <!-- Quick form to add a language -->
-                          <ion-row class="add-language-row ion-align-items-center">
-                            <ion-col size="6" size-md="5">
-                              <ion-item lines="none" class="venus-input input-compact">
+                          <!-- One wrapping line: the languages already added, then the compact add form -->
+                          <div class="languages-line">
+                            @for (item of profileLanguages; track item; let i = $index) {
+                              <ion-chip color="primary" class="language-chip">
+                                <img [src]="languageService.getLanguageMeta(item.language).flag" [alt]="item.language"
+                                  class="chip-flag"/>
+                                <ion-label>
+                                  <strong>{{ languageService.getLanguageMeta(item.language).label }}</strong>
+                                  <span class="chip-level">• {{ languageService.getMasteryLabel(item.level, t) }}</span>
+                                </ion-label>
+                                <button type="button" class="chip-remove"
+                                  [attr.aria-label]="(t.common?.delete || 'Supprimer') + ' ' + languageService.getLanguageMeta(item.language).label"
+                                  (click)="removeLanguage(i)">
+                                  <ion-icon name="trash-outline"></ion-icon>
+                                </button>
+                              </ion-chip>
+                            } @empty {
+                              <p class="empty-languages-hint">
+                                {{ t.profile_management?.form?.no_languages || 'No language added yet' }}
+                              </p>
+                            }
+                            <div class="add-language">
+                              <ion-item lines="none" class="venus-input input-compact add-language-lang">
                                 <ion-select [(ngModel)]="newLangCode"
+                                  [aria-label]="t.profile_management?.form?.select_language"
                                   [placeholder]="t.profile_management?.form?.select_language || 'Choisir une langue'"
                                   interface="popover">
                                   @for (lang of languageService.availableLanguages; track lang) {
@@ -286,10 +303,9 @@
                                   }
                                 </ion-select>
                               </ion-item>
-                            </ion-col>
-                            <ion-col size="6" size-md="4">
-                              <ion-item lines="none" class="venus-input input-compact">
+                              <ion-item lines="none" class="venus-input input-compact add-language-level">
                                 <ion-select [(ngModel)]="newLangLevel"
+                                  [aria-label]="t.profile_management?.form?.select_level"
                                   [placeholder]="t.profile_management?.form?.select_level || 'Proficiency level'"
                                   interface="popover">
                                   @for (lvl of languageService.MASTERY_LEVELS; track lvl) {
@@ -299,41 +315,15 @@
                                   }
                                 </ion-select>
                               </ion-item>
-                            </ion-col>
-                            <ion-col size="12" size-md="3">
-                              <ion-button expand="block"
-                                color="primary"
+                              <ion-button color="primary"
                                 class="add-language-btn"
+                                [attr.aria-label]="t.profile_management?.form?.add_language"
+                                [title]="t.profile_management?.form?.add_language || ''"
                                 [disabled]="!newLangCode || !newLangLevel"
                                 (click)="addLanguage()">
-                                <ion-icon name="add-outline" slot="start"></ion-icon>
-                                {{ t.profile_management?.form?.add_language }}
+                                <ion-icon name="add-outline" slot="icon-only"></ion-icon>
                               </ion-button>
-                            </ion-col>
-                          </ion-row>
-                        </ion-grid>
-                      </div>
-                    </ion-col>
-                  </ion-row>
-                  <ion-row>
-                    <!-- Services -->
-                    <ion-col size="12">
-                      <div class="services-container" [class.invalid-container]="isFieldMissing('services', me)">
-                        <ion-grid class="services-grid">
-                          <ion-label class="section-box-title">{{ t.profile_management?.form?.services_title }}</ion-label>
-                          <div class="services-list">
-                            @for (service of allServices; track service) {
-                              <div class="service-item">
-                                <ion-checkbox
-                                  justify="start"
-                                  labelPlacement="end"
-                                  [checked]="me.servicesId.includes(service.id)"
-                                  (ionChange)="toggleService(me, service.id, $event)">
-                                  {{ service.name }}
-                                </ion-checkbox>
-                                <service-info [service]="service"></service-info>
-                              </div>
-                            }
+                            </div>
                           </div>
                         </ion-grid>
                       </div>
