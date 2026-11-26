@@ -1,5 +1,5 @@
 import { Injectable, NgZone } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { tap, map, catchError } from 'rxjs/operators';
@@ -68,8 +68,11 @@ export class AuthService {
         this.establishRealTimeStream();
       }),
       map(() => true),
-      catchError(() => {
-        this.handleLocalLogout();
+      catchError((err: HttpErrorResponse) => {
+        // Only a refused token ends the session; a network error or a server failure keeps it for next time.
+        if (err.status === 401 || err.status === 403) {
+          this.handleLocalLogout();
+        }
         return of(false);
       })
     );

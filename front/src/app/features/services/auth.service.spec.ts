@@ -92,6 +92,15 @@ describe('AuthService', () => {
     expect(clientService.clearCache).toHaveBeenCalled();
   });
 
+  it('checkSession keeps the token when the server is unreachable or failing', () => {
+    localStorage.setItem('auth_token', 'tok');
+    let result: boolean | undefined;
+    service.checkSession().subscribe(r => (result = r));
+    httpMock.expectOne(`${auth}/session-check`).flush({}, { status: 502, statusText: 'Bad Gateway' });
+    expect(result).toBeFalse();
+    expect(localStorage.getItem('auth_token')).toBe('tok');
+  });
+
   it('checkSession is cached for a minute', () => {
     service.checkSession().subscribe();
     httpMock.expectOne(`${auth}/session-check`).flush({ id: '1', role: UserRole.CLIENT });
