@@ -109,7 +109,8 @@ class CertificationValidityTest extends IntegrationTest {
         sendPhoto(early).andExpect(status().isConflict());
 
         Worker w = certifiedThroughFlow(admin, "luna@venus.test", 7); // renewal opened a month ago
-        LocalDateTime oldEnd = w.getCertificationExpiresAt();
+        // As stored (the database keeps microseconds; Linux clocks give nanoseconds)
+        LocalDateTime oldEnd = reload(w).getCertificationExpiresAt();
         requestCertification(w).andExpect(status().isOk())
                 .andExpect(jsonPath("$.certificationRequest.status").value("PENDING_PHOTO"))
                 .andExpect(jsonPath("$.isCertified").value(true));
