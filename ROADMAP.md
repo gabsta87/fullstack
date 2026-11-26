@@ -11,6 +11,22 @@ Cocher `[x]` quand c'est mergé dans `master`.
 
 Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 
+Nouveaux éléments
+
+- front : sur la page Account, le titre Mes commentaires doit disparaitre, puisqu'il fait doublon avec l'onglet. on peut centrer les commentaires au milieu de la page
+- front : dans profile-management et profile, les langues maitrisées  doivent être triées en commençant par les mieux maitrisées par l'annonceur
+- global : du coup la limite de 50 Mo ne s'applique que pour les photos, correct ? je pensais faire une limite globale par compte, pour que les annonceurs gèrent eux-même la répartition entre photos et vidéos. 
+- front : profile-management : y a-t-il moyen de changer l'ordre des photos simplement en les faisant glisser pour changer l'ordre, sans devoir utiliser le bouton déplacer ? quitte à utiliser une librairie graphique importée. On pourrait ainsi avoir un slot marqué comme avatar, et il suffirait de glisser une des photos de la gallerie (qui resterait dans la gallerie) et qui remplacerait ainsi l'avatar courant. il ne resterait ainsi plus que le bouton delete pour chaque photo. On pourrait également afficher le poids de chaque photo, pour faciliter le choix des photos par l'annonceur.
+- front : profile-management : la zone de dépot est grande, mais j'aimerais que quand j'arrive en glissant une photo, que ce soit n'importe où sur la page, ce soit détecté et capté par la zone. il me semble avoir vu cela sur d'autres sites déjà. et j'aimerais que la couleur de la zone change (en vert par exemple) pour qu'on voit mieux le changement d'état quand on est sur le point de glisser une photo dedans. La zone de dépot pourrait n'occuper que les 3/4 droits de la ligne, vu que toute la page détecte l'arrivée de fichiers, et sur le quart gauche, on pourrait avoir l'emplacement pour glisser et afficher la photo d'avatar
+- front : admin-dashboard. 
+  - les onglets dont le nom est trop long n'affichent pas le chiffre. je pense qu'il faudrait donner la priorité au chiffre (du nombre d'entrées), et peut-être utiliser l'Ellipse pour le texte. On peut gagner de la place en remplaçant "Journal d'audit" avec Logs déjà. et on peut peut-être changer le texte des onglets pour enlever cet espacement énorme et ces lettres en capitales (quitte à le faire disparaitre pour toutes les toolbars dans l'application. Si c'est plus joli comme ça, on ne fait cette réduction que pour le admin-dashboard)
+  - les entrées sont moches. elles sont compressées sur la gauche de la ligne, et le reste de la ligne est vide. il faut des colonnes pour répartir l'information et réduire la hauteur de la ligne, tout en la remplissant. la date est minuscule
+  - le style du drop-down est pas mal, mais les options n'ont pas de background. du coup le texte semble perdu dans le vide
+  - Concernant les zones, on pourrait avoir des menus dépliants pour chaque zone parente. car une fois des zones réelles remplies, ça deviendra vite illisible. D'autre part, les lignes sont inutilement longues. tout est vide. il faut aller chercher les boutons très loin. donc soit on réduit la taille du tableau pour qu'il corresponde à la ligne la plus longue affichée, soit on met les actions/icones sur la gauche.
+  - services : le titre prend beaucoup trop de place. ce sont les descriptions qui auront besoin de plus de place. De nouveau, on ne veut pas des lignes vides. on va faire un tableau qui prend la largeur du texte le plus long. la description peut se mettre sur plusieurs lignes. 
+- front : un administrateur qui visite un profil doit pouvoir administrer (bloquer/bannir, supprimer les commentaires) le profil depuis la page sans devoir revenir au panneau admin. Donc soit on crée un composant spécifique aux admins, soit on met des NGIFs pour les admins.
+
+
 Branche du troisième lot : `fix/batch-3`.
 
 - [x] admins : statut en ligne / hors ligne, en vert / rouge pour tous — *pas stocké dans `isAvailable` : un jeton de 30 jours ne dit pas si quelqu'un est là, et fermer l'onglet ne déconnecte pas. Un admin est « en ligne » tant que son flux temps réel est ouvert (site ouvert), ce que le serveur sait exactement ; les autres admins le voient changer en direct. Colonne « Statut » : disponible / indisponible pour les annonceurs, en ligne / hors ligne pour les admins, rien pour les visiteurs*
