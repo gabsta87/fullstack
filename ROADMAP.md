@@ -11,14 +11,15 @@ Cocher `[x]` quand c'est mergé dans `master`.
 
 Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 
-Elements nouveaux
+Branche du troisième lot : `fix/batch-3`.
 
-- [ ] Les admins ont encore l'attribut "disponible/indisponible". On pourrait plutôt afficher s'ils sont online ou pas. On peut utiliser la même propriété. Quand ils se connectent, ils deviennent online (disponibles). Quand ils se déconnectent, la valeur est ajustée en conséquence. On pourrait aussi afficher en vert/rouge ce statut pour tout le monde  (disponible/indisponible pour les annonceurs, online/offline pour les admins)
-- [ ] Sur profile-management, on utilise plus d'espace que nécessaire pour les langues. les champs de sélection sont super larges, même quand on réduit la largeur. on pourrait peut-être disposer cela plus intelligemment. le bouton notamment peut-être bien plus petit. dans l'espace gagné, on pourrait mettre les langues maitrisées. mais si elles sont en colonne, on risque de perdre de la place au final. Fais moi une suggestion ou teste quelque chose si tu as une bonne idée.
-- [ ] front : les services sont plus importants que la langue ou les critères physiques. peut-être faut-il remonter cela dans la page et les mettre au-dessus des éléments mentionnés.
-- [ ] Vérification que chaque action admin est correctement loggée dans le journal d'audit de manière compréhensible, pour qu'on puisse contrôler les actions de chaque admin. D'ailleurs, il faudra pouvoir filtrer par admin, par cible/annonceur...
-- [ ] Le Filtrage du admin-dashboard (tous les roles) est moche. il faut que ces boutons aient un fond pour être lisibles. En plus, tous les roles et sa flèche vers le bas ne sont pas alignés. ou alors ils devraient être super-posés, mais à mon avis on a assez de largeur disponible. la barre de recherche est très longue
-- Je n'ai pas précisé, mais les super-admins peuvent bannir/supprimer les admins (sauf eux-mêmes). Je ne sais pas encore s'ils doivent pouvoir le faire sur les autres super-admins. il faudra bien pouvoir nettoyer/effacer ça au bout d'un moment, d'une manière ou d'une autre.
+- [x] admins : statut en ligne / hors ligne, en vert / rouge pour tous — *pas stocké dans `isAvailable` : un jeton de 30 jours ne dit pas si quelqu'un est là, et fermer l'onglet ne déconnecte pas. Un admin est « en ligne » tant que son flux temps réel est ouvert (site ouvert), ce que le serveur sait exactement ; les autres admins le voient changer en direct. Colonne « Statut » : disponible / indisponible pour les annonceurs, en ligne / hors ligne pour les admins, rien pour les visiteurs*
+- [x] profile-management : langues plus compactes — *une seule ligne qui passe à la ligne si besoin : les langues ajoutées, puis le petit formulaire (langue, niveau, bouton « + » carré) aligné à droite ; sur mobile les deux listes se partagent la largeur*
+- [x] profile-management : services remontés au-dessus des critères physiques et des langues
+- [x] journal d'audit — *toutes les actions admin y sont (seuls les verrous de revue de certification, simple « je m'en occupe » temporaire, n'y sont pas). Chaque entrée indique l'admin (nom, sinon e-mail), l'action, la cible (type et nom) ou, pour un élément supprimé, son instantané (ids, nom, extrait du commentaire). Filtres : admin, action, recherche sur la cible / id / détails (retrouve aussi les actions sur des commentaires supprimés d'un annonceur). Plus récentes en premier*
+- [x] admin-dashboard : barre de filtres lisible — *recherche de largeur raisonnable avec icône (la police PrimeIcons n'était pas chargée), listes avec fond et bordure, alignées à côté ; même barre pour le journal*
+- [x] super-admins et autres super-admins — *décision ouverte → déplacée en §6*
+- [x] corrigés en vérifiant : une erreur réseau ou serveur pendant la vérification de session supprimait le jeton (déconnexion) ; seul un jeton refusé (401/403) déconnecte maintenant
 
 Branche du deuxième lot : `fix/batch-2`.
 
@@ -133,6 +134,7 @@ Branche du deuxième lot : `fix/batch-2`.
 - **Signalement de numéros de clients** par les annonceurs + outil « Vérifier un numéro » dans l'espace annonceur (plutôt qu'une app mobile)
 - **Serveur stateless / montée en charge** : pouvoir lancer plusieurs instances du backend. État actuellement gardé en mémoire à déplacer (DB ou Redis) : flux SSE (`SseStreamService`), limitation des connexions (`AbuseProtectionService`), tâches planifiées (`@Scheduled`, à exécuter sur une seule instance), future file de tarification. Les médias sont sur disque local → stockage partagé (cf. Azure Blob en §7).
 - **Super Admin** (sans la partie paiement) : tous les droits admin, ajout/suppression d'admins
+- **Super-admins entre eux** : un super-admin peut bannir / supprimer un admin (sauf lui-même) ; peut-il le faire sur un autre super-admin ? Aujourd'hui non (refusé par le serveur). Il faudra une façon de retirer un super-admin (au moins par un accès direct à la base, ou une règle « deux super-admins doivent valider »)
 - **Statistiques** : nombre de consultations par profil (et par heure)
 
 ## 7. Plus tard (site gratuit pour l'instant)
