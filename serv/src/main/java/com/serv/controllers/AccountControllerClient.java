@@ -35,6 +35,7 @@ public class AccountControllerClient {
     private final ClientRepository clientRepository;
     private final ReportRepository reportRepository;
     private final CommentRepository commentRepository;
+    private final com.serv.services.AvailabilityAlertService availabilityAlertService;
 
     @GetMapping("/me")
     @Transactional(readOnly = true)
@@ -115,6 +116,32 @@ public class AccountControllerClient {
         }
 
         return ResponseEntity.ok(ReportDTO.from(r));
+    }
+
+    // "Notify me when back" alerts
+
+    /** Ids of the profiles this visitor is waiting for. */
+    @GetMapping("/availability-alerts")
+    public List<UUID> availabilityAlerts(Client client) {
+        return availabilityAlertService.watchedWorkerIds(client);
+    }
+
+    /** Only for a public, currently unavailable profile (409 if already available). Idempotent. */
+    @PutMapping("/availability-alerts/{workerId}")
+    public ResponseEntity<Void> addAvailabilityAlert(@PathVariable UUID workerId, Client clientArg) {
+        Client client = clientRepository.findById(clientArg.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
+        Worker worker = workerRepository.findById(workerId)
+                .filter(Worker::isValid)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Targeted announcer not found"));
+        availabilityAlertService.subscribe(client, worker);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/availability-alerts/{workerId}")
+    public ResponseEntity<Void> removeAvailabilityAlert(@PathVariable UUID workerId, Client client) {
+        availabilityAlertService.unsubscribe(client, workerId);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/comment")

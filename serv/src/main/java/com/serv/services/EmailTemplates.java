@@ -17,23 +17,31 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class EmailTemplates {
 
-    public enum Kind { VERIFY_EMAIL, RESET_PASSWORD, ADMIN_INVITATION }
+    public enum Kind { VERIFY_EMAIL, RESET_PASSWORD, ADMIN_INVITATION, BACK_ONLINE }
 
     public record RenderedEmail(String subject, String html) {}
 
     private final MessageSource messageSource;
 
     public RenderedEmail render(Kind kind, String url) {
-        Locale locale = LocaleContextHolder.getLocale();
+        return render(kind, url, LocaleContextHolder.getLocale());
+    }
+
+    /**
+     * @param locale language of the email (emails sent outside a request use the language stored earlier)
+     * @param args   values for the {0}, {1}… placeholders of the intro (escaped like the rest of the text)
+     */
+    public RenderedEmail render(Kind kind, String url, Locale locale, Object... args) {
         String prefix = switch (kind) {
             case VERIFY_EMAIL -> "email.verify.";
             case RESET_PASSWORD -> "email.reset.";
             case ADMIN_INVITATION -> "email.invite.";
+            case BACK_ONLINE -> "email.back.";
         };
         String safeUrl = HtmlUtils.htmlEscape(url, "UTF-8");
         String html = "<html><head><meta charset=\"UTF-8\"></head><body>"
                 + "<p>" + text("email.greeting", locale) + "</p>"
-                + "<p>" + text(prefix + "intro", locale) + "</p>"
+                + "<p>" + text(prefix + "intro", locale, args) + "</p>"
                 + "<p style='margin: 20px 0;'>"
                 + "  <a href='" + safeUrl + "' style='background-color: #3880ff; color: white; padding: 10px 20px;"
                 + " text-decoration: none; border-radius: 4px; display: inline-block;'>"
@@ -42,13 +50,14 @@ public class EmailTemplates {
                 + "</p>"
                 + "<p>" + text("email.fallback", locale) + "<br>"
                 + "<a href='" + safeUrl + "'>" + safeUrl + "</a></p>"
+                + (kind == Kind.BACK_ONLINE ? "<p>" + text("email.back.why", locale) + "</p>" : "")
                 + "<p>" + text("email.signature", locale) + "<br>" + text("email.team", locale) + "</p>"
                 + "</body></html>";
-        return new RenderedEmail(messageSource.getMessage(prefix + "subject", null, locale), html);
+        return new RenderedEmail(messageSource.getMessage(prefix + "subject", args, locale), html);
     }
 
     /** Message texts are plain text: escaped before being placed in the HTML. */
-    private String text(String key, Locale locale) {
-        return HtmlUtils.htmlEscape(messageSource.getMessage(key, null, locale), "UTF-8");
+    private String text(String key, Locale locale, Object... args) {
+        return HtmlUtils.htmlEscape(messageSource.getMessage(key, args.length == 0 ? null : args, locale), "UTF-8");
     }
 }

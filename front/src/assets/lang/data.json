@@ -401,7 +401,9 @@
       "current_language": "Current language",
       "adult_title": "Adults only",
       "adult_enter": "I am 18 or older, enter",
-      "adult_leave": "Leave"
+      "adult_leave": "Leave",
+      "notify_enabled": "You will get an email as soon as this profile is available again.",
+      "notify_error": "Could not change the alert. Please try again later."
     }
   },
   "fr": {
@@ -806,7 +808,9 @@
       "current_language": "Langue active",
       "adult_title": "Réservé aux adultes",
       "adult_enter": "J'ai 18 ans ou plus, entrer",
-      "adult_leave": "Quitter"
+      "adult_leave": "Quitter",
+      "notify_enabled": "Vous recevrez un e-mail dès que ce profil sera de nouveau disponible.",
+      "notify_error": "Impossible de modifier l'alerte. Réessayez plus tard."
     }
   },
   "de": {
@@ -1206,7 +1210,9 @@
       "current_language": "Aktuelle Sprache",
       "adult_title": "Nur für Erwachsene",
       "adult_enter": "Ich bin mindestens 18, eintreten",
-      "adult_leave": "Verlassen"
+      "adult_leave": "Verlassen",
+      "notify_enabled": "Sie erhalten eine E-Mail, sobald dieses Profil wieder verfügbar ist.",
+      "notify_error": "Die Benachrichtigung konnte nicht geändert werden. Bitte später erneut versuchen."
     }
   },
   "es": {
@@ -1606,7 +1612,9 @@
       "current_language": "Idioma actual",
       "adult_title": "Solo para adultos",
       "adult_enter": "Tengo 18 años o más, entrar",
-      "adult_leave": "Salir"
+      "adult_leave": "Salir",
+      "notify_enabled": "Recibirá un correo en cuanto este perfil vuelva a estar disponible.",
+      "notify_error": "No se pudo cambiar la alerta. Inténtelo más tarde."
     }
   },
   "pt": {
@@ -2006,7 +2014,9 @@
       "current_language": "Idioma atual",
       "adult_title": "Apenas para adultos",
       "adult_enter": "Tenho 18 anos ou mais, entrar",
-      "adult_leave": "Sair"
+      "adult_leave": "Sair",
+      "notify_enabled": "Receberá um e-mail assim que este perfil voltar a estar disponível.",
+      "notify_error": "Não foi possível alterar o alerta. Tente mais tarde."
     }
   },
   "it": {
@@ -2406,7 +2416,9 @@
       "current_language": "Lingua attuale",
       "adult_title": "Riservato agli adulti",
       "adult_enter": "Ho almeno 18 anni, entra",
-      "adult_leave": "Esci"
+      "adult_leave": "Esci",
+      "notify_enabled": "Riceverai un'e-mail appena questo profilo sarà di nuovo disponibile.",
+      "notify_error": "Impossibile modificare l'avviso. Riprova più tardi."
     }
   },
   "ru": {
@@ -2806,7 +2818,9 @@
       "current_language": "Текущий язык",
       "adult_title": "Только для взрослых",
       "adult_enter": "Мне есть 18 лет, войти",
-      "adult_leave": "Уйти"
+      "adult_leave": "Уйти",
+      "notify_enabled": "Вы получите письмо, как только этот профиль снова станет доступен.",
+      "notify_error": "Не удалось изменить уведомление. Попробуйте позже."
     }
   },
   "ua": {
@@ -3206,7 +3220,9 @@
       "current_language": "Поточна мова",
       "adult_title": "Лише для дорослих",
       "adult_enter": "Мені є 18 років, увійти",
-      "adult_leave": "Вийти"
+      "adult_leave": "Вийти",
+      "notify_enabled": "Ви отримаєте лист, щойно цей профіль знову стане доступним.",
+      "notify_error": "Не вдалося змінити сповіщення. Спробуйте пізніше."
     }
   },
   "ar": {
@@ -3606,7 +3622,9 @@
       "current_language": "اللغة الحالية",
       "adult_title": "للبالغين فقط",
       "adult_enter": "عمري 18 عامًا أو أكثر، دخول",
-      "adult_leave": "مغادرة"
+      "adult_leave": "مغادرة",
+      "notify_enabled": "ستتلقى بريدًا إلكترونيًا فور عودة هذا الملف متاحًا.",
+      "notify_error": "تعذّر تعديل التنبيه. حاول لاحقًا."
     }
   }
 }

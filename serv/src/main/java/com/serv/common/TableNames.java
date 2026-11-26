@@ -29,6 +29,7 @@ public final class TableNames {
     public static final String CLIENT_PREFERRED_LANGUAGES = "client_preferred_languages";
     public static final String COMMENTS = "comments";
     public static final String REPORTS = "reports";
+    public static final String AVAILABILITY_ALERTS = "availability_alerts";
 
     // Reference data
     public static final String SERVICES = "services";

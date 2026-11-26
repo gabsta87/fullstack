@@ -96,6 +96,9 @@ class AuthorizationMatrixTest extends IntegrationTest {
         return Stream.of(
                 new Endpoint(HttpMethod.GET, "/account/client/me"),
                 new Endpoint(HttpMethod.GET, "/account/client/favorites"),
+                new Endpoint(HttpMethod.GET, "/account/client/availability-alerts"),
+                new Endpoint(HttpMethod.PUT, "/account/client/availability-alerts/" + ID),
+                new Endpoint(HttpMethod.DELETE, "/account/client/availability-alerts/" + ID),
                 new Endpoint(HttpMethod.POST, "/account/client/favorites/" + ID),
                 new Endpoint(HttpMethod.DELETE, "/account/client/favorites/" + ID),
                 new Endpoint(HttpMethod.GET, "/account/client/filters"),

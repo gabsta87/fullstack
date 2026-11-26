@@ -115,6 +115,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
         },
         error: (err) => console.error('Client favorites stream error', err)
       });
+      if (!this.worker.available) {
+        this.clientAccountService.getAvailabilityAlerts()
+          .then(ids => this.notifyEnabled = ids.includes(this.worker!.id))
+          .catch(err => console.warn('Could not load the availability alerts', err));
+      }
     }
   }
 
@@ -215,10 +220,18 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
   }
 
-  toggleNotify(): void {
-    if (!this.isClient) return;
-    this.notifyEnabled = !this.notifyEnabled;
-    // TODO: call the future NotificationService.toggle(this.worker!.id)
+  /** "Notify me when back": one email when this unavailable profile is available again. */
+  async toggleNotify(): Promise<void> {
+    if (!this.isClient || !this.worker) return;
+    const enable = !this.notifyEnabled;
+    try {
+      await this.clientAccountService.setAvailabilityAlert(this.worker.id, enable);
+      this.notifyEnabled = enable;
+      if (enable) alert(this.languageService.msg('notify_enabled'));
+    } catch (err) {
+      console.error('Could not change the availability alert', err);
+      alert(this.languageService.msg('notify_error'));
+    }
   }
 
   async report(): Promise<void> {

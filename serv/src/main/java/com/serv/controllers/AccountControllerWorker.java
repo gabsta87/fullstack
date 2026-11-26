@@ -40,6 +40,7 @@ public class AccountControllerWorker {
     private final MediaStorageService mediaStorageService;
     private final SseStreamService sseStreamService;
     private final MailService emailService;
+    private final com.serv.services.AvailabilityAlertService availabilityAlertService;
 
     @Transactional(readOnly = true)
     @GetMapping("/me")
@@ -132,6 +133,7 @@ public class AccountControllerWorker {
         if (requestedAvailability == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Field 'available' is required.");
         }
+        boolean comingBack = requestedAvailability && !worker.isAvailable();
         worker.setAvailable(requestedAvailability);
 
         if (requestedAvailability) {
@@ -139,6 +141,10 @@ public class AccountControllerWorker {
         }
 
         Worker savedWorker = workerRepository.save(worker);
+        // Visitors waiting for this profile are told once it is back and public (emails sent after the commit)
+        if (comingBack && savedWorker.isValid()) {
+            availabilityAlertService.onBackOnline(savedWorker);
+        }
 
         return ResponseEntity.ok().body(WorkerFullProfileDTO.from(savedWorker));
     }

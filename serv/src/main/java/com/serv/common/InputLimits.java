@@ -16,6 +16,8 @@ public final class InputLimits {
     public static final int PASSWORD_INPUT_MAX = 128;
 
     public static final int USERNAME_MAX = 50;
+    /** Pending "notify me when back" alerts per visitor. */
+    public static final int AVAILABILITY_ALERTS_MAX = 200;
     public static final int DESCRIPTION_MAX = 5000;
     public static final int SHORT_DESCRIPTION_MAX = 45;
     /** Digits with an optional leading '+', 6 to 20 characters (same rule as the front). */

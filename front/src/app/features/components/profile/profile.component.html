@@ -50,12 +50,16 @@
                       [color]="isFavorite ? 'danger' : undefined"></ion-icon>
                       <span class="btn-label">{{ t.worker_profile?.favorite }}</span>
                     </ion-button>
-                    <ion-button fill="outline" color="medium" class="icon-action" [class.active]="notifyEnabled"
-                      [attr.aria-label]="t.worker_profile?.notify_me" [title]="$safeNavigationMigration(t.worker_profile?.notify_me)"
-                      (click)="toggleNotify()">
-                      <ion-icon slot="start" [name]="notifyEnabled ? 'notifications' : 'notifications-outline'"></ion-icon>
-                      <span class="btn-label">{{ t.worker_profile?.notify_me }}</span>
-                    </ion-button>
+                    <!-- Only useful while the profile is unavailable; needs an account (the email is sent to it) -->
+                    @if (isClient && !worker.available) {
+                      <ion-button fill="outline" color="medium" class="icon-action" [class.active]="notifyEnabled"
+                        [attr.aria-pressed]="notifyEnabled"
+                        [attr.aria-label]="t.worker_profile?.notify_me" [title]="$safeNavigationMigration(t.worker_profile?.notify_me)"
+                        (click)="toggleNotify()">
+                        <ion-icon slot="start" [name]="notifyEnabled ? 'notifications' : 'notifications-outline'"></ion-icon>
+                        <span class="btn-label">{{ t.worker_profile?.notify_me }}</span>
+                      </ion-button>
+                    }
                     <ion-button fill="outline" color="danger" class="icon-action"
                       [attr.aria-label]="t.worker_profile?.report" [title]="$safeNavigationMigration(t.worker_profile?.report)"
                       (click)="report()">

@@ -81,6 +81,16 @@ export class ClientAccountService {
     return await firstValueFrom(this.http.post(`${this.base}/comment`, { workerId, content }));
   }
 
+  /** Ids of the profiles this visitor waits for ("notify me when back"). */
+  async getAvailabilityAlerts(): Promise<string[]> {
+    return await firstValueFrom(this.http.get<string[]>(`${this.base}/availability-alerts`));
+  }
+
+  async setAvailabilityAlert(workerId: string, enabled: boolean): Promise<void> {
+    const url = `${this.base}/availability-alerts/${encodeURIComponent(workerId)}`;
+    await firstValueFrom(enabled ? this.http.put(url, null) : this.http.delete(url));
+  }
+
   async deleteComment(commentId: number): Promise<void> {
     await firstValueFrom(this.http.delete(`${this.base}/comment/${commentId}`));
   }
