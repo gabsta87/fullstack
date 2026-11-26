@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Component
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(name = "media.video.engine", havingValue = "ffmpeg", matchIfMissing = true)
 public class FfmpegVideoTranscoder implements VideoTranscoder {
 
     private static final long PROBE_TIMEOUT_S = 30;
