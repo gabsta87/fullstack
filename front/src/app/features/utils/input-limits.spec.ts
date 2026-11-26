@@ -1,6 +1,12 @@
-import { InputLimits, isValidPhone, sanitizePhone } from './input-limits';
+import { InputLimits, isValidPhone, sanitizePhone, sanitizePhoneTyping } from './input-limits';
 
 describe('input limits', () => {
+  it('sanitizePhoneTyping keeps the spaces typed, but no letters or punctuation', () => {
+    expect(sanitizePhoneTyping('+41 79 123 45 67')).toBe('+41 79 123 45 67');
+    expect(sanitizePhoneTyping('  +41  79-12a3')).toBe('+41 79123');
+    expect(sanitizePhoneTyping('07+9')).toBe('079');
+  });
+
   it('sanitizePhone keeps digits and a leading +', () => {
     expect(sanitizePhone(' +41 79-123.45.67 ')).toBe('+41791234567');
     expect(sanitizePhone('07a9b<script>1')).toBe('0791');

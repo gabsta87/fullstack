@@ -24,7 +24,8 @@ import {ModalController} from "@ionic/angular/standalone";
 import {CertificationModalComponent} from "../certification-modal/certification-modal.component";
 import {LanguageManagerService} from "../../services/language-manager.service";
 import {AccountService} from "../../services/account-service";
-import {sanitizePhone} from "../../utils/input-limits";
+import {sanitizePhone, sanitizePhoneTyping} from "../../utils/input-limits";
+import {formatPhone} from "../../utils/phone";
 import {settingsErrorKey} from "../../utils/error-messages";
 import {siteLanguageTag} from "../../interceptors/jwt.interceptor";
 
@@ -133,7 +134,8 @@ export class ProfileManagementComponent implements OnInit {
           birthdate: cleanBirthdate
         };
 
-        this.profileForm = { ...this.lastServerState };
+        // The phone is stored without spaces but shown grouped ("+41 79 123 45 67").
+        this.profileForm = { ...this.lastServerState, phone: formatPhone(user.phone) };
       })
     );
 
@@ -383,14 +385,14 @@ export class ProfileManagementComponent implements OnInit {
   }
 
   /**
-   * Phone: digits only, with an optional leading "+".
-   * The field is corrected while typing (ionInput); saving is still
-   * triggered by ionChange.
+   * Phone: digits and spaces, with an optional leading "+".
+   * The field is corrected while typing (ionInput); on leaving the field (ionChange)
+   * the number is saved without spaces and shown grouped again (onPhoneChange).
    */
   async onPhoneInput(event: CustomEvent): Promise<void> {
     const input = event.target as HTMLIonInputElement;
     const raw = String((event as any).detail?.value ?? '');
-    const cleaned = sanitizePhone(raw);
+    const cleaned = sanitizePhoneTyping(raw);
     this.profileForm.phone = cleaned;
     if (cleaned !== raw) {
       // When the cleaned value did not change since the previous keystroke,
@@ -399,6 +401,12 @@ export class ProfileManagementComponent implements OnInit {
       const native = await input.getInputElement();
       native.value = cleaned;
     }
+  }
+
+  async onPhoneChange(value: string | null | undefined): Promise<void> {
+    const phone = sanitizePhone(value ?? '');
+    await this.updateProfileField('phone', phone);
+    this.profileForm.phone = formatPhone(this.lastServerState.phone);
   }
 
   async updateProfileField(field: keyof WorkerProfileUpdate, value: any) {

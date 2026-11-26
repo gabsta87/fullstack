@@ -167,10 +167,10 @@
                         <ion-input type="tel"
                           inputmode="tel"
                           autocomplete="tel"
-                          [maxlength]="20"
+                          [maxlength]="25"
                           [(ngModel)]="profileForm.phone"
                           (ionInput)="onPhoneInput($event)"
-                          (ionChange)="updateProfileField('phone', $event.detail.value)"
+                          (ionChange)="onPhoneChange($event.detail.value)"
                         [placeholder]="$safeNavigationMigration(t.profile_management?.form?.phone_placeholder)"></ion-input>
                       </ion-item>
                     </ion-col>

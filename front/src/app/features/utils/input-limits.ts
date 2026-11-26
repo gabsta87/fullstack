@@ -23,6 +23,12 @@ export function sanitizePhone(value: string): string {
   return plus + trimmed.replace(/\D/g, '');
 }
 
+/** While typing: digits, an optional leading "+", and single spaces (as in "+41 79 123 45 67"). */
+export function sanitizePhoneTyping(value: string): string {
+  const plus = value.trimStart().startsWith('+') ? '+' : '';
+  return plus + value.replace(/[^\d ]/g, '').replace(/ {2,}/g, ' ').trimStart();
+}
+
 export function isValidPhone(value: string | null | undefined): boolean {
   return !value || PHONE_PATTERN.test(value);
 }
