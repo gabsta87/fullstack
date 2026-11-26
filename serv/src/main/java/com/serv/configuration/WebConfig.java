@@ -12,6 +12,12 @@ import java.util.List;
 public class WebConfig implements WebMvcConfigurer {
 
     private final CurrentUserArgumentResolver userArgumentResolver;
+    private final WorkerChangeNotifier workerChangeNotifier;
+
+    @Override
+    public void addInterceptors(org.springframework.web.servlet.config.annotation.InterceptorRegistry registry) {
+        registry.addInterceptor(workerChangeNotifier).addPathPatterns("/account/worker/**");
+    }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
