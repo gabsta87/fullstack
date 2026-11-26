@@ -211,7 +211,13 @@
         "drop_title": "Drag and drop your photos or videos here or",
         "drop_click": "click to browse",
         "format_hint": "Photos: JPG, PNG, WEBP • Videos: MP4, MOV, WEBM",
-        "add_btn": "Add your photos or videos * (At least one photo required)"
+        "add_btn": "Add your photos or videos * (At least one photo required)",
+        "avatar_title": "Profile photo",
+        "avatar_hint": "Drag a photo from the gallery here",
+        "drop_release": "Drop your files to add them",
+        "reorder_hint": "Drag the photos to change their order",
+        "unit_kb": "KB",
+        "unit_mb": "MB"
       }
     },
     "admin": {
@@ -433,7 +439,8 @@
       "cert_renewal_pending": "Renewal sent, waiting for review",
       "cert_pending": "Waiting for review",
       "admin_cert_expired": "Expired",
-      "admin_cert_until": "until {date}"
+      "admin_cert_until": "until {date}",
+      "media_unsupported": "Not a supported photo or video: {names}"
     }
   },
   "fr": {
@@ -648,7 +655,13 @@
         "drop_title": "Glissez-déposez vos photos ou vidéos ici ou",
         "drop_click": "cliquez pour parcourir",
         "format_hint": "Photos : JPG, PNG, WEBP • Vidéos : MP4, MOV, WEBM",
-        "add_btn": "Ajouter vos photos ou vidéos * (Au moins une photo obligatoire)"
+        "add_btn": "Ajouter vos photos ou vidéos * (Au moins une photo obligatoire)",
+        "avatar_title": "Photo de profil",
+        "avatar_hint": "Glissez ici une photo de la galerie",
+        "drop_release": "Relâchez pour ajouter vos fichiers",
+        "reorder_hint": "Glissez les photos pour changer leur ordre",
+        "unit_kb": "Ko",
+        "unit_mb": "Mo"
       }
     },
     "admin": {
@@ -870,7 +883,8 @@
       "cert_renewal_pending": "Renouvellement envoyé, en attente de validation",
       "cert_pending": "En attente de validation",
       "admin_cert_expired": "Expirée",
-      "admin_cert_until": "jusqu'au {date}"
+      "admin_cert_until": "jusqu'au {date}",
+      "media_unsupported": "Format de photo ou de vidéo non pris en charge : {names}"
     }
   },
   "de": {
@@ -1080,7 +1094,13 @@
         "drop_title": "Ziehen Sie Fotos oder Videos hierher oder",
         "drop_click": "klicken Sie zum Durchsuchen",
         "format_hint": "Fotos: JPG, PNG, WEBP • Videos: MP4, MOV, WEBM",
-        "add_btn": "Fotos oder Videos hinzufügen * (Mindestens ein Foto erforderlich)"
+        "add_btn": "Fotos oder Videos hinzufügen * (Mindestens ein Foto erforderlich)",
+        "avatar_title": "Profilbild",
+        "avatar_hint": "Ziehen Sie ein Foto aus der Galerie hierher",
+        "drop_release": "Loslassen, um Ihre Dateien hinzuzufügen",
+        "reorder_hint": "Ziehen Sie die Fotos, um ihre Reihenfolge zu ändern",
+        "unit_kb": "KB",
+        "unit_mb": "MB"
       }
     },
     "admin": {
@@ -1302,7 +1322,8 @@
       "cert_renewal_pending": "Verlängerung gesendet, wartet auf Prüfung",
       "cert_pending": "Wartet auf Prüfung",
       "admin_cert_expired": "Abgelaufen",
-      "admin_cert_until": "bis {date}"
+      "admin_cert_until": "bis {date}",
+      "media_unsupported": "Kein unterstütztes Foto- oder Videoformat: {names}"
     }
   },
   "es": {
@@ -1512,7 +1533,13 @@
         "drop_title": "Arrastra tus fotos o videos aquí o",
         "drop_click": "haz clic para explorar",
         "format_hint": "Fotos: JPG, PNG, WEBP • Videos: MP4, MOV, WEBM",
-        "add_btn": "Añadir fotos o videos * (Al menos una foto obligatoria)"
+        "add_btn": "Añadir fotos o videos * (Al menos una foto obligatoria)",
+        "avatar_title": "Foto de perfil",
+        "avatar_hint": "Arrastre aquí una foto de la galería",
+        "drop_release": "Suelte para añadir sus archivos",
+        "reorder_hint": "Arrastre las fotos para cambiar su orden",
+        "unit_kb": "KB",
+        "unit_mb": "MB"
       }
     },
     "admin": {
@@ -1734,7 +1761,8 @@
       "cert_renewal_pending": "Renovación enviada, pendiente de validación",
       "cert_pending": "Pendiente de validación",
       "admin_cert_expired": "Caducada",
-      "admin_cert_until": "hasta el {date}"
+      "admin_cert_until": "hasta el {date}",
+      "media_unsupported": "Formato de foto o vídeo no admitido: {names}"
     }
   },
   "pt": {
@@ -1944,7 +1972,13 @@
         "drop_title": "Arraste as suas fotos ou vídeos para aqui ou",
         "drop_click": "clique para procurar",
         "format_hint": "Fotos: JPG, PNG, WEBP • Vídeos: MP4, MOV, WEBM",
-        "add_btn": "Adicionar fotos ou vídeos * (Pelo menos uma foto obrigatória)"
+        "add_btn": "Adicionar fotos ou vídeos * (Pelo menos uma foto obrigatória)",
+        "avatar_title": "Foto de perfil",
+        "avatar_hint": "Arraste aqui uma foto da galeria",
+        "drop_release": "Solte para adicionar os seus ficheiros",
+        "reorder_hint": "Arraste as fotos para mudar a sua ordem",
+        "unit_kb": "KB",
+        "unit_mb": "MB"
       }
     },
     "admin": {
@@ -2166,7 +2200,8 @@
       "cert_renewal_pending": "Renovação enviada, a aguardar validação",
       "cert_pending": "A aguardar validação",
       "admin_cert_expired": "Expirada",
-      "admin_cert_until": "até {date}"
+      "admin_cert_until": "até {date}",
+      "media_unsupported": "Formato de foto ou vídeo não suportado: {names}"
     }
   },
   "it": {
@@ -2376,7 +2411,13 @@
         "drop_title": "Trascina le tue foto o i tuoi video qui o",
         "drop_click": "clicca per sfogliare",
         "format_hint": "Foto: JPG, PNG, WEBP • Video: MP4, MOV, WEBM",
-        "add_btn": "Aggiungi foto o video * (Almeno una foto obbligatoria)"
+        "add_btn": "Aggiungi foto o video * (Almeno una foto obbligatoria)",
+        "avatar_title": "Foto del profilo",
+        "avatar_hint": "Trascina qui una foto della galleria",
+        "drop_release": "Rilascia per aggiungere i tuoi file",
+        "reorder_hint": "Trascina le foto per cambiarne l'ordine",
+        "unit_kb": "KB",
+        "unit_mb": "MB"
       }
     },
     "admin": {
@@ -2598,7 +2639,8 @@
       "cert_renewal_pending": "Rinnovo inviato, in attesa di verifica",
       "cert_pending": "In attesa di verifica",
       "admin_cert_expired": "Scaduta",
-      "admin_cert_until": "fino al {date}"
+      "admin_cert_until": "fino al {date}",
+      "media_unsupported": "Formato di foto o video non supportato: {names}"
     }
   },
   "ru": {
@@ -2808,7 +2850,13 @@
         "drop_title": "Перетащите фото или видео сюда или",
         "drop_click": "нажмите для обзора",
         "format_hint": "Фото: JPG, PNG, WEBP • Видео: MP4, MOV, WEBM",
-        "add_btn": "Добавить фото или видео * (Обязательно хотя бы одно фото)"
+        "add_btn": "Добавить фото или видео * (Обязательно хотя бы одно фото)",
+        "avatar_title": "Фото профиля",
+        "avatar_hint": "Перетащите сюда фото из галереи",
+        "drop_release": "Отпустите, чтобы добавить файлы",
+        "reorder_hint": "Перетаскивайте фото, чтобы изменить порядок",
+        "unit_kb": "КБ",
+        "unit_mb": "МБ"
       }
     },
     "admin": {
@@ -3030,7 +3078,8 @@
       "cert_renewal_pending": "Продление отправлено, ожидает проверки",
       "cert_pending": "Ожидает проверки",
       "admin_cert_expired": "Истекла",
-      "admin_cert_until": "до {date}"
+      "admin_cert_until": "до {date}",
+      "media_unsupported": "Неподдерживаемый формат фото или видео: {names}"
     }
   },
   "ua": {
@@ -3240,7 +3289,13 @@
         "drop_title": "Перетягніть фото або відео сюди або",
         "drop_click": "натисніть для огляду",
         "format_hint": "Фото: JPG, PNG, WEBP • Відео: MP4, MOV, WEBM",
-        "add_btn": "Додати фото або відео * (Обов'язково хоча б одне фото)"
+        "add_btn": "Додати фото або відео * (Обов'язково хоча б одне фото)",
+        "avatar_title": "Фото профілю",
+        "avatar_hint": "Перетягніть сюди фото з галереї",
+        "drop_release": "Відпустіть, щоб додати файли",
+        "reorder_hint": "Перетягуйте фото, щоб змінити порядок",
+        "unit_kb": "КБ",
+        "unit_mb": "МБ"
       }
     },
     "admin": {
@@ -3462,7 +3517,8 @@
       "cert_renewal_pending": "Продовження надіслано, очікує перевірки",
       "cert_pending": "Очікує перевірки",
       "admin_cert_expired": "Закінчилася",
-      "admin_cert_until": "до {date}"
+      "admin_cert_until": "до {date}",
+      "media_unsupported": "Непідтримуваний формат фото чи відео: {names}"
     }
   },
   "ar": {
@@ -3672,7 +3728,13 @@
         "drop_title": "اسحب صورك أو مقاطع الفيديو الخاصة بك وأسقطها هنا أو",
         "drop_click": "انقر للتصفح",
         "format_hint": "الصور: JPG, PNG, WEBP • مقاطع الفيديو: MP4, MOV, WEBM",
-        "add_btn": "أضف صورك أو مقاطع الفيديو * (يلزم إضافة صورة واحدة على الأقل)"
+        "add_btn": "أضف صورك أو مقاطع الفيديو * (يلزم إضافة صورة واحدة على الأقل)",
+        "avatar_title": "صورة الملف الشخصي",
+        "avatar_hint": "اسحب صورة من المعرض إلى هنا",
+        "drop_release": "أفلت لإضافة ملفاتك",
+        "reorder_hint": "اسحب الصور لتغيير ترتيبها",
+        "unit_kb": "ك.ب",
+        "unit_mb": "م.ب"
       }
     },
     "admin": {
@@ -3894,7 +3956,8 @@
       "cert_renewal_pending": "تم إرسال التجديد، بانتظار المراجعة",
       "cert_pending": "بانتظار المراجعة",
       "admin_cert_expired": "منتهية",
-      "admin_cert_until": "حتى {date}"
+      "admin_cert_until": "حتى {date}",
+      "media_unsupported": "صيغة صورة أو فيديو غير مدعومة: {names}"
     }
   }
 }

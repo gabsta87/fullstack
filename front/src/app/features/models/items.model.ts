@@ -12,6 +12,8 @@ export interface PhotoItem {
   mainThumbUrl: string;
   sortOrder : number;
   type?: 'image';
+  /** Bytes on disk (original and thumbnail); 0 for older photos */
+  fileSize?: number | null;
 }
 
 export interface VideoItem {
@@ -21,6 +23,8 @@ export interface VideoItem {
   thumbnailUrl?: string | null;
   /** Seconds */
   duration?: number | null;
+  /** Bytes on disk once processed */
+  fileSize?: number | null;
   sortOrder : number;
   /** Visitors only receive READY videos; the owner also sees the others */
   status?: 'PROCESSING' | 'READY' | 'FAILED';

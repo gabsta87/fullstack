@@ -335,26 +335,39 @@
             <!-- PHOTOS / MEDIA TAB -->
             @if (activeTab === 'photos') {
               <div class="fade-in">
-                <div class="drop-zone-container">
-                  <input type="file" #fileInput (change)="onFileSelected($event)"
-                    accept="image/jpeg, image/png, image/webp, video/mp4, video/quicktime, video/webm" multiple
-                    style="display: none">
-                  <div class="drop-zone"
-                    (dragover)="onZoneDragOver($event)"
-                    (dragleave)="onZoneDragLeave()"
-                    (drop)="onZoneDrop($event)"
-                    [class.drop-zone-active]="isZoneActive"
-                    (click)="fileInput.click()">
-                    <ion-icon name="cloud-upload-outline" size="large" color="primary"></ion-icon>
-                    <p>{{ t.profile_management?.media?.drop_title }}
-                      <strong>{{ t.profile_management?.media?.drop_click }}</strong></p>
-                      <p class="format-hint">{{ t.profile_management?.media?.format_hint }}</p>
+                <!-- Top row: profile photo slot (1/4) and drop zone (3/4). Files dropped anywhere on the page land here. -->
+                <input type="file" #fileInput (change)="onFileSelected($event)"
+                  [accept]="allowedUploadTypes" multiple style="display: none">
+                <div class="media-top">
+                  <div class="avatar-slot" cdkDropList id="avatar-slot" (cdkDropListDropped)="onAvatarDrop($event)"
+                       [cdkDropListSortingDisabled]="true">
+                    <span class="avatar-slot-title">{{ t.profile_management?.media?.avatar_title }}</span>
+                    <div class="avatar-slot-frame">
+                      @if (me.mainThumbUrl) {
+                        <img [src]="me.mainThumbUrl" [alt]="t.profile_management?.media?.avatar_title" />
+                      } @else {
+                        <ion-icon name="person-circle-outline"></ion-icon>
+                      }
                     </div>
-                    <ion-button expand="block" (click)="fileInput.click()"
-                      [color]="isFieldMissing('photos', me) ? 'danger' : 'primary'" class="ion-margin">
-                      <ion-icon slot="start" name="add-circle-outline"></ion-icon>
-                      {{ t.profile_management?.media?.add_btn }}
-                    </ion-button>
+                    <span class="avatar-slot-hint">{{ t.profile_management?.media?.avatar_hint }}</span>
+                  </div>
+
+                  <div class="drop-zone-column">
+                    <div class="drop-zone" role="button" tabindex="0"
+                      [class.drop-zone-armed]="isFileDragOnPage"
+                      (click)="fileInput.click()" (keydown.enter)="fileInput.click()">
+                      <ion-icon [name]="isFileDragOnPage ? 'download-outline' : 'cloud-upload-outline'" size="large"></ion-icon>
+                      @if (isFileDragOnPage) {
+                        <p><strong>{{ t.profile_management?.media?.drop_release }}</strong></p>
+                      } @else {
+                        <p>{{ t.profile_management?.media?.drop_title }}
+                          <strong>{{ t.profile_management?.media?.drop_click }}</strong></p>
+                        <p class="format-hint">{{ t.profile_management?.media?.format_hint }}</p>
+                      }
+                    </div>
+                    @if (uploadMessage) {
+                      <p class="upload-message">{{ uploadMessage }}</p>
+                    }
                     @if (workerAccountService.storage$ | async; as usage) {
                       <div class="storage-usage">
                         <ion-progress-bar [value]="storageRatio(usage)"
@@ -364,41 +377,38 @@
                       </div>
                     }
                   </div>
-                  <!-- Photo gallery -->
-                  <div class="media-section-title">
-                    <h3>{{ t.common?.photos }} <span class="required-asterisk">*</span></h3>
-                  </div>
-                  <ion-grid class="ion-no-padding ion-padding-horizontal">
-                    <ion-row>
-                      @for (photo of (photos$ | async); track photo; let i = $index) {
-                        <ion-col size="4" size-md="3"
-                          class="ion-padding-tiny photo-col">
-                          <div class="gallery-item"
-                            draggable="true"
-                            (dragstart)="onDragStart(i)"
-                            (dragover)="onDragOver($event, i)"
-                            (drop)="onDrop(i)"
-                            (dragend)="onDragEnd()"
-                            [class.drag-over]="dragOverIndex === i">
-                            <img [src]="photo.mainThumbUrl ? photo.mainThumbUrl : 'assets/images/default-avatar.jpg'" class="gallery-img"/>
-                            <div class="gallery-actions-overlay">
-                              <ion-button [color]="photo.isMain ? 'warning' : 'light'" fill="clear" size="small"
-                                (click)="setMain(photo); $event.stopPropagation();">
-                                <ion-icon [name]="photo.isMain ? 'star' : 'star-outline'" slot="icon-only"></ion-icon>
-                              </ion-button>
-                              <ion-button color="danger" fill="clear" size="small"
-                                (click)="deletePhoto(photo); $event.stopPropagation();">
-                                <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
-                              </ion-button>
-                              <div class="drag-handle-icon">
-                                <ion-icon name="move" color="--ion-color-dark"></ion-icon>
-                              </div>
-                            </div>
-                          </div>
-                        </ion-col>
+                </div>
+
+                <!-- Photo gallery: drag to reorder, or onto the profile photo slot -->
+                <div class="media-section-title">
+                  <h3 [class.tab-error]="isFieldMissing('photos', me)">{{ t.common?.photos }} <span class="required-asterisk">*</span></h3>
+                  @if (photos.length > 1) {
+                    <span class="media-hint">{{ t.profile_management?.media?.reorder_hint }}</span>
+                  }
+                </div>
+                <div class="photo-grid" cdkDropList id="photo-gallery" cdkDropListOrientation="mixed"
+                     [cdkDropListData]="photos" [cdkDropListConnectedTo]="['avatar-slot']"
+                     (cdkDropListDropped)="onGalleryDrop($event)">
+                  @for (photo of photos; track photo.id) {
+                    <div class="gallery-item" cdkDrag [cdkDragData]="photo" [class.is-main]="photo.isMain">
+                      <img [src]="photo.mainThumbUrl || 'assets/images/default-avatar.jpg'" class="gallery-img" draggable="false" alt="" />
+                      @if (photo.isMain) {
+                        <span class="main-badge" [title]="t.profile_management?.media?.avatar_title">
+                          <ion-icon name="person-circle-outline"></ion-icon>
+                        </span>
                       }
-                    </ion-row>
-                  </ion-grid>
+                      <button type="button" class="delete-btn" (click)="deletePhoto(photo)"
+                              [title]="t.common?.delete" [attr.aria-label]="t.common?.delete"
+                              (mousedown)="$event.stopPropagation()" (touchstart)="$event.stopPropagation()">
+                        <ion-icon name="trash-outline"></ion-icon>
+                      </button>
+                      @if (fileSizeLabel(photo.fileSize, t); as size) {
+                        <span class="size-badge">{{ size }}</span>
+                      }
+                      <div *cdkDragPlaceholder class="gallery-placeholder"></div>
+                    </div>
+                  }
+                </div>
                   <!-- Video gallery -->
                   <div class="media-section-title ion-margin-top">
                     <h3>{{ t.common?.videos }} <span class="optional-text">{{ t.common?.optional }}</span></h3>
@@ -425,6 +435,9 @@
                               @default {
                                 <video [src]="video.url" [poster]="video.thumbnailUrl || ''" class="gallery-img" controls preload="none"></video>
                               }
+                            }
+                            @if (fileSizeLabel(video.fileSize, t); as size) {
+                              <span class="size-badge">{{ size }}</span>
                             }
                             <div class="gallery-actions-overlay">
                               <ion-button color="danger" fill="clear" size="small"
