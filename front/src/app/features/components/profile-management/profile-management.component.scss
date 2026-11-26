@@ -1,8 +1,6 @@
 .pm-wrapper {
   --gutter: 16px;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 20px 16px;
+  padding: 20px 16px; // full width
 
   @media (max-width: 576px) {
     --gutter: 12px;

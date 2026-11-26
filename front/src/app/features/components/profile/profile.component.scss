@@ -6,9 +6,7 @@
 .profile-wrap {
   --card-gap: 16px;
   --muted: var(--text-muted, #8c7d75);
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 12px 16px 80px;
+  padding: 12px 16px 80px; // full width: the photos use the whole screen
 }
 
 // Back: simple compact link
@@ -233,6 +231,7 @@
   .description {
     margin: 0 0 12px;
     line-height: 1.5;
+    max-width: 80ch; // long lines stay readable on wide screens
     white-space: pre-line;
     overflow-wrap: anywhere;
   }
