@@ -406,6 +406,21 @@ class AccessControlTest extends IntegrationTest {
         }
 
         @Test
+        @DisplayName("Admins delete a comment through /admin/comments/{id} only")
+        void deleteComment() throws Exception {
+            Admin admin = createAdmin("admin@venus.test");
+            Comment comment = commentRepository.save(new Comment(createClient("c@venus.test"), createVisibleWorker("w@venus.test"), "Hi"));
+            mvc.perform(delete("/admin/comment/" + comment.getId()).header("Authorization", bearer(admin)))
+                    .andExpect(status().is4xxClientError());
+            assertThat(commentRepository.findById(comment.getId())).isPresent();
+            mvc.perform(delete("/admin/comments/" + comment.getId()).header("Authorization", bearer(admin)))
+                    .andExpect(status().isOk());
+            assertThat(commentRepository.findById(comment.getId())).isEmpty();
+            mvc.perform(delete("/admin/comments/" + comment.getId()).header("Authorization", bearer(admin)))
+                    .andExpect(status().isNotFound());
+        }
+
+        @Test
         @DisplayName("Admins cannot blank out a comment")
         void editCommentValidated() throws Exception {
             Admin admin = createAdmin("admin@venus.test");

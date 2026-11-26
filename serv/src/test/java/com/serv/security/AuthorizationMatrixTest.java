@@ -63,7 +63,6 @@ class AuthorizationMatrixTest extends IntegrationTest {
                 new Endpoint(HttpMethod.POST, "/admin/region"),
                 new Endpoint(HttpMethod.DELETE, "/admin/comments/1"),
                 new Endpoint(HttpMethod.PATCH, "/admin/comments/1"),
-                new Endpoint(HttpMethod.DELETE, "/admin/comment/1"),
                 new Endpoint(HttpMethod.GET, "/admin/reports-summary"),
                 new Endpoint(HttpMethod.POST, "/admin/reports/1/dismiss"),
                 new Endpoint(HttpMethod.POST, "/admin/invite"),

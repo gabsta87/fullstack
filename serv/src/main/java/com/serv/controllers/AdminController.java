@@ -246,7 +246,7 @@ public class AdminController {
             worker.setVerificationCode(null);
             workerRepository.save(worker);
 
-            logAdminAction(admin, "CERTIFICATION_APPROVED", worker, "Certification approved for worker " + worker.getEmail());
+            logAdminAction(admin, "CERTIFICATION_APPROVED", worker, "Certification approved for worker #" + worker.getId());
 
         } else {
             request.setStatus(CertificationStatus.REJECTED);
@@ -256,7 +256,7 @@ public class AdminController {
             request.setComment(dto.comment());
 
             saved = certificationRequestRepository.save(request);
-            logAdminAction(admin, "CERTIFICATION_DENIED", worker, "Certification denied for worker " + worker.getEmail() + " because of " + dto.comment());
+            logAdminAction(admin, "CERTIFICATION_DENIED", worker, "Certification denied for worker #" + worker.getId() + ": " + dto.comment());
         }
         sseStreamService.broadcastAdminEvent("CERTIFICATION_UPDATED", saved.getId());
 
@@ -280,7 +280,7 @@ public class AdminController {
         CertificationRequest savedRequest = certificationRequestRepository.save(worker.getLastCertificationRequest());
         workerRepository.save(worker);
 
-        logAdminAction(admin, "CERTIFICATION_REVOKED", worker, "Certification revoked for worker " + worker.getEmail()+ " for reason: " + dto.reason());
+        logAdminAction(admin, "CERTIFICATION_REVOKED", worker, "Certification revoked for worker #" + worker.getId() + ": " + dto.reason());
 
         sseStreamService.broadcastAdminEvent("CERTIFICATION_UPDATED", savedRequest.getId());
 
@@ -537,7 +537,7 @@ public class AdminController {
         commentRepository.delete(c);
 
         logAdminAction(admin, "COMMENT_DELETED", "comment:" + id,
-                "Comment deleted on worker " + (targetWorker != null ? targetWorker.getEmail() : "unknown"));
+                "Comment deleted on worker #" + (targetWorker != null ? targetWorker.getId() : "unknown"));
 
         return ResponseEntity.ok().body(remainingComments);
     }
@@ -553,32 +553,9 @@ public class AdminController {
 
         comment.setContent(content.trim());
 
-        logAdminAction(admin, "COMMENT_EDITED", comment.getId(), "Comment edited on worker " + comment.getWorker().getEmail());
+        logAdminAction(admin, "COMMENT_EDITED", comment.getId(), "Comment edited on worker #" + comment.getWorker().getId());
 
         return ResponseEntity.ok(CommentDTO.from(comment));
-    }
-
-    @DeleteMapping("/comment/{commentId}")
-    @Transactional
-    public ResponseEntity<?> deleteCommentByAdmin(@PathVariable Long commentId, Admin admin) {
-        Comment comm = commentRepository.findById(commentId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found"));
-
-        Client author = comm.getAuthor();
-
-        if(author != null){
-            author.removeComment(comm);
-        }
-
-        if (comm.getWorker() != null) {
-            comm.getWorker().removeComment(comm);
-        }
-
-        commentRepository.delete(comm);
-        logAdminAction(admin, "COMMENT_DELETED", "comment:" + commentId,
-                "Comment from " + (author != null ? author.getEmail() : "unknown") + " deleted by admin");
-
-        return author != null ? ResponseEntity.ok(ClientDTO.from(author)) : ResponseEntity.ok().build();
     }
 
     // REPORTS
