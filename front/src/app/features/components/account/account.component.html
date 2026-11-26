@@ -24,7 +24,7 @@
       @if (activeTab === 'favorites' && user.favorites) {
         <div class="fade-in ion-padding">
           <ion-row>
-            @for (f of user.favorites; track f) {
+            @for (f of user.favorites; track f.id) {
               <ion-col size="6" size-sm="4" size-md="3" size-lg="2.4" size-xl="2"
                 >
                 <worker-card [worker]="f"></worker-card>
@@ -44,7 +44,7 @@
         <div class="fade-in ion-padding">
           @if (user.reviews && user.reviews.length > 0) {
             <ul class="my-comments">
-              @for (comment of user.reviews; track comment) {
+              @for (comment of user.reviews; track comment.id) {
                 <li class="my-comment">
                   <!-- Commented profile: clickable thumbnail -->
                   <button type="button" class="mc-thumb" (click)="navigateToWorker(comment.workerId)"

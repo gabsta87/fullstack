@@ -139,7 +139,7 @@
                   <span class="count">{{ (worker.photos.length || 0) + (worker.videos.length || 0) }}</span>
                 </h3>
                 <div class="gallery-grid">
-                  @for (p of worker.photos; track p) {
+                  @for (p of worker.photos; track p.id) {
                     <button type="button" class="thumb" (click)="openMedia(p)">
                       <img [src]="p.mainThumbUrl || p.originalUrl" [alt]="worker.username" loading="lazy">
                     </button>
@@ -166,7 +166,7 @@
                 }
                 @if (workerServices.length) {
                   <div class="chips-group">
-                    @for (service of workerServices; track service) {
+                    @for (service of workerServices; track service.id) {
                       <service-info class="service-chip" [service]="service">{{ service.name }}</service-info>
                     }
                   </div>
@@ -200,7 +200,7 @@
               }
               @if (worker.comments.length) {
                 <ul class="comments-list">
-                  @for (comment of worker.comments; track comment) {
+                  @for (comment of worker.comments; track comment.id) {
                     <li class="comment">
                       <div class="comment-head">
                         <span class="author">

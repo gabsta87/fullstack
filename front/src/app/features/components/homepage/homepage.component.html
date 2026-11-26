@@ -91,7 +91,7 @@
                 <ion-col size="12" size-sm="4" class="filter-col">
                   <ion-item lines="none" class="filter-input-item">
                     <ion-select aria-label="Services" interface="popover" [multiple]="true" [(ngModel)]="filters.services" (ionChange)="loadPage(true)" [placeholder]="$safeNavigationMigration(t.filters?.all_services)">
-                      @for (service of allServices; track service) {
+                      @for (service of allServices; track service.id) {
                         <ion-select-option [value]="service.name">{{ service.name }}</ion-select-option>
                       }
                     </ion-select>
@@ -127,7 +127,7 @@
       @if (allWorkers.length > 0) {
         <section>
           <ion-row class="ion-no-padding">
-            @for (w of allWorkers; track w) {
+            @for (w of allWorkers; track w.id) {
               <ion-col size="6" size-sm="4" size-md="3" size-lg="2" class="card-col">
                 <worker-card [worker]="w" [class.faded]="!w.available"></worker-card>
               </ion-col>

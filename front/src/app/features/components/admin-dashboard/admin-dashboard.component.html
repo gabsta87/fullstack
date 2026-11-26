@@ -213,7 +213,7 @@
           }
           @if (requests.length > 0) {
             <ion-list lines="full">
-              @for (req of requests; track req) {
+              @for (req of requests; track req.id) {
                 <ion-item
                   [button]="!req.underReview"
                   (click)="!req.underReview && openCertificationModal(req)"
@@ -267,7 +267,7 @@
             <h4>{{ t.admin?.certif_tab?.other_photos_title }}</h4>
             @if (selectedWorkerDetails.photos && selectedWorkerDetails.photos.length > 0) {
               <div class="other-photos-container">
-                @for (p of selectedWorkerDetails.photos; track p) {
+                @for (p of selectedWorkerDetails.photos; track p.id) {
                   <img
                     [src]="p.mainThumbUrl ? p.mainThumbUrl : 'assets/images/default-avatar.jpg'"
                     (click)="openImagePreview(p.mainThumbUrl, certificationPreviewList)"

@@ -17,7 +17,7 @@
               {{ allParentsLabel || t.filters?.all_regions }}
             </ion-select-option>
           }
-          @for (zone of zones; track zone) {
+          @for (zone of zones; track zone.id) {
             <ion-select-option [value]="zone.id">
               {{ zone.name }}
             </ion-select-option>
@@ -44,7 +44,7 @@
               {{ allChildrenLabel || t.filters?.all_locations }}
             </ion-select-option>
           }
-          @for (subZone of availableChildZones; track subZone) {
+          @for (subZone of availableChildZones; track subZone.id) {
             <ion-select-option [value]="subZone.id">
               {{ subZone.name }}
             </ion-select-option>

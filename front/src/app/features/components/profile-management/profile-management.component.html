@@ -192,7 +192,7 @@
                         <ion-grid class="services-grid">
                           <ion-label class="section-box-title">{{ t.profile_management?.form?.services_title }}</ion-label>
                           <div class="services-list">
-                            @for (service of allServices; track service) {
+                            @for (service of allServices; track service.id) {
                               <div class="service-item">
                                 <ion-checkbox
                                   justify="start"
@@ -269,7 +269,7 @@
                           </ion-label>
                           <!-- One wrapping line: the languages already added, then the compact add form -->
                           <div class="languages-line">
-                            @for (item of profileLanguages; track item; let i = $index) {
+                            @for (item of profileLanguages; track item.language; let i = $index) {
                               <ion-chip color="primary" class="language-chip">
                                 <img [src]="languageService.getLanguageMeta(item.language).flag" [alt]="item.language"
                                   class="chip-flag"/>
@@ -398,14 +398,14 @@
                         </span>
                       }
                       <button type="button" class="delete-btn" (click)="deletePhoto(photo)"
-                              [title]="t.common?.delete" [attr.aria-label]="t.common?.delete"
-                              (mousedown)="$event.stopPropagation()" (touchstart)="$event.stopPropagation()">
+                              [title]="t.common?.delete" [attr.aria-label]="t.common?.delete">
                         <ion-icon name="trash-outline"></ion-icon>
                       </button>
                       @if (fileSizeLabel(photo.fileSize, t); as size) {
                         <span class="size-badge">{{ size }}</span>
                       }
-                      <div *cdkDragPlaceholder class="gallery-placeholder"></div>
+                      <!-- Same size as a photo: shows where it will land, without moving the others into a column -->
+                      <div *cdkDragPlaceholder class="gallery-item gallery-placeholder"></div>
                     </div>
                   }
                 </div>
@@ -415,7 +415,7 @@
                   </div>
                   <ion-grid class="ion-no-padding ion-padding-horizontal">
                     <ion-row>
-                      @for (video of videos$ | async; track video; let i = $index) {
+                      @for (video of videos$ | async; track video.id) {
                         <ion-col size="4" size-md="3"
                           class="ion-padding-tiny photo-col">
                           <div class="gallery-item video-gallery-item">
