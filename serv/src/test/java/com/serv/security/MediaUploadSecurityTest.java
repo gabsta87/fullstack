@@ -64,6 +64,12 @@ class MediaUploadSecurityTest extends IntegrationTest {
         assertThat(files).hasSize(2);
         assertThat(files).allMatch(p -> p.getFileName().toString().endsWith(".jpg"));
         assertThat(photoRepository.findByWorker(worker)).hasSize(1);
+
+        // Each photo reports its weight on disk (original and thumbnail), for the storage choices
+        long onDisk = 0;
+        for (Path f : files) onDisk += Files.size(f);
+        mvc.perform(get("/account/worker/me").header("Authorization", bearer(worker)))
+                .andExpect(jsonPath("$.photos[0].fileSize").value(onDisk));
     }
 
     @Test
