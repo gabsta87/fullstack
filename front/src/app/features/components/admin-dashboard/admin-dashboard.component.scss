@@ -270,3 +270,21 @@ ion-modal.image-preview-modal {
     right: 0;
   }
 }
+
+// Status column: green when available (workers) or online (admins), red otherwise
+.status-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--ion-color-danger);
+  }
+
+  &.on::before { background: var(--ion-color-success); }
+}

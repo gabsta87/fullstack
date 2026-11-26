@@ -29,8 +29,12 @@ public record AdminUserDTO(
         /** Why a worker profile is not public (see {@link Worker#profileIssues()}); empty otherwise. */
         List<String> profileIssues
 ) {
-    public static AdminUserDTO from(VenusUser user, String certificationRequestDateParam) {
-        boolean available = false;
+    /**
+     * @param online for admins: whether they are connected right now (shown in the "available" column);
+     *               workers show their own availability, clients nothing
+     */
+    public static AdminUserDTO from(VenusUser user, String certificationRequestDateParam, boolean online) {
+        boolean available = user.isAdmin() && online;
         boolean hidden = false;
         String role = user.getRole().name();
         String language = null;
@@ -90,7 +94,7 @@ public record AdminUserDTO(
         );
     }
 
-    public static AdminUserDTO from(VenusUser user) {
-        return from(user, null);
+    public static AdminUserDTO from(VenusUser user, boolean online) {
+        return from(user, null, online);
     }
 }

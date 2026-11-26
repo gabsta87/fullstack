@@ -156,18 +156,36 @@ public class SseStreamService {
             adminEmitters.remove(oldest);
             try { oldest.complete(); } catch (Exception ignored) {}
         }
+        boolean wasOffline = own.isEmpty();
         own.add(emitter);
         adminEmitters.add(emitter);
+        if (wasOffline) {
+            sendToAdmins(ADMIN_PRESENCE_EVENT, adminId, own); // the other admins' tables show who is online
+        }
 
         Runnable cleanup = () -> {
             adminEmitters.remove(emitter);
-            own.remove(emitter);
+            if (own.remove(emitter) && own.isEmpty()) {
+                sendToAdmins(ADMIN_PRESENCE_EVENT, adminId, own);
+            }
         };
         emitter.onCompletion(cleanup);
         emitter.onTimeout(() -> { emitter.complete(); cleanup.run(); });
         emitter.onError((e) -> { emitter.completeWithError(e); cleanup.run(); });
 
         return emitter;
+    }
+
+    /** Sent to admins when another admin comes online or goes offline (first stream opened, last one closed). */
+    static final String ADMIN_PRESENCE_EVENT = "USERS_UPDATED";
+
+    /**
+     * An admin is online while at least one admin stream is open (the front opens it on login and keeps it
+     * while a tab is open). Not stored: a long-lived token says nothing about presence.
+     */
+    public boolean isAdminOnline(UUID adminId) {
+        List<SseEmitter> own = adminEmittersById.get(adminId);
+        return own != null && !own.isEmpty();
     }
 
     int activeStreamCount(UUID userId) {
@@ -181,7 +199,12 @@ public class SseStreamService {
     }
 
     private void sendToAdmins(String eventName, Object data) {
+        sendToAdmins(eventName, data, List.of());
+    }
+
+    private void sendToAdmins(String eventName, Object data, List<SseEmitter> skipped) {
         List<SseEmitter> emittersCopy = new ArrayList<>(adminEmitters);
+        emittersCopy.removeAll(skipped);
         for (SseEmitter emitter : emittersCopy) {
             try {
                 emitter.send(SseEmitter.event().name(eventName).data(data));

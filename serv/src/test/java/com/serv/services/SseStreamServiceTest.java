@@ -61,6 +61,25 @@ class SseStreamServiceTest {
     }
 
     @Test
+    @DisplayName("An admin is online while a stream is open; the other admins are told when they come online")
+    void adminPresence() {
+        UUID watcherId = UUID.randomUUID();
+        UUID adminId = UUID.randomUUID();
+        RecordingEmitter watcher = new RecordingEmitter();
+        service.createAdminStream(watcherId, watcher);
+        assertThat(service.isAdminOnline(adminId)).isFalse();
+
+        RecordingEmitter firstTab = new RecordingEmitter();
+        service.createAdminStream(adminId, firstTab);
+        assertThat(service.isAdminOnline(adminId)).isTrue();
+        assertThat(watcher.sent).hasSize(1);
+        assertThat(firstTab.sent).isEmpty(); // not told about themself
+
+        service.createAdminStream(adminId, new RecordingEmitter()); // second tab: already online
+        assertThat(watcher.sent).hasSize(1);
+    }
+
+    @Test
     @DisplayName("Outside a transaction, admin events are sent right away")
     void adminEventsWithoutTransaction() {
         RecordingEmitter admin = new RecordingEmitter();

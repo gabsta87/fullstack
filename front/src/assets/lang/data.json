@@ -63,7 +63,8 @@
         "native": "Native"
       },
       "publish": "Publish",
-      "update": "Update"
+      "update": "Update",
+      "status": "Status"
     },
     "header": {
       "home": "Home",
@@ -462,7 +463,8 @@
         "native": "Langue maternelle"
       },
       "publish": "Publier",
-      "update": "Mettre à jour"
+      "update": "Mettre à jour",
+      "status": "Statut"
     },
     "header": {
       "home": "Accueil",
@@ -861,7 +863,8 @@
         "native": "Muttersprache"
       },
       "publish": "Veröffentlichen",
-      "update": "Aktualisieren"
+      "update": "Aktualisieren",
+      "status": "Status"
     },
     "header": {
       "home": "Startseite",
@@ -1255,7 +1258,8 @@
         "native": "Nativo"
       },
       "publish": "Publicar",
-      "update": "Actualizar"
+      "update": "Actualizar",
+      "status": "Estado"
     },
     "header": {
       "home": "Inicio",
@@ -1649,7 +1653,8 @@
         "native": "Nativo"
       },
       "publish": "Publicar",
-      "update": "Atualizar"
+      "update": "Atualizar",
+      "status": "Estado"
     },
     "header": {
       "home": "Início",
@@ -2043,7 +2048,8 @@
         "native": "Madrelingua"
       },
       "publish": "Pubblica",
-      "update": "Aggiorna"
+      "update": "Aggiorna",
+      "status": "Stato"
     },
     "header": {
       "home": "Home",
@@ -2437,7 +2443,8 @@
         "native": "Родной"
       },
       "publish": "Опубликовать",
-      "update": "Обновить"
+      "update": "Обновить",
+      "status": "Статус"
     },
     "header": {
       "home": "Главная",
@@ -2831,7 +2838,8 @@
         "native": "Рідна"
       },
       "publish": "Опублікувати",
-      "update": "Оновити"
+      "update": "Оновити",
+      "status": "Статус"
     },
     "header": {
       "home": "Головна",
@@ -3225,7 +3233,8 @@
         "native": "لغة أم"
       },
       "publish": "نشر",
-      "update": "تحديث"
+      "update": "تحديث",
+      "status": "الحالة"
     },
     "header": {
       "home": "الصفحة الرئيسية",

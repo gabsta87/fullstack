@@ -80,7 +80,7 @@ public class AdminController {
         List<AdminUserDTO> userDTOs = users.stream()
                 .map(user -> {
                     String reqDate = (user instanceof Worker w) ? requestDatesMap.get(w.getId()) : null;
-                    return AdminUserDTO.from(user, reqDate);
+                    return AdminUserDTO.from(user, reqDate, sseStreamService.isAdminOnline(user.getId()));
                 })
                 .toList();
 
@@ -155,7 +155,7 @@ public class AdminController {
             sseStreamService.emitEvent(worker.getId(), "account-update", WorkerFullProfileDTO.from(worker));
         }
 
-        return ResponseEntity.ok(AdminUserDTO.from(savedUser));
+        return ResponseEntity.ok(AdminUserDTO.from(savedUser, sseStreamService.isAdminOnline(savedUser.getId())));
     }
 
     @PostMapping("/profiles/update-days")

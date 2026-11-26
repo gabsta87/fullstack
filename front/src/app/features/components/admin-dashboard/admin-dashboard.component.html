@@ -71,7 +71,7 @@
               <th pSortableColumn="birthdate">{{ t.common?.birthdate }}<p-sort-icon field="birthdate"></p-sort-icon></th>
               <th pSortableColumn="banned">{{ t.common?.banned }}<p-sort-icon field="banned"></p-sort-icon></th>
               <th pSortableColumn="locked">{{ t.common?.locked }}<p-sort-icon field="locked"></p-sort-icon></th>
-              <th pSortableColumn="available">{{ t.common?.available }}<p-sort-icon field="available"></p-sort-icon></th>
+              <th pSortableColumn="available">{{ t.common?.status }}<p-sort-icon field="available"></p-sort-icon></th>
               <th pSortableColumn="hidden">{{ t.common?.hidden }}<p-sort-icon field="hidden"></p-sort-icon></th>
               <th>{{ t.admin?.users_tab?.col_certification }}</th>
               <th pSortableColumn="certifiedAt">{{ t.admin?.users_tab?.col_certif_date }}<p-sort-icon field="certifiedAt"></p-sort-icon></th>
@@ -128,8 +128,17 @@
                   {{ user.locked ? t.common?.locked : t.admin?.users_tab?.btn_lock }}
                 </ion-button>
               </td>
-              <td class="ion-text-center">
-                {{ user.available ? t.common?.available : t.common?.unavailable }}
+              <!-- Workers: their availability; admins: connected right now; clients: nothing -->
+              <td>
+                @if (user.role !== 'CLIENT') {
+                  <span class="status-dot" [class.on]="user.available">
+                    @if (user.role === 'WORKER') {
+                      {{ user.available ? t.common?.available : t.common?.unavailable }}
+                    } @else {
+                      {{ user.available ? t.common?.online : t.common?.offline }}
+                    }
+                  </span>
+                }
               </td>
               <td>
                 @if (user.hidden) {
