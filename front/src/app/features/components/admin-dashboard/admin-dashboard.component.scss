@@ -341,7 +341,19 @@ ion-modal.image-preview-modal {
   align-items: center;
   gap: 0.5rem;
 
-  input { width: 6.5rem; text-align: right; }
+  input {
+    width: 6.5rem;
+    padding: 0.4rem 0.6rem;
+    text-align: right;
+    font: inherit;
+    color: var(--ion-text-color);
+    background: var(--ion-background-color, #fff);
+    border: 1px solid var(--ion-color-step-300, #bbb);
+    border-radius: 8px;
+
+    &:focus { outline: none; border-color: var(--ion-color-primary); box-shadow: 0 0 0 2px rgba(var(--ion-color-primary-rgb), 0.2); }
+    &.ng-invalid, &:invalid { border-color: var(--ion-color-danger); }
+  }
   .setting-unit { min-width: 2.5rem; color: var(--ion-color-medium); }
 }
 
