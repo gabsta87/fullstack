@@ -376,3 +376,106 @@ ion-modal.image-preview-modal {
 
 .cert-until { font-size: 0.8rem; color: var(--ion-color-medium); }
 .cert-expired { color: var(--ion-color-danger); font-weight: 600; }
+
+// ── Tabs: no capitals, the count always visible, the text shortened first ──
+.admin-tabs ion-segment-button {
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.9rem;
+  min-width: 0;
+  --padding-start: 6px;
+  --padding-end: 6px;
+}
+
+.tab-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+}
+
+.tab-text {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.tab-count {
+  flex-shrink: 0;
+  min-width: 1.4rem;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--ion-color-step-150, #e6e6e6);
+  color: var(--ion-text-color);
+}
+
+// ── Tables that take the width of their content (services, zones) ──
+.actions-col { width: 1%; white-space: nowrap; text-align: left; }
+
+.service-desc {
+  min-width: 20rem;
+  max-width: 60ch;
+  white-space: normal;
+}
+
+.zone-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+
+  &:disabled { cursor: default; }
+  ion-icon.invisible { visibility: hidden; }
+}
+
+.zone-child-count {
+  font-size: 0.75rem;
+  color: var(--ion-color-medium);
+}
+
+// ── Audit log ──
+:host ::ng-deep .log-table {
+  table { table-layout: fixed; width: 100%; }
+
+  // Phones: one card per entry instead of squeezed columns
+  @media (max-width: 640px) {
+    thead { display: none; }
+    table, tbody, tr, td { display: block; width: auto !important; }
+    tr { padding: 8px 0; border-bottom: 1px solid var(--ion-color-step-150, #e6e6e6); }
+    td { border: 0 !important; padding: 2px 8px !important; }
+  }
+}
+
+.log-row td { vertical-align: top; }
+
+.log-col-date { width: 7.5rem; font-variant-numeric: tabular-nums; }
+.log-col-admin { width: 12%; overflow-wrap: anywhere; }
+.log-col-action { width: 10.5rem; }
+.log-col-action .log-action { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: top; }
+.log-col-target { width: 12%; overflow-wrap: anywhere; }
+.log-col-details { overflow-wrap: break-word; }
+
+.log-action {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--ion-color-step-150, #e6e6e6);
+}
+
+.log-target-type {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--ion-color-medium);
+}

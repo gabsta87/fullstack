@@ -3,28 +3,28 @@
 @if (languageService.currentLanguage$ | async; as t) {
   <ion-header class="ion-no-border">
     <!-- Tab navigation segments -->
-    <ion-toolbar color="light">
+    <ion-toolbar color="light" class="admin-tabs">
       <ion-segment [(ngModel)]="currentTab">
         <ion-segment-button value="users">
-          <ion-label>{{ t.admin?.tabs?.users }} ({{ (users$ | async)?.length || 0 }})</ion-label>
+          <ion-label class="tab-label"><span class="tab-text">{{ t.admin?.tabs?.users }}</span><span class="tab-count">{{ (users$ | async)?.length || 0 }}</span></ion-label>
         </ion-segment-button>
         <ion-segment-button value="certifications">
-          <ion-label>{{ t.admin?.tabs?.certifications }} ({{ (pendingCertificationRequests$ | async)?.length || 0 }})</ion-label>
+          <ion-label class="tab-label"><span class="tab-text">{{ t.admin?.tabs?.certifications }}</span><span class="tab-count">{{ (pendingCertificationRequests$ | async)?.length || 0 }}</span></ion-label>
         </ion-segment-button>
         <ion-segment-button value="reports">
-          <ion-label>{{ t.admin?.tabs?.reports }} ({{ (totalReportsCount$ | async) || 0 }})</ion-label>
+          <ion-label class="tab-label"><span class="tab-text">{{ t.admin?.tabs?.reports }}</span><span class="tab-count">{{ (totalReportsCount$ | async) || 0 }}</span></ion-label>
         </ion-segment-button>
         <ion-segment-button value="services">
-          <ion-label>{{ t.admin?.tabs?.services }} ({{ (services$ | async)?.length || 0 }})</ion-label>
+          <ion-label class="tab-label"><span class="tab-text">{{ t.admin?.tabs?.services }}</span><span class="tab-count">{{ (services$ | async)?.length || 0 }}</span></ion-label>
         </ion-segment-button>
         <ion-segment-button value="zones">
-          <ion-label>{{ t.admin?.tabs?.zones }} ({{ (zones$ | async)?.length || 0 }})</ion-label>
+          <ion-label class="tab-label"><span class="tab-text">{{ t.admin?.tabs?.zones }}</span><span class="tab-count">{{ (zones$ | async)?.length || 0 }}</span></ion-label>
         </ion-segment-button>
         <ion-segment-button value="logs">
-          <ion-label>{{ t.admin?.tabs?.logs }} ({{ (displayedAuditLogs$ | async)?.length || 0 }})</ion-label>
+          <ion-label class="tab-label"><span class="tab-text">{{ t.admin?.tabs?.logs }}</span><span class="tab-count">{{ (displayedAuditLogs$ | async)?.length || 0 }}</span></ion-label>
         </ion-segment-button>
         <ion-segment-button value="admins">
-          <ion-label>{{ t.admin?.tabs?.admins }}</ion-label>
+          <ion-label class="tab-label"><span class="tab-text">{{ t.admin?.tabs?.admins }}</span></ion-label>
         </ion-segment-button>
       </ion-segment>
     </ion-toolbar>
@@ -70,7 +70,7 @@
           [rows]="20"
           [rowsPerPageOptions]="[20, 50, 100]"
           [globalFilterFields]="['username', 'email', 'description', 'id']"
-          styleClass="p-datatable-gridlines p-datatable-sm"
+          class="p-datatable-sm"
           [tableStyle]="{'min-width': '65rem'}">
           <ng-template #header>
             <tr>
@@ -353,7 +353,7 @@
           <h2>{{ t.admin?.reports_tab?.title }}</h2>
           <p class="reports-subtitle">{{ t.admin?.reports_tab?.subtitle }}</p>
         </div>
-        <p-table [value]="(reportsSummary$ | async) || []" styleClass="p-datatable-gridlines p-datatable-sm" [tableStyle]="{'min-width': '50rem'}">
+        <p-table [value]="(reportsSummary$ | async) || []" class="p-datatable-sm" [tableStyle]="{'min-width': '50rem'}">
           <ng-template #header>
             <tr>
               <th pSortableColumn="workerUsername">{{ t.admin?.reports_tab?.col_advertiser }} <p-sort-icon field="workerUsername"></p-sort-icon></th>
@@ -448,21 +448,17 @@
             {{ t.admin?.services_tab?.btn_add }}
           </ion-button>
         </div>
-        <p-table [value]="(services$ | async) || []" styleClass="p-datatable-gridlines p-datatable-sm" [tableStyle]="{'min-width': '40rem'}">
+        <p-table [value]="(services$ | async) || []" class="p-datatable-sm fit-table" [tableStyle]="{ width: 'auto' }">
           <ng-template #header>
             <tr>
+              <th class="actions-col">{{ t.common?.actions }}</th>
               <th>{{ t.admin?.services_tab?.col_name }}</th>
               <th>{{ t.admin?.services_tab?.col_desc }}</th>
-              <th class="ion-text-center width-140">{{ t.common?.actions }}</th>
             </tr>
           </ng-template>
           <ng-template #body let-service>
             <tr>
-              <td>
-                <span class="font-weight-500">{{ service.name }}</span>
-              </td>
-              <td>{{ service.description || '—' }}</td>
-              <td class="ion-text-center nowrap-cell">
+              <td class="actions-col nowrap-cell">
                 <ion-button size="small" fill="clear" color="medium" (click)="editServiceModal(service)" [title]="$safeNavigationMigration(t.common?.edit)">
                   <ion-icon name="pencil-outline" slot="icon-only"></ion-icon>
                 </ion-button>
@@ -470,6 +466,8 @@
                   <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
                 </ion-button>
               </td>
+              <td class="nowrap-cell"><span class="font-weight-500">{{ service.name }}</span></td>
+              <td class="service-desc">{{ service.description || '—' }}</td>
             </tr>
           </ng-template>
           <ng-template #emptymessage>
@@ -490,35 +488,43 @@
             {{ t.admin?.zones_tab?.btn_add_parent }}
           </ion-button>
         </div>
-        <p-table [value]="(flatZones$ | async) || []" styleClass="p-datatable-gridlines p-datatable-sm" [tableStyle]="{'min-width': '40rem'}">
+        <p-table [value]="(visibleZones$ | async) || []" class="p-datatable-sm fit-table" [tableStyle]="{ width: 'auto' }">
           <ng-template #header>
             <tr>
+              <th class="actions-col">{{ t.common?.actions }}</th>
               <th>{{ t.admin?.zones_tab?.col_name }}</th>
-              <th class="ion-text-center width-160">{{ t.common?.actions }}</th>
             </tr>
           </ng-template>
           <ng-template #body let-zone>
             <tr [ngClass]="{'parent-zone-row': zone.level === 0}">
-              <td [style.padding-left.px]="15 + (zone.level * 25)">
-                @if (zone.level > 0) {
-                  <span class="zone-sub-arrow">└─</span>
-                }
-                <span [class.zone-parent-bold]="zone.level === 0">
-                  {{ zone.name }}
-                </span>
-              </td>
-              <td class="ion-text-center nowrap-cell">
-                @if (zone.level === 0) {
-                  <ion-button size="small" fill="clear" color="primary" (click)="openZoneModal(zone.id)" [title]="$safeNavigationMigration(t.admin?.zones_tab?.tooltip_add_child)">
-                    <ion-icon name="add-outline" slot="icon-only"></ion-icon>
-                  </ion-button>
-                }
+              <td class="actions-col nowrap-cell">
                 <ion-button size="small" fill="clear" color="medium" (click)="editZoneName(zone)" [title]="$safeNavigationMigration(t.common?.edit)">
                   <ion-icon name="pencil-outline" slot="icon-only"></ion-icon>
                 </ion-button>
                 <ion-button size="small" fill="clear" color="danger" (click)="deleteZone(zone.id)" [title]="$safeNavigationMigration(t.common?.delete)">
                   <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
                 </ion-button>
+                @if (zone.level === 0) {
+                  <ion-button size="small" fill="clear" color="primary" (click)="openZoneModal(zone.id)" [title]="$safeNavigationMigration(t.admin?.zones_tab?.tooltip_add_child)">
+                    <ion-icon name="add-outline" slot="icon-only"></ion-icon>
+                  </ion-button>
+                }
+              </td>
+              <td class="nowrap-cell" [style.padding-left.px]="12 + (zone.level * 28)">
+                @if (zone.level === 0) {
+                  <button type="button" class="zone-toggle" (click)="toggleZone(zone.id)"
+                          [attr.aria-expanded]="expandedZones.has(zone.id)" [disabled]="!zone.childCount">
+                    <ion-icon [name]="expandedZones.has(zone.id) ? 'chevron-down-outline' : 'chevron-forward-outline'"
+                              [class.invisible]="!zone.childCount"></ion-icon>
+                    <span class="zone-parent-bold">{{ zone.name }}</span>
+                    @if (zone.childCount) {
+                      <span class="zone-child-count">{{ zone.childCount }}</span>
+                    }
+                  </button>
+                } @else {
+                  <span class="zone-sub-arrow">└─</span>
+                  {{ zone.name }}
+                }
               </td>
             </tr>
           </ng-template>
@@ -570,26 +576,42 @@
             </ion-button>
           }
         </div>
-        <ion-list>
-          @for (log of (displayedAuditLogs$ | async) || []; track log.id) {
-            <ion-item>
-              <ion-label class="ion-text-wrap">
-                <h3><strong>{{ t.admin?.logs_tab?.moderator_label }}</strong> {{ log.adminName }}</h3>
-                <p><strong>{{ t.admin?.logs_tab?.action_label }}</strong> <ion-badge color="medium">{{ log.actionType }}</ion-badge></p>
+        <p-table [value]="(displayedAuditLogs$ | async) || []" class="p-datatable-sm log-table"
+                 [paginator]="true" [rows]="50" [alwaysShowPaginator]="false" dataKey="id">
+          <ng-template #header>
+            <tr>
+              <th class="log-col-date">{{ t.admin?.logs_tab?.col_date }}</th>
+              <th class="log-col-admin">{{ t.admin?.logs_tab?.moderator_label }}</th>
+              <th class="log-col-action">{{ t.admin?.logs_tab?.action_label }}</th>
+              <th class="log-col-target">{{ t.admin?.logs_tab?.target_label }}</th>
+              <th>{{ t.admin?.logs_tab?.col_details }}</th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-log>
+            <tr class="log-row">
+              <td class="log-col-date nowrap-cell">{{ log.createdAt | date:'dd.MM.yyyy HH:mm' }}</td>
+              <td class="log-col-admin">{{ log.adminName }}</td>
+              <td class="log-col-action"><span class="log-action">{{ log.actionType }}</span></td>
+              <td class="log-col-target">
                 @if (log.targetLabel || log.targetId) {
-                  <p><strong>{{ t.admin?.logs_tab?.target_label }}</strong> {{ log.targetType }} · {{ log.targetLabel || log.targetId }}</p>
+                  <span class="log-target-type">{{ log.targetType }}</span>
+                  {{ log.targetLabel || log.targetId }}
+                } @else if (log.targetType) {
+                  <span class="log-target-type">{{ log.targetType }}</span>
                 }
-                <p>{{ log.details }}</p>
+              </td>
+              <td class="log-col-details">
+                {{ log.details }}
                 @if (log.targetSnapshot) {
-                  <p class="log-snapshot">{{ log.targetSnapshot }}</p>
+                  <div class="log-snapshot">{{ log.targetSnapshot }}</div>
                 }
-                <p class="ion-text-right"><small>{{ log.createdAt | date:'short' }}</small></p>
-              </ion-label>
-            </ion-item>
-          } @empty {
-            <p class="ion-text-center ion-padding">{{ t.admin?.logs_tab?.empty }}</p>
-          }
-        </ion-list>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template #emptymessage>
+            <tr><td colspan="5" class="ion-text-center ion-padding">{{ t.admin?.logs_tab?.empty }}</td></tr>
+          </ng-template>
+        </p-table>
       </div>
     }
     <!-- TAB 7: ADMINISTRATION (settings, team) -->

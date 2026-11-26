@@ -82,3 +82,26 @@ ion-modal::part(content) {
 :root {
   --p-datatable-paginator-bottom-border-width: 0;
 }
+
+/* Dropdown panels of p-select (appended to the body): without a theme preset they had no background.
+   PrimeNG injects its own rules after this file, so its variables are set rather than its properties. */
+:root {
+  --p-select-overlay-background: var(--ion-background-color, #fff);
+  --p-select-overlay-color: var(--ion-text-color, #222);
+  --p-select-overlay-border-color: var(--ion-color-step-200, #ddd);
+  --p-select-overlay-border-radius: 8px;
+  --p-select-overlay-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  --p-select-list-padding: 4px;
+  --p-select-list-gap: 2px;
+  --p-select-option-padding: 8px 12px;
+  --p-select-option-border-radius: 6px;
+  --p-select-option-color: var(--ion-text-color, #222);
+  --p-select-option-focus-background: var(--ion-color-step-100, #f0f0f0);
+  --p-select-option-focus-color: var(--ion-text-color, #222);
+  --p-select-option-selected-background: var(--ion-color-step-150, #e6e6e6);
+  --p-select-option-selected-color: var(--ion-text-color, #222);
+  --p-select-option-selected-focus-background: var(--ion-color-step-200, #ddd);
+  --p-select-option-selected-focus-color: var(--ion-text-color, #222);
+}
+
+.p-select-option { cursor: pointer; }

@@ -221,7 +221,7 @@
         "reports": "Reports",
         "services": "Services",
         "zones": "Zones",
-        "logs": "Audit Logs",
+        "logs": "Logs",
         "admins": "Administration"
       },
       "roles": {
@@ -286,7 +286,9 @@
         "filter_admin": "All admins",
         "filter_action": "All actions",
         "target_label": "Target ",
-        "empty": "No entry."
+        "empty": "No entry.",
+        "col_date": "Date",
+        "col_details": "Details"
       },
       "services_tab": {
         "title": "Services List",
@@ -656,7 +658,7 @@
         "reports": "Signalements",
         "services": "Services",
         "zones": "Zones",
-        "logs": "Journal d'Audit",
+        "logs": "Logs",
         "admins": "Administration"
       },
       "roles": {
@@ -721,7 +723,9 @@
         "filter_admin": "Tous les admins",
         "filter_action": "Toutes les actions",
         "target_label": "Cible ",
-        "empty": "Aucune entrée."
+        "empty": "Aucune entrée.",
+        "col_date": "Date",
+        "col_details": "Détails"
       },
       "services_tab": {
         "title": "Liste des Services",
@@ -1086,7 +1090,7 @@
         "reports": "Meldungen",
         "services": "Dienstleistungen",
         "zones": "Zonen",
-        "logs": "Audit-Protokoll",
+        "logs": "Logs",
         "admins": "Administration"
       },
       "roles": {
@@ -1151,7 +1155,9 @@
         "filter_admin": "Alle Admins",
         "filter_action": "Alle Aktionen",
         "target_label": "Ziel ",
-        "empty": "Kein Eintrag."
+        "empty": "Kein Eintrag.",
+        "col_date": "Datum",
+        "col_details": "Details"
       },
       "services_tab": {
         "title": "Liste der Dienstleistungen",
@@ -1516,7 +1522,7 @@
         "reports": "Denuncias",
         "services": "Servicios",
         "zones": "Zonas",
-        "logs": "Registro de auditoría",
+        "logs": "Logs",
         "admins": "Administración"
       },
       "roles": {
@@ -1581,7 +1587,9 @@
         "filter_admin": "Todos los admins",
         "filter_action": "Todas las acciones",
         "target_label": "Objetivo ",
-        "empty": "Ninguna entrada."
+        "empty": "Ninguna entrada.",
+        "col_date": "Fecha",
+        "col_details": "Detalles"
       },
       "services_tab": {
         "title": "Lista de servicios",
@@ -1946,7 +1954,7 @@
         "reports": "Denúncias",
         "services": "Serviços",
         "zones": "Zonas",
-        "logs": "Registo de auditoria",
+        "logs": "Logs",
         "admins": "Administração"
       },
       "roles": {
@@ -2011,7 +2019,9 @@
         "filter_admin": "Todos os admins",
         "filter_action": "Todas as ações",
         "target_label": "Alvo ",
-        "empty": "Nenhuma entrada."
+        "empty": "Nenhuma entrada.",
+        "col_date": "Data",
+        "col_details": "Detalhes"
       },
       "services_tab": {
         "title": "Lista de serviços",
@@ -2376,7 +2386,7 @@
         "reports": "Segnalazioni",
         "services": "Servizi",
         "zones": "Zone",
-        "logs": "Registro di audit",
+        "logs": "Log",
         "admins": "Amministrazione"
       },
       "roles": {
@@ -2441,7 +2451,9 @@
         "filter_admin": "Tutti gli admin",
         "filter_action": "Tutte le azioni",
         "target_label": "Obiettivo ",
-        "empty": "Nessuna voce."
+        "empty": "Nessuna voce.",
+        "col_date": "Data",
+        "col_details": "Dettagli"
       },
       "services_tab": {
         "title": "Elenco dei servizi",
@@ -2806,7 +2818,7 @@
         "reports": "Жалобы",
         "services": "Услуги",
         "zones": "Зоны",
-        "logs": "Журнал аудита",
+        "logs": "Журнал",
         "admins": "Администрирование"
       },
       "roles": {
@@ -2871,7 +2883,9 @@
         "filter_admin": "Все админы",
         "filter_action": "Все действия",
         "target_label": "Объект ",
-        "empty": "Нет записей."
+        "empty": "Нет записей.",
+        "col_date": "Дата",
+        "col_details": "Подробности"
       },
       "services_tab": {
         "title": "Список услуг",
@@ -3236,7 +3250,7 @@
         "reports": "Скарги",
         "services": "Послуги",
         "zones": "Зони",
-        "logs": "Журнал аудиту",
+        "logs": "Журнал",
         "admins": "Адміністрування"
       },
       "roles": {
@@ -3301,7 +3315,9 @@
         "filter_admin": "Усі адміни",
         "filter_action": "Усі дії",
         "target_label": "Об'єкт ",
-        "empty": "Немає записів."
+        "empty": "Немає записів.",
+        "col_date": "Дата",
+        "col_details": "Подробиці"
       },
       "services_tab": {
         "title": "Список послуг",
@@ -3666,7 +3682,7 @@
         "reports": "التقارير",
         "services": "الخدمات",
         "zones": "المناطق",
-        "logs": "سجلات التدقيق",
+        "logs": "السجلات",
         "admins": "الإدارة"
       },
       "roles": {
@@ -3731,7 +3747,9 @@
         "filter_admin": "كل المشرفين",
         "filter_action": "كل الإجراءات",
         "target_label": "الهدف ",
-        "empty": "لا توجد إدخالات."
+        "empty": "لا توجد إدخالات.",
+        "col_date": "التاريخ",
+        "col_details": "التفاصيل"
       },
       "services_tab": {
         "title": "قائمة الخدمات",

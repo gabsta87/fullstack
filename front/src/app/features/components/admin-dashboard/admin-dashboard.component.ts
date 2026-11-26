@@ -9,7 +9,8 @@ import { AdminService } from '../../services/admin-service';
 import { addIcons } from "ionicons";
 import {
   addOutline, chevronBackOutline, chevronForwardOutline, closeOutline, pencilOutline, trashOutline, personAddOutline,
-  shieldCheckmarkOutline, lockClosedOutline, lockOpenOutline, closeCircleOutline, alertCircleOutline, searchOutline
+  shieldCheckmarkOutline, lockClosedOutline, lockOpenOutline, closeCircleOutline, alertCircleOutline, searchOutline,
+      chevronDownOutline
 } from "ionicons/icons";
 import {BehaviorSubject, combineLatest, firstValueFrom, map, Observable, Subject} from "rxjs";
 import { switchMap, tap } from "rxjs/operators";
@@ -55,7 +56,16 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   setAuditLogFilter(change: Partial<AuditLogFilter>): void {
     this.auditLogFilter$.next({ ...this.auditLogFilter$.value, ...change });
   }
-  flatZones$!: Observable<{ id: number; name: string; level: number; parentId: number | null }[]>;
+  flatZones$!: Observable<{ id: number; name: string; level: number; parentId: number | null; childCount: number }[]>;
+  /** Parent zones shown with their children (collapsed by default: real lists get long). */
+  expandedZones = new Set<number>();
+  private expandedZones$ = new BehaviorSubject<Set<number>>(this.expandedZones);
+  visibleZones$!: Observable<{ id: number; name: string; level: number; parentId: number | null; childCount: number }[]>;
+
+  toggleZone(id: number) {
+    if (this.expandedZones.has(id)) this.expandedZones.delete(id); else this.expandedZones.add(id);
+    this.expandedZones$.next(this.expandedZones);
+  }
 
   selectedReportWorker: AdminWorkerReport | null = null;
   totalReportsCount$!: Observable<number>;
@@ -138,7 +148,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     protected languageService : LanguageManagerService
   ) {
     addIcons({ addOutline, trashOutline, pencilOutline, chevronBackOutline, chevronForwardOutline, closeOutline,
-      personAddOutline, shieldCheckmarkOutline, lockClosedOutline, lockOpenOutline, closeCircleOutline, alertCircleOutline, searchOutline
+      personAddOutline, shieldCheckmarkOutline, lockClosedOutline, lockOpenOutline, closeCircleOutline, alertCircleOutline, searchOutline,
+      chevronDownOutline
     });
   }
 
@@ -192,19 +203,22 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       map(zones => {
         if (!zones) return [];
         const parents = zones.filter(z => !z.parentId);
-        const result: { id: number; name: string; level: number; parentId: number | null }[] = [];
+        const result: { id: number; name: string; level: number; parentId: number | null; childCount: number }[] = [];
+        const byName = (a: { name: string }, b: { name: string }) => a.name.localeCompare(b.name);
 
-        parents.forEach(parent => {
-          result.push({ id: parent.id, name: parent.name, level: 0, parentId: parent.parentId ?? null });
-          const children = zones.filter(z => z.parentId === parent.id);
+        [...parents].sort(byName).forEach(parent => {
+          const children = zones.filter(z => z.parentId === parent.id).sort(byName);
+          result.push({ id: parent.id, name: parent.name, level: 0, parentId: parent.parentId ?? null, childCount: children.length });
           children.forEach(child => {
-            result.push({ id: child.id, name: child.name, level: 1, parentId: parent.id });
+            result.push({ id: child.id, name: child.name, level: 1, parentId: parent.id, childCount: 0 });
           });
         });
 
         return result;
       })
     );
+    this.visibleZones$ = combineLatest([this.flatZones$, this.expandedZones$]).pipe(
+      map(([zones, expanded]) => zones.filter(z => z.level === 0 || (z.parentId !== null && expanded.has(z.parentId)))));
 
     this.submitCertification$.pipe(
       switchMap(({ requestId, approved, comment }) =>
@@ -312,6 +326,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     const title = this.languageService.msg(parentId ? 'admin_zone_child_prompt' : 'admin_zone_parent_prompt');
     const name = prompt(title);
     if (!name || name.trim() === '') return;
+    if (parentId !== null && !this.expandedZones.has(parentId)) this.toggleZone(parentId); // show the new child
 
     try {
       await firstValueFrom(this.adminService.updateRegion({
