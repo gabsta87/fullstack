@@ -92,7 +92,7 @@
               @if (worker.spokenLanguages.length) {
                 <h3 class="sub-title">{{ t.worker_profile?.languages }}</h3>
                 <ul class="languages-list">
-                  @for (l of worker.spokenLanguages; track l) {
+                  @for (l of sortByMastery(worker.spokenLanguages); track l.language) {
                     <li>
                       <img [src]="languageService.getLanguageMeta(l.language).flag" [alt]="l.language" class="flag">
                       <span class="lang-name">{{ languageService.getLanguageMeta(l.language).label }}</span>

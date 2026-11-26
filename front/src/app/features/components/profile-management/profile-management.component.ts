@@ -28,6 +28,7 @@ import {sanitizePhone, sanitizePhoneTyping} from "../../utils/input-limits";
 import {formatPhone} from "../../utils/phone";
 import {settingsErrorKey} from "../../utils/error-messages";
 import {certificationState} from "../../utils/certification-state";
+import {sortByMastery} from "../../utils/languages";
 import {siteLanguageTag} from "../../interceptors/jwt.interceptor";
 
 @Component({
@@ -103,7 +104,7 @@ export class ProfileManagementComponent implements OnInit {
         });
 
         if (user && user.spokenLanguages) {
-          this.profileLanguages = [...user.spokenLanguages];
+          this.profileLanguages = sortByMastery(user.spokenLanguages);
         }
 
         if (this.childZoneId) {
@@ -304,7 +305,7 @@ export class ProfileManagementComponent implements OnInit {
       level: this.newLangLevel
     };
 
-    this.profileLanguages.push(newItem);
+    this.profileLanguages = sortByMastery([...this.profileLanguages, newItem]);
     this.newLangCode = null;
     this.newLangLevel = null;
 

@@ -1,3 +1,4 @@
+import {sortByMastery} from "../../utils/languages";
 import {Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {CommonModule} from '@angular/common';
@@ -53,6 +54,8 @@ import {Subscription} from "rxjs";
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ProfileComponent implements OnInit, OnDestroy {
+  protected readonly sortByMastery = sortByMastery;
+
   @ViewChild('swiperRef') swiperRef?: ElementRef;
 
   services! : Service[];
