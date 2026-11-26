@@ -581,9 +581,47 @@
         </ion-list>
       </div>
     }
-    <!-- TAB 7: ADMINISTRATION / TEAM -->
+    <!-- TAB 7: ADMINISTRATION (settings, team) -->
     @if (currentTab === 'admins') {
       <div>
+        @if (settings$ | async; as settings) {
+          <section class="settings-card ion-margin-bottom">
+            <h2>{{ t.admin?.settings?.title }}</h2>
+            <p class="admin-subtitle-text">{{ t.admin?.settings?.subtitle }}</p>
+            <form class="settings-form" (ngSubmit)="saveSettings(settings)">
+              @for (s of settings; track s.key) {
+                <div class="setting-row">
+                  <label [for]="'setting-' + s.key">
+                    <span class="setting-label">{{ t.admin?.settings?.[s.key] }}</span>
+                    <span class="setting-hint">{{ t.admin?.settings?.[s.key + '_hint'] }}</span>
+                  </label>
+                  <div class="setting-input">
+                    <input pInputText type="number" inputmode="numeric" step="1"
+                           [id]="'setting-' + s.key" [name]="s.key" [min]="s.min" [max]="s.max"
+                           [(ngModel)]="settingsDraft[s.key]" (ngModelChange)="settingsMessage = null" />
+                    <span class="setting-unit">{{ settingUnit(s.key, t) }}</span>
+                  </div>
+                  <span class="setting-meta">
+                    {{ languageService.msg('admin_settings_range', { min: s.min, max: s.max }) }} ·
+                    {{ languageService.msg('admin_settings_default', { value: s.defaultValue }) }}
+                  </span>
+                </div>
+              }
+              <div class="settings-actions">
+                @let error = settingsError(settings);
+                @if (error) {
+                  <span class="settings-status error">{{ languageService.msg(error) }}</span>
+                } @else if (settingsMessage) {
+                  <span class="settings-status" [class.error]="!settingsMessage.ok">{{ settingsMessage.text }}</span>
+                }
+                <ion-button type="submit" size="small"
+                            [disabled]="!!error || settingsSaving || !hasSettingsChanges(settings)">
+                  {{ t.admin?.settings?.save }}
+                </ion-button>
+              </div>
+            </form>
+          </section>
+        }
         <div class="tab-header-flex ion-margin-bottom">
           <div>
             <h2>{{ t.admin?.admins_tab?.title }}</h2>
@@ -596,18 +634,6 @@
             {{ t.admin?.admins_tab?.btn_invite }}
           </ion-button>
         </div>
-        <ion-grid class="ion-no-padding">
-          <ion-row>
-            <ion-col size="12">
-              <div class="admin-placeholder-box">
-                <ion-icon name="shield-checkmark-outline" class="admin-shield-icon"></ion-icon>
-                <p class="admin-placeholder-p">
-                  {{ t.admin?.admins_tab?.placeholder_box }}
-                </p>
-              </div>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
       </div>
     }
   </ion-content>

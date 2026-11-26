@@ -5,7 +5,7 @@ import {auditTime, shareReplay, startWith, switchMap, tap} from 'rxjs/operators'
 import {environment} from "../../../environments/environment";
 import {AdminUser, WorkerPrivateProfile} from "../models/user.model";
 import {GeographicZoneWithParent} from "../models/filter.model";
-import {AdminLog, CertificationRequest, Service} from "../models/common.model";
+import {AdminLog, AdminSetting, CertificationRequest, Service} from "../models/common.model";
 import {AuthService} from "./auth.service";
 import {UserRole} from "../models/roles";
 import {AdminWorkerReport} from "../models/items.model";
@@ -37,6 +37,7 @@ export class AdminService {
   private zonesRefresh$ = new BehaviorSubject<void>(undefined);
   private reportsRefresh$ = new BehaviorSubject<void>(undefined);
   private auditLogsRefresh$ = new Subject<void>();
+  private settingsRefresh$ = new Subject<void>();
 
   // The users list is heavy: one reload per second at most, whatever the number of events
   public users$: Observable<AdminUser[]> = this.usersRefresh$.pipe(
@@ -52,6 +53,19 @@ export class AdminService {
     switchMap(() => this.http.get<AdminLog[]>(`${this.apiUrl}/logs`)),
     shareReplay(1)
   );
+
+  public settings$: Observable<AdminSetting[]> = this.settingsRefresh$.pipe(
+    startWith(undefined),
+    switchMap(() => this.http.get<AdminSetting[]>(`${this.apiUrl}/settings`)),
+    shareReplay(1)
+  );
+
+  /** Saves the given values (all or nothing on the server) and returns the settings as stored. */
+  async updateSettings(values: Record<string, number>): Promise<AdminSetting[]> {
+    const saved = await firstValueFrom(this.http.put<AdminSetting[]>(`${this.apiUrl}/settings`, { values }));
+    this.settingsRefresh$.next();
+    return saved;
+  }
 
   public pendingCertificationRequests$: Observable<CertificationRequest[]> = this.certificationRefresh$.pipe(
     switchMap(() => this.http.get<CertificationRequest[]>(`${this.apiUrl}/certification-requests`)),
@@ -117,6 +131,11 @@ export class AdminService {
     // Any admin action adds a line to the audit log
     this.adminEventSource.addEventListener('AUDIT_LOG_UPDATED', () => {
       this.zone.run(() => this.auditLogsRefresh$.next());
+    });
+
+    // Settings changed by another admin
+    this.adminEventSource.addEventListener('SETTINGS_UPDATED', () => {
+      this.zone.run(() => this.settingsRefresh$.next());
     });
 
     this.adminEventSource.addEventListener('REPORT_UPDATED', () => {

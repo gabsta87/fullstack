@@ -219,25 +219,8 @@
   margin: 4px 0 0 0;
 }
 
-.admin-placeholder-box {
-  background: var(--surface-card, #f0ece7);
-  border: 1px dashed var(--border-dashed, #d4c8be);
-  border-radius: 12px;
-  padding: 30px;
-  text-align: center;
-}
 
-.admin-shield-icon {
-  font-size: 2.5rem;
-  color: var(--accent, #c8956c);
-  margin-bottom: 10px;
-}
 
-.admin-placeholder-p {
-  margin: 0;
-  font-weight: 500;
-  color: var(--text-dark, #332d29);
-}
 
 /* --- Lightbox / Modale de zoom d'image --- */
 ion-modal.image-preview-modal {
@@ -320,4 +303,61 @@ ion-modal.image-preview-modal {
   }
 
   &.on::before { background: var(--ion-color-success); }
+}
+
+// ── Settings (Administration tab) ──
+.settings-card {
+  max-width: 52rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--ion-color-step-150, #ddd);
+  border-radius: 12px;
+  background: var(--ion-color-step-50, #fafafa);
+
+  h2 { margin: 0 0 0.25rem; }
+}
+
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.setting-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 1rem;
+  row-gap: 0.25rem;
+  align-items: center;
+
+  label { display: flex; flex-direction: column; gap: 0.15rem; }
+  .setting-label { font-weight: 600; }
+  .setting-hint, .setting-meta { font-size: 0.85rem; color: var(--ion-color-medium); }
+  .setting-meta { grid-column: 1 / -1; }
+}
+
+.setting-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  input { width: 6.5rem; text-align: right; }
+  .setting-unit { min-width: 2.5rem; color: var(--ion-color-medium); }
+}
+
+.settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+}
+
+.settings-status {
+  font-size: 0.9rem;
+  color: var(--ion-color-success);
+  &.error { color: var(--ion-color-danger); }
+}
+
+@media (max-width: 576px) {
+  .setting-row { grid-template-columns: 1fr; }
 }

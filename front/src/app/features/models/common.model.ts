@@ -48,11 +48,20 @@ export interface AdminLog {
   adminName: string;
   actionType: string;
   details?: string;
-  /** Role of the user (WORKER, CLIENT…), SERVICE, REGION or LEGAL_TEXT; absent for deleted items (see targetSnapshot) */
+  /** Role of the user (WORKER, CLIENT…), SERVICE, REGION, LEGAL_TEXT or SETTINGS; absent for deleted items (see targetSnapshot) */
   targetType?: string | null;
   targetId?: string | null;
   targetLabel?: string | null;
   /** JSON snapshot of a deleted item (ids, name, excerpt) */
   targetSnapshot?: string | null;
   createdAt: string;
+}
+
+/** A setting the admins can change (see backend SettingKey). */
+export interface AdminSetting {
+  key: 'CERTIFICATION_VALIDITY_MONTHS' | 'CERTIFICATION_RENEWAL_MONTHS' | 'STORAGE_LIMIT_MB';
+  value: number;
+  defaultValue: number;
+  min: number;
+  max: number;
 }

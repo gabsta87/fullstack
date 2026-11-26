@@ -71,7 +71,8 @@
       "login": "Login",
       "logout": "Logout",
       "account": "My Account",
-      "register": "Register"
+      "register": "Register",
+      "dashboard": "Dashboard"
     },
     "filters": {
       "placeholder_name": "Name...",
@@ -305,11 +306,23 @@
       "admins_tab": {
         "title": "Admin Team Management",
         "subtitle": "Invite new moderators and manage secure access to the platform.",
-        "btn_invite": "Invite administrator",
-        "placeholder_box": "Space reserved for future administrator supervision tools."
+        "btn_invite": "Invite administrator"
       },
       "preview": {
         "title": "Preview"
+      },
+      "settings": {
+        "title": "Settings",
+        "subtitle": "Applied at once, without a redeployment. Every change is recorded in the logs.",
+        "CERTIFICATION_VALIDITY_MONTHS": "Certification validity",
+        "CERTIFICATION_VALIDITY_MONTHS_hint": "For certifications approved from now on; existing ones keep their end date.",
+        "CERTIFICATION_RENEWAL_MONTHS": "Renewal opens",
+        "CERTIFICATION_RENEWAL_MONTHS_hint": "Months before the end of a certification. Must be shorter than the validity.",
+        "STORAGE_LIMIT_MB": "Storage per account",
+        "STORAGE_LIMIT_MB_hint": "Photos and videos together. Lowering it deletes nothing: only new uploads are blocked.",
+        "unit_months": "months",
+        "unit_mb": "MB",
+        "save": "Save"
       }
     },
     "messages": {
@@ -321,8 +334,6 @@
       "register_autologin_failed": "Account created, but automatic login failed. Please log in manually.",
       "email_taken": "An account already exists with this email.",
       "register_invalid": "Invalid email, or password not between 8 and 72 characters.",
-      "settings_saved": "Your account settings have been updated.",
-      "settings_error": "An error occurred while updating.",
       "wrong_password": "Wrong current password.",
       "forgot_sending": "Sending the link...",
       "forgot_sent_title": "Email sent",
@@ -407,7 +418,14 @@
       "video_processing": "Processing the video…",
       "video_too_long": "Video too long (2 minutes at most).",
       "video_unreadable": "This file is not a readable video.",
-      "video_processing_failed": "The video could not be processed. Delete it and try again."
+      "video_processing_failed": "The video could not be processed. Delete it and try again.",
+      "admin_settings_saved": "Settings saved",
+      "admin_settings_error": "The settings could not be saved",
+      "admin_settings_renewal_too_long": "The renewal period must be shorter than the validity",
+      "admin_settings_default": "default: {value}",
+      "admin_settings_range": "between {min} and {max}",
+      "settings_saved": "Your account settings have been updated.",
+      "settings_error": "An error occurred while updating."
     }
   },
   "fr": {
@@ -482,7 +500,8 @@
       "login": "Connexion",
       "logout": "Déconnexion",
       "account": "Mon Compte",
-      "register": "S'inscrire"
+      "register": "S'inscrire",
+      "dashboard": "Dashboard"
     },
     "filters": {
       "placeholder_name": "Nom...",
@@ -716,11 +735,23 @@
       "admins_tab": {
         "title": "Gestion de l'équipe d'administration",
         "subtitle": "Invitez de nouveaux modérateurs et gérez les accès sécurisés de la plateforme.",
-        "btn_invite": "Inviter un administrateur",
-        "placeholder_box": "Espace réservé aux futurs outils de supervision des administrateurs."
+        "btn_invite": "Inviter un administrateur"
       },
       "preview": {
         "title": "Visualisation"
+      },
+      "settings": {
+        "title": "Réglages",
+        "subtitle": "Appliqués immédiatement, sans redéploiement. Chaque modification est inscrite dans les logs.",
+        "CERTIFICATION_VALIDITY_MONTHS": "Validité d'une certification",
+        "CERTIFICATION_VALIDITY_MONTHS_hint": "Pour les certifications approuvées à partir de maintenant ; celles en cours gardent leur date de fin.",
+        "CERTIFICATION_RENEWAL_MONTHS": "Ouverture du renouvellement",
+        "CERTIFICATION_RENEWAL_MONTHS_hint": "Nombre de mois avant la fin d'une certification. Doit être plus court que la validité.",
+        "STORAGE_LIMIT_MB": "Stockage par compte",
+        "STORAGE_LIMIT_MB_hint": "Photos et vidéos ensemble. Le réduire ne supprime rien : seuls les nouveaux envois sont bloqués.",
+        "unit_months": "mois",
+        "unit_mb": "Mo",
+        "save": "Enregistrer"
       }
     },
     "messages": {
@@ -732,8 +763,6 @@
       "register_autologin_failed": "Compte créé, mais la connexion automatique a échoué. Veuillez vous connecter manuellement.",
       "email_taken": "Un compte existe déjà avec cet e-mail.",
       "register_invalid": "E-mail invalide, ou mot de passe hors de 8 à 72 caractères.",
-      "settings_saved": "Vos paramètres de compte ont été mis à jour.",
-      "settings_error": "Une erreur est survenue lors de la mise à jour.",
       "wrong_password": "Mot de passe actuel incorrect.",
       "forgot_sending": "Envoi du lien...",
       "forgot_sent_title": "E-mail envoyé",
@@ -818,7 +847,14 @@
       "video_processing": "Traitement de la vidéo…",
       "video_too_long": "Vidéo trop longue (2 minutes au plus).",
       "video_unreadable": "Ce fichier n'est pas une vidéo lisible.",
-      "video_processing_failed": "La vidéo n'a pas pu être traitée. Supprimez-la et réessayez."
+      "video_processing_failed": "La vidéo n'a pas pu être traitée. Supprimez-la et réessayez.",
+      "admin_settings_saved": "Réglages enregistrés",
+      "admin_settings_error": "Les réglages n'ont pas pu être enregistrés",
+      "admin_settings_renewal_too_long": "Le renouvellement doit s'ouvrir moins longtemps avant la fin que la durée de validité",
+      "admin_settings_default": "par défaut : {value}",
+      "admin_settings_range": "entre {min} et {max}",
+      "settings_saved": "Vos paramètres de compte ont été mis à jour.",
+      "settings_error": "Une erreur est survenue lors de la mise à jour."
     }
   },
   "de": {
@@ -893,7 +929,8 @@
       "login": "Anmelden",
       "logout": "Abmelden",
       "account": "Mein Konto",
-      "register": "Registrieren"
+      "register": "Registrieren",
+      "dashboard": "Dashboard"
     },
     "filters": {
       "placeholder_name": "Name...",
@@ -1122,11 +1159,23 @@
       "admins_tab": {
         "title": "Verwaltung des Admin-Teams",
         "subtitle": "Laden Sie neue Moderatoren ein und verwalten Sie Zugriffsrechte.",
-        "btn_invite": "Administrator einladen",
-        "placeholder_box": "Platzhalter für zukünftige Admin-Werkzeuge."
+        "btn_invite": "Administrator einladen"
       },
       "preview": {
         "title": "Vorschau"
+      },
+      "settings": {
+        "title": "Einstellungen",
+        "subtitle": "Sofort wirksam, ohne neues Deployment. Jede Änderung wird in den Logs festgehalten.",
+        "CERTIFICATION_VALIDITY_MONTHS": "Gültigkeit einer Zertifizierung",
+        "CERTIFICATION_VALIDITY_MONTHS_hint": "Für ab jetzt genehmigte Zertifizierungen; bestehende behalten ihr Enddatum.",
+        "CERTIFICATION_RENEWAL_MONTHS": "Verlängerung möglich ab",
+        "CERTIFICATION_RENEWAL_MONTHS_hint": "Monate vor Ablauf einer Zertifizierung. Muss kürzer als die Gültigkeit sein.",
+        "STORAGE_LIMIT_MB": "Speicher pro Konto",
+        "STORAGE_LIMIT_MB_hint": "Fotos und Videos zusammen. Eine Senkung löscht nichts: nur neue Uploads werden blockiert.",
+        "unit_months": "Monate",
+        "unit_mb": "MB",
+        "save": "Speichern"
       }
     },
     "messages": {
@@ -1138,8 +1187,6 @@
       "register_autologin_failed": "Konto erstellt, aber die automatische Anmeldung ist fehlgeschlagen. Bitte melden Sie sich manuell an.",
       "email_taken": "Mit dieser E-Mail existiert bereits ein Konto.",
       "register_invalid": "Ungültige E-Mail oder Passwort nicht zwischen 8 und 72 Zeichen.",
-      "settings_saved": "Ihre Kontoeinstellungen wurden aktualisiert.",
-      "settings_error": "Beim Aktualisieren ist ein Fehler aufgetreten.",
       "wrong_password": "Aktuelles Passwort falsch.",
       "forgot_sending": "Link wird gesendet...",
       "forgot_sent_title": "E-Mail gesendet",
@@ -1224,7 +1271,14 @@
       "video_processing": "Video wird verarbeitet…",
       "video_too_long": "Video zu lang (höchstens 2 Minuten).",
       "video_unreadable": "Diese Datei ist kein lesbares Video.",
-      "video_processing_failed": "Das Video konnte nicht verarbeitet werden. Löschen Sie es und versuchen Sie es erneut."
+      "video_processing_failed": "Das Video konnte nicht verarbeitet werden. Löschen Sie es und versuchen Sie es erneut.",
+      "admin_settings_saved": "Einstellungen gespeichert",
+      "admin_settings_error": "Die Einstellungen konnten nicht gespeichert werden",
+      "admin_settings_renewal_too_long": "Der Verlängerungszeitraum muss kürzer als die Gültigkeit sein",
+      "admin_settings_default": "Standard: {value}",
+      "admin_settings_range": "zwischen {min} und {max}",
+      "settings_saved": "Ihre Kontoeinstellungen wurden aktualisiert.",
+      "settings_error": "Beim Aktualisieren ist ein Fehler aufgetreten."
     }
   },
   "es": {
@@ -1299,7 +1353,8 @@
       "login": "Iniciar sesión",
       "logout": "Cerrar sesión",
       "account": "Mi Cuenta",
-      "register": "Registrarse"
+      "register": "Registrarse",
+      "dashboard": "Dashboard"
     },
     "filters": {
       "placeholder_name": "Nombre...",
@@ -1528,11 +1583,23 @@
       "admins_tab": {
         "title": "Gestión del equipo de administración",
         "subtitle": "Invita a nuevos moderadores y gestiona los accesos.",
-        "btn_invite": "Invitar administrador",
-        "placeholder_box": "Espacio reservado para futuras herramientas de supervisión."
+        "btn_invite": "Invitar administrador"
       },
       "preview": {
         "title": "Vista previa"
+      },
+      "settings": {
+        "title": "Ajustes",
+        "subtitle": "Se aplican de inmediato, sin redespliegue. Cada cambio queda registrado en los logs.",
+        "CERTIFICATION_VALIDITY_MONTHS": "Validez de una certificación",
+        "CERTIFICATION_VALIDITY_MONTHS_hint": "Para las certificaciones aprobadas a partir de ahora; las vigentes conservan su fecha de fin.",
+        "CERTIFICATION_RENEWAL_MONTHS": "Apertura de la renovación",
+        "CERTIFICATION_RENEWAL_MONTHS_hint": "Meses antes del fin de una certificación. Debe ser menor que la validez.",
+        "STORAGE_LIMIT_MB": "Almacenamiento por cuenta",
+        "STORAGE_LIMIT_MB_hint": "Fotos y vídeos juntos. Reducirlo no borra nada: solo se bloquean las nuevas subidas.",
+        "unit_months": "meses",
+        "unit_mb": "MB",
+        "save": "Guardar"
       }
     },
     "messages": {
@@ -1544,8 +1611,6 @@
       "register_autologin_failed": "Cuenta creada, pero el inicio de sesión automático ha fallado. Inicie sesión manualmente.",
       "email_taken": "Ya existe una cuenta con este correo.",
       "register_invalid": "Correo no válido, o contraseña fuera de 8 a 72 caracteres.",
-      "settings_saved": "Los ajustes de su cuenta se han actualizado.",
-      "settings_error": "Se ha producido un error durante la actualización.",
       "wrong_password": "Contraseña actual incorrecta.",
       "forgot_sending": "Enviando el enlace...",
       "forgot_sent_title": "Correo enviado",
@@ -1630,7 +1695,14 @@
       "video_processing": "Procesando el vídeo…",
       "video_too_long": "Vídeo demasiado largo (2 minutos como máximo).",
       "video_unreadable": "Este archivo no es un vídeo legible.",
-      "video_processing_failed": "No se pudo procesar el vídeo. Elimínelo y vuelva a intentarlo."
+      "video_processing_failed": "No se pudo procesar el vídeo. Elimínelo y vuelva a intentarlo.",
+      "admin_settings_saved": "Ajustes guardados",
+      "admin_settings_error": "No se pudieron guardar los ajustes",
+      "admin_settings_renewal_too_long": "El periodo de renovación debe ser menor que la validez",
+      "admin_settings_default": "por defecto: {value}",
+      "admin_settings_range": "entre {min} y {max}",
+      "settings_saved": "Los ajustes de su cuenta se han actualizado.",
+      "settings_error": "Se ha producido un error durante la actualización."
     }
   },
   "pt": {
@@ -1705,7 +1777,8 @@
       "login": "Iniciar sessão",
       "logout": "Terminar sessão",
       "account": "A minha conta",
-      "register": "Registar"
+      "register": "Registar",
+      "dashboard": "Dashboard"
     },
     "filters": {
       "placeholder_name": "Nome...",
@@ -1934,11 +2007,23 @@
       "admins_tab": {
         "title": "Gestão da equipa de administração",
         "subtitle": "Convide novos moderadores e gira os acessos.",
-        "btn_invite": "Convidar administrador",
-        "placeholder_box": "Espaço reservado para futuras ferramentas de supervisão."
+        "btn_invite": "Convidar administrador"
       },
       "preview": {
         "title": "Visualização"
+      },
+      "settings": {
+        "title": "Definições",
+        "subtitle": "Aplicadas de imediato, sem nova implementação. Cada alteração fica registada nos logs.",
+        "CERTIFICATION_VALIDITY_MONTHS": "Validade de uma certificação",
+        "CERTIFICATION_VALIDITY_MONTHS_hint": "Para as certificações aprovadas a partir de agora; as atuais mantêm a sua data de fim.",
+        "CERTIFICATION_RENEWAL_MONTHS": "Abertura da renovação",
+        "CERTIFICATION_RENEWAL_MONTHS_hint": "Meses antes do fim de uma certificação. Tem de ser inferior à validade.",
+        "STORAGE_LIMIT_MB": "Armazenamento por conta",
+        "STORAGE_LIMIT_MB_hint": "Fotos e vídeos em conjunto. Reduzi-lo não apaga nada: só os novos envios são bloqueados.",
+        "unit_months": "meses",
+        "unit_mb": "MB",
+        "save": "Guardar"
       }
     },
     "messages": {
@@ -1950,8 +2035,6 @@
       "register_autologin_failed": "Conta criada, mas o início de sessão automático falhou. Inicie sessão manualmente.",
       "email_taken": "Já existe uma conta com este e-mail.",
       "register_invalid": "E-mail inválido, ou palavra-passe fora de 8 a 72 caracteres.",
-      "settings_saved": "As definições da sua conta foram atualizadas.",
-      "settings_error": "Ocorreu um erro durante a atualização.",
       "wrong_password": "Palavra-passe atual incorreta.",
       "forgot_sending": "A enviar a ligação...",
       "forgot_sent_title": "E-mail enviado",
@@ -2036,7 +2119,14 @@
       "video_processing": "A processar o vídeo…",
       "video_too_long": "Vídeo demasiado longo (2 minutos no máximo).",
       "video_unreadable": "Este ficheiro não é um vídeo legível.",
-      "video_processing_failed": "Não foi possível processar o vídeo. Elimine-o e tente novamente."
+      "video_processing_failed": "Não foi possível processar o vídeo. Elimine-o e tente novamente.",
+      "admin_settings_saved": "Definições guardadas",
+      "admin_settings_error": "Não foi possível guardar as definições",
+      "admin_settings_renewal_too_long": "O período de renovação tem de ser inferior à validade",
+      "admin_settings_default": "predefinição: {value}",
+      "admin_settings_range": "entre {min} e {max}",
+      "settings_saved": "As definições da sua conta foram atualizadas.",
+      "settings_error": "Ocorreu um erro durante a atualização."
     }
   },
   "it": {
@@ -2111,7 +2201,8 @@
       "login": "Accedi",
       "logout": "Disconnettiti",
       "account": "Il mio conto",
-      "register": "Registrati"
+      "register": "Registrati",
+      "dashboard": "Dashboard"
     },
     "filters": {
       "placeholder_name": "Nome...",
@@ -2340,11 +2431,23 @@
       "admins_tab": {
         "title": "Gestione del team di amministrazione",
         "subtitle": "Invita nuovi moderatori e gestisci gli accessi.",
-        "btn_invite": "Invita amministratore",
-        "placeholder_box": "Spazio riservato ai futuri strumenti di supervisione."
+        "btn_invite": "Invita amministratore"
       },
       "preview": {
         "title": "Anteprima"
+      },
+      "settings": {
+        "title": "Impostazioni",
+        "subtitle": "Applicate subito, senza un nuovo deploy. Ogni modifica è registrata nei log.",
+        "CERTIFICATION_VALIDITY_MONTHS": "Validità di una certificazione",
+        "CERTIFICATION_VALIDITY_MONTHS_hint": "Per le certificazioni approvate da ora in poi; quelle in corso mantengono la loro data di fine.",
+        "CERTIFICATION_RENEWAL_MONTHS": "Apertura del rinnovo",
+        "CERTIFICATION_RENEWAL_MONTHS_hint": "Mesi prima della fine di una certificazione. Deve essere inferiore alla validità.",
+        "STORAGE_LIMIT_MB": "Spazio per account",
+        "STORAGE_LIMIT_MB_hint": "Foto e video insieme. Ridurlo non cancella nulla: vengono bloccati solo i nuovi caricamenti.",
+        "unit_months": "mesi",
+        "unit_mb": "MB",
+        "save": "Salva"
       }
     },
     "messages": {
@@ -2356,8 +2459,6 @@
       "register_autologin_failed": "Account creato, ma l'accesso automatico non è riuscito. Accedi manualmente.",
       "email_taken": "Esiste già un account con questa e-mail.",
       "register_invalid": "E-mail non valida, o password non compresa tra 8 e 72 caratteri.",
-      "settings_saved": "Le impostazioni del tuo account sono state aggiornate.",
-      "settings_error": "Si è verificato un errore durante l'aggiornamento.",
       "wrong_password": "Password attuale errata.",
       "forgot_sending": "Invio del link...",
       "forgot_sent_title": "E-mail inviata",
@@ -2442,7 +2543,14 @@
       "video_processing": "Elaborazione del video…",
       "video_too_long": "Video troppo lungo (al massimo 2 minuti).",
       "video_unreadable": "Questo file non è un video leggibile.",
-      "video_processing_failed": "Impossibile elaborare il video. Eliminalo e riprova."
+      "video_processing_failed": "Impossibile elaborare il video. Eliminalo e riprova.",
+      "admin_settings_saved": "Impostazioni salvate",
+      "admin_settings_error": "Impossibile salvare le impostazioni",
+      "admin_settings_renewal_too_long": "Il periodo di rinnovo deve essere inferiore alla validità",
+      "admin_settings_default": "predefinito: {value}",
+      "admin_settings_range": "tra {min} e {max}",
+      "settings_saved": "Le impostazioni del tuo account sono state aggiornate.",
+      "settings_error": "Si è verificato un errore durante l'aggiornamento."
     }
   },
   "ru": {
@@ -2517,7 +2625,8 @@
       "login": "Войти",
       "logout": "Выйти",
       "account": "Мой аккаунт",
-      "register": "Регистрация"
+      "register": "Регистрация",
+      "dashboard": "Панель"
     },
     "filters": {
       "placeholder_name": "Имя...",
@@ -2746,11 +2855,23 @@
       "admins_tab": {
         "title": "Управление командой администраторов",
         "subtitle": "Приглашайте новых модераторов и управляйте доступами.",
-        "btn_invite": "Пригласить администратора",
-        "placeholder_box": "Резервное место для будущих инструментов модерации."
+        "btn_invite": "Пригласить администратора"
       },
       "preview": {
         "title": "Просмотр"
+      },
+      "settings": {
+        "title": "Настройки",
+        "subtitle": "Применяются сразу, без повторного развёртывания. Каждое изменение записывается в журнал.",
+        "CERTIFICATION_VALIDITY_MONTHS": "Срок действия сертификации",
+        "CERTIFICATION_VALIDITY_MONTHS_hint": "Для сертификаций, одобренных с этого момента; текущие сохраняют свою дату окончания.",
+        "CERTIFICATION_RENEWAL_MONTHS": "Продление доступно за",
+        "CERTIFICATION_RENEWAL_MONTHS_hint": "Месяцев до окончания сертификации. Должно быть меньше срока действия.",
+        "STORAGE_LIMIT_MB": "Хранилище на аккаунт",
+        "STORAGE_LIMIT_MB_hint": "Фото и видео вместе. Уменьшение ничего не удаляет: блокируются только новые загрузки.",
+        "unit_months": "мес.",
+        "unit_mb": "МБ",
+        "save": "Сохранить"
       }
     },
     "messages": {
@@ -2762,8 +2883,6 @@
       "register_autologin_failed": "Аккаунт создан, но автоматический вход не удался. Войдите вручную.",
       "email_taken": "Аккаунт с этим e-mail уже существует.",
       "register_invalid": "Неверный e-mail или пароль не от 8 до 72 символов.",
-      "settings_saved": "Настройки аккаунта обновлены.",
-      "settings_error": "Ошибка при обновлении.",
       "wrong_password": "Неверный текущий пароль.",
       "forgot_sending": "Отправка ссылки...",
       "forgot_sent_title": "Письмо отправлено",
@@ -2848,7 +2967,14 @@
       "video_processing": "Обработка видео…",
       "video_too_long": "Видео слишком длинное (не более 2 минут).",
       "video_unreadable": "Этот файл не является читаемым видео.",
-      "video_processing_failed": "Не удалось обработать видео. Удалите его и попробуйте снова."
+      "video_processing_failed": "Не удалось обработать видео. Удалите его и попробуйте снова.",
+      "admin_settings_saved": "Настройки сохранены",
+      "admin_settings_error": "Не удалось сохранить настройки",
+      "admin_settings_renewal_too_long": "Период продления должен быть меньше срока действия",
+      "admin_settings_default": "по умолчанию: {value}",
+      "admin_settings_range": "от {min} до {max}",
+      "settings_saved": "Настройки аккаунта обновлены.",
+      "settings_error": "Ошибка при обновлении."
     }
   },
   "ua": {
@@ -2923,7 +3049,8 @@
       "login": "Увійти",
       "logout": "Вийти",
       "account": "Мій акаунт",
-      "register": "Реєстрація"
+      "register": "Реєстрація",
+      "dashboard": "Панель"
     },
     "filters": {
       "placeholder_name": "Ім'я...",
@@ -3152,11 +3279,23 @@
       "admins_tab": {
         "title": "Управління командою адміністраторів",
         "subtitle": "Запрошуйте нових модераторів та керуйте доступами.",
-        "btn_invite": "Запросити адміністратора",
-        "placeholder_box": "Резервне місце для майбутніх інструментів модерації."
+        "btn_invite": "Запросити адміністратора"
       },
       "preview": {
         "title": "Перегляд"
+      },
+      "settings": {
+        "title": "Налаштування",
+        "subtitle": "Застосовуються одразу, без повторного розгортання. Кожна зміна записується в журнал.",
+        "CERTIFICATION_VALIDITY_MONTHS": "Термін дії сертифікації",
+        "CERTIFICATION_VALIDITY_MONTHS_hint": "Для сертифікацій, схвалених відтепер; чинні зберігають свою дату завершення.",
+        "CERTIFICATION_RENEWAL_MONTHS": "Продовження доступне за",
+        "CERTIFICATION_RENEWAL_MONTHS_hint": "Місяців до завершення сертифікації. Має бути менше за термін дії.",
+        "STORAGE_LIMIT_MB": "Сховище на акаунт",
+        "STORAGE_LIMIT_MB_hint": "Фото й відео разом. Зменшення нічого не видаляє: блокуються лише нові завантаження.",
+        "unit_months": "міс.",
+        "unit_mb": "МБ",
+        "save": "Зберегти"
       }
     },
     "messages": {
@@ -3168,8 +3307,6 @@
       "register_autologin_failed": "Обліковий запис створено, але автоматичний вхід не вдався. Увійдіть вручну.",
       "email_taken": "Обліковий запис із цим e-mail уже існує.",
       "register_invalid": "Неправильний e-mail або пароль не від 8 до 72 символів.",
-      "settings_saved": "Налаштування облікового запису оновлено.",
-      "settings_error": "Помилка під час оновлення.",
       "wrong_password": "Неправильний поточний пароль.",
       "forgot_sending": "Надсилання посилання...",
       "forgot_sent_title": "Лист надіслано",
@@ -3254,7 +3391,14 @@
       "video_processing": "Обробка відео…",
       "video_too_long": "Відео задовге (не більше 2 хвилин).",
       "video_unreadable": "Цей файл не є відео, яке можна відтворити.",
-      "video_processing_failed": "Не вдалося обробити відео. Видаліть його та спробуйте ще раз."
+      "video_processing_failed": "Не вдалося обробити відео. Видаліть його та спробуйте ще раз.",
+      "admin_settings_saved": "Налаштування збережено",
+      "admin_settings_error": "Не вдалося зберегти налаштування",
+      "admin_settings_renewal_too_long": "Період продовження має бути менший за термін дії",
+      "admin_settings_default": "за замовчуванням: {value}",
+      "admin_settings_range": "від {min} до {max}",
+      "settings_saved": "Налаштування облікового запису оновлено.",
+      "settings_error": "Помилка під час оновлення."
     }
   },
   "ar": {
@@ -3329,7 +3473,8 @@
       "login": "تسجيل الدخول",
       "logout": "تسجيل الخروج",
       "account": "حسابي",
-      "register": "التسجيل"
+      "register": "التسجيل",
+      "dashboard": "لوحة التحكم"
     },
     "filters": {
       "placeholder_name": "الاسم...",
@@ -3558,11 +3703,23 @@
       "admins_tab": {
         "title": "إدارة فريق الإدارة",
         "subtitle": "دعوة مشرفين جدد وإدارة الوصول الآمن إلى المنصة.",
-        "btn_invite": "دعوة مسؤول",
-        "placeholder_box": "مساحة مخصصة لأدوات الإشراف المستقبلية للمسؤولين."
+        "btn_invite": "دعوة مسؤول"
       },
       "preview": {
         "title": "معاينة"
+      },
+      "settings": {
+        "title": "الإعدادات",
+        "subtitle": "تُطبَّق فوراً دون إعادة نشر. يُسجَّل كل تعديل في السجلات.",
+        "CERTIFICATION_VALIDITY_MONTHS": "مدة صلاحية الشهادة",
+        "CERTIFICATION_VALIDITY_MONTHS_hint": "للشهادات المعتمدة من الآن فصاعداً؛ تحتفظ الشهادات الحالية بتاريخ انتهائها.",
+        "CERTIFICATION_RENEWAL_MONTHS": "فتح التجديد",
+        "CERTIFICATION_RENEWAL_MONTHS_hint": "عدد الأشهر قبل انتهاء الشهادة. يجب أن يكون أقل من مدة الصلاحية.",
+        "STORAGE_LIMIT_MB": "مساحة التخزين لكل حساب",
+        "STORAGE_LIMIT_MB_hint": "الصور ومقاطع الفيديو معاً. تخفيضها لا يحذف شيئاً: تُمنع فقط عمليات الرفع الجديدة.",
+        "unit_months": "أشهر",
+        "unit_mb": "ميغابايت",
+        "save": "حفظ"
       }
     },
     "messages": {
@@ -3574,8 +3731,6 @@
       "register_autologin_failed": "تم إنشاء الحساب، لكن تسجيل الدخول التلقائي فشل. يرجى تسجيل الدخول يدويًا.",
       "email_taken": "يوجد حساب بهذا البريد الإلكتروني بالفعل.",
       "register_invalid": "بريد إلكتروني غير صالح، أو كلمة مرور ليست بين 8 و72 حرفًا.",
-      "settings_saved": "تم تحديث إعدادات حسابك.",
-      "settings_error": "حدث خطأ أثناء التحديث.",
       "wrong_password": "كلمة المرور الحالية غير صحيحة.",
       "forgot_sending": "جارٍ إرسال الرابط...",
       "forgot_sent_title": "تم إرسال البريد",
@@ -3660,7 +3815,14 @@
       "video_processing": "جارٍ معالجة الفيديو…",
       "video_too_long": "الفيديو طويل جدًا (دقيقتان كحد أقصى).",
       "video_unreadable": "هذا الملف ليس فيديو قابلًا للقراءة.",
-      "video_processing_failed": "تعذّرت معالجة الفيديو. احذفه وحاول مرة أخرى."
+      "video_processing_failed": "تعذّرت معالجة الفيديو. احذفه وحاول مرة أخرى.",
+      "admin_settings_saved": "تم حفظ الإعدادات",
+      "admin_settings_error": "تعذّر حفظ الإعدادات",
+      "admin_settings_renewal_too_long": "يجب أن تكون فترة التجديد أقل من مدة الصلاحية",
+      "admin_settings_default": "الافتراضي: {value}",
+      "admin_settings_range": "بين {min} و {max}",
+      "settings_saved": "تم تحديث إعدادات حسابك.",
+      "settings_error": "حدث خطأ أثناء التحديث."
     }
   }
 }

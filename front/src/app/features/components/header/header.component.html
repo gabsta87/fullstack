@@ -42,7 +42,7 @@
           @if (authService.isAdmin) {
             <ion-button (click)="openAdmin()" fill="clear" class="nav-link-btn">
               <ion-icon name="build-outline" slot="start"></ion-icon>
-              <span class="btn-label">{{ t.admin?.tabs?.admins || 'Administration' }}</span>
+              <span class="btn-label">{{ t.header?.dashboard || 'Dashboard' }}</span>
             </ion-button>
           }
           @if (!authService.isAdmin) {

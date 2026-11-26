@@ -13,7 +13,8 @@ import {
 } from "ionicons/icons";
 import {BehaviorSubject, combineLatest, firstValueFrom, map, Observable, Subject} from "rxjs";
 import { switchMap, tap } from "rxjs/operators";
-import { AdminLog, CertificationRequest, Service } from "../../models/common.model";
+import { AdminLog, AdminSetting, CertificationRequest, Service } from "../../models/common.model";
+import { changedSettings, settingsError } from "../../utils/settings-form";
 import { GeographicZoneWithParent } from "../../models/filter.model";
 import { WorkerPrivateProfile, AdminUser } from "../../models/user.model";
 import { AuthService } from "../../services/auth.service";
@@ -92,6 +93,42 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   previewIndex: number = 0;
   certificationPreviewList: string[] = [];
 
+  // ── Settings (Administration tab) ──
+  settings$!: Observable<AdminSetting[]>;
+  /** Values being edited; reset whenever the stored settings change (here or by another admin). */
+  settingsDraft: Record<string, number | null> = {};
+  settingsSaving = false;
+  settingsMessage: { ok: boolean; text: string } | null = null;
+
+  settingsError(settings: AdminSetting[]): string | null {
+    return settingsError(settings, this.settingsDraft);
+  }
+
+  hasSettingsChanges(settings: AdminSetting[]): boolean {
+    return Object.keys(changedSettings(settings, this.settingsDraft)).length > 0;
+  }
+
+  settingUnit(key: string, t: any): string {
+    return key === 'STORAGE_LIMIT_MB' ? t.admin?.settings?.unit_mb : t.admin?.settings?.unit_months;
+  }
+
+  async saveSettings(settings: AdminSetting[]) {
+    if (this.settingsError(settings) || this.settingsSaving) return;
+    const values = changedSettings(settings, this.settingsDraft);
+    if (Object.keys(values).length === 0) return;
+    this.settingsSaving = true;
+    this.settingsMessage = null;
+    try {
+      await this.adminService.updateSettings(values);
+      this.settingsMessage = { ok: true, text: this.languageService.msg('admin_settings_saved') };
+    } catch (err) {
+      console.error('Could not save the settings', err);
+      this.settingsMessage = { ok: false, text: this.languageService.msg('admin_settings_error') };
+    } finally {
+      this.settingsSaving = false;
+    }
+  }
+
   constructor(
     private adminService: AdminService,
     private alertCtrl: AlertController,
@@ -147,6 +184,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       )));
 
     this.services$ = this.adminService.services$;
+    this.settings$ = this.adminService.settings$.pipe(
+      tap(settings => this.settingsDraft = Object.fromEntries(settings.map(s => [s.key, s.value]))));
     this.zones$ = this.adminService.zones$;
 
     this.flatZones$ = this.zones$.pipe(
