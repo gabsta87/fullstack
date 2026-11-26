@@ -421,6 +421,30 @@ class AccessControlTest extends IntegrationTest {
         }
 
         @Test
+        @DisplayName("Audit snapshots of deleted items are valid JSON, whatever the name (MySQL json column)")
+        void auditSnapshotsAreJson() throws Exception {
+            Admin admin = createAdmin("admin@venus.test");
+            Service service = serviceRepository.save(new Service("Quote \" and \\ backslash"));
+            Comment comment = commentRepository.save(new Comment(createClient("c@venus.test"), createVisibleWorker("w@venus.test"), "Hi"));
+
+            mvc.perform(patch("/admin/comments/" + comment.getId()).header("Authorization", bearer(admin))
+                    .contentType(MediaType.TEXT_PLAIN).content("Edited")).andExpect(status().isOk());
+            mvc.perform(delete("/admin/comments/" + comment.getId()).header("Authorization", bearer(admin)))
+                    .andExpect(status().isOk());
+            mvc.perform(delete("/admin/services/" + service.getId()).header("Authorization", bearer(admin)))
+                    .andExpect(status().isOk());
+
+            // H2 accepts any text in a json column, MySQL does not: parse every snapshot.
+            var snapshots = jdbc.queryForList("SELECT target_snapshot FROM admin_audit_logs WHERE target_snapshot IS NOT NULL", String.class);
+            assertThat(snapshots).hasSize(3);
+            for (String snapshot : snapshots) {
+                String raw = json.readTree(snapshot).isString() ? json.readTree(snapshot).asString() : snapshot;
+                assertThat(json.readTree(raw).isObject()).as(snapshot).isTrue();
+            }
+            assertThat(snapshots).anySatisfy(x -> assertThat(x).contains("backslash"));
+        }
+
+        @Test
         @DisplayName("Admins cannot blank out a comment")
         void editCommentValidated() throws Exception {
             Admin admin = createAdmin("admin@venus.test");

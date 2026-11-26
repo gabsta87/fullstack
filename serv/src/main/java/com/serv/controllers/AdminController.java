@@ -22,6 +22,8 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.time.LocalDateTime;
+import tools.jackson.databind.ObjectMapper;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +52,7 @@ public class AdminController {
     private final UserCleanupService userCleanupService;
     private final ReportRepository reportRepository;
     private final com.serv.services.MediaStorageService mediaStorageService;
+    private final ObjectMapper objectMapper;
 
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamAdmin(Admin adminArg) {
@@ -101,7 +104,8 @@ public class AdminController {
         userCleanupService.deleteUserCompletely(userToDelete);
 
         // Audit Log
-        logAdminAction(admin, "DELETE_USER", "null", "Account deleted " + userToDelete.getEmail());
+        logAdminAction(admin, "DELETE_USER", Map.of("userId", id.toString(), "role", userToDelete.getRole().name()),
+                "Account deleted " + userToDelete.getEmail());
         sseStreamService.broadcastAdminEvent("USERS_UPDATED", id);
         sseStreamService.endSession(id);
 
@@ -340,7 +344,7 @@ public class AdminController {
                 newService.setDescription(service.description());
             serviceRepository.save(newService);
 
-            logAdminAction(admin, "CREATE_SERVICE", service, "Service created: " + newService.getName());
+            logAdminAction(admin, "CREATE_SERVICE", newService, "Service created: " + newService.getName());
         }
 
         List<ServiceDTO> updatedServices = serviceRepository.findAll().stream().map(ServiceDTO::from).collect(Collectors.toList());
@@ -358,13 +362,12 @@ public class AdminController {
 
         // 1. Keep the details for the audit log
         String serviceName = service.getName();
-        String snapshot = String.format("{\"id\": %d, \"name\": \"%s\"}", id, serviceName);
 
         // 2. Suppression effective
         serviceRepository.delete(service);
 
         // 3. Audit log
-        logAdminAction(admin, "DELETE_SERVICE", snapshot, "Service deleted: " + serviceName);
+        logAdminAction(admin, "DELETE_SERVICE", Map.of("id", id, "name", serviceName), "Service deleted: " + serviceName);
 
         // 4. Reload the updated list of services
         List<ServiceDTO> updatedServices = serviceRepository.findAll()
@@ -438,13 +441,12 @@ public class AdminController {
 
         // 3. Keep the details for the audit log
         String zoneName = zone.getName();
-        String snapshot = String.format("{\"id\": %d, \"name\": \"%s\"}", id, zoneName);
 
         // 4. Delete (children are removed by the cascade)
         geographicZoneRepository.delete(zone);
 
         // 5. Audit log
-        logAdminAction(admin, "DELETE_REGION", snapshot, "Region deleted: " + zoneName);
+        logAdminAction(admin, "DELETE_REGION", Map.of("id", id, "name", zoneName), "Region deleted: " + zoneName);
 
         // 6. Reload the updated list of regions
         List<GeographicZoneWithChildrenDTO> updatedZones = geographicZoneRepository.findAll()
@@ -536,7 +538,7 @@ public class AdminController {
 
         commentRepository.delete(c);
 
-        logAdminAction(admin, "COMMENT_DELETED", "comment:" + id,
+        logAdminAction(admin, "COMMENT_DELETED", Map.of("commentId", id),
                 "Comment deleted on worker #" + (targetWorker != null ? targetWorker.getId() : "unknown"));
 
         return ResponseEntity.ok().body(remainingComments);
@@ -553,7 +555,7 @@ public class AdminController {
 
         comment.setContent(content.trim());
 
-        logAdminAction(admin, "COMMENT_EDITED", comment.getId(), "Comment edited on worker #" + comment.getWorker().getId());
+        logAdminAction(admin, "COMMENT_EDITED", Map.of("commentId", comment.getId()), "Comment edited on worker #" + comment.getWorker().getId());
 
         return ResponseEntity.ok(CommentDTO.from(comment));
     }
@@ -607,7 +609,7 @@ public class AdminController {
         report.setStatus(ReportStatus.DISMISSED);
         reportRepository.save(report);
 
-        logAdminAction(admin, "DISMISS_REPORT", report, "Report dismissed for worker #" + report.getWorker().getId() + ": " + report.getStatus());
+        logAdminAction(admin, "DISMISS_REPORT", report.getWorker(), "Report dismissed for worker #" + report.getWorker().getId() + ": " + report.getStatus());
 
         // Notify the other connected admins
         sseStreamService.broadcastAdminEvent("REPORT_UPDATED", report.getId());
@@ -647,8 +649,7 @@ public class AdminController {
         sseStreamService.broadcastAdminEvent("USERS_UPDATED", newAdmin.getId());
 
         // 4. Audit Log
-        String snapshotJson = String.format("{\"invited_email\": \"%s\", \"role_assigned\": \"ADMIN\"}", email);
-        logAdminAction(admin, "INVITE_ADMIN", snapshotJson, "Admin account pre-created; activation email sent (password reset flow).");
+        logAdminAction(admin, "INVITE_ADMIN", Map.of("invited_email", email.toString(), "role_assigned", "ADMIN"), "Admin account pre-created; activation email sent (password reset flow).");
 
         return ResponseEntity.ok(AdminDTO.from(newAdmin));
     }
@@ -699,10 +700,9 @@ public class AdminController {
             case GeographicZone geographicZone -> log.setTarget(geographicZone);
             case Service service -> log.setTarget(service);
             case LegalText legalText -> log.setTarget(legalText);
-            case Comment comment -> log.setTarget(comment);
-            case String s -> log.setTarget(s);
-            default -> {
-            }
+            // Snapshot of something deleted, stored in a JSON column: always serialized, never built by hand
+            case Map<?, ?> snapshot -> log.setTarget(objectMapper.writeValueAsString(snapshot));
+            default -> throw new IllegalArgumentException("Unsupported audit target: " + target.getClass().getSimpleName());
         }
 
         auditLogRepository.save(log);
