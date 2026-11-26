@@ -30,7 +30,12 @@ import {
   playCircleOutline,
   timeOutline,
   warningOutline,
-  womanOutline
+  womanOutline,
+  shieldCheckmarkOutline,
+  trashOutline,
+  banOutline,
+  lockClosedOutline,
+  lockOpenOutline
 } from 'ionicons/icons';
 import {Comment, PhotoItem, VideoItem} from '../../models/items.model';
 import {WorkerPublicFullProfile} from "../../models/user.model";
@@ -41,7 +46,11 @@ import {AuthService} from "../../services/auth.service";
 import {Service} from "../../models/common.model";
 import {LanguageManagerService} from "../../services/language-manager.service";
 import {formatPhone, whatsappNumber} from "../../utils/phone";
-import {Subscription} from "rxjs";
+import {firstValueFrom, Subscription} from "rxjs";
+import {AdminService} from "../../services/admin-service";
+import {WorkerService} from "../../services/worker.service";
+import {canManageAccount} from "../../utils/admin-rights";
+import {UserRole} from "../../models/roles";
 
 @Component({
     selector: 'app-profile',
@@ -72,6 +81,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
   isContactOpen  = false;
 
   private clientAccountSub?: Subscription;
+  private adminSub?: Subscription;
+  /** Admin visiting: moderation from the profile itself (ban, lock, delete comments), refreshed live. */
+  isAdmin = false;
+  adminBusy = false;
+  adminError: string | null = null;
 
   newCommentText: string = '';
   isSubmittingReview: boolean = false;
@@ -80,7 +94,9 @@ export class ProfileComponent implements OnInit, OnDestroy {
               private clientAccountService: ClientAccountService,
               protected authService : AuthService,
               private router: Router,
-              protected languageService : LanguageManagerService
+              protected languageService : LanguageManagerService,
+              private adminService: AdminService,
+              private workerService: WorkerService
   ) {
     addIcons({
       callOutline, logoWhatsapp, heartOutline, heart,
@@ -88,7 +104,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       chevronBackOutline, chevronForwardOutline, closeOutline,
       playCircleOutline, locationOutline, calendarOutline,
       bodyOutline, timeOutline, womanOutline, personOutline,
-      alertCircleOutline
+      alertCircleOutline, shieldCheckmarkOutline, trashOutline, banOutline, lockClosedOutline, lockOpenOutline
     });
   }
 
@@ -107,6 +123,15 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
     if (this.worker && this.worker.comments) {
       this.sortAndPrepareComments(currentUser?.id);
+    }
+
+    const role = currentUser?.role;
+    this.isAdmin = !!this.worker && (role === UserRole.ADMIN || role === UserRole.SUPER_ADMIN)
+      && canManageAccount(currentUser, { id: this.worker.id, role: UserRole.WORKER });
+    if (this.isAdmin) {
+      this.adminSub = this.adminService.workerChanged$.subscribe(id => {
+        if (id === this.worker?.id) void this.reloadProfile();
+      });
     }
 
     if (this.isClient && this.worker) {
@@ -322,7 +347,51 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   hasMyComment(): boolean { return this.worker?.comments?.some(c => c.authorId === this.authService.getUser()?.id) ?? false; }
 
+  // ── Admin moderation ───────────────────────────────────────────────────────
+
+  private async reloadProfile() {
+    if (!this.worker) return;
+    try {
+      this.worker = await firstValueFrom(this.workerService.refreshProfile(this.worker.id));
+      this.workerServices = this.services.filter(s => this.worker!.servicesId?.includes(s.id));
+      this.sortAndPrepareComments(this.authService.getUser()?.id);
+    } catch (err) {
+      console.error('Could not reload the profile', err);
+    }
+  }
+
+  /** Ban / lock (or lift them). Same endpoint and rules as the dashboard; the backend checks the rights. */
+  async adminSetStatus(change: { banned?: boolean; locked?: boolean }) {
+    if (!this.worker || this.adminBusy) return;
+    if (change.banned && !confirm(this.languageService.msg('admin_ban_confirm', { name: this.worker.username }))) return;
+    this.adminBusy = true;
+    this.adminError = null;
+    try {
+      await firstValueFrom(this.adminService.updateWorkerStatus(this.worker.id, change));
+      await this.reloadProfile();
+    } catch (err) {
+      console.error('Status change failed', err);
+      this.adminError = this.languageService.msg('admin_action_error');
+    } finally {
+      this.adminBusy = false;
+    }
+  }
+
+  async adminDeleteComment(comment: Comment) {
+    if (!confirm(this.languageService.msg('admin_comment_delete_confirm', { author: comment.authorUsername || '' }))) return;
+    this.adminError = null;
+    try {
+      await this.adminService.deleteComment(comment.id);
+      await this.reloadProfile();
+    } catch (err) {
+      console.error('Comment deletion failed', err);
+      this.adminError = this.languageService.msg('admin_action_error');
+    }
+  }
+
   ngOnDestroy(): void {
+    this.adminSub?.unsubscribe();
+    this.clientAccountSub?.unsubscribe();
     document.body.style.overflow = '';
   }
 

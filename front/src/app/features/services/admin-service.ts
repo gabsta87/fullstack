@@ -31,6 +31,14 @@ export class AdminService {
   }
   private adminEventSource: EventSource | null = null;
 
+  /** Id of a worker that just changed (by an admin or by themself): an admin viewing that profile reloads it. */
+  readonly workerChanged$ = new Subject<string>();
+
+  private emitWorkerChanged(event: MessageEvent) {
+    const id = String(event.data ?? '').replace(/^"|"$/g, '');
+    if (id) this.zone.run(() => this.workerChanged$.next(id));
+  }
+
   private usersRefresh$ = new Subject<void>();
   private certificationRefresh$ = new BehaviorSubject<void>(undefined);
   private servicesRefresh$ = new BehaviorSubject<void>(undefined);
@@ -124,9 +132,13 @@ export class AdminService {
     });
 
     // Bans, locks, deletions, invitations made by another admin
-    this.adminEventSource.addEventListener('USERS_UPDATED', () => {
+    this.adminEventSource.addEventListener('USERS_UPDATED', (event) => {
       this.zone.run(() => this.refreshUsers());
+      this.emitWorkerChanged(event as MessageEvent);
     });
+
+    // An advertiser changed their own profile (the users table does not need it, an open profile does)
+    this.adminEventSource.addEventListener('WORKER_UPDATED', (event) => this.emitWorkerChanged(event as MessageEvent));
 
     // Any admin action adds a line to the audit log
     this.adminEventSource.addEventListener('AUDIT_LOG_UPDATED', () => {
@@ -211,6 +223,11 @@ export class AdminService {
     return this.http.post<any>(`${this.apiUrl}/profiles/${workerId}/status`, statusPayload).pipe(
       tap(() => this.refreshUsers())
     );
+  }
+
+  /** Deletes any comment (moderation), whoever wrote it. */
+  deleteComment(commentId: number): Promise<unknown> {
+    return firstValueFrom(this.http.delete(`${this.apiUrl}/comments/${commentId}`));
   }
 
   deleteUser(userId:string):Observable<any>{

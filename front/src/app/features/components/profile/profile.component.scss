@@ -663,3 +663,53 @@
   from { opacity: 0; transform: scale(0.92); }
   to { opacity: 1; transform: scale(1); }
 }
+
+// ── Admin moderation card ──
+.admin-card {
+  border: 1px solid rgba(var(--ion-color-danger-rgb), 0.35);
+  background: rgba(var(--ion-color-danger-rgb), 0.04);
+}
+
+.admin-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+
+  ion-icon { font-size: 1.2rem; color: var(--ion-color-danger); }
+}
+
+.admin-chip {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--ion-color-step-150, #e6e6e6);
+
+  &.danger { background: var(--ion-color-danger); color: #fff; }
+  &.warning { background: var(--ion-color-warning); color: #000; }
+}
+
+.admin-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.admin-error { margin: 8px 0 0; color: var(--ion-color-danger); font-size: 0.85rem; }
+
+.comment-delete {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--ion-color-danger);
+  cursor: pointer;
+  font-size: 1rem;
+
+  &:hover { background: rgba(var(--ion-color-danger-rgb), 0.1); }
+}

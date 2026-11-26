@@ -168,7 +168,11 @@
       "languages": "Languages",
       "eye_color": "Eyes",
       "hair_color": "Hair",
-      "write_review_placeholder": "Write or edit your review..."
+      "write_review_placeholder": "Write or edit your review...",
+      "admin_title": "Administration",
+      "admin_unavailable": "Unavailable",
+      "admin_unban": "Lift the ban",
+      "admin_unlock": "Unlock"
     },
     "reset_password": {
       "title": "New password",
@@ -440,7 +444,10 @@
       "cert_pending": "Waiting for review",
       "admin_cert_expired": "Expired",
       "admin_cert_until": "until {date}",
-      "media_unsupported": "Not a supported photo or video: {names}"
+      "media_unsupported": "Not a supported photo or video: {names}",
+      "admin_ban_confirm": "Ban {name}? The advertiser is logged out and the profile disappears from the site.",
+      "admin_comment_delete_confirm": "Delete the comment of {author}?",
+      "admin_action_error": "The action failed. Try again."
     }
   },
   "fr": {
@@ -612,7 +619,11 @@
       "languages": "Langues",
       "eye_color": "Yeux",
       "hair_color": "Cheveux",
-      "write_review_placeholder": "Rédigez ou modifiez votre avis..."
+      "write_review_placeholder": "Rédigez ou modifiez votre avis...",
+      "admin_title": "Administration",
+      "admin_unavailable": "Indisponible",
+      "admin_unban": "Lever le bannissement",
+      "admin_unlock": "Déverrouiller"
     },
     "reset_password": {
       "title": "Nouveau mot de passe",
@@ -884,7 +895,10 @@
       "cert_pending": "En attente de validation",
       "admin_cert_expired": "Expirée",
       "admin_cert_until": "jusqu'au {date}",
-      "media_unsupported": "Format de photo ou de vidéo non pris en charge : {names}"
+      "media_unsupported": "Format de photo ou de vidéo non pris en charge : {names}",
+      "admin_ban_confirm": "Bannir {name} ? L'annonceur est déconnecté et le profil disparaît du site.",
+      "admin_comment_delete_confirm": "Supprimer le commentaire de {author} ?",
+      "admin_action_error": "L'action a échoué. Réessayez."
     }
   },
   "de": {
@@ -1051,7 +1065,11 @@
       "languages": "Sprachen",
       "eye_color": "Augen",
       "hair_color": "Haare",
-      "write_review_placeholder": "Bewertung schreiben oder bearbeiten..."
+      "write_review_placeholder": "Bewertung schreiben oder bearbeiten...",
+      "admin_title": "Administration",
+      "admin_unavailable": "Nicht verfügbar",
+      "admin_unban": "Sperre aufheben",
+      "admin_unlock": "Entsperren"
     },
     "reset_password": {
       "title": "Neues Passwort",
@@ -1323,7 +1341,10 @@
       "cert_pending": "Wartet auf Prüfung",
       "admin_cert_expired": "Abgelaufen",
       "admin_cert_until": "bis {date}",
-      "media_unsupported": "Kein unterstütztes Foto- oder Videoformat: {names}"
+      "media_unsupported": "Kein unterstütztes Foto- oder Videoformat: {names}",
+      "admin_ban_confirm": "{name} sperren? Das Konto wird abgemeldet und das Profil verschwindet von der Website.",
+      "admin_comment_delete_confirm": "Den Kommentar von {author} löschen?",
+      "admin_action_error": "Die Aktion ist fehlgeschlagen. Bitte erneut versuchen."
     }
   },
   "es": {
@@ -1490,7 +1511,11 @@
       "languages": "Idiomas",
       "eye_color": "Ojos",
       "hair_color": "Cabello",
-      "write_review_placeholder": "Escriba o modifique su opinión..."
+      "write_review_placeholder": "Escriba o modifique su opinión...",
+      "admin_title": "Administración",
+      "admin_unavailable": "No disponible",
+      "admin_unban": "Levantar la expulsión",
+      "admin_unlock": "Desbloquear"
     },
     "reset_password": {
       "title": "Nueva contraseña",
@@ -1762,7 +1787,10 @@
       "cert_pending": "Pendiente de validación",
       "admin_cert_expired": "Caducada",
       "admin_cert_until": "hasta el {date}",
-      "media_unsupported": "Formato de foto o vídeo no admitido: {names}"
+      "media_unsupported": "Formato de foto o vídeo no admitido: {names}",
+      "admin_ban_confirm": "¿Expulsar a {name}? Se cierra su sesión y el perfil desaparece del sitio.",
+      "admin_comment_delete_confirm": "¿Eliminar el comentario de {author}?",
+      "admin_action_error": "La acción ha fallado. Inténtelo de nuevo."
     }
   },
   "pt": {
@@ -1929,7 +1957,11 @@
       "languages": "Idiomas",
       "eye_color": "Olhos",
       "hair_color": "Cabelo",
-      "write_review_placeholder": "Escreva ou altere a sua avaliação..."
+      "write_review_placeholder": "Escreva ou altere a sua avaliação...",
+      "admin_title": "Administração",
+      "admin_unavailable": "Indisponível",
+      "admin_unban": "Levantar o banimento",
+      "admin_unlock": "Desbloquear"
     },
     "reset_password": {
       "title": "Nova palavra-passe",
@@ -2201,7 +2233,10 @@
       "cert_pending": "A aguardar validação",
       "admin_cert_expired": "Expirada",
       "admin_cert_until": "até {date}",
-      "media_unsupported": "Formato de foto ou vídeo não suportado: {names}"
+      "media_unsupported": "Formato de foto ou vídeo não suportado: {names}",
+      "admin_ban_confirm": "Banir {name}? A sessão é terminada e o perfil desaparece do site.",
+      "admin_comment_delete_confirm": "Eliminar o comentário de {author}?",
+      "admin_action_error": "A ação falhou. Tente novamente."
     }
   },
   "it": {
@@ -2368,7 +2403,11 @@
       "languages": "Lingue",
       "eye_color": "Occhi",
       "hair_color": "Capelli",
-      "write_review_placeholder": "Scrivi o modifica la tua recensione..."
+      "write_review_placeholder": "Scrivi o modifica la tua recensione...",
+      "admin_title": "Amministrazione",
+      "admin_unavailable": "Non disponibile",
+      "admin_unban": "Revoca il ban",
+      "admin_unlock": "Sblocca"
     },
     "reset_password": {
       "title": "Nuova password",
@@ -2640,7 +2679,10 @@
       "cert_pending": "In attesa di verifica",
       "admin_cert_expired": "Scaduta",
       "admin_cert_until": "fino al {date}",
-      "media_unsupported": "Formato di foto o video non supportato: {names}"
+      "media_unsupported": "Formato di foto o video non supportato: {names}",
+      "admin_ban_confirm": "Bannare {name}? La sessione viene chiusa e il profilo scompare dal sito.",
+      "admin_comment_delete_confirm": "Eliminare il commento di {author}?",
+      "admin_action_error": "L'azione non è riuscita. Riprova."
     }
   },
   "ru": {
@@ -2807,7 +2849,11 @@
       "languages": "Языки",
       "eye_color": "Глаза",
       "hair_color": "Волосы",
-      "write_review_placeholder": "Напишите или измените отзыв..."
+      "write_review_placeholder": "Напишите или измените отзыв...",
+      "admin_title": "Администрирование",
+      "admin_unavailable": "Недоступно",
+      "admin_unban": "Снять бан",
+      "admin_unlock": "Разблокировать"
     },
     "reset_password": {
       "title": "Новый пароль",
@@ -3079,7 +3125,10 @@
       "cert_pending": "Ожидает проверки",
       "admin_cert_expired": "Истекла",
       "admin_cert_until": "до {date}",
-      "media_unsupported": "Неподдерживаемый формат фото или видео: {names}"
+      "media_unsupported": "Неподдерживаемый формат фото или видео: {names}",
+      "admin_ban_confirm": "Забанить {name}? Сеанс будет завершён, а профиль исчезнет с сайта.",
+      "admin_comment_delete_confirm": "Удалить комментарий {author}?",
+      "admin_action_error": "Действие не удалось. Попробуйте ещё раз."
     }
   },
   "ua": {
@@ -3246,7 +3295,11 @@
       "languages": "Мови",
       "eye_color": "Очі",
       "hair_color": "Волосся",
-      "write_review_placeholder": "Напишіть або змініть відгук..."
+      "write_review_placeholder": "Напишіть або змініть відгук...",
+      "admin_title": "Адміністрування",
+      "admin_unavailable": "Недоступно",
+      "admin_unban": "Зняти бан",
+      "admin_unlock": "Розблокувати"
     },
     "reset_password": {
       "title": "Новий пароль",
@@ -3518,7 +3571,10 @@
       "cert_pending": "Очікує перевірки",
       "admin_cert_expired": "Закінчилася",
       "admin_cert_until": "до {date}",
-      "media_unsupported": "Непідтримуваний формат фото чи відео: {names}"
+      "media_unsupported": "Непідтримуваний формат фото чи відео: {names}",
+      "admin_ban_confirm": "Забанити {name}? Сеанс буде завершено, а профіль зникне з сайту.",
+      "admin_comment_delete_confirm": "Видалити коментар {author}?",
+      "admin_action_error": "Дію не виконано. Спробуйте ще раз."
     }
   },
   "ar": {
@@ -3685,7 +3741,11 @@
       "languages": "اللغات",
       "eye_color": "العيون",
       "hair_color": "الشعر",
-      "write_review_placeholder": "اكتب تقييمك أو عدّله..."
+      "write_review_placeholder": "اكتب تقييمك أو عدّله...",
+      "admin_title": "الإدارة",
+      "admin_unavailable": "غير متاح",
+      "admin_unban": "رفع الحظر",
+      "admin_unlock": "إلغاء القفل"
     },
     "reset_password": {
       "title": "كلمة مرور جديدة",
@@ -3957,7 +4017,10 @@
       "cert_pending": "بانتظار المراجعة",
       "admin_cert_expired": "منتهية",
       "admin_cert_until": "حتى {date}",
-      "media_unsupported": "صيغة صورة أو فيديو غير مدعومة: {names}"
+      "media_unsupported": "صيغة صورة أو فيديو غير مدعومة: {names}",
+      "admin_ban_confirm": "حظر {name}؟ سيتم تسجيل الخروج وسيختفي الملف الشخصي من الموقع.",
+      "admin_comment_delete_confirm": "حذف تعليق {author}؟",
+      "admin_action_error": "فشل الإجراء. حاول مرة أخرى."
     }
   }
 }

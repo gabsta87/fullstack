@@ -1,5 +1,6 @@
 // src/app/features/services/worker.service.ts
 
+import {tap} from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import {firstValueFrom, Observable, of, shareReplay} from 'rxjs';
@@ -50,6 +51,11 @@ export class WorkerService {
     this.getProfile(workerId)
       .pipe(catchError(() => of(null)))
       .subscribe(profile => { if (profile) this.profileCache.set(workerId, profile); });
+  }
+
+  /** Loads the profile again (after a change) and keeps the cache in line. */
+  refreshProfile(workerId: string): Observable<WorkerPublicFullProfile> {
+    return this.getProfile(workerId).pipe(tap(profile => this.profileCache.set(workerId, profile)));
   }
 
   getCachedProfile(workerId: string): WorkerPublicFullProfile | null {

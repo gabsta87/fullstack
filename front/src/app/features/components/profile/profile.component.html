@@ -32,6 +32,33 @@
                 }
               </div>
             </section>
+            <!-- Admins moderate from here, without going back to the dashboard -->
+            @if (isAdmin) {
+              <section class="profile-card admin-card" aria-live="polite">
+                <div class="admin-card-head">
+                  <ion-icon name="shield-checkmark-outline"></ion-icon>
+                  <strong>{{ t.worker_profile?.admin_title }}</strong>
+                  @if (worker.banned) { <span class="admin-chip danger">{{ t.common?.banned }}</span> }
+                  @if (worker.locked) { <span class="admin-chip warning">{{ t.common?.locked }}</span> }
+                  @if (!worker.available) { <span class="admin-chip">{{ t.worker_profile?.admin_unavailable }}</span> }
+                </div>
+                <div class="admin-card-actions">
+                  <ion-button size="small" [fill]="worker.banned ? 'outline' : 'solid'" color="danger" [disabled]="adminBusy"
+                              (click)="adminSetStatus({ banned: !worker.banned })">
+                    <ion-icon slot="start" name="ban-outline"></ion-icon>
+                    {{ worker.banned ? t.worker_profile?.admin_unban : t.admin?.users_tab?.btn_ban }}
+                  </ion-button>
+                  <ion-button size="small" fill="outline" color="warning" [disabled]="adminBusy"
+                              (click)="adminSetStatus({ locked: !worker.locked })">
+                    <ion-icon slot="start" [name]="worker.locked ? 'lock-open-outline' : 'lock-closed-outline'"></ion-icon>
+                    {{ worker.locked ? t.worker_profile?.admin_unlock : t.admin?.users_tab?.btn_lock }}
+                  </ion-button>
+                </div>
+                @if (adminError) {
+                  <p class="admin-error">{{ adminError }}</p>
+                }
+              </section>
+            }
             <!-- Actions: contact as the main one, the rest as small buttons -->
             @if (worker.available || isClient) {
               <section class="profile-card actions-card">
@@ -183,6 +210,12 @@
                           }
                         </span>
                         <span class="date">{{ comment.date | date:'shortDate' }}</span>
+                        @if (isAdmin) {
+                          <button type="button" class="comment-delete" (click)="adminDeleteComment(comment)"
+                                  [title]="t.common?.delete" [attr.aria-label]="t.common?.delete">
+                            <ion-icon name="trash-outline"></ion-icon>
+                          </button>
+                        }
                       </div>
                       <p class="comment-body">{{ comment.content }}</p>
                     </li>
