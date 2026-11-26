@@ -54,6 +54,7 @@ public class AdminController {
     private final ReportRepository reportRepository;
     private final com.serv.services.MediaStorageService mediaStorageService;
     private final ObjectMapper objectMapper;
+    private final com.serv.services.SettingsService settingsService;
 
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamAdmin(Admin adminArg) {
@@ -404,6 +405,30 @@ public class AdminController {
         logAdminAction(admin, "UPDATE_LEGAL_TEXT", legal,
                 "Legal text updated: " + req.key() + " (" + req.language() + ") v" + legal.getVersion());
         return ResponseEntity.ok(Map.of("success", true, "version", legal.getVersion()));
+    }
+
+    // SETTINGS
+
+    @GetMapping("/settings")
+    public List<SettingDTO> getSettings() {
+        return settingsService.all();
+    }
+
+    @PutMapping("/settings")
+    @Transactional
+    public List<SettingDTO> updateSettings(@Valid @RequestBody UpdateSettings req, Admin admin) {
+        var changed = settingsService.update(req.values(), admin.getId());
+        if (!changed.isEmpty()) {
+            Map<String, Object> changes = new java.util.LinkedHashMap<>();
+            changed.forEach((key, values) -> changes.put(key.name(), Map.of("from", values[0], "to", values[1])));
+            String details = changed.entrySet().stream()
+                    .map(e -> e.getKey().name() + ": " + e.getValue()[0] + " -> " + e.getValue()[1])
+                    .collect(Collectors.joining(", "));
+            logAdminAction(admin, "SETTINGS_UPDATED", Map.of("type", "SETTINGS", "changes", changes),
+                    "Settings updated: " + details);
+            sseStreamService.broadcastAdminEvent("SETTINGS_UPDATED", "");
+        }
+        return settingsService.all();
     }
 
     // REGIONS

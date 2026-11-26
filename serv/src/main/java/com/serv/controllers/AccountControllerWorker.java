@@ -42,6 +42,7 @@ public class AccountControllerWorker {
     private final MailService emailService;
     private final com.serv.services.AvailabilityAlertService availabilityAlertService;
     private final com.serv.services.video.VideoProcessingService videoProcessingService;
+    private final com.serv.services.SettingsService settingsService;
 
     @Transactional(readOnly = true)
     @GetMapping("/me")
@@ -59,7 +60,7 @@ public class AccountControllerWorker {
 
     @GetMapping("/storage")
     public StorageUsageDTO getStorage(Worker worker) {
-        return new StorageUsageDTO(mediaStorageService.usedBytes(worker.getId()), worker.getMaxStorageBytes());
+        return new StorageUsageDTO(mediaStorageService.usedBytes(worker.getId()), worker.getMaxStorageBytes(settingsService.storageLimitBytes()));
     }
 
     @Transactional
@@ -268,9 +269,10 @@ public class AccountControllerWorker {
 
         long incoming = files.stream().mapToLong(MultipartFile::getSize).sum();
         long used = mediaStorageService.usedBytes(worker.getId());
-        if (used + incoming > worker.getMaxStorageBytes()) {
+        long limit = worker.getMaxStorageBytes(settingsService.storageLimitBytes());
+        if (used + incoming > limit) {
             throw new ResponseStatusException(HttpStatus.CONTENT_TOO_LARGE,
-                    "Storage limit reached: " + (worker.getMaxStorageBytes() / (1024 * 1024)) + " MB.");
+                    "Storage limit reached: " + (limit / (1024 * 1024)) + " MB.");
         }
 
         for (MultipartFile file : files) {

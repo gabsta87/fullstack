@@ -72,7 +72,7 @@ class MediaUploadSecurityTest extends IntegrationTest {
         mvc.perform(get("/account/worker/storage").header("Authorization", bearer(worker)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.usedBytes").value(0))
-                .andExpect(jsonPath("$.maxBytes").value(worker.getMaxStorageBytes()));
+                .andExpect(jsonPath("$.maxBytes").value(50L * 1024 * 1024)); // default STORAGE_LIMIT_MB
 
         upload(file("me.jpg", "image/jpeg", TestImages.jpeg(800, 600))).andExpect(status().isOk());
         long onDisk = 0;
@@ -198,7 +198,7 @@ class MediaUploadSecurityTest extends IntegrationTest {
     @DisplayName("The storage quota is enforced")
     void quota() throws Exception {
         Path dir = Files.createDirectories(MEDIA_DIR.resolve(worker.getId().toString()).resolve("originals"));
-        Files.write(dir.resolve("filler.jpg"), new byte[(int) worker.getMaxStorageBytes()]);
+        Files.write(dir.resolve("filler.jpg"), new byte[50 * 1024 * 1024] /* default STORAGE_LIMIT_MB */);
         upload(file("one-more.jpg", "image/jpeg", TestImages.jpeg(50, 50))).andExpect(status().isContentTooLarge());
     }
 

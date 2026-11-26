@@ -36,6 +36,7 @@ public final class TableNames {
     public static final String GEOGRAPHIC_ZONES = "geographic_zones";
     public static final String LOCATIONS = "locations";
     public static final String LEGAL_TEXTS = "legal_text";
+    public static final String APP_SETTINGS = "app_settings";
 
     // Tokens, payments, audit
     public static final String VERIFICATION_TOKENS = "verification_tokens";

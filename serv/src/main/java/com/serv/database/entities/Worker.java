@@ -185,20 +185,18 @@ public class Worker extends VenusUser {
     /**
      * Centralized method to calculate the maximum storage allowed.
      */
-    public long getMaxStorageBytes() {
-        long baseLimit = 0L;
-
-        // Case 1: limit based on the subscription tier
-        if (subscriptionTier != null) {
-            baseLimit = switch (subscriptionTier) {
-                case BASIC -> 50L * 1024 * 1024;    // 50 Mo
-                case STANDARD -> 200L * 1024 * 1024;   // 200 Mo
-                case PREMIUM -> 1024L * 1024 * 1024;  // 1 Go
-                default -> 50L * 1024 * 1024;
-            };
-        } else {
-            baseLimit = 50L * 1024 * 1024; // Default value
-        }
+    /**
+     * Storage allowed for photos and videos together.
+     *
+     * @param freeLimitBytes limit of a free account, set by the admins ({@code STORAGE_LIMIT_MB})
+     */
+    public long getMaxStorageBytes(long freeLimitBytes) {
+        // Paid tiers are not sold yet (the site is free): their limits stay as they were, never below the free one
+        long baseLimit = subscriptionTier == null ? freeLimitBytes : switch (subscriptionTier) {
+            case STANDARD -> Math.max(freeLimitBytes, 200L * 1024 * 1024);
+            case PREMIUM -> Math.max(freeLimitBytes, 1024L * 1024 * 1024);
+            default -> freeLimitBytes;
+        };
 
         // Case 2: extra storage bought separately
         long extra = (extraStoragePurchased != null) ? extraStoragePurchased : 0L;

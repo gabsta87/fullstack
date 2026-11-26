@@ -40,6 +40,8 @@ public record AdminAuditLogDTO(
             type = "LEGAL_TEXT";
             id = String.valueOf(log.getLegalTextTarget().getId());
             label = log.getLegalTextTarget().getName() + " (" + log.getLegalTextTarget().getLanguage() + ")";
+        } else if ("SETTINGS_UPDATED".equals(log.getActionType())) {
+            type = "SETTINGS";
         }
         VenusUser admin = log.getAdmin();
         return new AdminAuditLogDTO(
