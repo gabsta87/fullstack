@@ -409,7 +409,23 @@
                         <ion-col size="4" size-md="3"
                           class="ion-padding-tiny photo-col">
                           <div class="gallery-item video-gallery-item">
-                            <video [src]="video.url" class="gallery-img" controls preload="metadata"></video>
+                            @switch (video.status) {
+                              @case ('PROCESSING') {
+                                <div class="video-state">
+                                  <ion-spinner name="crescent"></ion-spinner>
+                                  <span>{{ languageService.msg('video_processing') }}</span>
+                                </div>
+                              }
+                              @case ('FAILED') {
+                                <div class="video-state video-state-failed">
+                                  <ion-icon name="alert-circle-outline"></ion-icon>
+                                  <span>{{ languageService.msg(videoFailureKey(video)) }}</span>
+                                </div>
+                              }
+                              @default {
+                                <video [src]="video.url" [poster]="video.thumbnailUrl || ''" class="gallery-img" controls preload="none"></video>
+                              }
+                            }
                             <div class="gallery-actions-overlay">
                               <ion-button color="danger" fill="clear" size="small"
                                 (click)="deleteVideo(video); $event.stopPropagation();">

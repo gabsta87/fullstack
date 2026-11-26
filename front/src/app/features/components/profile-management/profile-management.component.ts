@@ -403,6 +403,15 @@ export class ProfileManagementComponent implements OnInit {
     }
   }
 
+  /** Message key explaining why a video could not be processed. */
+  videoFailureKey(video: VideoItem): string {
+    switch (video.failureReason) {
+      case 'VIDEO_TOO_LONG': return 'video_too_long';
+      case 'VIDEO_UNREADABLE': return 'video_unreadable';
+      default: return 'video_processing_failed';
+    }
+  }
+
   async onPhoneChange(value: string | null | undefined): Promise<void> {
     const phone = sanitizePhone(value ?? '');
     await this.updateProfileField('phone', phone);

@@ -59,7 +59,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   workerServices: Service[] = [];
 
-  modalMedia: { type: 'photo' | 'video'; url: string }[] = [];
+  modalMedia: { type: 'photo' | 'video'; url: string; thumbnailUrl?: string | null }[] = [];
 
   worker: WorkerPublicFullProfile | null = null;
   isFavorite     = false;
@@ -141,7 +141,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
     const videoItems = (this.worker.videos || []).map(v => ({
       type: 'video' as const,
-      url: v.url
+      url: v.url,
+      thumbnailUrl: v.thumbnailUrl
     }));
 
     // Photos and videos in one list

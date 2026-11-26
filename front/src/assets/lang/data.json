@@ -403,7 +403,11 @@
       "adult_enter": "I am 18 or older, enter",
       "adult_leave": "Leave",
       "notify_enabled": "You will get an email as soon as this profile is available again.",
-      "notify_error": "Could not change the alert. Please try again later."
+      "notify_error": "Could not change the alert. Please try again later.",
+      "video_processing": "Processing the video…",
+      "video_too_long": "Video too long (2 minutes at most).",
+      "video_unreadable": "This file is not a readable video.",
+      "video_processing_failed": "The video could not be processed. Delete it and try again."
     }
   },
   "fr": {
@@ -810,7 +814,11 @@
       "adult_enter": "J'ai 18 ans ou plus, entrer",
       "adult_leave": "Quitter",
       "notify_enabled": "Vous recevrez un e-mail dès que ce profil sera de nouveau disponible.",
-      "notify_error": "Impossible de modifier l'alerte. Réessayez plus tard."
+      "notify_error": "Impossible de modifier l'alerte. Réessayez plus tard.",
+      "video_processing": "Traitement de la vidéo…",
+      "video_too_long": "Vidéo trop longue (2 minutes au plus).",
+      "video_unreadable": "Ce fichier n'est pas une vidéo lisible.",
+      "video_processing_failed": "La vidéo n'a pas pu être traitée. Supprimez-la et réessayez."
     }
   },
   "de": {
@@ -1212,7 +1220,11 @@
       "adult_enter": "Ich bin mindestens 18, eintreten",
       "adult_leave": "Verlassen",
       "notify_enabled": "Sie erhalten eine E-Mail, sobald dieses Profil wieder verfügbar ist.",
-      "notify_error": "Die Benachrichtigung konnte nicht geändert werden. Bitte später erneut versuchen."
+      "notify_error": "Die Benachrichtigung konnte nicht geändert werden. Bitte später erneut versuchen.",
+      "video_processing": "Video wird verarbeitet…",
+      "video_too_long": "Video zu lang (höchstens 2 Minuten).",
+      "video_unreadable": "Diese Datei ist kein lesbares Video.",
+      "video_processing_failed": "Das Video konnte nicht verarbeitet werden. Löschen Sie es und versuchen Sie es erneut."
     }
   },
   "es": {
@@ -1614,7 +1626,11 @@
       "adult_enter": "Tengo 18 años o más, entrar",
       "adult_leave": "Salir",
       "notify_enabled": "Recibirá un correo en cuanto este perfil vuelva a estar disponible.",
-      "notify_error": "No se pudo cambiar la alerta. Inténtelo más tarde."
+      "notify_error": "No se pudo cambiar la alerta. Inténtelo más tarde.",
+      "video_processing": "Procesando el vídeo…",
+      "video_too_long": "Vídeo demasiado largo (2 minutos como máximo).",
+      "video_unreadable": "Este archivo no es un vídeo legible.",
+      "video_processing_failed": "No se pudo procesar el vídeo. Elimínelo y vuelva a intentarlo."
     }
   },
   "pt": {
@@ -2016,7 +2032,11 @@
       "adult_enter": "Tenho 18 anos ou mais, entrar",
       "adult_leave": "Sair",
       "notify_enabled": "Receberá um e-mail assim que este perfil voltar a estar disponível.",
-      "notify_error": "Não foi possível alterar o alerta. Tente mais tarde."
+      "notify_error": "Não foi possível alterar o alerta. Tente mais tarde.",
+      "video_processing": "A processar o vídeo…",
+      "video_too_long": "Vídeo demasiado longo (2 minutos no máximo).",
+      "video_unreadable": "Este ficheiro não é um vídeo legível.",
+      "video_processing_failed": "Não foi possível processar o vídeo. Elimine-o e tente novamente."
     }
   },
   "it": {
@@ -2418,7 +2438,11 @@
       "adult_enter": "Ho almeno 18 anni, entra",
       "adult_leave": "Esci",
       "notify_enabled": "Riceverai un'e-mail appena questo profilo sarà di nuovo disponibile.",
-      "notify_error": "Impossibile modificare l'avviso. Riprova più tardi."
+      "notify_error": "Impossibile modificare l'avviso. Riprova più tardi.",
+      "video_processing": "Elaborazione del video…",
+      "video_too_long": "Video troppo lungo (al massimo 2 minuti).",
+      "video_unreadable": "Questo file non è un video leggibile.",
+      "video_processing_failed": "Impossibile elaborare il video. Eliminalo e riprova."
     }
   },
   "ru": {
@@ -2820,7 +2844,11 @@
       "adult_enter": "Мне есть 18 лет, войти",
       "adult_leave": "Уйти",
       "notify_enabled": "Вы получите письмо, как только этот профиль снова станет доступен.",
-      "notify_error": "Не удалось изменить уведомление. Попробуйте позже."
+      "notify_error": "Не удалось изменить уведомление. Попробуйте позже.",
+      "video_processing": "Обработка видео…",
+      "video_too_long": "Видео слишком длинное (не более 2 минут).",
+      "video_unreadable": "Этот файл не является читаемым видео.",
+      "video_processing_failed": "Не удалось обработать видео. Удалите его и попробуйте снова."
     }
   },
   "ua": {
@@ -3222,7 +3250,11 @@
       "adult_enter": "Мені є 18 років, увійти",
       "adult_leave": "Вийти",
       "notify_enabled": "Ви отримаєте лист, щойно цей профіль знову стане доступним.",
-      "notify_error": "Не вдалося змінити сповіщення. Спробуйте пізніше."
+      "notify_error": "Не вдалося змінити сповіщення. Спробуйте пізніше.",
+      "video_processing": "Обробка відео…",
+      "video_too_long": "Відео задовге (не більше 2 хвилин).",
+      "video_unreadable": "Цей файл не є відео, яке можна відтворити.",
+      "video_processing_failed": "Не вдалося обробити відео. Видаліть його та спробуйте ще раз."
     }
   },
   "ar": {
@@ -3624,7 +3656,11 @@
       "adult_enter": "عمري 18 عامًا أو أكثر، دخول",
       "adult_leave": "مغادرة",
       "notify_enabled": "ستتلقى بريدًا إلكترونيًا فور عودة هذا الملف متاحًا.",
-      "notify_error": "تعذّر تعديل التنبيه. حاول لاحقًا."
+      "notify_error": "تعذّر تعديل التنبيه. حاول لاحقًا.",
+      "video_processing": "جارٍ معالجة الفيديو…",
+      "video_too_long": "الفيديو طويل جدًا (دقيقتان كحد أقصى).",
+      "video_unreadable": "هذا الملف ليس فيديو قابلًا للقراءة.",
+      "video_processing_failed": "تعذّرت معالجة الفيديو. احذفه وحاول مرة أخرى."
     }
   }
 }

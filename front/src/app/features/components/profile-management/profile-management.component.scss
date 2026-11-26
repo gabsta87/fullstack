@@ -498,3 +498,23 @@
     backdrop-filter: blur(4px);
   }
 }
+
+// Video not playable yet: processing (spinner) or failed (reason)
+.video-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  aspect-ratio: 3 / 4;
+  padding: 8px;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted, #8c7d75);
+  background: var(--background-light, #f4f1ee);
+  border-radius: var(--radius-sm, 6px);
+
+  ion-icon { font-size: 1.6rem; }
+}
+
+.video-state-failed { color: var(--ion-color-danger); }

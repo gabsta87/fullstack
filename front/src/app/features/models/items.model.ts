@@ -17,8 +17,15 @@ export interface PhotoItem {
 export interface VideoItem {
   id: string;
   url: string;
-  duration?: string;
+  /** JPEG frame of the video, once processed */
+  thumbnailUrl?: string | null;
+  /** Seconds */
+  duration?: number | null;
   sortOrder : number;
+  /** Visitors only receive READY videos; the owner also sees the others */
+  status?: 'PROCESSING' | 'READY' | 'FAILED';
+  /** VIDEO_UNREADABLE, VIDEO_TOO_LONG or VIDEO_PROCESSING_FAILED */
+  failureReason?: string | null;
   type?: 'video';
 }
 

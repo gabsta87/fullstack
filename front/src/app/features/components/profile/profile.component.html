@@ -119,7 +119,11 @@
                   }
                   @for (v of worker.videos; track v) {
                     <button type="button" class="thumb video-thumb" (click)="openMedia(v)">
-                      <video [src]="v.url" preload="metadata" muted playsinline></video>
+                      @if (v.thumbnailUrl) {
+                        <img [src]="v.thumbnailUrl" [alt]="worker.username" loading="lazy">
+                      } @else {
+                        <video [src]="v.url" preload="metadata" muted playsinline></video>
+                      }
                       <ion-icon name="play-circle-outline" class="play-icon"></ion-icon>
                     </button>
                   }
@@ -212,6 +216,7 @@
                           @if (media.type === 'video') {
                             <video
                               [src]="media.url"
+                              [poster]="media.thumbnailUrl || ''"
                               controls
                               playsinline
                               preload="metadata"
