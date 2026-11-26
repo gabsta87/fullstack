@@ -13,6 +13,19 @@ Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 
 Nouveaux éléments
 
+- front : sur la page profile, il faudrait que chaque avis apparaisse comme indépendant, en marquant une petite séparation.
+- front : admin dashboard (cf /Users/principal/Downloads/admin_dashboard.png)
+  - laissons tomber d'afficher l'action sous forme de badge, ça ne sert à rien.  
+  - la fin de la date chevauche le début de l'adresse email du modérateur
+  - il faudrait pouvoir cliquer sur les colonnes pour trier
+  - dans la userlist, la date et le role sont collés l'un à l'autre (cf /Users/principal/Downloads/admin_dashboard_userslist.png). il faut les séparer légèrement
+  - dans la userlist, ce serait peut-être mieux d'afficher les colonnes cliquables comme des boutons. peut-être qu'on pourrait retirer l'icone de filtrage qui prend de la place. si c'est pas assez clair, on peut laisser les deux. et si c'est pas joli, on peut mettre toutes les en-têtes de colonnes sous formes de boutons, désactiver ceux qui ne peuvent pas trier, et éventuellement mettre l'icone de tri
+- front : les visiteurs doivent pouvoir modifier leur pseudo sous l'onglet compte
+- le changement d'ordre des photos dans profile-management ne le change pas sur profile. c'était le cas auparavant. il faut rétablir le tri avec l'index. Le réarrangement a un comportement bizarre (cf /Users/principal/Downloads/profile-management.png). ça décale les photos en colonne. Je ne sais pas si c'est ce qui est actuellement le cas, mais tant qu'on ne relache pas la photo, aucun changement ne dois être envoyé au serveur, afin de limiter les requêtes de modification. Il va falloir régler le problème du traitement vidéo en local (ou alors ne pas compresser la vidéo en profil dev) afin que je puisse tester le cycle complet.
+- on constate sur profile-management qu'il y a des warnings (cf /Users/principal/Downloads/profile-management.png). regarde si ça vaut la peine de les corriger
+
+Branche du quatrième lot : `fix/batch-4`.
+
 - [x] front : sur la page Account, le titre Mes commentaires doit disparaitre, puisqu'il fait doublon avec l'onglet. on peut centrer les commentaires au milieu de la page — *fait (`fix/batch-4`)*
 - [x] front : dans profile-management et profile, les langues maitrisées  doivent être triées en commençant par les mieux maitrisées par l'annonceur — *fait (`fix/batch-4`) ; à niveau égal, l'ordre d'ajout est gardé*
 - [x] global : du coup la limite de 50 Mo ne s'applique que pour les photos, correct ? je pensais faire une limite globale par compte, pour que les annonceurs gèrent eux-même la répartition entre photos et vidéos. 
