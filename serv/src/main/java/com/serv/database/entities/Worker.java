@@ -35,6 +35,7 @@ public class Worker extends VenusUser {
     @BatchSize(size = 20)
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
     @SQLRestriction("photo_type = 'GALLERY'")
+    @OrderBy("sortOrder ASC") // the order chosen by the advertiser, everywhere (public profile included)
     private Collection<Photo> photos = new ArrayList<>();
 
     @ToString.Exclude
@@ -44,6 +45,7 @@ public class Worker extends VenusUser {
     @ToString.Exclude
     @BatchSize(size = 20)
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("sortOrder ASC")
     private Collection<Video> videos = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
