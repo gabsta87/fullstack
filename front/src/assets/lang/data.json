@@ -293,7 +293,14 @@
         "dismissed_suffix": "(🔒 Dismissed / Abusive)",
         "reason_label": "Reason",
         "date_label": "Date",
-        "btn_dismiss": "Dismiss"
+        "btn_dismiss": "Dismiss",
+        "view_profiles": "Reported profiles",
+        "view_all": "All reports",
+        "subtitle_all": "Every report, pending or dismissed, newest first.",
+        "search_placeholder": "Profile, author, reason, #id…",
+        "status_pending": "Pending",
+        "status_dismissed": "Dismissed",
+        "status_all": "All statuses"
       },
       "logs_tab": {
         "moderator_label": "Moderator",
@@ -304,7 +311,8 @@
         "target_label": "Target ",
         "empty": "No entry.",
         "col_date": "Date",
-        "col_details": "Details"
+        "col_details": "Details",
+        "see_report": "See the report"
       },
       "services_tab": {
         "title": "Services List",
@@ -750,7 +758,14 @@
         "dismissed_suffix": "(🔒 Classé / Abusif)",
         "reason_label": "Raison ",
         "date_label": "Date ",
-        "btn_dismiss": "Classer sans suite"
+        "btn_dismiss": "Classer sans suite",
+        "view_profiles": "Annonceurs signalés",
+        "view_all": "Tous les signalements",
+        "subtitle_all": "Tous les signalements, en cours ou classés, du plus récent au plus ancien.",
+        "search_placeholder": "Annonceur, auteur, motif, n°…",
+        "status_pending": "En cours",
+        "status_dismissed": "Classé",
+        "status_all": "Tous les statuts"
       },
       "logs_tab": {
         "moderator_label": "Modérateur ",
@@ -761,7 +776,8 @@
         "target_label": "Cible ",
         "empty": "Aucune entrée.",
         "col_date": "Date",
-        "col_details": "Détails"
+        "col_details": "Détails",
+        "see_report": "Voir le signalement"
       },
       "services_tab": {
         "title": "Liste des Services",
@@ -1202,7 +1218,14 @@
         "dismissed_suffix": "(🔒 Abgewiesen / Missbräuchlich)",
         "reason_label": "Grund",
         "date_label": "Datum",
-        "btn_dismiss": "Abweisen"
+        "btn_dismiss": "Abweisen",
+        "view_profiles": "Gemeldete Profile",
+        "view_all": "Alle Meldungen",
+        "subtitle_all": "Alle Meldungen, offen oder abgelegt, die neuesten zuerst.",
+        "search_placeholder": "Profil, Verfasser, Grund, Nr.…",
+        "status_pending": "Offen",
+        "status_dismissed": "Abgelegt",
+        "status_all": "Alle Status"
       },
       "logs_tab": {
         "moderator_label": "Moderator",
@@ -1213,7 +1236,8 @@
         "target_label": "Ziel ",
         "empty": "Kein Eintrag.",
         "col_date": "Datum",
-        "col_details": "Details"
+        "col_details": "Details",
+        "see_report": "Meldung ansehen"
       },
       "services_tab": {
         "title": "Liste der Dienstleistungen",
@@ -1654,7 +1678,14 @@
         "dismissed_suffix": "(🔒 Desestimado / Abusivo)",
         "reason_label": "Razón",
         "date_label": "Fecha",
-        "btn_dismiss": "Desestimar"
+        "btn_dismiss": "Desestimar",
+        "view_profiles": "Perfiles denunciados",
+        "view_all": "Todas las denuncias",
+        "subtitle_all": "Todas las denuncias, pendientes o archivadas, de la más reciente a la más antigua.",
+        "search_placeholder": "Perfil, autor, motivo, n.º…",
+        "status_pending": "Pendiente",
+        "status_dismissed": "Archivada",
+        "status_all": "Todos los estados"
       },
       "logs_tab": {
         "moderator_label": "Moderador",
@@ -1665,7 +1696,8 @@
         "target_label": "Objetivo ",
         "empty": "Ninguna entrada.",
         "col_date": "Fecha",
-        "col_details": "Detalles"
+        "col_details": "Detalles",
+        "see_report": "Ver la denuncia"
       },
       "services_tab": {
         "title": "Lista de servicios",
@@ -2106,7 +2138,14 @@
         "dismissed_suffix": "(🔒 Arquivado / Abusivo)",
         "reason_label": "Razão",
         "date_label": "Data",
-        "btn_dismiss": "Arquivar"
+        "btn_dismiss": "Arquivar",
+        "view_profiles": "Perfis denunciados",
+        "view_all": "Todas as denúncias",
+        "subtitle_all": "Todas as denúncias, pendentes ou arquivadas, da mais recente para a mais antiga.",
+        "search_placeholder": "Perfil, autor, motivo, n.º…",
+        "status_pending": "Pendente",
+        "status_dismissed": "Arquivada",
+        "status_all": "Todos os estados"
       },
       "logs_tab": {
         "moderator_label": "Moderador",
@@ -2117,7 +2156,8 @@
         "target_label": "Alvo ",
         "empty": "Nenhuma entrada.",
         "col_date": "Data",
-        "col_details": "Detalhes"
+        "col_details": "Detalhes",
+        "see_report": "Ver a denúncia"
       },
       "services_tab": {
         "title": "Lista de serviços",
@@ -2558,7 +2598,14 @@
         "dismissed_suffix": "(🔒 Archiviato / Abusivo)",
         "reason_label": "Motivo",
         "date_label": "Data",
-        "btn_dismiss": "Archivia"
+        "btn_dismiss": "Archivia",
+        "view_profiles": "Profili segnalati",
+        "view_all": "Tutte le segnalazioni",
+        "subtitle_all": "Tutte le segnalazioni, in corso o archiviate, dalla più recente.",
+        "search_placeholder": "Profilo, autore, motivo, n.…",
+        "status_pending": "In corso",
+        "status_dismissed": "Archiviata",
+        "status_all": "Tutti gli stati"
       },
       "logs_tab": {
         "moderator_label": "Moderatore",
@@ -2569,7 +2616,8 @@
         "target_label": "Obiettivo ",
         "empty": "Nessuna voce.",
         "col_date": "Data",
-        "col_details": "Dettagli"
+        "col_details": "Dettagli",
+        "see_report": "Vedi la segnalazione"
       },
       "services_tab": {
         "title": "Elenco dei servizi",
@@ -3010,7 +3058,14 @@
         "dismissed_suffix": "(🔒 Отклонено / Ложная)",
         "reason_label": "Причина",
         "date_label": "Дата",
-        "btn_dismiss": "Отклонить жалобу"
+        "btn_dismiss": "Отклонить жалобу",
+        "view_profiles": "Профили с жалобами",
+        "view_all": "Все жалобы",
+        "subtitle_all": "Все жалобы, открытые и закрытые, сначала новые.",
+        "search_placeholder": "Профиль, автор, причина, №…",
+        "status_pending": "Открыта",
+        "status_dismissed": "Закрыта",
+        "status_all": "Все статусы"
       },
       "logs_tab": {
         "moderator_label": "Модератор",
@@ -3021,7 +3076,8 @@
         "target_label": "Объект ",
         "empty": "Нет записей.",
         "col_date": "Дата",
-        "col_details": "Подробности"
+        "col_details": "Подробности",
+        "see_report": "Открыть жалобу"
       },
       "services_tab": {
         "title": "Список услуг",
@@ -3462,7 +3518,14 @@
         "dismissed_suffix": "(🔒 Відхилено / Необґрунтована)",
         "reason_label": "Причина",
         "date_label": "Дата",
-        "btn_dismiss": "Відхилити скаргу"
+        "btn_dismiss": "Відхилити скаргу",
+        "view_profiles": "Профілі зі скаргами",
+        "view_all": "Усі скарги",
+        "subtitle_all": "Усі скарги, відкриті й закриті, спочатку нові.",
+        "search_placeholder": "Профіль, автор, причина, №…",
+        "status_pending": "Відкрита",
+        "status_dismissed": "Закрита",
+        "status_all": "Усі статуси"
       },
       "logs_tab": {
         "moderator_label": "Модератор",
@@ -3473,7 +3536,8 @@
         "target_label": "Об'єкт ",
         "empty": "Немає записів.",
         "col_date": "Дата",
-        "col_details": "Подробиці"
+        "col_details": "Подробиці",
+        "see_report": "Відкрити скаргу"
       },
       "services_tab": {
         "title": "Список послуг",
@@ -3914,7 +3978,14 @@
         "dismissed_suffix": "(🔒 تم رفضه / مسيء)",
         "reason_label": "السبب",
         "date_label": "التاريخ",
-        "btn_dismiss": "رفض"
+        "btn_dismiss": "رفض",
+        "view_profiles": "الملفات المُبلَّغ عنها",
+        "view_all": "كل البلاغات",
+        "subtitle_all": "كل البلاغات، المفتوحة والمؤرشفة، من الأحدث إلى الأقدم.",
+        "search_placeholder": "الملف، الكاتب، السبب، الرقم…",
+        "status_pending": "قيد المعالجة",
+        "status_dismissed": "مؤرشف",
+        "status_all": "كل الحالات"
       },
       "logs_tab": {
         "moderator_label": "المشرف",
@@ -3925,7 +3996,8 @@
         "target_label": "الهدف ",
         "empty": "لا توجد إدخالات.",
         "col_date": "التاريخ",
-        "col_details": "التفاصيل"
+        "col_details": "التفاصيل",
+        "see_report": "عرض البلاغ"
       },
       "services_tab": {
         "title": "قائمة الخدمات",

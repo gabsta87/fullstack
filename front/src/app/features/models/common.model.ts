@@ -52,6 +52,8 @@ export interface AdminLog {
   targetType?: string | null;
   targetId?: string | null;
   targetLabel?: string | null;
+  /** Email of the targeted account */
+  targetEmail?: string | null;
   /** JSON snapshot of a deleted item (ids, name, excerpt) */
   targetSnapshot?: string | null;
   createdAt: string;

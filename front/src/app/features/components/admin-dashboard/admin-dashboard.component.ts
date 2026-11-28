@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, HostListener, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ChangeDetectionStrategy, ViewChild } from '@angular/core';
+import { Table } from 'primeng/table';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AlertController, IonicModule } from '@ionic/angular';
@@ -23,7 +24,8 @@ import { UserRole } from "../../models/roles";
 import { canManageAccount } from "../../utils/admin-rights";
 import { auditLogChoices, AuditLogFilter, EMPTY_AUDIT_LOG_FILTER, filterAuditLogs } from "../../utils/audit-log-filter";
 import {Select} from "primeng/select";
-import {AdminWorkerReport} from "../../models/items.model";
+import {AdminWorkerReport, ReportRow} from "../../models/items.model";
+import {EMPTY_REPORT_FILTER, filterReports, flattenReports, ReportFilter, reportIdOfLog} from "../../utils/reports";
 import {Router} from "@angular/router";
 import {LanguageManagerService} from "../../services/language-manager.service";
 import {profileIssueKeys} from "../../utils/error-messages";
@@ -68,6 +70,52 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   selectedReportWorker: AdminWorkerReport | null = null;
+
+  // ── Reports: per profile (pending ones) or every report (dismissed included) ──
+  reportsView: 'profiles' | 'all' = 'profiles';
+  reportedProfiles$!: Observable<AdminWorkerReport[]>;
+  allReports$!: Observable<ReportRow[]>;
+  reportFilter: ReportFilter = { ...EMPTY_REPORT_FILTER };
+  readonly reportIdOfLog = reportIdOfLog;
+
+  filteredReports(rows: ReportRow[] | null): ReportRow[] {
+    return filterReports(rows ?? [], this.reportFilter);
+  }
+
+  /** From the audit log: the reports tab, all reports, on this one. */
+  showReport(reportId: number) {
+    this.reportsView = 'all';
+    this.reportFilter = { ...EMPTY_REPORT_FILTER, reportId };
+    this.currentTab = 'reports';
+  }
+
+  // ── Audit log targets ──
+  private pendingUserSearch: string | null = null;
+
+  /** The users table appears after a tab change: the search asked from the log is applied then. */
+  @ViewChild('dt') set usersTable(table: Table | undefined) {
+    if (!table || this.pendingUserSearch === null) return;
+    const query = this.pendingUserSearch;
+    this.pendingUserSearch = null;
+    setTimeout(() => table.filterGlobal(query, 'contains'));
+  }
+
+  /** An advertiser opens their profile (moderation is there); any other account is found in the users table. */
+  openLogTarget(log: AdminLog) {
+    if (!log.targetId) return;
+    if (log.targetType === UserRole.WORKER) {
+      this.viewProfile({ id: log.targetId, role: UserRole.WORKER });
+    } else {
+      this.usersSearch = log.targetEmail || log.targetId;
+      this.selectedRole = null;
+      this.pendingUserSearch = this.usersSearch;
+      this.currentTab = 'users';
+    }
+  }
+
+  isAccountTarget(log: AdminLog): boolean {
+    return !!log.targetId && ['WORKER', 'CLIENT', 'ADMIN', 'SUPER_ADMIN'].includes(log.targetType ?? '');
+  }
   totalReportsCount$!: Observable<number>;
   isReportsModalOpen = false;
 
@@ -234,6 +282,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     });
 
     this.reportsSummary$ = this.adminService.reportsSummary$;
+    this.reportedProfiles$ = this.reportsSummary$.pipe(map(list => (list || []).filter(w => w.reportCount > 0)));
+    this.allReports$ = this.reportsSummary$.pipe(map(flattenReports));
 
     this.totalReportsCount$ = this.reportsSummary$.pipe(
       map(list => (list || []).reduce((acc, curr) => acc + curr.reportCount, 0))

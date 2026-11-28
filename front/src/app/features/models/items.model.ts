@@ -53,6 +53,18 @@ export interface AdminWorkerReport{
   reports: Report[];
 }
 
+/** One report in the "all reports" view (flattened from the per-profile summary). */
+export interface ReportRow {
+  reportId: number;
+  workerId: string;
+  workerUsername: string;
+  workerEmail: string;
+  authorEmail: string;
+  reportStatus: string;
+  reason: string;
+  createdAt: string;
+}
+
 export interface Report{
   reportId: number;
   authorEmail: string;

@@ -378,6 +378,12 @@ ion-modal.image-preview-modal {
 .cert-expired { color: var(--ion-color-danger); font-weight: 600; }
 
 // ── Tabs: no capitals, the count always visible, the text shortened first ──
+.admin-tabs {
+  padding: 8px 16px 0;
+  margin-bottom: 0;
+  background: var(--ion-background-color, #fff);
+}
+
 .admin-tabs ion-segment-button {
   text-transform: none;
   letter-spacing: normal;
@@ -512,3 +518,9 @@ th.sort-header[aria-sort="descending"] .sort-btn {
 }
 th.sort-header[aria-sort="ascending"] .sort-btn::after { content: '▲'; font-size: 0.7em; color: var(--ion-color-primary); }
 th.sort-header[aria-sort="descending"] .sort-btn::after { content: '▼'; font-size: 0.7em; color: var(--ion-color-primary); }
+
+// ── Reports ──
+.reports-view-select { font-size: 1.3rem; font-weight: 600; min-width: 18rem; }
+.cell-sub { font-size: 0.78rem; color: var(--ion-color-medium); overflow-wrap: anywhere; }
+.report-reason { max-width: 40ch; white-space: normal; overflow-wrap: anywhere; }
+.dismissed-report-row td { color: var(--ion-color-medium); }

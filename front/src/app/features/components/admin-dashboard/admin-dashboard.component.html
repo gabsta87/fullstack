@@ -3,8 +3,9 @@
 @if (languageService.currentLanguage$ | async; as t) {
   <ion-header class="ion-no-border">
     <!-- Tab navigation segments -->
-    <ion-toolbar color="light" class="admin-tabs">
-      <ion-segment [(ngModel)]="currentTab">
+    <!-- Same look as the tabs of the account and profile management pages -->
+    <ion-toolbar class="venus-tabs admin-tabs">
+      <ion-segment [(ngModel)]="currentTab" mode="md">
         <ion-segment-button value="users">
           <ion-label class="tab-label"><span class="tab-text">{{ t.admin?.tabs?.users }}</span><span class="tab-count">{{ (users$ | async)?.length || 0 }}</span></ion-label>
         </ion-segment-button>
@@ -350,10 +351,74 @@
     @if (currentTab === 'reports') {
       <div>
         <div class="reports-header-margin">
-          <h2>{{ t.admin?.reports_tab?.title }}</h2>
-          <p class="reports-subtitle">{{ t.admin?.reports_tab?.subtitle }}</p>
+          <!-- The title chooses the view -->
+          <p-select class="reports-view-select" [options]="[
+              { label: t.admin?.reports_tab?.view_profiles, value: 'profiles' },
+              { label: t.admin?.reports_tab?.view_all, value: 'all' }]"
+            optionLabel="label" optionValue="value" [(ngModel)]="reportsView"
+            [attr.aria-label]="t.admin?.reports_tab?.title"></p-select>
+          <p class="reports-subtitle">{{ reportsView === 'all' ? t.admin?.reports_tab?.subtitle_all : t.admin?.reports_tab?.subtitle }}</p>
         </div>
-        <p-table [value]="(reportsSummary$ | async) || []" class="p-datatable-sm" [tableStyle]="{'min-width': '50rem'}">
+        @if (reportsView === 'all') {
+          <div class="filter-bar ion-margin-bottom">
+            <div class="filter-search">
+              <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+              <input pInputText type="search" [value]="reportFilter.text"
+                     (input)="reportFilter = { ...reportFilter, text: $any($event.target).value, reportId: null }"
+                     (keydown.escape)="reportFilter = { ...reportFilter, text: '' }"
+                     [attr.aria-label]="t.admin?.reports_tab?.search_placeholder"
+                     [placeholder]="t.admin?.reports_tab?.search_placeholder" />
+            </div>
+            <p-select class="filter-select" [options]="[
+                { label: t.admin?.reports_tab?.status_pending, value: 'PENDING' },
+                { label: t.admin?.reports_tab?.status_dismissed, value: 'DISMISSED' }]"
+              optionLabel="label" optionValue="value" [showClear]="true"
+              [ngModel]="reportFilter.status" (ngModelChange)="reportFilter = { ...reportFilter, status: $event ?? null }"
+              [placeholder]="t.admin?.reports_tab?.status_all"></p-select>
+            @if (reportFilter.text || reportFilter.status || reportFilter.reportId !== null) {
+              <ion-button fill="clear" size="small" (click)="reportFilter = { status: null, reportId: null, text: '' }">
+                <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+                {{ reportFilter.reportId !== null ? ('#' + reportFilter.reportId + ' · ') : '' }}{{ t.common?.clear }}
+              </ion-button>
+            }
+          </div>
+          <p-table [value]="filteredReports(allReports$ | async)" class="p-datatable-sm" dataKey="reportId"
+                   [paginator]="true" [rows]="50" [alwaysShowPaginator]="false">
+            <ng-template #header>
+              <tr>
+                <th pSortableColumn="createdAt" class="sort-header"><span class="sort-btn">{{ t.admin?.logs_tab?.col_date }}</span></th>
+                <th pSortableColumn="workerUsername" class="sort-header"><span class="sort-btn">{{ t.admin?.reports_tab?.col_advertiser }}</span></th>
+                <th pSortableColumn="authorEmail" class="sort-header"><span class="sort-btn">{{ t.admin?.reports_tab?.author_label }}</span></th>
+                <th pSortableColumn="reportStatus" class="sort-header"><span class="sort-btn">{{ t.common?.status }}</span></th>
+                <th>{{ t.admin?.reports_tab?.reason_label }}</th>
+                <th>{{ t.common?.actions }}</th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-r>
+              <tr [class.dismissed-report-row]="r.reportStatus === 'DISMISSED'">
+                <td class="nowrap-cell">{{ r.createdAt | date:'dd.MM.yyyy HH:mm' }}</td>
+                <td>
+                  <a class="clickable-username" (click)="viewProfile({ id: r.workerId, role: 'WORKER' })">{{ r.workerUsername || r.workerEmail }}</a>
+                  <div class="cell-sub">{{ r.workerEmail }}</div>
+                </td>
+                <td>{{ r.authorEmail }}</td>
+                <td>{{ r.reportStatus === 'DISMISSED' ? t.admin?.reports_tab?.status_dismissed : t.admin?.reports_tab?.status_pending }}</td>
+                <td class="report-reason">{{ r.reason }}</td>
+                <td>
+                  @if (r.reportStatus === 'PENDING') {
+                    <ion-button size="small" fill="outline" color="medium" (click)="dismissReport(r.reportId)">
+                      {{ t.admin?.reports_tab?.btn_dismiss }}
+                    </ion-button>
+                  }
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+              <tr><td colspan="6" class="ion-text-center ion-padding">{{ t.admin?.reports_tab?.empty_reports }}</td></tr>
+            </ng-template>
+          </p-table>
+        } @else {
+        <p-table [value]="(reportedProfiles$ | async) || []" class="p-datatable-sm" [tableStyle]="{'min-width': '50rem'}">
           <ng-template #header>
             <tr>
               <th pSortableColumn="workerUsername" class="sort-header"><span class="sort-btn">{{ t.admin?.reports_tab?.col_advertiser }}</span></th>
@@ -382,6 +447,7 @@
             </tr>
           </ng-template>
         </p-table>
+        }
       </div>
     }
     <!-- REPORTS MODAL -->
@@ -593,11 +659,20 @@
               <td class="log-col-admin">{{ log.adminName }}</td>
               <td class="log-col-action">{{ log.actionType }}</td>
               <td class="log-col-target">
-                @if (log.targetLabel || log.targetId) {
+                @if (log.targetType) {
                   <span class="log-target-type">{{ log.targetType }}</span>
+                }
+                @if (isAccountTarget(log)) {
+                  <!-- Advertiser: their profile (moderation there); other accounts: the users table -->
+                  <a class="clickable-username" (click)="openLogTarget(log)">{{ log.targetLabel || log.targetEmail || log.targetId }}</a>
+                  @if (log.targetEmail && log.targetLabel) {
+                    <div class="cell-sub">{{ log.targetEmail }}</div>
+                  }
+                } @else if (log.targetLabel || log.targetId) {
                   {{ log.targetLabel || log.targetId }}
-                } @else if (log.targetType) {
-                  <span class="log-target-type">{{ log.targetType }}</span>
+                }
+                @if (reportIdOfLog(log); as reportId) {
+                  <div><a class="clickable-username" (click)="showReport(reportId)">{{ t.admin?.logs_tab?.see_report }} #{{ reportId }}</a></div>
                 }
               </td>
               <td class="log-col-details">
