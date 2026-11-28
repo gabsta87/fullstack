@@ -64,7 +64,7 @@ public class MailService {
     @Scheduled(cron = "0 0 3 * * *")
     @Transactional
     public void purgeExpiredTokens() {
-        passwordResetTokenRepository.deleteAllByExpiryDateBefore(LocalDateTime.now());
+        passwordResetTokenRepository.deleteAllByExpiryDateBefore(java.time.Instant.now());
     }
 
     public void sendAlertToLocalAuthorities(Worker worker) {
