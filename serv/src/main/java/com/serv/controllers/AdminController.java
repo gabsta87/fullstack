@@ -626,7 +626,7 @@ public class AdminController {
                             reportDetails
                     );
                 })
-                .filter(dto -> dto.reportCount() > 0)
+                // Profiles whose reports are all dismissed are kept: the "all reports" view still shows them
                 .sorted(Comparator.comparingLong(AdminWorkerReportDTO::reportCount).reversed())
                 .toList();
 
@@ -642,7 +642,12 @@ public class AdminController {
         report.setStatus(ReportStatus.DISMISSED);
         reportRepository.save(report);
 
-        logAdminAction(admin, "DISMISS_REPORT", report.getWorker(), "Report dismissed for worker #" + report.getWorker().getId() + ": " + report.getStatus());
+        // The reported profile is the target; the report itself (id, text) is kept with it, so the log shows what was dismissed
+        String reason = report.getReason() == null ? "" : report.getReason();
+        String excerpt = reason.length() > 200 ? reason.substring(0, 200) + "…" : reason;
+        logAdminAction(admin, "DISMISS_REPORT", report.getWorker(),
+                "Report #" + report.getId() + " dismissed: " + excerpt,
+                Map.of("reportId", report.getId(), "reason", excerpt));
 
         // Notify the other connected admins
         sseStreamService.broadcastAdminEvent("REPORT_UPDATED", report.getId());
@@ -727,7 +732,16 @@ public class AdminController {
         return current != null;
     }
 
+    /** Same, with a JSON snapshot kept next to a target that still exists (e.g. the report dismissed on a profile). */
+    private void logAdminAction(Admin admin, String actionType, VenusUser target, String details, Map<String, ?> snapshot) {
+        saveAuditEntry(admin, actionType, target, details, snapshot);
+    }
+
     private void logAdminAction(Admin admin, String actionType, Object target, String details) {
+        saveAuditEntry(admin, actionType, target, details, null);
+    }
+
+    private void saveAuditEntry(Admin admin, String actionType, Object target, String details, Map<String, ?> extraSnapshot) {
         // Full details (may contain personal data) stay in the audit table; the log only keeps who did what.
         log.info("ADMIN {} by admin {}{}", actionType, admin.getId(),
                 target instanceof VenusUser u ? " on account " + u.getId() : "");
@@ -746,6 +760,7 @@ public class AdminController {
             case Map<?, ?> snapshot -> log.setTarget(objectMapper.writeValueAsString(snapshot));
             default -> throw new IllegalArgumentException("Unsupported audit target: " + target.getClass().getSimpleName());
         }
+        if (extraSnapshot != null) log.setTarget(objectMapper.writeValueAsString(extraSnapshot));
 
         auditLogRepository.save(log);
         sseStreamService.broadcastAdminEvent("AUDIT_LOG_UPDATED", actionType);

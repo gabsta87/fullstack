@@ -18,16 +18,19 @@ public record AdminAuditLogDTO(
         String targetType,
         String targetId,
         String targetLabel,
+        /** Email of the targeted account (admins only see the log), to reach it from the log */
+        String targetEmail,
         String targetSnapshot,
         LocalDateTime createdAt
 ) {
     public static AdminAuditLogDTO from(AdminAuditLog log) {
-        String type = null, id = null, label = null;
+        String type = null, id = null, label = null, email = null;
         if (log.getUserTarget() != null) {
             VenusUser u = log.getUserTarget();
             type = u.getRole().name();
             id = u.getId().toString();
             label = u.getUsername();
+            email = u.getEmail() != null ? u.getEmail().getValue() : null;
         } else if (log.getServiceTarget() != null) {
             type = "SERVICE";
             id = String.valueOf(log.getServiceTarget().getId());
@@ -53,6 +56,7 @@ public record AdminAuditLogDTO(
                 type,
                 id,
                 label,
+                email,
                 log.getTargetSnapshot(),
                 log.getCreatedAt()
         );
