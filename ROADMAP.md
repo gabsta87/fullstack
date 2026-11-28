@@ -13,6 +13,8 @@ Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 
 Nouveaux éléments
 
+- Si photos et vidéos sont mélangés sur Profile, il faut mettre le titre à média. Auparavant les deux étaient séparés. Donc soit on sépare, soit on change le titre.
+
 Branche du sixième lot : `fix/batch-6`.
 
 - [x] front : admin dashboard : on devrait réutiliser le code couleurs des toolbars de account et profile-management, au lieu de tout avoir en blanc avec un sous-lignage. — *les onglets reprennent le style de Compte et Gestion du profil (pastilles sur fond teinté), en gardant le texte sans majuscules et les nombres*
