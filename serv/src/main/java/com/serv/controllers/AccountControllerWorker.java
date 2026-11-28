@@ -75,14 +75,21 @@ public class AccountControllerWorker {
             worker.setVerificationCode(verificationCode);
         }
 
+        final Worker owner = worker;
         CertificationRequest request = certificationRequestRepository.findByWorker(worker)
-                .orElseGet(() -> new CertificationRequest(workerArg));
+                .orElseGet(() -> new CertificationRequest(owner));
+        // The code to hold on the photo: the one the admins compare it with (a renewal gets a new one)
+        request.setVerificationCode(verificationCode);
 
         // A renewal starts over from the photo step; the current certification stays valid meanwhile
         if (request.getStatus() == null || request.getStatus() == CertificationStatus.NOT_CERTIFIED
-                || request.getStatus() == CertificationStatus.CERTIFIED) {
+                || request.getStatus() == CertificationStatus.CERTIFIED
+                || request.getStatus() == CertificationStatus.PENDING_APPROVAL && request.getCertificationPhoto() == null) {
             request.setStatus(CertificationStatus.PENDING_PHOTO);
         }
+        // Saved and attached: before, a first request was never stored, so the code never reached the page
+        request = certificationRequestRepository.save(request);
+        worker.setLastCertificationRequest(request);
 
         worker = workerRepository.save(worker);
 
@@ -107,6 +114,7 @@ public class AccountControllerWorker {
 
             request.setStatus(CertificationStatus.PENDING_APPROVAL);
             request.setCertificationPhoto(certificationPhoto);
+            if (worker.getVerificationCode() != null) request.setVerificationCode(worker.getVerificationCode());
 
             CertificationRequest savedRequest = certificationRequestRepository.save(request);
             worker.setLastCertificationRequest(savedRequest);

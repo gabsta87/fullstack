@@ -241,11 +241,13 @@ export class ProfileManagementComponent implements OnInit {
     try {
       const status = me.certificationRequest?.status;
       // A renewal (status CERTIFIED) or a first request starts with a new verification code
+      let current = me;
       if (!me.certificationRequest?.verificationCode || status === CertificationStatus.NOT_CERTIFIED || status === CertificationStatus.CERTIFIED) {
-        await this.workerAccountService.requestCertification();
+        // The modal shows the code just created: the profile returned by the request, not the one before it
+        current = await this.workerAccountService.requestCertification();
       }
 
-      await this.presentModal(me);
+      await this.presentModal(current);
 
     } catch (err) {
       console.error('Certification request failed', err);
@@ -259,7 +261,7 @@ export class ProfileManagementComponent implements OnInit {
     const modal = await this.modalController.create({
       component: CertificationModalComponent,
       componentProps: {
-        verificationCode: me.certificationRequest?.verificationCode,
+        verificationCode: me.certificationRequest?.verificationCode ?? me.verificationCode,
         adminMessage: me.adminCertificationFeedback
       }
     });

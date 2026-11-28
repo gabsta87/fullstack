@@ -12,6 +12,11 @@ Cocher `[x]` quand c'est mergé dans `master`.
 Branche suggérée : `fix/batch-1` (un commit par ligne, merge groupé).
 
 Nouveaux éléments
+- [ ] front : admin dashboard : on devrait réutiliser le code couleurs des toolbars de account et profile-management, au lieu de tout avoir en blanc avec un sous-lignage.
+- [ ] front : admin dashboard : dans les logs, ce serait mieux de voir l'email du compte ciblé. d'autre part, si la cible est un annonceur, on pourrait directement mettre le lien vers le profil. Ceci dit, l'information est en double. car on a déjà ça dans cible. En tout cas il faut un lien vers la cible.
+- [ ] front : admin dashboard : quand un signalement est classé, dans le journal admin on ne voit pas le texte du signalement qui a été classé. Si ces signalements ne sont pas effacés, et gardés en base, on pourrait peut-être ajouter un onglet de tri dans signalements pour pouvoir consulter ces signalements classés. Et du coup depuis le journal on devrait pouvoir cliquer sur l'objet pour aller dans l'onglet des signalements avec le tri nécessaire pour le voir. Ou alors cliquer sur le signalement classé devrait permettre d'en voir le texte. Par contre l'onglet signalements regroupe par annonceur. Il faudrait soit un 2ème tableau pour voir tous les signalements sans les regrouper, soit un dropdown menu pour choisir quel tableau afficher. Le titre pourrait faire office de Sélecteur. Annonceurs signalés / Tous les signalements (et dans le 2ème cas, on peut filtrer ceux classés, ceux en cours...)
+- [ ] front : j'ai installé ffmpg pour un autre usage avec la commande brew install yt-dlp ffmpeg donc on peut intégrer la compression vidéo en mode dev maintenant j'imagine.
+- [ ] front : Lors d'une demande de certification, le code ne s'affiche pas dans la fenêtre.
 
 Branche du cinquième lot : `fix/batch-5`.
 

@@ -50,6 +50,8 @@ export interface WorkerPublicFullProfile extends WorkerMinimalProfile {
 export interface WorkerPrivateProfile extends WorkerPublicFullProfile {
   birthdate?: string;
   certificationRequest?: CertificationRequest;
+  /** Code to hold on the certification photo (also in certificationRequest) */
+  verificationCode?: string | null;
   /** End of the current certification and start of its renewal period (set by the server at approval). */
   certificationExpiresAt?: string | null;
   certificationRenewableFrom?: string | null;

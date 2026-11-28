@@ -101,6 +101,38 @@ class CertificationValidityTest extends IntegrationTest {
     }
 
     @Test
+    @DisplayName("A first request is stored with its code, so the page can show it; the admins see the same code; a renewal gets a new one")
+    void codeShownAndKept() throws Exception {
+        Admin admin = createAdmin("admin@venus.test");
+        Worker w = createVisibleWorker("luna@venus.test");
+
+        String body = requestCertification(w).andExpect(status().isOk())
+                .andExpect(jsonPath("$.certificationRequest.status").value("PENDING_PHOTO"))
+                .andReturn().getResponse().getContentAsString();
+        String code = json.readTree(body).get("verificationCode").asString();
+        assertThat(code).hasSize(5);
+        assertThat(json.readTree(body).get("certificationRequest").get("verificationCode").asString()).isEqualTo(code);
+        // Asking again keeps the same code (the advertiser may already have written it down)
+        requestCertification(w).andExpect(jsonPath("$.certificationRequest.verificationCode").value(code));
+
+        sendPhoto(w).andExpect(status().isOk());
+        mvc.perform(get("/admin/certification-requests").header("Authorization", bearer(admin)))
+                .andExpect(jsonPath("$[0].verificationCode").value(code));
+        review(admin, w, true).andExpect(status().isOk());
+
+        // Renewal: a new code, on the page and for the admins
+        Worker renewing = reload(w);
+        renewing.certify(LocalDateTime.now().minusMonths(7), 8, 2);
+        workerRepository.save(renewing);
+        String renewal = json.readTree(requestCertification(w).andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString()).get("certificationRequest").get("verificationCode").asString();
+        assertThat(renewal).isNotEqualTo(code).hasSize(5);
+        sendPhoto(w).andExpect(status().isOk());
+        mvc.perform(get("/admin/certification-requests").header("Authorization", bearer(admin)))
+                .andExpect(jsonPath("$[0].verificationCode").value(renewal));
+    }
+
+    @Test
     @DisplayName("Before the renewal period a new request is refused; within it, the advertiser stays certified until the renewal is approved")
     void renewalWindow() throws Exception {
         Admin admin = createAdmin("admin@venus.test");
